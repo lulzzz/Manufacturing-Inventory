@@ -3,10 +3,11 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
+    <FileVersion>1.0.1.1205</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.7" />
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.7" />
-    <PackageReference Include="Prism.Wpf" Version="7.2.0.1367" />
+    <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
   </ItemGroup>
 </Project>

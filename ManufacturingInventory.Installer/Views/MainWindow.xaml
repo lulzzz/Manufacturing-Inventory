@@ -1,0 +1,21 @@
+﻿<dx:ThemedWindow x:Class="ManufacturingInventory.Installer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        dx:ThemeManager.Theme="VS2017Dark"
+        Title="Inventory Installer" Height="350" Width="525" >
+    <dxlc:LayoutControl>
+        <dxlc:DockLayoutControl>
+            <ContentControl dxlc:DockLayoutControl.Dock="Client" prism:RegionManager.RegionName="ContentRegion" />
+            <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Bottom" Height="30">
+                <dx:SimpleButton Content="Next"></dx:SimpleButton>
+                <dx:SimpleButton Content="Back"></dx:SimpleButton>
+                <dx:SimpleButton Content="Cancel"></dx:SimpleButton>
+            </dxlc:LayoutGroup>
+        </dxlc:DockLayoutControl>
+
+    </dxlc:LayoutControl>
+</dx:ThemedWindow>

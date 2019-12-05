@@ -84,14 +84,14 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             foreach (FileInfo file in source.GetFiles()) {
 
-                var dest = Path.Combine(target.ToString(), fi.Name);
+                var dest = Path.Combine(target.ToString(), file.Name);
                 if (System.IO.File.Exists(dest)) {
                     FileInfo info = new FileInfo(dest);
                     if (file.LastWriteTime!=info.LastWriteTime) {
-                        Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
-                        file.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
+                        Console.WriteLine(@"Copying {0}\{1}", target.FullName, file.Name);
+                        file.CopyTo(Path.Combine(target.ToString(), file.Name), true);
                     } else {
-                        Console.WriteLine(@"Not Copying {0}\{1}", target.FullName, fi.Name);
+                        Console.WriteLine(@"Not Copying {0}\{1}", target.FullName, file.Name);
                     }
                 }
             }

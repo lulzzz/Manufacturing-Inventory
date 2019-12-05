@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.Cons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.InstallConsole", "ManufacturingInventory.InstallConsole\ManufacturingInventory.InstallConsole.csproj", "{1E52A2E2-C928-4085-9C61-875EFF1DD450}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.Installer", "ManufacturingInventory.Installer\ManufacturingInventory.Installer.csproj", "{14EF8C47-B558-4AAD-8EBA-C73D6FA82651}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{1E52A2E2-C928-4085-9C61-875EFF1DD450}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E52A2E2-C928-4085-9C61-875EFF1DD450}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E52A2E2-C928-4085-9C61-875EFF1DD450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14EF8C47-B558-4AAD-8EBA-C73D6FA82651}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14EF8C47-B558-4AAD-8EBA-C73D6FA82651}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14EF8C47-B558-4AAD-8EBA-C73D6FA82651}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14EF8C47-B558-4AAD-8EBA-C73D6FA82651}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{F575D201-498B-45A3-AB81-3A0FEBE4BF12} = {D4D6569B-0BC5-45CF-B000-E14C9CFD86CF}
 		{13E0C465-97D0-4259-B13A-305048FC7FD8} = {24BF0A95-72C3-4B9B-8D54-BAF55A003A1A}
 		{1E52A2E2-C928-4085-9C61-875EFF1DD450} = {24BF0A95-72C3-4B9B-8D54-BAF55A003A1A}
+		{14EF8C47-B558-4AAD-8EBA-C73D6FA82651} = {24BF0A95-72C3-4B9B-8D54-BAF55A003A1A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09344567-FB58-498F-9B9B-4DEDB1165687}

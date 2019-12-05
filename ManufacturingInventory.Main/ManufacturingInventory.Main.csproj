@@ -6,19 +6,17 @@
     <AssemblyName>ManufacturingInventory.Main</AssemblyName>
     <StartupObject>ManufacturingInventory.Main.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>1.1.6.19339</FileVersion>
+    <FileVersion>1.1.7.1205</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <UpdatePackageVersion>False</UpdatePackageVersion>
-    <PackageVersionSettings>AssemblyVersion.IncrementWithAutoReset.None</PackageVersionSettings>
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-    <AssemblyFileVersionSettings>None.IncrementOnDemand.IncrementWithResetOnIncrease.DateStamp</AssemblyFileVersionSettings>
   </PropertyGroup>
 
   <ItemGroup>
