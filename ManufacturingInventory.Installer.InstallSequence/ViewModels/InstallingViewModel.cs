@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DevExpress.Mvvm;
 using ManufacturingInventory.Common.Application;
@@ -20,6 +21,11 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         private IRegionNavigationJournal _journal;
         private IEventAggregator _eventAggregator;
         private IInstaller _installer;
+        private int _itemCount;
+        private int _maxProgress;
+
+        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DispatcherService"); }
+
 
         public PrismCommands.DelegateCommand BackCommand { get; private set; }
         public PrismCommands.DelegateCommand NextCommand { get; private set; }
@@ -29,11 +35,14 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         public InstallingViewModel(IRegionManager regionManager, IEventAggregator eventAggregator,IInstaller installer) {
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
-            this._installer = installer; 
+            this._installer = installer;
+            this.IsIndeterminate = false;
+            this.ItemCount = 0;
             this.NextCommand = new PrismCommands.DelegateCommand(this.GoForward);
             this.BackCommand = new PrismCommands.DelegateCommand(this.GoBack);
             this.CancelCommand = new PrismCommands.DelegateCommand(this.Cancel);
             this.InstallCommand = new AsyncCommand(this.InstallHandler);
+            this._eventAggregator.GetEvent<IncrementProgress>().Subscribe(this.IncrementProgressHandler);
         }
 
         public override bool KeepAlive {
@@ -48,19 +57,31 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             get => this._isIndeterminate;
             set => SetProperty(ref this._isIndeterminate, value);
         }
+        public int ItemCount { 
+            get => this._itemCount; 
+            set => SetProperty(ref this._itemCount, value);
+        }
+
+        public int MaxProgress { 
+            get => this._maxProgress; 
+            set => SetProperty(ref this._maxProgress,value);
+        }
 
         private async Task InstallHandler() {
-            this.IsIndeterminate = true;
-            await Task.Run(() => {
-                bool success;
-                if (!string.IsNullOrEmpty(this._installLocation)) {
-                    success = this._installer.Install();
-                } else {
-                    success = this._installer.Install(this._installLocation);
-                }
-                this.InstallLog = (success) ? "Install Complete" : "Install Failed";
-            });
-            this.IsIndeterminate = false;
+            this.MaxProgress = this._installer.CalculateWork();
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
+            bool success;
+            if (!string.IsNullOrEmpty(this._installLocation)) {
+                success = await this._installer.InstallAsync(token);
+            } else {
+                success = await this._installer.InstallAsync(token,this._installLocation);
+            }
+            this.InstallLog = (success) ? "Install Complete" : "Install Failed";
+        }
+
+        private void IncrementProgressHandler() {
+            this.DispatcherService.BeginInvoke(()=> this.ItemCount = this.ItemCount + 1);
         }
 
         private void Cancel() {
@@ -68,7 +89,6 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         }
 
         private void GoBack() {
-
             _journal.GoBack();
         }
 

@@ -4,7 +4,10 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>InventoryInstaller</AssemblyName>
-    <FileVersion>1.0.28.1206</FileVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <FileVersion>1.0.33.1206</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\seti_logo.png" />

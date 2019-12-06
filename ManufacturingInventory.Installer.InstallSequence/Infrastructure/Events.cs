@@ -6,4 +6,5 @@ using System.Text;
 namespace ManufacturingInventory.InstallSequence.Infrastructure {
     public class CancelEvent:PubSubEvent { }
     public class FinishedEvent : PubSubEvent { }
+    public class IncrementProgress : PubSubEvent { }
 }

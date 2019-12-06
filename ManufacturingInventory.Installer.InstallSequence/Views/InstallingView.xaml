@@ -11,14 +11,17 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
              mc:Ignorable="d" d:DesignHeight="240" d:DesignWidth="530">
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="DispatcherService"/>
+    </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl>
         <dxlc:LayoutGroup Orientation="Vertical">
             <dx:SimpleButton Height="20" Content="Install" Command="{Binding InstallCommand}"></dx:SimpleButton>
-            <dxlc:LayoutItem Label="Install Progress" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,5">
+            <dxlc:LayoutItem Label="Install Progress" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,0">
                 <ProgressBar x:Name="progressBar"
-                             Height="12"
+                             Height="20"
                              IsIndeterminate="{Binding IsIndeterminate}"
-                             Value="{Binding Progress}"
+                             Value="{Binding ItemCount}"
                              Maximum="{Binding MaxProgress}"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Log" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,0">
