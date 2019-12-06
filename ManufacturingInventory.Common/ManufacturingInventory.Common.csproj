@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <FileVersion>1.0.3.1205</FileVersion>
+    <FileVersion>1.0.6.1206</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +18,4 @@
     <Folder Include="Data\" />
     <Folder Include="Buisness\" />
   </ItemGroup>
-
-
 </Project>

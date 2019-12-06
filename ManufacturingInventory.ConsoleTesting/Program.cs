@@ -97,8 +97,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             }
 
             foreach (DirectoryInfo diSourceSubDir in source.GetDirectories()) {
-                DirectoryInfo nextTargetSubDir =
-                    target.CreateSubdirectory(diSourceSubDir.Name);
+                DirectoryInfo nextTargetSubDir =target.CreateSubdirectory(diSourceSubDir.Name);
                 CopyAll(diSourceSubDir, nextTargetSubDir);
             }
         }

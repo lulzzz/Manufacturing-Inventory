@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="ManufacturingInventory.InstallSequence.Views.FinishedView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
+             mc:Ignorable="d" d:DesignHeight="190" d:DesignWidth="580">
+    <dxlc:DockLayoutControl>
+        <TextBlock dxlc:DockLayoutControl.Dock="Top" Text="{Binding FinishedText}" TextAlignment="Center" VerticalAlignment="Center" FontSize="18" />
+        <TextBlock dxlc:DockLayoutControl.Dock="Client" Text="{Binding FinishedInstruction}" TextAlignment="Center" VerticalAlignment="Center" FontSize="18" />
+        <dxlc:LayoutGroup Height="30" dxlc:DockLayoutControl.Dock="Bottom" VerticalAlignment="Center">
+            <dx:SimpleButton Content="Done" Command="{Binding FinishedCommand}"></dx:SimpleButton>
+        </dxlc:LayoutGroup>
+    </dxlc:DockLayoutControl>
+</UserControl>

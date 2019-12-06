@@ -11,12 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ManufacturingInventory.Installer.Views {
+namespace ManufacturingInventory.InstallSequence.Views {
     /// <summary>
-    /// Interaction logic for WelcomeView.xaml
+    /// Interaction logic for InstallingView.xaml
     /// </summary>
-    public partial class WelcomeView : UserControl {
-        public WelcomeView() {
+    public partial class InstallingView : UserControl {
+        public InstallingView() {
             InitializeComponent();
         }
     }

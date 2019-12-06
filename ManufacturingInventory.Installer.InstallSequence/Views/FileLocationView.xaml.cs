@@ -11,12 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ManufacturingInventory.Installer.Views {
+namespace ManufacturingInventory.InstallSequence.Views {
     /// <summary>
-    /// Interaction logic for FinsihedView.xaml
+    /// Interaction logic for FileLocationView.xaml
     /// </summary>
-    public partial class FinsihedView : UserControl {
-        public FinsihedView() {
+    public partial class FileLocationView : UserControl {
+        public FileLocationView() {
             InitializeComponent();
         }
     }

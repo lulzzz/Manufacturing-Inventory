@@ -4,26 +4,27 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>InventoryInstaller</AssemblyName>
-    <FileVersion>1.0.3.1205</FileVersion>
+    <FileVersion>1.0.28.1206</FileVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Images\seti_logo.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.7" />
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.7" />
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.All" Version="19.1.7" />
     <PackageReference Include="Prism.DryIoc" Version="7.2.0.1367" />
-    <COMReference Include="IWshRuntimeLibrary.dll">
-      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Installer.InstallSequence\ManufacturingInventory.InstallSequence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\seti_logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

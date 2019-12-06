@@ -4,18 +4,26 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
         xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         prism:ViewModelLocator.AutoWireViewModel="True"
         dx:ThemeManager.Theme="VS2017Dark"
-        Title="Inventory Installer" Height="350" Width="525" >
+        Title="Inventory Installer" Height="400" Width="630" >
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:CurrentWindowService x:Name="CurrentWindowService"/>
+        <dx:DXMessageBoxService x:Name="MessageBoxService"/>
+    </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl>
+        <dxlc:LayoutControl.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="Black" Offset="0"/>
+                <GradientStop Color="White" Offset="1"/>
+            </LinearGradientBrush>
+        </dxlc:LayoutControl.Background>
         <dxlc:DockLayoutControl>
-            <ContentControl dxlc:DockLayoutControl.Dock="Client" prism:RegionManager.RegionName="ContentRegion" />
-            <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Bottom" Height="30">
-                <dx:SimpleButton Content="Next"></dx:SimpleButton>
-                <dx:SimpleButton Content="Back"></dx:SimpleButton>
-                <dx:SimpleButton Content="Cancel"></dx:SimpleButton>
+            <dxlc:LayoutGroup Orientation="Vertical" dxlc:DockLayoutControl.Dock="Client">
+                <Image Source="\Images\seti_logo.png" Stretch="None" OpacityMask="Black" />
+                <ContentControl Height="220"  prism:RegionManager.RegionName="ContentRegion"/>
             </dxlc:LayoutGroup>
         </dxlc:DockLayoutControl>
-
     </dxlc:LayoutControl>
 </dx:ThemedWindow>

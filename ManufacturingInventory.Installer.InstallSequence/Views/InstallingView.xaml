@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="ManufacturingInventory.InstallSequence.Views.InstallingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
+             mc:Ignorable="d" d:DesignHeight="240" d:DesignWidth="530">
+    <dxlc:LayoutControl>
+        <dxlc:LayoutGroup Orientation="Vertical">
+            <dx:SimpleButton Height="20" Content="Install" Command="{Binding InstallCommand}"></dx:SimpleButton>
+            <dxlc:LayoutItem Label="Install Progress" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,5">
+                <ProgressBar x:Name="progressBar"
+                             Height="12"
+                             IsIndeterminate="{Binding IsIndeterminate}"
+                             Value="{Binding Progress}"
+                             Maximum="{Binding MaxProgress}"/>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Label="Log" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,0">
+                <TextBox Text="{Binding InstallLog}" Height="90" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" ></TextBox>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutGroup Height="30" VerticalAlignment="Center">
+                <dx:SimpleButton Content="Back" Command="{Binding BackCommand}"></dx:SimpleButton>
+                <dx:SimpleButton Content="Next" Command="{Binding NextCommand}"></dx:SimpleButton>
+                <dx:SimpleButton Content="Cancel" Command="{Binding CancelCommand}"></dx:SimpleButton>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>

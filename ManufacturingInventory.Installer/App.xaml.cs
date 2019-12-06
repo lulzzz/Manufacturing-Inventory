@@ -6,6 +6,9 @@ using DevExpress.Xpf.Docking;
 using DevExpress.Xpf.Prism;
 using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Grid;
+using Prism.Modularity;
+using ManufacturingInventory.InstallSequence;
+using ManufacturingInventory.InstallSequence.Infrastructure;
 
 namespace ManufacturingInventory.Installer {
     /// <summary>
@@ -19,16 +22,18 @@ namespace ManufacturingInventory.Installer {
         protected override void OnStartup(StartupEventArgs e) {
             //Configure theme manager
 
-            ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017Dark.Name;
+            //ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017Dark.Name;
             ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             GridControl.AllowInfiniteGridSize = true;
-
-
             base.OnStartup(e);
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {
-            //containerRegistry.RegisterForNavigation<>
+            containerRegistry.Register<IInstaller,InstallSequence.Infrastructure.Installer>();
+        }
+
+        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) {
+            moduleCatalog.AddModule<InstallSequenceModule>();
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings) {
