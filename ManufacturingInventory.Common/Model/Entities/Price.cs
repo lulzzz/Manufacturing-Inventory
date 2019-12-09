@@ -15,11 +15,11 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public double LeadTime { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public int? DistributorId { get; set; }
-        public virtual Distributor Distributor { get; set; }
+        public int DistributorId { get; set; }
+        public Distributor Distributor { get; set; }
 
-        public int? PartInstanceId { get; set; }
-        public virtual PartInstance PartInstance { get; set; }
+        public int PartInstanceId { get; set; }
+        public PartInstance PartInstance { get; set; }
 
         public virtual ICollection<Attachment> Attachments { get; set; }
 

@@ -18,11 +18,14 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public byte[] RowVersion { get; set; }
 
         public int? PermissionId { get; set; }
-        public virtual Permission Permission { get; set; }
+        public Permission Permission { get; set; }
 
-        public virtual ICollection<Session> Sessions { get; set; }
+        public ICollection<UserAlert> UserAlerts { get; set; }
+
+        public ICollection<Session> Sessions { get; set; }
 
         public User() {
+            this.UserAlerts = new ObservableHashSet<UserAlert>();
             this.Sessions = new ObservableHashSet<Session>();
         }
     }

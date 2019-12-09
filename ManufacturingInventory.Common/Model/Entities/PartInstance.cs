@@ -18,22 +18,27 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public byte[] RowVersion { get; set; }
 
         public int PartId { get; set; }
-        public virtual Part Part { get; set; }
+        public Part Part { get; set; }
 
         public int? PartTypeId { get; set; }
-        public virtual PartType PartType { get; set; }
+        public PartType PartType { get; set; }
 
         public int? ConditionId { get; set; }
-        public virtual Condition Condition { get; set; }
+        public Condition Condition { get; set; }
 
-        public virtual ICollection<Price> Prices { get; set; }
-        public virtual ICollection<InstanceParameter> InstanceParameters { get; set; }
-        public virtual ICollection<Transaction> Transactions { get; set; }
+        public int LocationId { get; set; }
+        public Location CurrentLocation { get; set; }
+
+        public InstanceParameter InstanceParameter { get; set; }
+
+        public Price Price { get; set; }
+
+        public ICollection<Attachment> Attachments { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
 
         public PartInstance() {
-            this.InstanceParameters = new HashSet<InstanceParameter>();
-            this.Transactions = new HashSet<Transaction>();
-            this.Prices = new HashSet<Price>();
+            this.Transactions = new ObservableHashSet<Transaction>();
+            this.Attachments = new ObservableHashSet<Attachment>();
         }
 
         public PartInstance(Part part, string name, string serialNumber, string batchNumber, string skuNumber) : this() {

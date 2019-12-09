@@ -17,15 +17,14 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public string Extension { get; set; }
         public string Phone { get; set; }
         public string Fax { get; set; }
+        public byte[] RowVersion { get; set; }
 
-        public int? ManufacturerID { get; set; }
+        public int? ManufacturerId { get; set; }
         public virtual Manufacturer Manufacturer { get; set; }
 
         public int? DistributorId { get; set; }
         public virtual Distributor Distributor { get; set; }
-        
-        public byte[] RowVersion { get; set; }
-
+       
         public Contact() {
 
         }

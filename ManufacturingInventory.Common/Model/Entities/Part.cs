@@ -8,6 +8,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public byte[] RowVersion { get; set; }
 
         public int? OgranizationId { get; set; }
         public virtual Organization Organization { get; set; }
@@ -18,13 +19,11 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int? UsageId { get; set; }
         public Usage Usage { get; set; }
 
-        public ICollection<Manufacturer> Manufacturers { get; set; }
         public ICollection<Attachment> Attachments { get; set; }
         public ICollection<PartInstance> PartInstances { get; set; }
         public ICollection<PartManufacturer> PartManufacturers { get; set; }
 
         public Part() {
-            this.Manufacturers = new ObservableHashSet<Manufacturer>();
             this.Attachments = new ObservableHashSet<Attachment>();
             this.PartInstances = new ObservableHashSet<PartInstance>();
             this.PartManufacturers = new ObservableHashSet<PartManufacturer>();

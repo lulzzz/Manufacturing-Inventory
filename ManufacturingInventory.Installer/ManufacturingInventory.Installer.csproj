@@ -7,7 +7,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <FileVersion>1.0.33.1206</FileVersion>
+    <FileVersion>1.0.58.1209</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\seti_logo.png" />

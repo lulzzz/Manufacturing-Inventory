@@ -10,10 +10,15 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public string Description { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public virtual ICollection<User> Users { get; set; }
+        public ICollection<User> Users { get; set; }
 
         public Permission() {
             this.Users = new ObservableHashSet<User>();
+        }
+
+        public Permission(string name,string description) : this() {
+            this.Name = name;
+            this.Description = description;
         }
     }
 }

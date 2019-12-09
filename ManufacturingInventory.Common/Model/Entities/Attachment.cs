@@ -16,6 +16,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public string FileReference { get; set; }
         public string Extension { get; set; }
         public bool Expires { get; set; }
+        public byte[] RowVersion { get; set; }
 
         public int? PartId { get; set; }
         public virtual Part Part { get; set; }
@@ -32,7 +33,6 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int? PartInstanceId { get; set; }
         public virtual PartInstance PartInstance { get; set; }
 
-        public byte[] RowVersion { get; set; }
 
         public Attachment() {
 

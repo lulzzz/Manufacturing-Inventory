@@ -2,8 +2,11 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
-        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
         prism:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        dx:ThemeManager.Theme="VS2017Dark"
         Title="{Binding Title}" Height="350" Width="525"  >
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />

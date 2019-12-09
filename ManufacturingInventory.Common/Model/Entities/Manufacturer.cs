@@ -11,13 +11,14 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public string Comments { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public virtual ICollection<Part> Parts { get; set; }
-        public virtual ICollection<Contact> Contacts { get; set; }
-        public virtual ICollection<Attachment> Attachments { get; set; }
+        public ICollection<Contact> Contacts { get; set; }
+        public ICollection<Attachment> Attachments { get; set; }
+        public ICollection<PartManufacturer> PartManufacturers { get; set; }
 
         public Manufacturer() {
             this.Contacts = new ObservableHashSet<Contact>();
             this.Attachments = new ObservableHashSet<Attachment>();
+            this.PartManufacturers = new ObservableHashSet<PartManufacturer>();
         }
 
         public Manufacturer(string name, string description, string comments) : this() {
