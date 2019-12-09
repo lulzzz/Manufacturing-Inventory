@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
+            //TransactionTesting();
+            InitialUser();
+            ParameterTesting();
             TransactionTesting();
         }
 
@@ -17,10 +20,22 @@ namespace ManufacturingInventory.ConsoleTesting {
         public static void ReturnTransactionTest() {
             using var context = new ManufacturingContext();
 
-            //var outTransaction=context.Transactions.OfType<OutgoingTransaction>()
-            //    .Include(e=>e.Consumer)
-            //    .Include(e=>e.PartInstance)
-            //    .Include(e=>)
+            var outTransaction = context.Transactions.OfType<OutgoingTransaction>()
+                .Include(e => e.Consumer)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.InstanceParameter)
+                .FirstOrDefault(e => e.Id == 2);
+
+            if (outTransaction != null) {
+                ReturningTransaction returnTransaction = new ReturningTransaction();
+                returnTransaction.InstanceParameterValue = 1000;
+                returnTransaction.OutgoingTransaction = outTransaction;
+                returnTransaction.PartInstance = outTransaction.PartInstance;
+
+            } else {
+                Console.WriteLine("Erro finding transaction");
+            }
+            Console.ReadKey();
         }
 
         public static void TransactionTesting() {
@@ -51,7 +66,10 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             if(instance!=null && consumer != null && user!=null) {
                 Session session = new Session(user);
-                context.Session.Add(session);
+                context.Sessions.Add(session);
+
+                instance.CurrentLocation = consumer;
+
 
                 OutgoingTransaction outgoing = new OutgoingTransaction();
                 outgoing.Consumer = consumer;

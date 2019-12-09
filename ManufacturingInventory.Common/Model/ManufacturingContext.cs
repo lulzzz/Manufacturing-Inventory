@@ -20,7 +20,7 @@ namespace ManufacturingInventory.Common.Model {
         public DbSet<Price> Price { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Session> Session { get; set; }
+        public DbSet<Session> Sessions { get; set; }
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<UserAlert> UserAlerts { get; set; }
         public DbSet<PartManufacturer> PartManufacturers { get; set; }
