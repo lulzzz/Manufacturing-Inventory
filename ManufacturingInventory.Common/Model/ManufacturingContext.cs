@@ -8,8 +8,8 @@ namespace ManufacturingInventory.Common.Model {
         public DbSet<Part> Parts { get; set; }
         public DbSet<PartInstance> PartInstances { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
-        public DbSet<Category> Category { get; set; }
-        public DbSet<Distributor> Distributor { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Distributor> Distributors { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<Location> Locations { get; set; }
@@ -17,7 +17,7 @@ namespace ManufacturingInventory.Common.Model {
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Unit> Units { get; set; }
         public DbSet<InstanceParameter> InstanceParameters { get; set; }
-        public DbSet<Price> Price { get; set; }
+        public DbSet<Price> Prices { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Session> Sessions { get; set; }

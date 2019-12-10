@@ -30,8 +30,8 @@ namespace ManufacturingInventory.ConsoleTesting {
                 Distributor dist2 = new Distributor();
                 dist2.Name = "Distributor A";
 
-                context.Distributor.Add(dist1);
-                context.Distributor.Add(dist2);
+                context.Distributors.Add(dist1);
+                context.Distributors.Add(dist2);
 
                 
 
@@ -85,8 +85,8 @@ namespace ManufacturingInventory.ConsoleTesting {
                 dist1.Prices.Add(p1);
                 dist1.Prices.Add(p2);
 
-                context.Price.Add(p1);
-                context.Price.Add(p2);
+                context.Prices.Add(p1);
+                context.Prices.Add(p2);
                 context.SaveChanges();
 
                 Console.WriteLine("Should be done.  Maybe.....");
@@ -135,9 +135,9 @@ namespace ManufacturingInventory.ConsoleTesting {
             condition3.Name = "Empty";
             condition3.Description = "Empty";
 
-            context.Category.Add(condition1);
-            context.Category.Add(condition2);
-            context.Category.Add(condition3);
+            context.Categories.Add(condition1);
+            context.Categories.Add(condition2);
+            context.Categories.Add(condition3);
 
 
             if (outTransaction != null && user!=null) {
