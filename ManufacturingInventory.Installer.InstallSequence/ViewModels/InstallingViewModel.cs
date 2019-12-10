@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DevExpress.Mvvm;
-using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.InstallSequence.Infrastructure;
 using Prism.Commands;
 using Prism.Events;

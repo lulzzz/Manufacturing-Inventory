@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ManufacturingInventory.Main.Services {
+namespace ManufacturingInventory.ManufacturingApplication.Services {
     public class CheckVersionResponse {
         public bool NewVersionAvailable { get; set; }
         public string CurrentVersion { get; set; }

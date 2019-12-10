@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ManufacturingInventory.Main.Views {
+namespace ManufacturingInventory.ManufacturingApplication.Views {
     /// <summary>
     /// Interaction logic for CheckVersionWindow.xaml
     /// </summary>

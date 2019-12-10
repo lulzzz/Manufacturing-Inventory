@@ -21,7 +21,6 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public Permission Permission { get; set; }
 
         public ICollection<UserAlert> UserAlerts { get; set; }
-
         public ICollection<Session> Sessions { get; set; }
 
         public User() {

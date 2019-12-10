@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using DevExpress.Mvvm;
-using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.InstallSequence.Infrastructure;
 using Prism.Commands;
 using Prism.Events;

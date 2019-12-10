@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
-            DistributorPriceTesting();
+            //DistributorPriceTesting();
             //ReturnTransactionTest();
             //InitialUser();
             //ParameterTesting();

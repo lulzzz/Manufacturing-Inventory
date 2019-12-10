@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
-    <FileVersion>1.0.3.1209</FileVersion>
+    <FileVersion>1.0.5.1210</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.7" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.7" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
   </ItemGroup>
 </Project>

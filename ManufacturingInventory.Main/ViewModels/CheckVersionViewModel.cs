@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using DevExpress.Mvvm;
-using ManufacturingInventory.Main.Services;
+using ManufacturingInventory.ManufacturingApplication.Services;
 
-namespace ManufacturingInventory.Main.ViewModels {
+namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
     public class CheckVersionViewModel : Prism.Mvvm.BindableBase, DevExpress.Mvvm.ISupportServices {
         public DevExpress.Mvvm.IServiceContainer _serviceContainer = null;
         protected DevExpress.Mvvm.IServiceContainer ServiceContainer {

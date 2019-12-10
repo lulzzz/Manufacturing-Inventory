@@ -501,6 +501,32 @@ namespace ManufacturingInventory.Common.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Full Inventory Privileges and User Control",
+                            Name = "InventoryAdminAccount"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Inventory View Only",
+                            Name = "InventoryUserAccount"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Full Inventory Privileges",
+                            Name = "InventoryUserFullAccount"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Inventory Check In/Check Out/Create",
+                            Name = "InventoryUserLimitedAccount"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.Price", b =>
@@ -705,6 +731,17 @@ namespace ManufacturingInventory.Common.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FirstName = "Andrew",
+                            LastName = "Elmendorf",
+                            PermissionId = 1,
+                            StorePassword = false,
+                            UserName = "AElmendo"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.UserAlert", b =>

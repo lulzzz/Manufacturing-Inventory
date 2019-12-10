@@ -1,7 +1,7 @@
 ﻿using DevExpress.Xpf.Core;
 using System.Windows;
 
-namespace ManufacturingInventory.Main.Views {
+namespace ManufacturingInventory.ManufacturingApplication.Views {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

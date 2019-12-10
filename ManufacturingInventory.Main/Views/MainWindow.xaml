@@ -1,14 +1,116 @@
-﻿<dx:ThemedWindow x:Class="ManufacturingInventory.Main.Views.MainWindow"
+﻿<dx:ThemedWindow x:Class="ManufacturingInventory.ManufacturingApplication.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:prism="http://prismlibrary.com/"
-        prism:ViewModelLocator.AutoWireViewModel="True"
-        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"   
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"                 
         xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+        xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"                 
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-        dx:ThemeManager.Theme="VS2017Dark"
-        Title="{Binding Title}" Height="350" Width="525"  >
-    <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
-    </Grid>
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"         
+        xmlns:common="clr-namespace:ManufacturingInventory.Common.Application;assembly=ManufacturingInventory.Common"
+        Title="{Binding Title}" Height="600" Width="1100"  >
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand Command="{Binding LoadedCommand}" Event="Loaded"/>
+        <dx:DXMessageBoxService x:Name="Notice"/>
+    </dxmvvm:Interaction.Behaviors>
+    <dxb:BarManager>
+        <DockPanel>
+            <!--#region Ribbon Button Region-->
+            <dxr:RibbonControl x:Name="_ribbonControl" DockPanel.Dock="Top" RibbonStyle="Office2019" 
+                               ToolbarShowMode="Hide" AllowCustomization="False" ShowApplicationButton="False">
+                <dxr:RibbonDefaultPageCategory>
+                    <dxr:RibbonPage x:Name="HomePage" Caption="Home">
+                        <dxr:RibbonPageGroup Caption="Main Commands">
+                            <dxb:BarButtonItem x:Name="partsView" Content="Parts Managment"                                               
+                                               Command="{Binding LoadModuleCommand}"
+                                               CommandParameter="{x:Static common:AppViews.PartsManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=BOProduct_16x16.png}"
+                                               LargeGlyph="{dx:DXImage Image=BOProduct_16x16.png}"/>
+
+                            <dxb:BarButtonItem x:Name="locationView" Content="Location Managment"                                             
+                                               Command="{Binding LoadModuleCommand}" 
+                                               CommandParameter="{x:Static common:AppViews.LocationsManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=Country_32x32.png}" 
+                                               LargeGlyph="{dx:DXImage Image=Country_32x32.png}"
+                                               IsEnabled="True"/>
+
+                            <dxb:BarButtonItem x:Name="categoryView" Content="Category Managment"                                             
+                                               Command="{Binding LoadModuleCommand}" 
+                                               CommandParameter="{x:Static common:AppViews.CategoriesManagmentMainView}"
+                                               IsEnabled="True"
+                                               Glyph="{dx:DXImage Image=BO_Category.png}" 
+                                               LargeGlyph="{dx:DXImage Image=BO_Category.png}"/>
+
+                            <dxb:BarButtonItem x:Name="reportsView" Content="Reports"                                             
+                                               Command="{Binding LoadModuleCommand}" 
+                                               IsEnabled="False"
+                                               Glyph="{dx:DXImage Image=Report_16x16.png}" 
+                                               LargeGlyph="{dx:DXImage Image=Report_32x32.png}"/>
+
+                            <dxb:BarButtonItem x:Name="usersView" Content="User View"                                             
+                                               Command="{Binding LoadModuleCommand}"
+                                               CommandParameter="{x:Static common:AppViews.UserManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=BOCustomer_16x16.png}" 
+                                               LargeGlyph="{dx:DXImage Image=BOCustomer_32x32.png}"
+                                               IsEnabled="False"/>
+
+                            <dxb:BarButtonItem x:Name="userMngtView" Content="User Managment"                                             
+                                               Command="{Binding LoadModuleCommand}"
+                                               CommandParameter="{x:Static common:AppViews.UsersManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=BODepartment_16x16.png}" 
+                                               LargeGlyph="{dx:DXImage Image=BODepartment_32x32.png}"/>
+
+                            <dxb:BarButtonItem x:Name="projectView" Content="Project Managment"                                             
+                                               Command="{Binding LoadModuleCommand}"
+                                               CommandParameter="{x:Static common:AppViews.ProjectManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=BODepartment_16x16.png}" 
+                                               LargeGlyph="{dx:DXImage Image=BO_Project_Large.png}"/>
+
+                            <dxb:BarButtonItem x:Name="distributorView" Content="Distributor Managment"                                             
+                                               Command="{Binding LoadModuleCommand}"
+                                               CommandParameter="{x:Static common:AppViews.DistributorsManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=BOPosition2_16x16.png}" 
+                                               LargeGlyph="{dx:DXImage Image=BOPosition2_32x32.png}"/>
+
+                            <dxb:BarButtonItem x:Name="manufacturer" Content="Manufacturer Managment"                                             
+                                               Command="{Binding LoadModuleCommand}"
+                                               CommandParameter="{x:Static common:AppViews.DistributorsManagmentMainView}"
+                                               Glyph="{dx:DXImage Image=BOEmployee_16x16.png}" 
+                                               LargeGlyph="{dx:DXImage Image=BOEmployee_32x32.png}"/>
+
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                    <dxr:RibbonPage x:Name="ribbonPage_Main" Caption="View">
+                        <dxr:RibbonPageGroup x:Name="ribbonPageGroup_Main">
+                            <dxr:RibbonGalleryBarItem x:Name="ribbonGalleryBarItem_Theme">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxr:RibbonGalleryItemThemeSelectorBehavior/>
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxr:RibbonGalleryBarItem>
+                        </dxr:RibbonPageGroup>
+                    </dxr:RibbonPage>
+                </dxr:RibbonDefaultPageCategory>
+            </dxr:RibbonControl>
+            <dxdo:DockLayoutManager FloatingMode="Desktop">
+                <dxdo:LayoutGroup>
+                    <dxdo:DocumentGroup x:Name="_views" DestroyOnClosingChildren="False" prism:RegionManager.RegionName="{x:Static common:Regions.MainWindowRegion}" 
+                                        CaptionLocation="Top" 
+                                        ShowTabForSinglePage="True" 
+                                        GroupBorderStyle="GroupBox" 
+                                        AllowFloat="True">
+                        <dxdo:TabbedGroup.ItemStyle>
+                            <Style TargetType="{x:Type dxdo:LayoutPanel}">
+                                <Setter Property="Caption" Value="{Binding Content.PanelCaption, RelativeSource={RelativeSource Self}}"/>
+                                <Setter Property="IsActive" Value="{Binding Content.IsActive,RelativeSource={RelativeSource Self},Mode=TwoWay}"/>
+                                <Setter Property="ClosingBehavior" Value="ImmediatelyRemove"/>
+                            </Style>
+                        </dxdo:TabbedGroup.ItemStyle>
+                    </dxdo:DocumentGroup>
+                </dxdo:LayoutGroup>
+            </dxdo:DockLayoutManager>
+        </DockPanel>
+    </dxb:BarManager>
 </dx:ThemedWindow>

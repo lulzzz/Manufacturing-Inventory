@@ -4,7 +4,7 @@ using Prism.Events;
 using Prism.Mvvm;
 
 namespace ManufacturingInventory.Installer.ViewModels {
-    public class MainWindowViewModel : ManufacturingInventory.Common.Application.InventoryViewModelBase {
+    public class MainWindowViewModel : InventoryViewModelBase {
         private IEventAggregator _eventAggregator;
         protected ICurrentWindowService CurrentWindowService { get => ServiceContainer.GetService<ICurrentWindowService>("CurrentWindowService"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("MessageBoxService"); }

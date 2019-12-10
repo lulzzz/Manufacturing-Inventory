@@ -1,27 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>InventoryInstaller</AssemblyName>
-    <PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <FileVersion>1.0.62.1209</FileVersion>
+    <FileVersion>1.0.85.1210</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\seti_logo.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.7" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.7" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.All" Version="19.1.7" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.All" Version="19.1.8" />
     <PackageReference Include="Prism.DryIoc" Version="7.2.0.1367" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Installer.InstallSequence\ManufacturingInventory.InstallSequence.csproj" />
   </ItemGroup>
 
@@ -29,5 +25,9 @@
     <Resource Include="Images\seti_logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 </Project>

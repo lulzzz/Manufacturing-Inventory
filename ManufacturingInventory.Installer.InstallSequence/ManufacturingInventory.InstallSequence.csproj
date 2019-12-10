@@ -3,12 +3,12 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.InstallSequence</AssemblyName>
-    <FileVersion>1.0.65.1209</FileVersion>
+    <FileVersion>1.0.85.1210</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.7" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.7" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
     <COMReference Include="IWshRuntimeLibrary.dll">
       <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
       <VersionMajor>1</VersionMajor>
@@ -18,8 +18,5 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
   </ItemGroup>
 </Project>

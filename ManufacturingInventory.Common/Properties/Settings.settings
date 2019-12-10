@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Inventory.Common.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LDAP_UserName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SETI\elmendorfal</Value>
+    </Setting>
+    <Setting Name="LDAP_EncryptedPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">hQeY3bO3C2cC/DHXF3vmv4KwPZJpIJeDCHGqMDK+J6U=</Value>
+    </Setting>
+    <Setting Name="LDAP_Key" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">lNmrUIFj/zLnOUO3FrmbGKdQ0nY8eN9TpNrk/zPytAE=</Value>
+    </Setting>
+    <Setting Name="LDAP_IV" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">3lryijwucB/DQAwPStmUbetOTAfw37cl6Y2DHH7hN6E=</Value>
+    </Setting>
+    <Setting Name="LDAP_EncryptedAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">59Ho/m6wetIUX2zd8ph+8NvI1/PH9OhTt4m6f4S21+I=</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

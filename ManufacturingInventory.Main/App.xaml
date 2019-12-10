@@ -1,7 +1,8 @@
-﻿<prism:PrismApplication x:Class="ManufacturingInventory.Main.App"
+﻿<prism:PrismApplication 
+             x:Class="ManufacturingInventory.ManufacturingApplication.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ManufacturingInventory.Main"
+             xmlns:local="clr-namespace:ManufacturingInventory.ManufacturingApplication"
              xmlns:prism="http://prismlibrary.com/" >
     <Application.Resources>
          

@@ -35,8 +35,8 @@ namespace ManufacturingInventory.Common.Model {
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseLazyLoadingProxies(false);
-            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.
             //optionsBuilder.UseSqlServer("server=172.20.4.20;database=monitoring_dev;Trusted_Connection=True;MultipleActiveResultSets=true");
             //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
@@ -421,6 +421,47 @@ namespace ManufacturingInventory.Common.Model {
 
             #endregion
 
+            this.Seed(builder);
+        }
+
+        private void Seed(ModelBuilder builder) {
+            builder.Entity<Permission>()
+                .HasData(new Permission() 
+                {
+                    Id = 1,
+                    Name = "InventoryAdminAccount",
+                    Description = "Full Inventory Privileges and User Control"
+                });
+
+            builder.Entity<Permission>()
+                .HasData(new Permission() {
+                    Id = 2,
+                    Name = "InventoryUserAccount",
+                    Description = "Inventory View Only"
+                });
+
+            builder.Entity<Permission>()
+                .HasData(new Permission() {
+                    Id=3,
+                    Name = "InventoryUserFullAccount",
+                    Description = "Full Inventory Privileges"
+                });
+
+            builder.Entity<Permission>()
+                .HasData(new Permission() {
+                    Id = 4,
+                    Name = "InventoryUserLimitedAccount",
+                    Description = "Inventory Check In/Check Out/Create"
+                });
+
+            builder.Entity<User>()
+                .HasData(new User() { 
+                    Id=1,
+                    PermissionId=1,
+                    FirstName="Andrew",
+                    LastName="Elmendorf",
+                    UserName="AElmendo"
+                });
         }
     }
 }
