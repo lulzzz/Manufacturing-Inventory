@@ -11,9 +11,11 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int Quantity { get; set; }
         public int MinQuantity { get; set; }
         public int SafeQuantity { get; set; }
-
+        public double UnitCost { get; set; }
+        public double TotalCost { get; set; }
         public string SerialNumber { get; set; }
         public string BatchNumber { get; set; }
+        public bool CostReported { get; set; }
         public bool IsResuable { get; set; }
         public byte[] RowVersion { get; set; }
 

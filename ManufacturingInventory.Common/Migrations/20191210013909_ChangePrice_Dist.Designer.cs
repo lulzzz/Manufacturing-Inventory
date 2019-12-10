@@ -4,14 +4,16 @@ using ManufacturingInventory.Common.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ManufacturingInventory.Common.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    partial class ManufacturingContextModelSnapshot : ModelSnapshot
+    [Migration("20191210013909_ChangePrice_Dist")]
+    partial class ChangePrice_Dist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -437,12 +439,6 @@ namespace ManufacturingInventory.Common.Migrations
 
                     b.Property<string>("SkuNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("TotalCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("UnitCost")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

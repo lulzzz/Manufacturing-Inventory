@@ -9,13 +9,99 @@ using Microsoft.EntityFrameworkCore;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
+            DistributorPriceTesting();
+            //ReturnTransactionTest();
+            //InitialUser();
+            //ParameterTesting();
             //TransactionTesting();
-            InitialUser();
-            ParameterTesting();
-            TransactionTesting();
         }
 
         #region DatabaseTesting
+
+        public static void DistributorPriceTesting() {
+            using var context = new ManufacturingContext();
+
+            var warehouse = context.Locations.Find(5);
+
+            if (warehouse != null) {
+                Distributor dist1 = new Distributor();
+                dist1.Name = "Distributor B";
+
+                Distributor dist2 = new Distributor();
+                dist2.Name = "Distributor A";
+
+                context.Distributor.Add(dist1);
+                context.Distributor.Add(dist2);
+
+                
+
+                var part = new Part();
+                part.Name = "Process Chemicals";
+                part.Warehouse = (Warehouse)warehouse;
+
+                context.Parts.Add(part);
+                
+                var partInstance = new PartInstance(part, "IPA", "", "", "");
+                partInstance.Quantity = 4;
+                partInstance.SafeQuantity = 2;
+                partInstance.MinQuantity = 1;
+                partInstance.CostReported = true;
+                partInstance.CurrentLocation = partInstance.Part.Warehouse;
+
+                var partInstance2 = new PartInstance(part,"Acetone", "", "", "");
+                partInstance2.Quantity = 4;
+                partInstance2.SafeQuantity = 2;
+                partInstance2.MinQuantity = 1;
+                partInstance2.CostReported = true;
+                partInstance2.CurrentLocation = partInstance2.Part.Warehouse;
+
+                context.PartInstances.Add(partInstance);
+                context.PartInstances.Add(partInstance2);
+
+
+
+                Price p1 = new Price();
+                p1.Amount = 4.99;
+                p1.MinOrder = 10;
+                p1.PartInstance = partInstance;
+                p1.TimeStamp = DateTime.Now;
+                p1.Distributor = dist1;
+
+                Price p2 = new Price();
+                p2.Amount = 8.99;
+                p2.MinOrder = 10;
+                p2.PartInstance = partInstance2;
+                p2.TimeStamp = DateTime.Now;
+                p2.Distributor = dist1;
+
+                partInstance.Price = p1;
+                partInstance.UnitCost = partInstance.Price.Amount;
+                partInstance.TotalCost = partInstance.Price.Amount*partInstance.Quantity;
+
+                partInstance2.Price = p2;
+                partInstance2.UnitCost = partInstance2.Price.Amount;
+                partInstance2.TotalCost = partInstance2.Price.Amount * partInstance2.Quantity;
+
+                dist1.Prices.Add(p1);
+                dist1.Prices.Add(p2);
+
+                context.Price.Add(p1);
+                context.Price.Add(p2);
+                context.SaveChanges();
+
+                Console.WriteLine("Should be done.  Maybe.....");
+            } else {
+                Console.WriteLine("Error finding warehouse");
+            }
+
+            Console.ReadKey();
+
+
+
+
+
+
+        }
 
         public static void ReturnTransactionTest() {
             using var context = new ManufacturingContext();
@@ -24,16 +110,67 @@ namespace ManufacturingInventory.ConsoleTesting {
                 .Include(e => e.Consumer)
                 .Include(e => e.PartInstance)
                     .ThenInclude(e => e.InstanceParameter)
-                .FirstOrDefault(e => e.Id == 2);
+                .Include(e=>e.PartInstance)
+                    .ThenInclude(e=>e.CurrentLocation)
+                .Include(e=>e.PartInstance)
+                    .ThenInclude(e=>e.Part)
+                    .ThenInclude(e=>e.Warehouse)
+                .FirstOrDefault(e => e.Id == 1);
 
-            if (outTransaction != null) {
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+
+            Condition condition1 = new Condition();
+            condition1.Name = "Used";
+            condition1.Description = "Partial";
+
+            Condition condition2 = new Condition();
+            condition2.Name = "New";
+            condition2.Description = "Unused";
+
+            Condition condition3 = new Condition();
+            condition3.Name = "Empty";
+            condition3.Description = "Empty";
+
+            context.Category.Add(condition1);
+            context.Category.Add(condition2);
+            context.Category.Add(condition3);
+
+
+            if (outTransaction != null && user!=null) {
+                //var partInstance = context.PartInstances.Include(e => e.Id == outTransaction.PartInstanceId);
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+
+                var partInstance = context.Entry<PartInstance>(outTransaction.PartInstance).Entity;
+                
                 ReturningTransaction returnTransaction = new ReturningTransaction();
                 returnTransaction.InstanceParameterValue = 1000;
                 returnTransaction.OutgoingTransaction = outTransaction;
-                returnTransaction.PartInstance = outTransaction.PartInstance;
+                returnTransaction.PartInstance = partInstance;
+                returnTransaction.Session = session;
 
+                context.Transactions.Add(returnTransaction);
+                outTransaction.ReturningTransaction = returnTransaction;
+
+                partInstance.CurrentLocation = partInstance.Part.Warehouse;
+                partInstance.InstanceParameter.Value = returnTransaction.InstanceParameterValue;
+                partInstance.Condition = condition1;
+
+                context.Entry<PartInstance>(partInstance).State = EntityState.Modified;
+                context.Entry<Warehouse>(partInstance.Part.Warehouse).State = EntityState.Modified;
+                context.Entry<InstanceParameter>(partInstance.InstanceParameter).State = EntityState.Modified;
+                context.Entry<OutgoingTransaction>(outTransaction).State = EntityState.Modified;
+                context.Transactions.Add(returnTransaction);
+
+                context.SaveChanges();
+
+                Console.WriteLine("Should be done, maybe....");
             } else {
-                Console.WriteLine("Erro finding transaction");
+                Console.WriteLine("Error finding transaction");
             }
             Console.ReadKey();
         }

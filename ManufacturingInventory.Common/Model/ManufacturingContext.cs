@@ -35,7 +35,8 @@ namespace ManufacturingInventory.Common.Model {
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseLazyLoadingProxies(false);
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.
             //optionsBuilder.UseSqlServer("server=172.20.4.20;database=monitoring_dev;Trusted_Connection=True;MultipleActiveResultSets=true");
             //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
@@ -186,6 +187,7 @@ namespace ManufacturingInventory.Common.Model {
             #endregion
 
             #region ConfigureAttachment
+
             builder.Entity<Attachment>()
                     .HasOne(e => e.Part)
                     .WithMany(e => e.Attachments)
@@ -213,6 +215,7 @@ namespace ManufacturingInventory.Common.Model {
                     .HasForeignKey(e => e.PartInstanceId)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
+
             #endregion
 
             #region ConfigurePartInstance
@@ -249,6 +252,24 @@ namespace ManufacturingInventory.Common.Model {
 
             #region Price_Distributer_Instance
 
+            //builder.Entity<Price>()
+            //    .HasKey(e => new { e.DistributorId, e.PartInstanceId });
+
+            //builder.Entity<Price>()
+            //    .HasOne(e => e.PartInstance)
+            //    .WithOne(e => e.Price)
+            //    .IsRequired(false)
+            //    .HasForeignKey<Price>(e => e.PartInstanceId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            //builder.Entity<Price>()
+            //    .HasOne(e => e.Distributor)
+            //    .WithMany(e => e.Prices)
+            //    .IsRequired(true)
+            //    .HasForeignKey(e => e.DistributorId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+
             //ParInstance-Price/Distributor
             builder.Entity<PartInstance>()
                 .HasOne(e => e.Price)
@@ -257,9 +278,10 @@ namespace ManufacturingInventory.Common.Model {
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Distributor>()
-                .HasOne(e => e.Price)
+                .HasMany(e => e.Prices)
                 .WithOne(e => e.Distributor)
-                .HasForeignKey<Price>(e => e.DistributorId)
+                .HasForeignKey(e => e.DistributorId)
+                .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Distributor>()
@@ -297,20 +319,6 @@ namespace ManufacturingInventory.Common.Model {
                 .HasForeignKey(e => e.UnitId)
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Entity<InstanceParameter>()
-            //    .HasOne(e => e.Parameter)
-            //    .WithMany(e => e.InstanceParameters)
-            //    .IsRequired(true)
-            //    .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Entity<PartInstance>()
-            //    .HasOne(e => e.InstanceParameter)
-            //    .WithOne(e => e.PartInstance)
-            //    .HasForeignKey<InstanceParameter>(e=>e.PartInstanceId)
-            //    .IsRequired(false)
-            //    .OnDelete(DeleteBehavior.NoAction);
-
 
             #endregion
 

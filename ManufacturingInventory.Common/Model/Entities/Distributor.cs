@@ -36,12 +36,14 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public string Description { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public Price Price { get; set; }
+        //public Price Price { get; set; }
 
+        public ICollection<Price> Prices { get; set; }
         public ICollection<Contact> Contacts { get; set; }
         public ICollection<Attachment> Attachments { get; set; }
 
         public Distributor() {
+            this.Prices = new ObservableHashSet<Price>();
             this.Contacts = new ObservableHashSet<Contact>();
             this.Attachments = new ObservableHashSet<Attachment>();
         }
