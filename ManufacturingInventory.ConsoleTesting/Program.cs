@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IWshRuntimeLibrary;
@@ -14,6 +15,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             //InitialUser();
             //ParameterTesting();
             //TransactionTesting();
+            Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
         }
 
         #region DatabaseTesting

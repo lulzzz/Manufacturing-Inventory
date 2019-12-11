@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
-    <FileVersion>1.0.5.1210</FileVersion>
+    <FileVersion>1.0.8.1211</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />

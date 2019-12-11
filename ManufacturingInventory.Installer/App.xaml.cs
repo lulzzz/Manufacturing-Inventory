@@ -15,20 +15,34 @@ namespace ManufacturingInventory.Installer {
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App {
+        private VersionCheckerResponce installTraveler;
+
         protected override Window CreateShell() {
             return Container.Resolve<MainWindow>();
         }
 
         protected override void OnStartup(StartupEventArgs e) {
-            //Configure theme manager
-
-            //ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017Dark.Name;
             ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             GridControl.AllowInfiniteGridSize = true;
+            this.installTraveler = VersionChecker.CheckInstalledVersion();
+
+            //Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            //if () {
+            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //} else {
+            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //    this.Shutdown();
+            //}
             base.OnStartup(e);
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {
+            if (this.installTraveler != null) {
+                containerRegistry.RegisterInstance<VersionCheckerResponce>(this.installTraveler);
+            } else {
+                containerRegistry.RegisterInstance<VersionCheckerResponce>(new VersionCheckerResponce(InstallStatus.NotInstalled,"",""));
+            }
             containerRegistry.Register<IInstaller,InstallSequence.Infrastructure.Installer>();
         }
 

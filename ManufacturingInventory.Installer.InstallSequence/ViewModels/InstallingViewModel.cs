@@ -22,8 +22,14 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         private IInstaller _installer;
         private int _itemCount;
         private int _maxProgress;
+        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        private bool _installing = false;
+        private string _progressLabel;
+        private string _buttonLabel;
 
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DispatcherService"); }
+        protected ICurrentWindowService CurrentWindowService { get => ServiceContainer.GetService<ICurrentWindowService>("InstallerCurrentWindow"); }
+        protected IMessageBoxService MessageBox  { get => ServiceContainer.GetService<IMessageBoxService>("InstallerMessageBox"); }
 
 
         public PrismCommands.DelegateCommand BackCommand { get; private set; }
@@ -37,15 +43,24 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             this._installer = installer;
             this.IsIndeterminate = false;
             this.ItemCount = 0;
+            this.IsInstalling = false;
+            this.MaxProgress = 100;
+            this.ProgressLabel = "Uninstall Progress";
+            this.ButtonLabel = "Cancel";
             this.NextCommand = new PrismCommands.DelegateCommand(this.GoForward);
             this.BackCommand = new PrismCommands.DelegateCommand(this.GoBack);
             this.CancelCommand = new PrismCommands.DelegateCommand(this.Cancel);
-            this.InstallCommand = new AsyncCommand(this.InstallHandler);
+            this.InstallCommand = new AsyncCommand(this.InstallHandler,()=>!this._installing);
             this._eventAggregator.GetEvent<IncrementProgress>().Subscribe(this.IncrementProgressHandler);
         }
 
         public override bool KeepAlive {
             get => false;
+        }
+
+        public bool IsInstalling {
+            get => !this._installing;
+            set => SetProperty(ref this._installing, value);
         }
 
         public string InstallLog { 
@@ -65,26 +80,67 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             get => this._maxProgress; 
             set => SetProperty(ref this._maxProgress,value);
         }
-
-        private async Task InstallHandler() {
-            this.MaxProgress = this._installer.CalculateWork();
-            var tokenSource = new CancellationTokenSource();
-            var token = tokenSource.Token;
-            bool success;
-            if (!string.IsNullOrEmpty(this._installLocation)) {
-                success = await this._installer.InstallAsync(token);
-            } else {
-                success = await this._installer.InstallAsync(token,this._installLocation);
-            }
-            this.InstallLog = (success) ? "Install Complete" : "Install Failed";
+        public string ProgressLabel { 
+            get => this._progressLabel; 
+            set => SetProperty(ref this._progressLabel,value); 
+        }
+        public string ButtonLabel { 
+            get => this._buttonLabel; 
+            set => SetProperty(ref this._buttonLabel,value); 
         }
 
-        private void IncrementProgressHandler() {
-            this.DispatcherService.BeginInvoke(()=> this.ItemCount = this.ItemCount + 1);
+        private async Task InstallHandler() {
+            this.IsInstalling = true;
+            this._installer.InstallLocation = this._installLocation;
+            this.MaxProgress = this._installer.CalculateWork();
+
+            var token = this._tokenSource.Token;
+            Task task;
+            if (!string.IsNullOrEmpty(this._installLocation)) {
+                task=this._installer.InstallAsync(token).ContinueWith(this.AfterInstall,TaskContinuationOptions.RunContinuationsAsynchronously);
+            } else {
+                task = this._installer.InstallAsync(token, this._installLocation).ContinueWith(this.AfterInstall,TaskContinuationOptions.RunContinuationsAsynchronously);
+            }
+            await Task.WhenAll(task);
+        }
+
+        private async Task AfterInstall(Task<bool> data) {
+            if (this._tokenSource.IsCancellationRequested) {
+                this.ProgressLabel = "Uninstall Progress";
+                this.InstallLog = "Removing Files..." + Environment.NewLine;
+                this.MaxProgress = this._installer.CalculateWorkUninstall();
+                this.ItemCount = 0;
+                this._installer.InstallLocation = this._installLocation;
+                this._tokenSource = new CancellationTokenSource();
+                await this._installer.UnInstall().ContinueWith((data) => { 
+                    this.IsInstalling = false;
+                    this.DispatcherService.BeginInvoke(() => {
+                        var result=this.MessageBox.ShowMessage("Finished Removing Files, Closing Installer","Goodbye",MessageButton.OK,MessageIcon.Exclamation);
+                        if (result == MessageResult.OK) {
+                            this.CurrentWindowService.Close();
+                        } else {
+                            this.CurrentWindowService.Close();
+                        }
+                    });
+                });
+            } else {
+                this.IsInstalling = false;
+                this.InstallLog = (data.Result) ? ("Install Complete" + Environment.NewLine) : ("Install Failed" + Environment.NewLine);
+            }
+        }
+
+        private void IncrementProgressHandler(string logLine) {
+            this.ItemCount = this.ItemCount + 1;
+            string line = DateTime.Now + ": " + logLine + Environment.NewLine;
+            this.InstallLog += line;
         }
 
         private void Cancel() {
-            this._eventAggregator.GetEvent<CancelEvent>().Publish();
+            if (this._installing) {
+                this._tokenSource.Cancel();
+            } else {
+                this._eventAggregator.GetEvent<CancelEvent>().Publish();
+            }
         }
 
         private void GoBack() {

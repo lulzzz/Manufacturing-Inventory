@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.Common", "ManufacturingInventory.Common\ManufacturingInventory.Common.csproj", "{BD65879F-06DB-421D-9B2A-34E6D73BC141}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.ManufacturingApplication", "ManufacturingInventory.Main\ManufacturingInventory.ManufacturingApplication.csproj", "{C59828D3-E033-4E3A-A87C-FA5472132B89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.Application", "ManufacturingInventory.Main\ManufacturingInventory.Application.csproj", "{C59828D3-E033-4E3A-A87C-FA5472132B89}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{24BF0A95-72C3-4B9B-8D54-BAF55A003A1A}"
 EndProject
@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.InstallSequence", "ManufacturingInventory.Installer.InstallSequence\ManufacturingInventory.InstallSequence.csproj", "{105F1E65-FEB4-4D97-9FB8-CC71B705A238}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.PartsManagment", "ManufacturingInventory.PartsManagment\ManufacturingInventory.PartsManagment.csproj", "{47E57F58-C101-4960-A2C2-72A7C5318AF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.PartsManagment", "ManufacturingInventory.PartsManagment\ManufacturingInventory.PartsManagment.csproj", "{47E57F58-C101-4960-A2C2-72A7C5318AF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

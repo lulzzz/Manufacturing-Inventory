@@ -13,7 +13,7 @@
              mc:Ignorable="d" d:DesignHeight="220" d:DesignWidth="530">
     <dxlc:DockLayoutControl>
         <TextBlock dxlc:DockLayoutControl.Dock="Top" Text="Welcome To Seti Installer" TextAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
-        <TextBlock dxlc:DockLayoutControl.Dock="Client" Text="Press Next To Continue" TextAlignment="Center" VerticalAlignment="Center" FontSize="18" />
+        <TextBlock dxlc:DockLayoutControl.Dock="Client" Text="{Binding Message,Mode=TwoWay}" TextAlignment="Center" VerticalAlignment="Center" FontSize="18" />
         <dxlc:LayoutGroup Height="30" dxlc:DockLayoutControl.Dock="Bottom" VerticalAlignment="Center">
             <dx:SimpleButton Content="Next" Command="{Binding NextCommand}"></dx:SimpleButton>
             <dx:SimpleButton Content="Cancel" Command="{Binding CancelCommand}"></dx:SimpleButton>

@@ -12,15 +12,14 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
         private IRegionManager _regionManager;
         public IMessageBoxService MessageBoxService { get { return ServiceContainer.GetService<IMessageBoxService>("Notice"); } }
 
-        private bool _userManagmentEnabled = false;
-
         public Prism.Commands.DelegateCommand<string> LoadModuleCommand { get; private set; }
-        public Prism.Commands.DelegateCommand OnLoadedCommand { get; private set; }
+        public Prism.Commands.DelegateCommand LoadedCommand { get; private set; }
 
 
         public MainWindowViewModel(IRegionManager regionManager) {
             this._regionManager = regionManager;
             this.LoadModuleCommand = new PrismCommands.DelegateCommand<string>(this.LoadModuleHandler);
+            this.LoadedCommand = new PrismCommands.DelegateCommand(this.LoadedHandler);
         }
 
         private string _title = "Manufacturing Inventory";
@@ -29,15 +28,10 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
             set { SetProperty(ref _title, value); }
         }
 
-        public PrismCommands.DelegateCommand LoadedCommand { get; private set; }
-
         public override bool KeepAlive {
             get => true;
         }
 
-        public MainWindowViewModel() {
-            this.LoadedCommand = new PrismCommands.DelegateCommand(this.LoadedHandler);
-        }
 
         private void LoadedHandler() {
             if (DXSplashScreen.IsActive)

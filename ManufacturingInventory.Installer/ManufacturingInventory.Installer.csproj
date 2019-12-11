@@ -1,10 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>InventoryInstaller</AssemblyName>
-    <FileVersion>1.0.85.1210</FileVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <FileVersion>1.0.123.1211</FileVersion>
+
+    <StartupObject>ManufacturingInventory.Installer.App</StartupObject>
+
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\seti_logo.png" />

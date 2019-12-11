@@ -7,7 +7,7 @@
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         prism:ViewModelLocator.AutoWireViewModel="True"
         dx:ThemeManager.Theme="VS2017Dark"
-        Title="Inventory Installer" Height="400" Width="630" >
+        Title="Inventory Installer" Height="480" Width="650" >
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:CurrentWindowService x:Name="CurrentWindowService"/>
         <dx:DXMessageBoxService x:Name="MessageBoxService"/>
@@ -22,7 +22,7 @@
         <dxlc:DockLayoutControl>
             <dxlc:LayoutGroup Orientation="Vertical" dxlc:DockLayoutControl.Dock="Client">
                 <Image Source="\Images\seti_logo.png" Stretch="None" OpacityMask="Black" />
-                <ContentControl Height="220"  prism:RegionManager.RegionName="ContentRegion"/>
+                <ContentControl Height="300"  prism:RegionManager.RegionName="ContentRegion"/>
             </dxlc:LayoutGroup>
         </dxlc:DockLayoutControl>
     </dxlc:LayoutControl>

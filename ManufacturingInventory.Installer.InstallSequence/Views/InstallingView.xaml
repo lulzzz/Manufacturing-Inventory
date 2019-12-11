@@ -10,27 +10,29 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
-             mc:Ignorable="d" d:DesignHeight="240" d:DesignWidth="530">
+             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="530">
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="DispatcherService"/>
+        <dxmvvm:CurrentWindowService x:Name="InstallerCurrentWindow"/>
+        <dx:DXMessageBoxService x:Name="InstallerMessageBox"/>
     </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl>
         <dxlc:LayoutGroup Orientation="Vertical">
-            <dx:SimpleButton Height="20" Content="Install" Command="{Binding InstallCommand}"></dx:SimpleButton>
-            <dxlc:LayoutItem Label="Install Progress" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,0">
+            <dx:SimpleButton Height="40" Content="Install" Command="{Binding InstallCommand}"></dx:SimpleButton>
+            <dxlc:LayoutItem Label="{Binding ProgressLabel}" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,0">
                 <ProgressBar x:Name="progressBar"
-                             Height="20"
+                             Height="25"
                              IsIndeterminate="{Binding IsIndeterminate}"
                              Value="{Binding ItemCount}"
                              Maximum="{Binding MaxProgress}"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Log" LabelPosition="Top" LabelHorizontalAlignment="Center" Margin="0,5,0,0">
-                <TextBox Text="{Binding InstallLog}" Height="90" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" ></TextBox>
+                <TextBox Text="{Binding InstallLog}" Height="120" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" VerticalScrollBarVisibility="Visible" ></TextBox>
             </dxlc:LayoutItem>
             <dxlc:LayoutGroup Height="30" VerticalAlignment="Center">
-                <dx:SimpleButton Content="Back" Command="{Binding BackCommand}"></dx:SimpleButton>
-                <dx:SimpleButton Content="Next" Command="{Binding NextCommand}"></dx:SimpleButton>
-                <dx:SimpleButton Content="Cancel" Command="{Binding CancelCommand}"></dx:SimpleButton>
+                <dx:SimpleButton Content="Back" Command="{Binding BackCommand}" IsEnabled="{Binding IsInstalling}"/>
+                <dx:SimpleButton Content="Next" Command="{Binding NextCommand}" IsEnabled="{Binding IsInstalling}"/>
+                <dx:SimpleButton Content="{Binding ButtonLabel}" Command="{Binding CancelCommand}"/>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>
     </dxlc:LayoutControl>

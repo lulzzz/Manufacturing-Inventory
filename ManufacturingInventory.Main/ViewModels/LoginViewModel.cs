@@ -44,60 +44,61 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
 
 
         private void LoadDefault() {
-            var saved = Properties.Settings.Default.CredentialsSaved;
-            if (saved) {
-                this.Username = Properties.Settings.Default.UserName;
-                var key = Properties.Settings.Default.userKey;
-                var iv = Properties.Settings.Default.userIV;
-                var encrypted = Properties.Settings.Default.Password;
-                this.Password = Strings.Decrypt(encrypted, key, iv);
-                this.SaveLogin = saved;
-            }
+            //var saved = Properties.Settings.Default.CredentialsSaved;
+            //if (saved) {
+            //    this.Username = Properties.Settings.Default.UserName;
+            //    var key = Properties.Settings.Default.userKey;
+            //    var iv = Properties.Settings.Default.userIV;
+            //    var encrypted = Properties.Settings.Default.Password;
+            //    this.Password = Strings.Decrypt(encrypted, key, iv);
+            //    this.SaveLogin = saved;
+            //}
         }
 
         private bool CheckProperties(IUserService service) {
-            if (Properties.Settings.Default.CredentialsSaved) {
-                var userName = Properties.Settings.Default.UserName;
-                var key = Properties.Settings.Default.userKey;
-                var iv = Properties.Settings.Default.userIV;
-                var encrypted = Properties.Settings.Default.Password;
-                bool credentialsSame = (service.CurrentUser.UserName.Equals(userName) &&
-                    service.CurrentUser.EncryptedPassword.Equals(encrypted) &&
-                    service.CurrentUser.Key.SequenceEqual(key) &&
-                    service.CurrentUser.IV.SequenceEqual(iv));
-                return credentialsSame;
-            } else {
-                return false;
-            }
+            //if (Properties.Settings.Default.CredentialsSaved) {
+            //    var userName = Properties.Settings.Default.UserName;
+            //    var key = Properties.Settings.Default.userKey;
+            //    var iv = Properties.Settings.Default.userIV;
+            //    var encrypted = Properties.Settings.Default.Password;
+            //    bool credentialsSame = (service.CurrentUser.UserName.Equals(userName) &&
+            //        service.CurrentUser.EncryptedPassword.Equals(encrypted) &&
+            //        service.CurrentUser.Key.SequenceEqual(key) &&
+            //        service.CurrentUser.IV.SequenceEqual(iv));
+            //    return credentialsSame;
+            //} else {
+            //    return false;
+            //}
+            return true;
         }
 
         private void SaveCredentials(IUserService service) {
-            Properties.Settings.Default.UserName = service.CurrentUser.UserName;
-            Properties.Settings.Default.userKey = service.CurrentUser.Key;
-            Properties.Settings.Default.userIV = service.CurrentUser.IV;
-            Properties.Settings.Default.Password = service.CurrentUser.EncryptedPassword;
-            Properties.Settings.Default.CredentialsSaved = true;
-            Properties.Settings.Default.Save();
+            //Properties.Settings.Default.UserName = service.CurrentUser.UserName;
+            //Properties.Settings.Default.userKey = service.CurrentUser.Key;
+            //Properties.Settings.Default.userIV = service.CurrentUser.IV;
+            //Properties.Settings.Default.Password = service.CurrentUser.EncryptedPassword;
+            //Properties.Settings.Default.CredentialsSaved = true;
+            //Properties.Settings.Default.Save();
         }
 
         private void LogIn() {
-            if (!string.IsNullOrEmpty(this.Username) && !string.IsNullOrEmpty(this.Password)) {
-                this.LoginResponce = this._loginService.LogInWithPassword(this.Username, this.Password, this.SaveLogin);
-                if (this.LoginResponce.Success) {
-                    if (this.SaveLogin) {
-                        if (!this.CheckProperties(this.LoginResponce.Service)) {
-                            this.SaveCredentials(this.LoginResponce.Service);
-                        }
-                    } else {
-                        Properties.Settings.Default.Reset();
-                    }
-                } else {
-                    this.ShowErrorMessage(this.LoginResponce);
-                }
-                this.LoginCompleted?.Invoke(this, EventArgs.Empty);
-            } else {
-                this.ShowErrorMessage();
-            }
+            //if (!string.IsNullOrEmpty(this.Username) && !string.IsNullOrEmpty(this.Password)) {
+            //    this.LoginResponce = this._loginService.LogInWithPassword(this.Username, this.Password, this.SaveLogin);
+            //    if (this.LoginResponce.Success) {
+            //        if (this.SaveLogin) {
+            //            if (!this.CheckProperties(this.LoginResponce.Service)) {
+            //                this.SaveCredentials(this.LoginResponce.Service);
+            //            }
+            //        } else {
+            //            Properties.Settings.Default.Reset();
+            //        }
+            //    } else {
+            //        this.ShowErrorMessage(this.LoginResponce);
+            //    }
+            //    this.LoginCompleted?.Invoke(this, EventArgs.Empty);
+            //} else {
+            //    this.ShowErrorMessage();
+            //}
         }
 
         private void ShowErrorMessage(LogInResponce responce = null) {

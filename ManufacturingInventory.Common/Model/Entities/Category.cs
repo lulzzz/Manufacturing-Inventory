@@ -45,7 +45,6 @@ namespace ManufacturingInventory.Common.Model.Entities {
 
     public partial class PartType : Category {
         public virtual ICollection<PartInstance> PartInstances { get; set; }
-
         public PartType() {
             this.PartInstances = new ObservableHashSet<PartInstance>();
         }

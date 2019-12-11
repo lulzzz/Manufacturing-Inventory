@@ -12,7 +12,9 @@ using ManufacturingInventory.Common.Buisness.Concrete;
 using ManufacturingInventory.Common.Model;
 using ManufacturingInventory.ManufacturingApplication.ViewModels;
 using ManufacturingInventory.ManufacturingApplication.Views;
-
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using ManufacturingInventory.Common.Model.Entities;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -46,14 +48,29 @@ namespace ManufacturingInventory.ManufacturingApplication {
             ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             GridControl.AllowInfiniteGridSize = true;
 
+            using var context= new ManufacturingContext();
 
-            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            if (this.ShowLogin()) {
-                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            } else {
-                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-                this.Shutdown();
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+
+            if (user != null) {
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+                context.SaveChanges();
+                this.userService.CurrentUser = user;
+                this.userService.CurrentSession = session;
             }
+
+            //Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            //if (this.ShowLogin()) {
+            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //} else {
+            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //    this.Shutdown();
+            //}
             base.OnStartup(e);
         }
 
