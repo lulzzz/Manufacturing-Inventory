@@ -40,8 +40,7 @@ namespace ManufacturingInventory.ConsoleTesting {
                 context.Distributors.Add(dist1);
                 context.Distributors.Add(dist2);
 
-                
-
+              
                 var part = new Part();
                 part.Name = "Process Chemicals";
                 part.Warehouse = (Warehouse)warehouse;
