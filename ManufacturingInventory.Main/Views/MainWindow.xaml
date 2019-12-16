@@ -26,58 +26,59 @@
                         <dxr:RibbonPageGroup Caption="Main Commands">
                             <dxb:BarButtonItem x:Name="partsView" Content="Parts Managment"                                               
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:AppViews.PartsManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.PartsManagmentMainView}"
                                                Glyph="{dx:DXImage Image=BOProduct_16x16.png}"
                                                LargeGlyph="{dx:DXImage Image=BOProduct_16x16.png}"/>
 
                             <dxb:BarButtonItem x:Name="locationView" Content="Location Managment"                                             
                                                Command="{Binding LoadModuleCommand}" 
-                                               CommandParameter="{x:Static common:AppViews.LocationsManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.LocationsManagmentMainView}"
                                                Glyph="{dx:DXImage Image=Country_32x32.png}" 
                                                LargeGlyph="{dx:DXImage Image=Country_32x32.png}"
                                                IsEnabled="True"/>
 
                             <dxb:BarButtonItem x:Name="categoryView" Content="Category Managment"                                             
                                                Command="{Binding LoadModuleCommand}" 
-                                               CommandParameter="{x:Static common:AppViews.CategoriesManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.CategoriesManagmentMainView}"
                                                IsEnabled="True"
                                                Glyph="{dx:DXImage Image=BO_Category.png}" 
                                                LargeGlyph="{dx:DXImage Image=BO_Category.png}"/>
 
                             <dxb:BarButtonItem x:Name="reportsView" Content="Reports"                                             
                                                Command="{Binding LoadModuleCommand}" 
+                                               CommandParameter="{x:Static common:MainAppViews.ReportsMainView}"
                                                IsEnabled="False"
                                                Glyph="{dx:DXImage Image=Report_16x16.png}" 
                                                LargeGlyph="{dx:DXImage Image=Report_32x32.png}"/>
 
                             <dxb:BarButtonItem x:Name="usersView" Content="User View"                                             
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:AppViews.UserManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.UserManagmentMainView}"
                                                Glyph="{dx:DXImage Image=BOCustomer_16x16.png}" 
                                                LargeGlyph="{dx:DXImage Image=BOCustomer_32x32.png}"
                                                IsEnabled="False"/>
 
                             <dxb:BarButtonItem x:Name="userMngtView" Content="User Managment"                                             
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:AppViews.UsersManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.UsersManagmentMainView}"
                                                Glyph="{dx:DXImage Image=BODepartment_16x16.png}" 
                                                LargeGlyph="{dx:DXImage Image=BODepartment_32x32.png}"/>
 
                             <dxb:BarButtonItem x:Name="projectView" Content="Project Managment"                                             
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:AppViews.ProjectManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.ProjectManagmentMainView}"
                                                Glyph="{dx:DXImage Image=BODepartment_16x16.png}" 
                                                LargeGlyph="{dx:DXImage Image=BO_Project_Large.png}"/>
 
                             <dxb:BarButtonItem x:Name="distributorView" Content="Distributor Managment"                                             
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:AppViews.DistributorsManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.DistributorsManagmentMainView}"
                                                Glyph="{dx:DXImage Image=BOPosition2_16x16.png}" 
                                                LargeGlyph="{dx:DXImage Image=BOPosition2_32x32.png}"/>
 
                             <dxb:BarButtonItem x:Name="manufacturer" Content="Manufacturer Managment"                                             
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:AppViews.DistributorsManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.ManufacturersManagmentMainView}"
                                                Glyph="{dx:DXImage Image=BOEmployee_16x16.png}" 
                                                LargeGlyph="{dx:DXImage Image=BOEmployee_32x32.png}"/>
 

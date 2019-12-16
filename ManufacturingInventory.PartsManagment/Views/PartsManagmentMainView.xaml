@@ -18,14 +18,14 @@
         <dxdo:LayoutPanel ShowCloseButton="False" ShowPinButton="False" ShowBorder="False" ShowControlBox="False" ShowHideButton="False">
             <dxlc:LayoutControl>
                 <dxlc:LayoutGroup Orientation="Horizontal">
-                    <dxlc:ScrollBox  VerticalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
-                        <ContentControl prism:RegionManager.RegionName="{x:Static common:Regions.NavigationRegion}" />
-                    </dxlc:ScrollBox>
                     <dxlc:LayoutItem VerticalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
-                        <ContentControl prism:RegionManager.RegionName="{x:Static common:Regions.MainDetailsRegion}" />
+                        <ContentControl prism:RegionManager.RegionName="{x:Static common:Regions.PartsNavigationRegion}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem VerticalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
-                        <ContentControl  prism:RegionManager.RegionName="{x:Static common:Regions.DetailsRegion}"/>
+                        <ContentControl prism:RegionManager.RegionName="{x:Static common:Regions.PartDetailsRegion}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem VerticalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
+                        <ContentControl  prism:RegionManager.RegionName="{x:Static common:Regions.PartInstanceDetailsRegion}"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
             </dxlc:LayoutControl>

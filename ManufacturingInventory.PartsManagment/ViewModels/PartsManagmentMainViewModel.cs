@@ -9,6 +9,6 @@ using System;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     class PartsManagmentMainViewModel : InventoryViewModelBase {
-        public override bool KeepAlive => throw new NotImplementedException();
+        public override bool KeepAlive => false;
     }
 }

@@ -7,30 +7,134 @@
             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
-            xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"                 
+            xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" 
+            xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"  
             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
             xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar"
             xmlns:prism="http://prismlibrary.com/"
             prism:ViewModelLocator.AutoWireViewModel="True"   
             xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
-            mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
-    <dxn:NavBarControl>
-        <dxn:NavBarControl.Groups>
-            <dxn:NavBarGroup Header="Group1">
-                <dxn:NavBarItem Content="Item11"/>
-            </dxn:NavBarGroup>
-            <dxn:NavBarGroup Header="Group2">
-                <dxn:NavBarItem Content="Item21"/>
-            </dxn:NavBarGroup>
-            <dxn:NavBarGroup Header="Group3" Style="{StaticResource GroupStyle}">
-                <dxn:NavBarItem Content="Item31"/>
-                <dxn:NavBarItem Content="Item32"/>
-            </dxn:NavBarGroup>
-            <dxn:NavBarGroup Header="Group4"  VisualStyle="{StaticResource GroupVisualStyle}">
-                <dxn:NavBarItem Content="Item41"/>
-                <dxn:NavBarItem Content="Item42" Style="{StaticResource ItemStyle}"/>
-                <dxn:NavBarItem Content="Item43"  VisualStyle="{StaticResource ItemVisualStyle}"/>
-            </dxn:NavBarGroup>
-        </dxn:NavBarControl.Groups>
-    </dxn:NavBarControl>
+            mc:Ignorable="d" d:DesignHeight="405" d:DesignWidth="470">
+	<UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DXMessageBoxService x:Name="PartsNavigationNotifications"/>
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
+        <!--<dx:DialogService x:Name="RenameFileDialog">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <View:FileNameView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    <Setter Property="WindowStyle" Value="ToolWindow" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dx:DialogService x:Name="RenameLotDialog" ViewTemplate="{StaticResource dialogTemplate}">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    <Setter Property="WindowStyle" Value="ToolWindow" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dx:DialogService x:Name="ReturnPartialDialog" DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <View:ReturnPartialView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    <Setter Property="WindowStyle" Value="ToolWindow" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dx:DialogService x:Name="FileNameDialog" DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <View:FileNameView/>
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width" Value="300" />
+                    <Setter Property="Height" Value="350" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog" Title="{Binding Title}"/>
+        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog" Title="{Binding Title}"/>-->
+        <dxmvvm:DispatcherService x:Name="PartsNavigationDispatcher"/>
+    </dxmvvm:Interaction.Behaviors>
+    <dx:LoadingDecorator>
+        <dxlc:GroupBox >
+            <dxlc:GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="Parts" HorizontalAlignment="Center" FontSize="16"/>
+                </DataTemplate>
+            </dxlc:GroupBox.HeaderTemplate>
+            <dxlc:DockLayoutControl>
+                <dxb:BarContainerControl dxlc:DockLayoutControl.Dock="Top">
+                    <dxb:ToolBarControl Caption="Distributor Actions" ShowDragWidget="False" ShowBackground="False"                                        
+                                        AllowCustomizationMenu="False" AllowQuickCustomization="False" AllowHide="False" 
+                                        BarItemDisplayMode="ContentAndGlyph" Orientation="Horizontal">
+
+                        <dxb:BarButtonItem x:Name="_newProduct" 
+                                           Command="{Binding NewPartCommand}"
+                                           BarItemDisplayMode="ContentAndGlyph" 
+                                           Content="New Product" 
+                                           Glyph="{dx:DXImage Image=InsertSheetRows_16x16.png}"/>
+
+                        <dxb:BarButtonItem x:Name="_refresh" 
+                                           Command="{Binding RefreshDataCommand}"
+                                           BarItemDisplayMode="ContentAndGlyph" 
+                                           Content="Refresh Product List" 
+                                           Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}"/>
+
+                    </dxb:ToolBarControl>
+                </dxb:BarContainerControl>
+                <dxg:GridControl x:Name="_listOfParts"  
+                                 ItemsSource="{Binding Parts,IsAsync=True,Mode=TwoWay}" 
+                                 SelectedItem="{Binding SelectedPart}"
+                                 dxlc:DockLayoutControl.Dock="Client"
+                                 ClipboardCopyMode="ExcludeHeader" >
+                    <!--<dxmvvm:Interaction.Behaviors>
+                        <commonservice:GridUpdateService/>
+                    </dxmvvm:Interaction.Behaviors>-->
+                    <dxg:GridControl.View>
+                        <dxg:TableView ShowSearchPanelMode="Always"
+                                       SearchPanelNullText="Search By Part Number" 
+                                       AllowGrouping="True" SearchColumns="Name">
+                            <dxg:TableView.RowCellMenuCustomizations>
+
+                                <dxb:BarButtonItem Content="View Details" 
+                                                   Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}"
+                                                   Command="{Binding Path=View.DataContext.ViewPartDetailsCommand}"/>
+
+                                <dxb:BarButtonItem Content="Edit Part Details" 
+                                                   Glyph="{dx:DXImage Image=Action_Edit.png}"
+                                                   Command="{Binding Path=View.DataContext.EditPartCommand}"/>
+
+                            </dxg:TableView.RowCellMenuCustomizations>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn FieldName="Name" Header="Part"/>
+                        <dxg:GridColumn FieldName="Organization.Name" Header="Organization" AllowGrouping="True"/>
+                        <dxg:GridColumn FieldName="Usage.Name" Header="Usage" AllowGrouping="True"/>
+                    </dxg:GridControl.Columns>
+                </dxg:GridControl>
+            </dxlc:DockLayoutControl>
+        </dxlc:GroupBox>
+    </dx:LoadingDecorator>
 </UserControl>

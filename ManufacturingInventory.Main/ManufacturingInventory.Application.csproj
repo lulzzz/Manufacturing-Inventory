@@ -6,7 +6,7 @@
     <AssemblyName>ManufacturingInventory.ManufacturingApplication</AssemblyName>
     <StartupObject>ManufacturingInventory.ManufacturingApplication.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>1.3.0.1211</FileVersion>
+    <FileVersion>1.3.32.1216</FileVersion>
     <PackageId>ManufacturingInventory.Application</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -19,6 +19,9 @@
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
@@ -30,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.PartsManagment\ManufacturingInventory.PartsManagment.csproj" />
   </ItemGroup>
 
   <ItemGroup>

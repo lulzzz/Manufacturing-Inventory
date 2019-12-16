@@ -15,6 +15,8 @@ using ManufacturingInventory.ManufacturingApplication.Views;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ManufacturingInventory.Common.Model.Entities;
+using Prism.Modularity;
+using ManufacturingInventory.PartsManagment;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -106,6 +108,10 @@ namespace ManufacturingInventory.ManufacturingApplication {
             versionWindow.DataContext = versionVM;
             versionWindow.ShowDialog();
             return true;
+        }
+
+        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) {
+            moduleCatalog.AddModule<PartsManagmentModule>();
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings) {

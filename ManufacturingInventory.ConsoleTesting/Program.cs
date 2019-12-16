@@ -10,15 +10,20 @@ using Microsoft.EntityFrameworkCore;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
+            //ParameterTesting();
             //DistributorPriceTesting();
             //ReturnTransactionTest();
             //InitialUser();
-            //ParameterTesting();
+
             //TransactionTesting();
-            Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
+            //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
         }
 
         #region DatabaseTesting
+
+        public static void CreateLocations() {
+
+        }
 
         public static void DistributorPriceTesting() {
             using var context = new ManufacturingContext();

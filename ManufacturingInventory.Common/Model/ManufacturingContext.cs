@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ManufacturingInventory.Common.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -463,5 +466,6 @@ namespace ManufacturingInventory.Common.Model {
                     UserName="AElmendo"
                 });
         }
+
     }
 }
