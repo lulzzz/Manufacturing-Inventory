@@ -4,6 +4,7 @@
         public double Value { get; set; }
         public double MinValue { get; set; }
         public double SafeValue { get; set; }
+
         public bool Tracked { get; set; }
         public byte[] RowVersion { get; set; }
 

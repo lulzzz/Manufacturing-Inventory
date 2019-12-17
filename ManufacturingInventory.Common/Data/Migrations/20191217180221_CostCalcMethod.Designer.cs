@@ -4,14 +4,16 @@ using ManufacturingInventory.Common.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ManufacturingInventory.Common.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    partial class ManufacturingContextModelSnapshot : ModelSnapshot
+    [Migration("20191217180221_CostCalcMethod")]
+    partial class CostCalcMethod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -400,6 +402,9 @@ namespace ManufacturingInventory.Common.Migrations
                     b.Property<int?>("ConditionId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CostCalcMethod")
+                        .HasColumnType("int");
+
                     b.Property<bool>("CostReported")
                         .HasColumnType("bit");
 
@@ -536,9 +541,6 @@ namespace ManufacturingInventory.Common.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
                     b.Property<int>("DistributorId")
                         .HasColumnType("int");
 
@@ -561,6 +563,9 @@ namespace ManufacturingInventory.Common.Migrations
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime2");
+
+                    b.Property<double>("UnitCost")
+                        .HasColumnType("float");
 
                     b.Property<DateTime?>("VaildFrom")
                         .HasColumnType("datetime2");

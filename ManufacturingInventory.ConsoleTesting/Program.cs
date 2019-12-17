@@ -14,99 +14,291 @@ namespace ManufacturingInventory.ConsoleTesting {
             //DistributorPriceTesting();
             //ReturnTransactionTest();
             //InitialUser();
-
+            //CreateLocations();
+            //CreateDistibutors();
+            //DistributorPriceTesting();
             //TransactionTesting();
+            //InitialCreate();
+            //TransactionTesting();
+            ReturnTransactionTest();
             //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
         }
 
         #region DatabaseTesting
 
-        public static void CreateLocations() {
+        public static void InitialCreate() {
+            using var context = new ManufacturingContext();
 
+            var tma = context.PartInstances.OfType<Bubbler>().Include(e=>e.Price).Single(e => e.SerialNumber == "1000006109");
+            tma.UpdateWeight(2100);
+            context.Entry<Bubbler>(tma).State = EntityState.Modified;
+            context.SaveChanges();
+            Console.WriteLine("Weight Changed");
+            Console.ReadKey();
+        }
+
+        public static void CreateLocations() {
+            using var context = new ManufacturingContext();
+            var warehouse1 = new Warehouse();
+            warehouse1.Name = "Epi System Parts";
+            warehouse1.Description = "Storage room for replacement epi parts";
+
+            var warehouse2 = new Warehouse();
+            warehouse2.Name = "IT Storage Room";
+            warehouse2.Description = "Storage Room for all things IT";
+
+            var consumer1 = new Consumer();
+            consumer1.Name = "System B01";
+            consumer1.Description = "B01 EPI System";
+
+            var consumer2 = new Consumer();
+            consumer2.Name = "System A01";
+            consumer2.Description = "B01 EPI System";
+
+            var consumer3 = new Consumer();
+            consumer3.Name = "System B02";
+            consumer3.Description = "B02 EPI System";
+
+            var consumer4 = new Consumer();
+            consumer4.Name = "System B03";
+            consumer4.Description = "B03 EPI System";
+
+            var consumer5 = new Consumer();
+            consumer5.Name = "System A02";
+            consumer5.Description = "A02 EPI System";
+
+            var consumer6 = new Consumer();
+            consumer6.Name = "System A03";
+            consumer6.Description = "A03 EPI System";
+
+            var consumer7 = new Consumer();
+            consumer7.Name = "System A04";
+            consumer7.Description = "A04 EPI System";
+
+            context.Locations.Add(warehouse1);
+            context.Locations.Add(warehouse2);
+
+            context.Locations.Add(consumer1);
+            context.Locations.Add(consumer2);
+            context.Locations.Add(consumer3);
+            context.Locations.Add(consumer4);
+            context.Locations.Add(consumer5);
+            context.Locations.Add(consumer6);
+            context.Locations.Add(consumer7);
+            context.SaveChanges();
+            Console.WriteLine("Locations Created,Press Any key To Continue");
+            Console.ReadKey();
+        }
+
+
+        public static void CreateDistibutors() {
+            using var context = new ManufacturingContext();
+
+            Distributor dist1 = new Distributor();
+            dist1.Name = "Distributor B";
+
+            Distributor dist2 = new Distributor();
+            dist2.Name = "Distributor A";
+
+            Distributor dist3 = new Distributor();
+            dist3.Name = "Distributor C";
+
+            Distributor dist4 = new Distributor();
+            dist4.Name = "Distributor D";
+
+            Distributor dist5 = new Distributor();
+            dist5.Name = "Distributor E";
+
+            Distributor dist6 = new Distributor();
+            dist6.Name = "Akzo Nobel";
+
+            context.Distributors.Add(dist1);
+            context.Distributors.Add(dist2);
+            context.Distributors.Add(dist3);
+            context.Distributors.Add(dist4);
+            context.Distributors.Add(dist5);
+            context.Distributors.Add(dist6);
+
+            context.SaveChanges();
+            Console.WriteLine("Distributors Created,Press any key to continue");
+            Console.ReadKey();
         }
 
         public static void DistributorPriceTesting() {
             using var context = new ManufacturingContext();
 
-            var warehouse = context.Locations.Find(5);
-
+            var warehouse = context.Locations.OfType<Warehouse>().FirstOrDefault(e => e.Name == "Epi System Parts");
             if (warehouse != null) {
-                Distributor dist1 = new Distributor();
-                dist1.Name = "Distributor B";
 
-                Distributor dist2 = new Distributor();
-                dist2.Name = "Distributor A";
+                var dist = context.Distributors.FirstOrDefault(e => e.Name == "Distributor A");
+                var dist2 = context.Distributors.FirstOrDefault(e => e.Name == "Akzo Nobel");
+                if (dist != null && dist2!=null) {
+                    var part = CreatePart("Process Chemicals", warehouse);
+                    var instance1 = CreatePartInstance("IPA", part, 8, 4, 2);
+                    var instance2 = CreatePartInstance("Acetone", part, 16, 2, 1);
 
-                context.Distributors.Add(dist1);
-                context.Distributors.Add(dist2);
+                    var p1 = CreatePrice(4.99, 10, dist, instance1);
+                    instance1.UpdatePrice(p1);
+                    dist.Prices.Add(p1);
+                    context.Prices.Add(p1);
 
-              
-                var part = new Part();
-                part.Name = "Process Chemicals";
-                part.Warehouse = (Warehouse)warehouse;
+
+                    var p2 = CreatePrice(4.99, 10, dist, instance2);
+                    instance2.UpdatePrice(p2);
+                    dist.Prices.Add(p2);
+                    context.Prices.Add(p2);
+
+
+                    part.PartInstances.Add(instance1);
+                    part.PartInstances.Add(instance1);
+
+                    context.PartInstances.Add(instance1);
+                    context.PartInstances.Add(instance2);
+
+                    context.Parts.Add(part);
+
+                    var part2 = CreatePart("Bubblers", warehouse);
+                    var tma1 = CreateBubbler("TMA", part2,380,2243,0,"1607AL1203","1000006109");
+                    var tma2 = CreateBubbler("TMA", part2, 380, 2316, 0, "1509AL1152", "1000009476");
+                    var tma3 = CreateBubbler("TMA", part2, 380, 2283, 0, "1604AL1190", "1000000192");
+                    var tmg1 = CreateBubbler("TMG", part2, 600, 2497, 1, "1211GM2059", "600VW2676");
+                    var tmg2 = CreateBubbler("TMG", part2, 600, 2526, 1, "1507GM2598", "1000000813");
+
+                    part2.PartInstances.Add(tma1);
+                    part2.PartInstances.Add(tma2);
+                    part2.PartInstances.Add(tma3);
+                    part2.PartInstances.Add(tma1);
+                    part2.PartInstances.Add(tmg1);
+                    part2.PartInstances.Add(tmg2);
+
+                    var p1_2 = CreatePrice(64.25, 0, dist2, tma1);
+                    var p2_2 = CreatePrice(65.04, 0, dist2, tma2);
+                    var p3_2 = CreatePrice(38.45, 0, dist2, tma3);
+                    var p4_2 = CreatePrice(45.78, 0, dist2, tmg1);
+                    var p5_2 = CreatePrice(62.88, 0, dist2, tmg2);
+
+                    tma1.UpdatePrice(p1_2);
+                    tma2.UpdatePrice(p2_2);
+                    tma3.UpdatePrice(p3_2);
+                    tmg1.UpdatePrice(p4_2);
+                    tmg2.UpdatePrice(p5_2);
+
+                    dist2.Prices.Add(p1_2);
+                    dist2.Prices.Add(p2_2);
+                    dist2.Prices.Add(p3_2);
+                    dist2.Prices.Add(p4_2);
+                    dist2.Prices.Add(p5_2);
+
+                    context.Prices.Add(p1_2);
+                    context.Prices.Add(p2_2);
+                    context.Prices.Add(p3_2);
+                    context.Prices.Add(p4_2);
+                    context.Prices.Add(p5_2);
+
+                    context.Entry<Distributor>(dist).State = EntityState.Modified;
+                    context.Entry<Distributor>(dist2).State = EntityState.Modified;
+                    context.SaveChanges();
+                    Console.WriteLine("Parts Created,Press any key to continue");
+                } else {
+                    Console.WriteLine("Error Finding Distributor");
+                }
+            } else {
+                Console.WriteLine("Error finding warehous");
+            }
+            Console.ReadKey();
+        }
+
+        public static Part CreatePart(string name, Warehouse warehouse) {
+            var part = new Part();
+            part.Name = "Process Chemicals";
+            part.Warehouse = (Warehouse)warehouse;
+            return part;
+        }
+
+        //public static PartInstance CreatePartInstance(string name, Part part, int quantity, int safe, int min, CostCalcMethod method) {
+        //    Random rand = new Random();
+        //    var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "");
+        //    partInstance.Quantity = quantity;
+        //    partInstance.SafeQuantity = safe;
+        //    partInstance.MinQuantity = min;
+        //    partInstance.CostReported = true;
+        //    partInstance.CurrentLocation = part.Warehouse;
+        //    //partInstance.CostCalcMethod = CostCalcMethod.QUANTITY;
+        //    return partInstance;
+        //}
+
+        public static PartInstance CreatePartInstance(string name, Part part, int quantity, int safe, int min) {
+            Random rand = new Random();
+            var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "");
+            partInstance.Quantity = quantity;
+            partInstance.SafeQuantity = safe;
+            partInstance.MinQuantity = min;
+            partInstance.CostReported = true;
+            partInstance.CurrentLocation = part.Warehouse;
+            //partInstance.CostCalcMethod = CostCalcMethod.QUANTITY;
+            return partInstance;
+        }
+
+        public static Bubbler CreateBubbler(string name, Part part,double net,double gross,double tare,string lot,string sn) {
+            var bubbler = new Bubbler(part,name,sn,lot,"",net,tare,gross);
+            bubbler.Part = part;
+            bubbler.NetWeight = net;
+            bubbler.GrossWeight = gross;
+            bubbler.Tare = tare;
+            bubbler.CurrentLocation = part.Warehouse;
+            return bubbler;
+        }
+
+        public static Price CreatePrice(double unitCost, int min, Distributor distributor, PartInstance instance) {
+            Price price = new Price();
+            price.UnitCost = unitCost;
+            price.MinOrder = min;
+            price.TimeStamp = DateTime.Now;
+            price.Distributor = distributor;
+            price.PartInstance = instance;
+            return price;
+        }
+
+        public static void CreateParts() {
+            using var context = new ManufacturingContext();
+
+            var warehouse = context.Locations.OfType<Warehouse>().FirstOrDefault(e => e.Name == "Epi System Parts");
+            if (warehouse != null) {
+                Unit unit = new Unit("Gram", "g", 10, 0);
+                Parameter parameter = new Parameter("Bubbler Weight", "");
+                parameter.Unit = unit;
+
+                context.Units.Add(unit);
+                context.Parameters.Add(parameter);
+
+                Part part = new Part();
+                part.Name = "Bubblers";
+                part.Description = "Bubblers";
+                part.Warehouse = warehouse;
 
                 context.Parts.Add(part);
-                
-                var partInstance = new PartInstance(part, "IPA", "", "", "");
-                partInstance.Quantity = 4;
-                partInstance.SafeQuantity = 2;
-                partInstance.MinQuantity = 1;
-                partInstance.CostReported = true;
-                partInstance.CurrentLocation = partInstance.Part.Warehouse;
 
-                var partInstance2 = new PartInstance(part,"Acetone", "", "", "");
-                partInstance2.Quantity = 4;
-                partInstance2.SafeQuantity = 2;
-                partInstance2.MinQuantity = 1;
-                partInstance2.CostReported = true;
-                partInstance2.CurrentLocation = partInstance2.Part.Warehouse;
+                PartInstance partInstance = new PartInstance(part, "TMA", "", "", "");
+                partInstance.Quantity = 1;
+                partInstance.CurrentLocation = warehouse;
 
                 context.PartInstances.Add(partInstance);
-                context.PartInstances.Add(partInstance2);
 
+                InstanceParameter instanceParameter = new InstanceParameter(partInstance, parameter);
+                instanceParameter.MinValue = 200;
+                instanceParameter.SafeValue = 400;
+                instanceParameter.Value = 1861;
+                instanceParameter.Tracked = true;
 
+                context.InstanceParameters.Add(instanceParameter);
 
-                Price p1 = new Price();
-                p1.Amount = 4.99;
-                p1.MinOrder = 10;
-                p1.PartInstance = partInstance;
-                p1.TimeStamp = DateTime.Now;
-                p1.Distributor = dist1;
-
-                Price p2 = new Price();
-                p2.Amount = 8.99;
-                p2.MinOrder = 10;
-                p2.PartInstance = partInstance2;
-                p2.TimeStamp = DateTime.Now;
-                p2.Distributor = dist1;
-
-                partInstance.Price = p1;
-                partInstance.UnitCost = partInstance.Price.Amount;
-                partInstance.TotalCost = partInstance.Price.Amount*partInstance.Quantity;
-
-                partInstance2.Price = p2;
-                partInstance2.UnitCost = partInstance2.Price.Amount;
-                partInstance2.TotalCost = partInstance2.Price.Amount * partInstance2.Quantity;
-
-                dist1.Prices.Add(p1);
-                dist1.Prices.Add(p2);
-
-                context.Prices.Add(p1);
-                context.Prices.Add(p2);
                 context.SaveChanges();
+                Console.WriteLine("Should be done!");
 
-                Console.WriteLine("Should be done.  Maybe.....");
             } else {
                 Console.WriteLine("Error finding warehouse");
             }
-
             Console.ReadKey();
-
-
-
-
-
-
         }
 
         public static void ReturnTransactionTest() {
@@ -115,12 +307,13 @@ namespace ManufacturingInventory.ConsoleTesting {
             var outTransaction = context.Transactions.OfType<OutgoingTransaction>()
                 .Include(e => e.Consumer)
                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.InstanceParameter)
-                .Include(e=>e.PartInstance)
-                    .ThenInclude(e=>e.CurrentLocation)
-                .Include(e=>e.PartInstance)
-                    .ThenInclude(e=>e.Part)
-                    .ThenInclude(e=>e.Warehouse)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.CurrentLocation)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                    .ThenInclude(e => e.Warehouse)
+                 .Include(e => e.PartInstance)
+                    .ThenInclude(e=>e.Price)
                 .FirstOrDefault(e => e.Id == 1);
 
             var user = context.Users
@@ -146,15 +339,15 @@ namespace ManufacturingInventory.ConsoleTesting {
             context.Categories.Add(condition3);
 
 
-            if (outTransaction != null && user!=null) {
+            if (outTransaction != null && user != null) {
                 //var partInstance = context.PartInstances.Include(e => e.Id == outTransaction.PartInstanceId);
                 Session session = new Session(user);
                 context.Sessions.Add(session);
 
-                var partInstance = context.Entry<PartInstance>(outTransaction.PartInstance).Entity;
-                
+                var partInstance = context.Entry<Bubbler>((Bubbler)outTransaction.PartInstance).Entity;
+
                 ReturningTransaction returnTransaction = new ReturningTransaction();
-                returnTransaction.InstanceParameterValue = 1000;
+                returnTransaction.InstanceParameterValue = 1900;
                 returnTransaction.OutgoingTransaction = outTransaction;
                 returnTransaction.PartInstance = partInstance;
                 returnTransaction.Session = session;
@@ -163,12 +356,12 @@ namespace ManufacturingInventory.ConsoleTesting {
                 outTransaction.ReturningTransaction = returnTransaction;
 
                 partInstance.CurrentLocation = partInstance.Part.Warehouse;
-                partInstance.InstanceParameter.Value = returnTransaction.InstanceParameterValue;
+                partInstance.UpdateWeight(1900);
                 partInstance.Condition = condition1;
 
                 context.Entry<PartInstance>(partInstance).State = EntityState.Modified;
                 context.Entry<Warehouse>(partInstance.Part.Warehouse).State = EntityState.Modified;
-                context.Entry<InstanceParameter>(partInstance.InstanceParameter).State = EntityState.Modified;
+                //context.Entry<InstanceParameter>(partInstance.InstanceParameter).State = EntityState.Modified;
                 context.Entry<OutgoingTransaction>(outTransaction).State = EntityState.Modified;
                 context.Transactions.Add(returnTransaction);
 
@@ -190,40 +383,37 @@ namespace ManufacturingInventory.ConsoleTesting {
                 .Include(e => e.OutgoingTransactions)
                 .FirstOrDefault(e => e.Name == "System B03");
 
-            var instance = context.PartInstances
+            var tma1 = context.PartInstances.OfType<Bubbler>()
                 .Include(e => e.Part)
                     .ThenInclude(e => e.Warehouse)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.InstanceParameter)
-                    .ThenInclude(e => e.Parameter)
-                    .ThenInclude(e => e.Unit)
                 .Include(e => e.Price)
-                .Single(e => e.Name =="TMA");
+                .FirstOrDefault(e => e.SerialNumber == "1000006109");
 
             var user = context.Users
                 .Include(e => e.Sessions)
                     .ThenInclude(e => e.Transactions)
                 .Include(e => e.Permission)
                 .FirstOrDefault(e => e.FirstName == "Andrew");
-                
 
-            if(instance!=null && consumer != null && user!=null) {
+
+            if (tma1 != null && consumer != null && user != null) {
                 Session session = new Session(user);
                 context.Sessions.Add(session);
 
-                instance.CurrentLocation = consumer;
-
+                tma1.CurrentLocation = consumer;
+                tma1.UpdateWeight(1861);
 
                 OutgoingTransaction outgoing = new OutgoingTransaction();
                 outgoing.Consumer = consumer;
-                outgoing.PartInstance = instance;
+                outgoing.PartInstance = tma1;
                 outgoing.InventoryAction = InventoryAction.OUTGOING;
                 outgoing.IsReturning = true;
                 outgoing.Quantity = 1;
-                outgoing.InstanceParameterValue =(instance.InstanceParameter!=null)? instance.InstanceParameter.Value:0;
+                outgoing.InstanceParameterValue = tma1.Weight;
                 outgoing.Session = session;
                 context.Transactions.Add(outgoing);
-                context.Entry<PartInstance>(instance).State = EntityState.Modified;
+                context.Entry<PartInstance>(tma1).State = EntityState.Modified;
                 context.Entry<Consumer>(consumer).State = EntityState.Modified;
                 context.SaveChanges();
                 Console.WriteLine("Should be done!");
@@ -231,68 +421,6 @@ namespace ManufacturingInventory.ConsoleTesting {
             } else {
                 Console.WriteLine("Error, Consumer or Instance not Found");
             }
-            Console.ReadKey();
-        }
-
-        public static void ParameterTesting() {
-            using var context = new ManufacturingContext();
-
-            Warehouse warehouse = new Warehouse();
-            warehouse.Name = "Epi System Parts";
-            warehouse.Description = "Storage room for replacement epi parts";
-
-            Consumer consumer1 = new Consumer();
-            consumer1.Name = "System B01";
-            consumer1.Description = "System B01 EPI System";
-
-            Consumer consumer2 = new Consumer();
-            consumer1.Name = "System A01";
-            consumer1.Description = "System B01 EPI System";
-
-            Consumer consumer3 = new Consumer();
-            consumer1.Name = "System B02";
-            consumer1.Description = "System B01 EPI System";
-
-            Consumer consumer4 = new Consumer();
-            consumer1.Name = "System B03";
-            consumer1.Description = "System B01 EPI System";
-
-            context.Locations.Add(consumer1);
-            context.Locations.Add(consumer2);
-            context.Locations.Add(consumer3);
-            context.Locations.Add(consumer4);
-            context.Locations.Add(warehouse);
-
-            Unit unit = new Unit("Gram", "g", 10, 0);
-            Parameter parameter = new Parameter("Bubbler Weight", "");
-            parameter.Unit = unit;
-
-            context.Units.Add(unit);
-            context.Parameters.Add(parameter);
-
-            Part part = new Part();
-            part.Name = "Bubblers";
-            part.Description = "Bubblers";
-            part.Warehouse = warehouse;
-
-            context.Parts.Add(part);
-
-            PartInstance partInstance = new PartInstance(part, "TMA", "", "", "");
-            partInstance.Quantity = 1;
-            partInstance.CurrentLocation = warehouse;
-
-            context.PartInstances.Add(partInstance);
-
-            InstanceParameter instanceParameter = new InstanceParameter(partInstance, parameter);
-            instanceParameter.MinValue = 200;
-            instanceParameter.SafeValue = 400;
-            instanceParameter.Value = 1861;
-            instanceParameter.Tracked = true;
-
-            context.InstanceParameters.Add(instanceParameter);
-
-            context.SaveChanges();
-            Console.WriteLine("Should be done!");
             Console.ReadKey();
         }
 
@@ -335,7 +463,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             Console.WriteLine("Should be done");
             Console.ReadKey();
         }
-        
+
         #endregion
 
         #region InstallTesting

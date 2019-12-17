@@ -1,4 +1,5 @@
 ﻿using ManufacturingInventory.Common.Application;
+using ManufacturingInventory.PartsManagment.Internal;
 using ManufacturingInventory.PartsManagment.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -15,9 +16,9 @@ namespace ManufacturingInventory.PartsManagment
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry){
-            containerRegistry.RegisterForNavigation<PartsManagmentMainView>();
-            containerRegistry.RegisterForNavigation<PartsDetailView>();
-            containerRegistry.RegisterForNavigation<PartInstanceDetailsView>();
+            containerRegistry.RegisterForNavigation<PartsManagmentMainView>(AppViews.PartsManagmentMainView);
+            containerRegistry.RegisterForNavigation<PartsDetailView>(AppViews.PartsDetailView);
+            containerRegistry.RegisterForNavigation<PartInstanceDetailsView>(AppViews.PartInstanceDetailsView);
         }
     }
 }

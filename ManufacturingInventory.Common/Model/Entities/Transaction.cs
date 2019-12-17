@@ -55,8 +55,6 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int Quantity { get; set; }
 
         public double InstanceParameterValue { get; set; }
-        //public int? InstanceParameterId { get; set; }
-        //public virtual InstanceParameter InstanceParameter { get; set; }
 
     }
 

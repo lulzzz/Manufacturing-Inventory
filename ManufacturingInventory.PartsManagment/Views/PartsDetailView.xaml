@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml"/>
+                <ResourceDictionary x:Name="resource" Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -31,13 +31,26 @@
             </dxlc:GroupBox.HeaderTemplate>
             <dxlc:DockLayoutControl>
                 <dx:DXTabControl dxlc:DockLayoutControl.Dock="Client" SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
-                    <dx:DXTabItem Header="Summary" Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}" TabIndex="0">
+                    <dx:DXTabItem Header="Summary" Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}" TabIndex="0" IsSelected="True">
                         <dxlc:LayoutControl>
                             <dxlc:LayoutGroup Orientation="Vertical">
                                 <dxlc:LayoutGroup>
                                     <dxlc:LayoutItem Label="Name" LabelPosition="Top" LabelHorizontalAlignment="Center">
                                         <dxe:TextEdit Text="{Binding SelectedPart.Name}" 
                                                       IsReadOnly="False" HorizontalContentAlignment="Left"/>
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem Label="Usage" LabelPosition="Top" 
+                                                     LabelHorizontalAlignment="Center"
+                                                     BorderBrush="Black">
+                                        <dxe:ComboBoxEdit ItemsSource="{Binding UsageList,Mode=TwoWay,IsAsync=True}" 
+                                                          SelectedItem="{Binding SelectedUsage,Mode=TwoWay,IsAsync=True}"
+                                                          ApplyItemTemplateToSelectedItem="True" IsTextEditable="False">
+                                            <dxe:ComboBoxEdit.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Stretch"/>
+                                                </DataTemplate>
+                                            </dxe:ComboBoxEdit.ItemTemplate>
+                                        </dxe:ComboBoxEdit>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="Organization"
                                                      LabelPosition="Top" 
@@ -58,8 +71,8 @@
                                                      LabelHorizontalAlignment="Center"
                                                      BorderBrush="Black">
                                         <dxe:ComboBoxEdit ItemsSource="{Binding Warehouses,Mode=TwoWay,IsAsync=True}" 
-                                          SelectedItem="{Binding SelectedWareHouse,Mode=TwoWay,IsAsync=True}"
-                                          ApplyItemTemplateToSelectedItem="True" IsTextEditable="False">
+                                                          SelectedItem="{Binding SelectedWareHouse,Mode=TwoWay,IsAsync=True}"
+                                                          ApplyItemTemplateToSelectedItem="True" IsTextEditable="False">
                                             <dxe:ComboBoxEdit.ItemTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Name}" HorizontalAlignment="Stretch"/>
@@ -81,7 +94,7 @@
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutControl>
                     </dx:DXTabItem>
-                    <dx:DXTabItem Header="Part Instances" Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}" TabIndex="1">
+                    <dx:DXTabItem Header="Part Instances" Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}" TabIndex="1" IsSelected="True">
                         <dxlc:LayoutControl>
                             <dxlc:LayoutGroup>
                                 <DockPanel>
@@ -111,13 +124,13 @@
                                                    Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}"/>
                                         </dxb:ToolBarControl>
                                     </dxb:BarContainerControl>
-                                    <dxg:GridControl x:Name="_listOfRanks" Style="{StaticResource GridControlStyle}"
-                                                 ItemsSource="{Binding Instances, IsAsync=True, Mode=TwoWay}"
-                                                 SelectedItem="{Binding SelectedInstance,Mode=TwoWay,IsAsync=True}"
+                                    <dxg:GridControl x:Name="_listOfPartInstances" Style="{StaticResource ResourceKey=GridControlStyle}"
+                                                 ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
+                                                 SelectedItem="{Binding SelectedPartInstance,Mode=TwoWay,IsAsync=True}"
                                                  AllowUpdateTwoWayBoundPropertiesOnSynchronization="True" AutoExpandAllGroups="True">
                                         <dxg:GridControl.View>
                                             <dxg:TableView ShowSearchPanelMode="Always"
-                                                           Style="{StaticResource TableViewStyleNoMaster}"
+                                                           Style="{StaticResource TableViewStyleWithMasterGroup}"
                                                            SearchPanelNullText="Search By Rank" 
                                                            AllowGrouping="True" ShowGroupPanel="True" 
                                                            SearchColumns="Name" BestFitArea="Header" AllowBestFit="True">
@@ -133,7 +146,8 @@
                                                 </dxg:TableView.RowCellMenuCustomizations>
                                             </dxg:TableView>
                                         </dxg:GridControl.View>
-                                        <dxg:GridColumn FieldName="Instance Name" AllowSearchPanel="true"/>
+                                        <dxg:GridColumn FieldName="Id" IsEnabled="False"/>
+                                        <dxg:GridColumn FieldName="Name" AllowSearchPanel="true"/>
                                         <dxg:GridColumn FieldName="PartType.Name" AllowGrouping="True"/>
                                         <dxg:GridColumn FieldName="Condition.Name" AllowGrouping="True"/>
                                         <dxg:GridColumn FieldName="Quantity"/>
@@ -243,16 +257,17 @@
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="Id" Visible="False"/>
                                     <dxg:GridColumn FieldName="TimeStamp"/>
-                                    <dxg:GridColumn FieldName="Session.UserName" Header="Username"/>
-                                    <dxg:GridColumn FieldName="Instance.Name" Header="Instance"/>
                                     <dxg:GridColumn FieldName="InventoryAction" Header="Action" AllowGrouping="True" GroupIndex="0"/>
-                                    <dxg:GridColumn FieldName="Location.Name" Header="Location"/>
-                                    <dxg:GridColumn FieldName="TrackedValue" Header="Quantity"/>
-                                    <!--<dxg:GridColumn FieldName="UnitCost" Header="Unit Cost">
+                                    <dxg:GridColumn FieldName="IsReturning" Header="Returning?"/>
+                                    <dxg:GridColumn FieldName="Session.UserName" Header="Username"/>
+                                    <dxg:GridColumn FieldName="PartInstance.Name" Header="Instance"/>
+                                    <dxg:GridColumn FieldName="Quantity" Header="Quantity"/>
+                                    <dxg:GridColumn FieldName="TrackedValue" Header="Tracked Value"/>
+                                    <dxg:GridColumn FieldName="Price.Amount" Header="Unit Cost">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c" AllowNullInput="True"/>
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>-->
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="TotalCost" Header="Total Cost">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings MaskType="Numeric" MaskUseAsDisplayFormat="True" Mask="c"/>

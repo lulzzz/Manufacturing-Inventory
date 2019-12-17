@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWpf>True</UseWpf>
-    <FileVersion>1.2.37.1216</FileVersion>
+    <FileVersion>1.2.53.1217</FileVersion>
   </PropertyGroup>
 
   <!--<ItemGroup>
@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Folder Include="Data\Interfaces\" />
   </ItemGroup>
 
   <!--<ItemGroup>

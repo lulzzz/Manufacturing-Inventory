@@ -58,6 +58,9 @@ namespace ManufacturingInventory.Common.Model {
             builder.Entity<IncomingTransaction>().HasBaseType<Transaction>();
             builder.Entity<ReturningTransaction>().HasBaseType<Transaction>();
 
+            builder.Entity<Bubbler>().HasBaseType<PartInstance>();
+
+
             #region Concurrency
 
             builder.Entity<Part>()
@@ -309,12 +312,12 @@ namespace ManufacturingInventory.Common.Model {
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<InstanceParameter>()
-                .HasOne(e => e.PartInstance)
-                .WithOne(e => e.InstanceParameter)
-                .HasForeignKey<InstanceParameter>(e => e.PartInstanceId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.Entity<InstanceParameter>()
+            //    .HasOne(e => e.PartInstance)
+            //    .WithOne(e => e.InstanceParameter)
+            //    .HasForeignKey<InstanceParameter>(e => e.PartInstanceId)
+            //    .IsRequired(false)
+            //    .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Parameter>()
                 .HasOne(e => e.Unit)

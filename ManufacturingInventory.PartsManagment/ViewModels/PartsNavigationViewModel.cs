@@ -40,7 +40,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.PopulateAsync);
-            this.RefreshDataCommand = new AsyncCommand(async ()=>await Task.Run(() => this.RefreshDataHandler()));
+            this.RefreshDataCommand = new AsyncCommand(this.RefreshDataHandler);
             this.ViewPartDetailsCommand = new PrismCommands.DelegateCommand(this.ViewPartDetailsHandler);
             this.EditPartCommand = new PrismCommands.DelegateCommand(this.EditPartDetailsHandler);
         }
@@ -67,10 +67,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this._regionManager.Regions[Regions.PartDetailsRegion].RemoveAll();
                 this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
-                parameters.Add("Part", this.SelectedPart);
-                parameters.Add("IsNew", false);
-                parameters.Add("IsEdit", false);
-                this._regionManager.RequestNavigate(Regions.PartDetailsRegion, AppViews.PartsDetailViewModel, parameters);
+                parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
+                parameters.Add(ParameterKeys.IsEdit, false);
+                parameters.Add(ParameterKeys.IsNew, false);
+                this._regionManager.RequestNavigate(Regions.PartDetailsRegion, AppViews.PartsDetailView, parameters);
             }
         }
 
@@ -80,10 +80,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this._regionManager.Regions[Regions.PartDetailsRegion].RemoveAll();
                 this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
-                parameters.Add("Part", this.SelectedPart);
-                parameters.Add("IsNew", false);
-                parameters.Add("IsEdit", true);
-                this._regionManager.RequestNavigate(Regions.PartDetailsRegion, AppViews.PartsDetailViewModel, parameters);
+                parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
+                parameters.Add(ParameterKeys.IsNew, false);
+                parameters.Add(ParameterKeys.IsEdit, true);
+                this._regionManager.RequestNavigate(Regions.PartDetailsRegion, AppViews.PartsDetailView, parameters);
             }
         }
 
@@ -93,30 +93,31 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this._regionManager.Regions[Regions.PartDetailsRegion].RemoveAll();
                 this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
-                parameters.Add("Part", this.SelectedPart);
-                parameters.Add("IsNew", true);
-                parameters.Add("IsEdit", false);
-                this._regionManager.RequestNavigate(Regions.PartDetailsRegion,AppViews.PartsDetailViewModel, parameters);
+                parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
+                parameters.Add(ParameterKeys.IsNew, true);
+                parameters.Add(ParameterKeys.IsEdit, false);
+                this._regionManager.RequestNavigate(Regions.PartDetailsRegion,AppViews.PartsDetailView, parameters);
             }
         }
 
-        private void RefreshDataHandler() {
-            this.DispatcherService.BeginInvoke(() => this.IsLoading = true);
-            var tempParts = this._context.Parts
+        private async Task RefreshDataHandler() {
+            //this.DispatcherService.BeginInvoke(() => this.IsLoading = true);
+            this.IsLoading = true;
+            var tempParts = await this._context.Parts
                 .AsNoTracking()
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage).ToList();
+                .Include(e => e.Usage).ToListAsync();
             var parts = new ObservableCollection<Part>();
             parts.AddRange(tempParts);
             this.Parts = parts;
-            this._isInitialized = true;
-            this.DispatcherService.BeginInvoke(() => this.IsLoading = false);
+            this.IsLoading = false;
+            //this.DispatcherService.BeginInvoke(() => this.IsLoading = false);
         }
 
         private async Task PopulateAsync() {
             if (!this._isInitialized) {
-                this.DispatcherService.BeginInvoke(() => this.IsLoading = true);
+                this.IsLoading = true;
                 var tempParts = await this._context.Parts
                     .AsNoTracking()
                     .Include(e => e.Organization)
@@ -125,8 +126,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 var parts = new ObservableCollection<Part>();
                 parts.AddRange(tempParts);
                 this.Parts = parts;
+                this.IsLoading = false;
                 this._isInitialized = true;
-                this.DispatcherService.BeginInvoke(() => this.IsLoading = false);
             }
         }
     }

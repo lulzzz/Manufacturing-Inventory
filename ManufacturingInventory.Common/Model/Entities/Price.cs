@@ -10,7 +10,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public DateTime? VaildFrom { get; set; }
         public DateTime? ValidUntil { get; set; }
         public bool IsCurrent { get; set; }
-        public double Amount { get; set; }
+        public double UnitCost { get; set; }
         public int MinOrder { get; set; }
         public double LeadTime { get; set; }
         public byte[] RowVersion { get; set; }
@@ -20,6 +20,8 @@ namespace ManufacturingInventory.Common.Model.Entities {
 
         public int PartInstanceId { get; set; }
         public PartInstance PartInstance { get; set; }
+
+
 
         public virtual ICollection<Attachment> Attachments { get; set; }
 
