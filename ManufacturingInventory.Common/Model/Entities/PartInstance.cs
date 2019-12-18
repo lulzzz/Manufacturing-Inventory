@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManufacturingInventory.Common.Model.Entities {
 
-
     public class PartInstance {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -19,6 +18,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public string BatchNumber { get; set; }
         public bool CostReported { get; set; }
         public bool IsResuable { get; set; }
+        public bool IsBubbler { get; set; }
         public byte[] RowVersion { get; set; }
 
         public int PartId { get; set; }
@@ -33,6 +33,9 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int LocationId { get; set; }
         public Location CurrentLocation { get; set; }
 
+        public int? BubblerParameterId { get; set; }
+        public BubblerParameter BubblerParameter { get; set; }
+
         public Price Price { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; }
@@ -43,79 +46,62 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.Attachments = new ObservableHashSet<Attachment>();
         }
 
-        public PartInstance(Part part, string name, string serialNumber, string batchNumber, string skuNumber) : this() {
+        public PartInstance(Part part, string name, string serialNumber, string batchNumber, string skuNumber,bool isBubbler) : this() {
             this.Name = name;
             this.SerialNumber = serialNumber;
             this.BatchNumber = batchNumber;
             this.SkuNumber = skuNumber;
             this.Part = part;
+            this.IsBubbler = isBubbler;
         }
 
-        public PartInstance(string name, string serialNumber, string batchNumber, string skuNumber) : this() {
+        public PartInstance(string name, string serialNumber, string batchNumber, string skuNumber, bool isBubbler) : this() {
             this.Name = name;
             this.SerialNumber = serialNumber;
             this.BatchNumber = batchNumber;
             this.SkuNumber = skuNumber;
+            this.IsBubbler = isBubbler;
         }
 
-        public virtual void UpdatePrice() {
-            this.UnitCost = this.Price.UnitCost;
-            this.TotalCost = this.UnitCost * this.Quantity;
+        public PartInstance(Part part, string name, string serialNumber, string batchNumber, string skuNumber, bool isBubbler, BubblerParameter param) : this(part, name, serialNumber, batchNumber, skuNumber,isBubbler) {
+            this.BubblerParameter = param;
         }
 
-        public virtual void UpdatePrice(Price price) {
-            this.Price = price;
-            this.Price.PartInstanceId = this.Id;
-            this.Price.PartInstance = this;
-            this.UnitCost = this.Price.UnitCost;
-            this.TotalCost = this.UnitCost * this.Quantity;
-        }
-    }
-
-    public class Bubbler : PartInstance {
-        public double NetWeight { get; set; }
-        public double Tare { get; set; }
-        public double GrossWeight { get; set; }
-
-        public double Measured { get; set; }
-        public double Weight { get; set; }
-
-        public DateTime? DateInstalled { get; set; }
-        public DateTime? DateRemoved { get; set; }
-
-        public Bubbler(Part part, string name, string serialNumber, string batchNumber, string skuNumber,double net,double tare,double gross) : base(part, name, serialNumber, batchNumber, skuNumber) {
-            this.NetWeight = net;
-            this.Tare = tare;
-            this.GrossWeight = gross;
-        }
-
-        public Bubbler(string name, string serialNumber, string batchNumber, string skuNumber, double net, double tare,double gross) : base(name,serialNumber,batchNumber,skuNumber) {
-            this.NetWeight = net;
-            this.Tare = tare;
-            this.GrossWeight = gross;
-        }
-
-        public Bubbler() : base() {
-
+        public PartInstance(string name, string serialNumber, string batchNumber, string skuNumber, bool isBubbler, BubblerParameter param) : this(name, serialNumber, batchNumber, skuNumber,isBubbler) {
+            this.BubblerParameter = param;
         }
 
         public void UpdateWeight(double measured) {
-            this.Measured = measured;
-            this.Weight = this.NetWeight-(this.GrossWeight - this.Measured);
+            
+            this.BubblerParameter.Measured = measured;
+            this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
             this.UpdatePrice();
         }
 
-        public override void UpdatePrice(Price price) {
-            this.Price = price;
-            this.Price.PartInstanceId = this.Id;
-            this.Price.PartInstance = this;
-            this.UnitCost= this.Price.UnitCost;
-            this.TotalCost = this.Weight * this.Price.UnitCost;
+        public void UpdatePrice() {
+            if (!this.IsBubbler) {
+                this.UnitCost = this.Price.UnitCost;
+                this.TotalCost = this.UnitCost * this.Quantity;
+            } else {
+                this.UnitCost = this.Price.UnitCost;
+                this.TotalCost = this.UnitCost * this.BubblerParameter.Weight;
+            }
         }
 
-        public override void UpdatePrice() {
-            this.UnitCost = this.Price.UnitCost;
-            this.TotalCost = this.Weight * this.Price.UnitCost;
+        public void UpdatePrice(Price price) {
+            if (!this.IsBubbler) {
+                this.Price = price;
+                this.Price.PartInstanceId = this.Id;
+                this.Price.PartInstance = this;
+                this.UnitCost = this.Price.UnitCost;
+                this.TotalCost = this.UnitCost * this.Quantity;
+            } else {
+                this.Price = price;
+                this.Price.PartInstanceId = this.Id;
+                this.Price.PartInstance = this;
+                this.UnitCost = this.Price.UnitCost;
+                this.TotalCost = this.UnitCost * this.BubblerParameter.Weight;
+            }
         }
     }
 }

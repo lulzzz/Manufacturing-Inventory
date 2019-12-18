@@ -11,10 +11,12 @@
             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" 
+            xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
+            xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment" 
+            xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.Behaviors;assembly=ManufacturingInventory.Common"
             xmlns:prism="http://prismlibrary.com/"
             prism:ViewModelLocator.AutoWireViewModel="True"    
-            xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
-            mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+            mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="1000">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -124,16 +126,20 @@
                                                    Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}"/>
                                         </dxb:ToolBarControl>
                                     </dxb:BarContainerControl>
-                                    <dxg:GridControl x:Name="_listOfPartInstances" Style="{StaticResource ResourceKey=GridControlStyle}"
-                                                 ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
-                                                 SelectedItem="{Binding SelectedPartInstance,Mode=TwoWay,IsAsync=True}"
-                                                 AllowUpdateTwoWayBoundPropertiesOnSynchronization="True" AutoExpandAllGroups="True">
+                                    <dxg:GridControl x:Name="_listOfPartInstances" ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
+                                                     SelectedItem="{Binding SelectedPartInstance,Mode=TwoWay,IsAsync=True}"
+                                                     AllowUpdateTwoWayBoundPropertiesOnSynchronization="True" AutoExpandAllGroups="True">
+                                        <!--<dxmvvm:Interaction.Behaviors>
+                                            <common:DeferredColumnFitBehavior/>
+                                        </dxmvvm:Interaction.Behaviors>-->
                                         <dxg:GridControl.View>
-                                            <dxg:TableView ShowSearchPanelMode="Always"
-                                                           Style="{StaticResource TableViewStyleWithMasterGroup}"
+                                            <dxg:TableView x:Name="tableview1" ShowSearchPanelMode="Always"
                                                            SearchPanelNullText="Search By Rank" 
                                                            AllowGrouping="True" ShowGroupPanel="True" 
-                                                           SearchColumns="Name" BestFitArea="Header" AllowBestFit="True">
+                                                           SearchColumns="Name" FontSize="14" BestFitArea="Header" BestFitMode="Smart" AllowBestFit="True">
+                                                <dxmvvm:Interaction.Behaviors>
+                                                    <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}"/>
+                                                </dxmvvm:Interaction.Behaviors>
                                                 <dxg:TableView.RowCellMenuCustomizations>
                                                     <dxb:BarButtonItem Content="View Details" 
                                                                        Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}"
@@ -146,18 +152,34 @@
                                                 </dxg:TableView.RowCellMenuCustomizations>
                                             </dxg:TableView>
                                         </dxg:GridControl.View>
-                                        <dxg:GridColumn FieldName="Id" IsEnabled="False"/>
-                                        <dxg:GridColumn FieldName="Name" AllowSearchPanel="true"/>
-                                        <dxg:GridColumn FieldName="PartType.Name" AllowGrouping="True"/>
-                                        <dxg:GridColumn FieldName="Condition.Name" AllowGrouping="True"/>
-                                        <dxg:GridColumn FieldName="Quantity"/>
-                                        <dxg:GridColumn FieldName="MinQuantity"/>
-                                        <dxg:GridColumn FieldName="SafeQuantity" />
-                                        <dxg:GridColumn FieldName="CurrentLocation.Name" Header="Current Location" AllowGrouping="True"/>
-                                        <dxg:GridColumn FieldName="SkuNumber"/>
-                                        <dxg:GridColumn FieldName="SerialNumber" AllowGrouping="True"/>
-                                        <dxg:GridColumn FieldName="BatchNumber" AllowGrouping="True"/>
-                                        <dxg:GridColumn FieldName="IsResuable" Header="Reusable?"/>
+                                        <dxg:GridControl.Bands>
+                                            <dxg:GridControlBand Header="None" OverlayHeaderByChildren="True" VisibleIndex="0">
+                                                <dxg:GridColumn FieldName="Id" IsEnabled="False"/>
+                                                <dxg:GridColumn FieldName="Name" AllowSearchPanel="true"/>
+                                                <dxg:GridColumn FieldName="PartType.Name" Header="Type" AllowGrouping="True"/>
+                                                <dxg:GridColumn FieldName="Condition.Name" Header="Condition" AllowGrouping="True"/>
+                                                <dxg:GridColumn FieldName="IsResuable" Header="Reusable?"/>
+                                            </dxg:GridControlBand>
+                                            <dxg:GridControlBand Header="Stock" VisibleIndex="1" Visible="{Binding IsNotBubbler,Mode=TwoWay}">
+                                                <dxg:GridColumn FieldName="Quantity" Header="Quantity"/>
+                                                <dxg:GridColumn FieldName="MinQuantity"/>
+                                                <dxg:GridColumn FieldName="SafeQuantity" />
+                                            </dxg:GridControlBand>
+                                            <dxg:GridControlBand Header="Weight" HorizontalHeaderContentAlignment="Center" VisibleIndex="1" Visible="{Binding IsBubbler,Mode=TwoWay}">
+                                                <dxg:GridColumn FieldName="BubblerParameter.NetWeight" Header="Net"/>
+                                                <dxg:GridColumn FieldName="BubblerParameter.Tare" Header="Tare"/>
+                                                <dxg:GridColumn FieldName="BubblerParameter.GrossWeight" Header="Gross"/>
+                                                <dxg:GridColumn FieldName="BubblerParameter.Measured" Header="Measured"/>
+                                                <dxg:GridColumn FieldName="BubblerParameter.Weight" Header="Weight"/>
+                                            </dxg:GridControlBand>
+                                            <dxg:GridControlBand  OverlayHeaderByChildren="True" VisibleIndex="2">
+                                                <dxg:GridColumn FieldName="CurrentLocation.Name" Header="Current Location"/>
+                                                <dxg:GridColumn FieldName="SkuNumber"/>
+                                                <dxg:GridColumn FieldName="SerialNumber"/>
+                                                <dxg:GridColumn FieldName="BatchNumber"/>
+                                            </dxg:GridControlBand>
+                                        </dxg:GridControl.Bands>
+
                                     </dxg:GridControl>
                                 </DockPanel>
                             </dxlc:LayoutGroup>

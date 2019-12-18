@@ -8,7 +8,7 @@
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-    <FileVersion>1.0.127.1217</FileVersion>
+    <FileVersion>1.0.128.1218</FileVersion>
 
     <StartupObject>ManufacturingInventory.Installer.App</StartupObject>
 

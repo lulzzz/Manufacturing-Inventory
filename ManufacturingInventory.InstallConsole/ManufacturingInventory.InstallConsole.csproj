@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <FileVersion>1.0.18.1217</FileVersion>
+    <FileVersion>1.0.19.1218</FileVersion>
   </PropertyGroup>
 
 </Project>

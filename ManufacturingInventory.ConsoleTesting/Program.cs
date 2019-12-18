@@ -16,8 +16,8 @@ namespace ManufacturingInventory.ConsoleTesting {
             //InitialUser();
             //CreateLocations();
             //CreateDistibutors();
-            //DistributorPriceTesting();
-            //TransactionTesting();
+            DistributorPriceTesting();
+            TransactionTesting();
             //InitialCreate();
             //TransactionTesting();
             ReturnTransactionTest();
@@ -29,9 +29,11 @@ namespace ManufacturingInventory.ConsoleTesting {
         public static void InitialCreate() {
             using var context = new ManufacturingContext();
 
-            var tma = context.PartInstances.OfType<Bubbler>().Include(e=>e.Price).Single(e => e.SerialNumber == "1000006109");
+            var tma = context.PartInstances
+                .Include(e => e.Price).Include(e=>e.BubblerParameter)
+                .Single(e => e.SerialNumber == "1000006109");
             tma.UpdateWeight(2100);
-            context.Entry<Bubbler>(tma).State = EntityState.Modified;
+            context.Entry<PartInstance>(tma).State = EntityState.Modified;
             context.SaveChanges();
             Console.WriteLine("Weight Changed");
             Console.ReadKey();
@@ -132,7 +134,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
                 var dist = context.Distributors.FirstOrDefault(e => e.Name == "Distributor A");
                 var dist2 = context.Distributors.FirstOrDefault(e => e.Name == "Akzo Nobel");
-                if (dist != null && dist2!=null) {
+                if (dist != null && dist2 != null) {
                     var part = CreatePart("Process Chemicals", warehouse);
                     var instance1 = CreatePartInstance("IPA", part, 8, 4, 2);
                     var instance2 = CreatePartInstance("Acetone", part, 16, 2, 1);
@@ -158,7 +160,7 @@ namespace ManufacturingInventory.ConsoleTesting {
                     context.Parts.Add(part);
 
                     var part2 = CreatePart("Bubblers", warehouse);
-                    var tma1 = CreateBubbler("TMA", part2,380,2243,0,"1607AL1203","1000006109");
+                    var tma1 = CreateBubbler("TMA", part2, 380, 2243, 0, "1607AL1203", "1000006109");
                     var tma2 = CreateBubbler("TMA", part2, 380, 2316, 0, "1509AL1152", "1000009476");
                     var tma3 = CreateBubbler("TMA", part2, 380, 2283, 0, "1604AL1190", "1000000192");
                     var tmg1 = CreateBubbler("TMG", part2, 600, 2497, 1, "1211GM2059", "600VW2676");
@@ -215,21 +217,9 @@ namespace ManufacturingInventory.ConsoleTesting {
             return part;
         }
 
-        //public static PartInstance CreatePartInstance(string name, Part part, int quantity, int safe, int min, CostCalcMethod method) {
-        //    Random rand = new Random();
-        //    var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "");
-        //    partInstance.Quantity = quantity;
-        //    partInstance.SafeQuantity = safe;
-        //    partInstance.MinQuantity = min;
-        //    partInstance.CostReported = true;
-        //    partInstance.CurrentLocation = part.Warehouse;
-        //    //partInstance.CostCalcMethod = CostCalcMethod.QUANTITY;
-        //    return partInstance;
-        //}
-
         public static PartInstance CreatePartInstance(string name, Part part, int quantity, int safe, int min) {
             Random rand = new Random();
-            var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "");
+            var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "",false);
             partInstance.Quantity = quantity;
             partInstance.SafeQuantity = safe;
             partInstance.MinQuantity = min;
@@ -239,12 +229,10 @@ namespace ManufacturingInventory.ConsoleTesting {
             return partInstance;
         }
 
-        public static Bubbler CreateBubbler(string name, Part part,double net,double gross,double tare,string lot,string sn) {
-            var bubbler = new Bubbler(part,name,sn,lot,"",net,tare,gross);
+        public static PartInstance CreateBubbler(string name, Part part, double net, double gross, double tare, string lot, string sn) {
+            var param = new BubblerParameter(net,gross,tare);
+            var bubbler = new PartInstance(part, name, sn, lot, "",true,param);
             bubbler.Part = part;
-            bubbler.NetWeight = net;
-            bubbler.GrossWeight = gross;
-            bubbler.Tare = tare;
             bubbler.CurrentLocation = part.Warehouse;
             return bubbler;
         }
@@ -278,7 +266,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
                 context.Parts.Add(part);
 
-                PartInstance partInstance = new PartInstance(part, "TMA", "", "", "");
+                PartInstance partInstance = new PartInstance(part, "TMA", "", "", "",false);
                 partInstance.Quantity = 1;
                 partInstance.CurrentLocation = warehouse;
 
@@ -307,13 +295,14 @@ namespace ManufacturingInventory.ConsoleTesting {
             var outTransaction = context.Transactions.OfType<OutgoingTransaction>()
                 .Include(e => e.Consumer)
                 .Include(e => e.PartInstance)
-                .Include(e => e.PartInstance)
                     .ThenInclude(e => e.CurrentLocation)
                 .Include(e => e.PartInstance)
                     .ThenInclude(e => e.Part)
                     .ThenInclude(e => e.Warehouse)
                  .Include(e => e.PartInstance)
-                    .ThenInclude(e=>e.Price)
+                    .ThenInclude(e => e.Price)
+                 .Include(e=>e.PartInstance)
+                    .ThenInclude(e=>e.BubblerParameter)
                 .FirstOrDefault(e => e.Id == 1);
 
             var user = context.Users
@@ -344,7 +333,7 @@ namespace ManufacturingInventory.ConsoleTesting {
                 Session session = new Session(user);
                 context.Sessions.Add(session);
 
-                var partInstance = context.Entry<Bubbler>((Bubbler)outTransaction.PartInstance).Entity;
+                var partInstance = context.Entry<PartInstance>((PartInstance)outTransaction.PartInstance).Entity;
 
                 ReturningTransaction returnTransaction = new ReturningTransaction();
                 returnTransaction.InstanceParameterValue = 1900;
@@ -383,11 +372,12 @@ namespace ManufacturingInventory.ConsoleTesting {
                 .Include(e => e.OutgoingTransactions)
                 .FirstOrDefault(e => e.Name == "System B03");
 
-            var tma1 = context.PartInstances.OfType<Bubbler>()
+            var tma1 = context.PartInstances.OfType<PartInstance>()
                 .Include(e => e.Part)
                     .ThenInclude(e => e.Warehouse)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Price)
+                .Include(e=>e.BubblerParameter)
                 .FirstOrDefault(e => e.SerialNumber == "1000006109");
 
             var user = context.Users
@@ -402,7 +392,7 @@ namespace ManufacturingInventory.ConsoleTesting {
                 context.Sessions.Add(session);
 
                 tma1.CurrentLocation = consumer;
-                tma1.UpdateWeight(1861);
+                tma1.UpdateWeight(2100);
 
                 OutgoingTransaction outgoing = new OutgoingTransaction();
                 outgoing.Consumer = consumer;
@@ -410,7 +400,7 @@ namespace ManufacturingInventory.ConsoleTesting {
                 outgoing.InventoryAction = InventoryAction.OUTGOING;
                 outgoing.IsReturning = true;
                 outgoing.Quantity = 1;
-                outgoing.InstanceParameterValue = tma1.Weight;
+                outgoing.InstanceParameterValue = tma1.BubblerParameter.Weight;
                 outgoing.Session = session;
                 context.Transactions.Add(outgoing);
                 context.Entry<PartInstance>(tma1).State = EntityState.Modified;

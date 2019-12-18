@@ -4,14 +4,16 @@ using ManufacturingInventory.Common.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ManufacturingInventory.Common.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    partial class ManufacturingContextModelSnapshot : ModelSnapshot
+    [Migration("20191218191635_PartInstance-Rework3")]
+    partial class PartInstanceRework3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,9 +390,6 @@ namespace ManufacturingInventory.Common.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("HoldsBubblers")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

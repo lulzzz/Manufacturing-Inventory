@@ -6,7 +6,7 @@
     <AssemblyName>ManufacturingInventory.ManufacturingApplication</AssemblyName>
     <StartupObject>ManufacturingInventory.ManufacturingApplication.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>1.3.52.1217</FileVersion>
+    <FileVersion>1.3.65.1218</FileVersion>
     <PackageId>ManufacturingInventory.Application</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

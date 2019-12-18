@@ -33,6 +33,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Visibility _visibility;
         private bool _isNewPart = false;
         private bool _isEdit = false;
+        private bool _isNotBubbler;
+        private bool _isBubbler;
 
 
         private ObservableCollection<PartInstance> _partInstances = new ObservableCollection<PartInstance>();
@@ -140,6 +142,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedUsage;
             set => SetProperty(ref this._selectedUsage, value);
         }
+        public bool IsNotBubbler { 
+            get => this._isNotBubbler;
+            set => SetProperty(ref this._isNotBubbler, value);
+        }
+
+        public bool IsBubbler { 
+            get => this._isBubbler;
+            set => SetProperty(ref this._isBubbler, value);
+        }
 
         private async Task LoadAsync() {
             var instances = await this._context.PartInstances.AsNoTracking()
@@ -148,8 +159,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 .Include(e => e.Condition)
                 .Include(e => e.Price)
                 .Include(e => e.PartType)
+                .Include(e=>e.BubblerParameter)
                 .Where(e=>e.PartId==this._selectedPart.Id)
                 .ToListAsync();
+
+            this.IsBubbler = this.SelectedPart.HoldsBubblers;
+            this.IsNotBubbler = !this.IsBubbler;
 
             this.PartInstances =new ObservableCollection<PartInstance>(instances);
 

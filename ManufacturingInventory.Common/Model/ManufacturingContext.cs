@@ -27,6 +27,7 @@ namespace ManufacturingInventory.Common.Model {
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<UserAlert> UserAlerts { get; set; }
         public DbSet<PartManufacturer> PartManufacturers { get; set; }
+        public DbSet<BubblerParameter> BubblerParameters { get; set; }
 
         public ManufacturingContext(DbContextOptions<ManufacturingContext> options) : base(options) {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -57,9 +58,6 @@ namespace ManufacturingInventory.Common.Model {
             builder.Entity<OutgoingTransaction>().HasBaseType<Transaction>();
             builder.Entity<IncomingTransaction>().HasBaseType<Transaction>();
             builder.Entity<ReturningTransaction>().HasBaseType<Transaction>();
-
-            builder.Entity<Bubbler>().HasBaseType<PartInstance>();
-
 
             #region Concurrency
 
@@ -254,6 +252,8 @@ namespace ManufacturingInventory.Common.Model {
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 
+
+
             #endregion
 
             #region Price_Distributer_Instance
@@ -325,6 +325,12 @@ namespace ManufacturingInventory.Common.Model {
                 .HasForeignKey(e => e.UnitId)
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<BubblerParameter>()
+                .HasOne(e => e.PartInstance)
+                .WithOne(e => e.BubblerParameter)
+                .HasForeignKey<PartInstance>(e => e.BubblerParameterId)
+                .IsRequired(false);
 
             #endregion
 

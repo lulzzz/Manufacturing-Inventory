@@ -8,6 +8,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool HoldsBubblers { get; set; }
         public byte[] RowVersion { get; set; }
 
         public int? OgranizationId { get; set; }
