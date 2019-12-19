@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWpf>True</UseWpf>
-    <FileVersion>1.2.62.1218</FileVersion>
+    <FileVersion>1.2.81.1219</FileVersion>
   </PropertyGroup>
 
   <!--<ItemGroup>
@@ -16,17 +16,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.0.1" />
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="4.6.0" />
     <PackageReference Include="Effortless.Net.Encryption" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\Interfaces\" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -56,5 +50,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Interfaces\" />
   </ItemGroup>
 </Project>

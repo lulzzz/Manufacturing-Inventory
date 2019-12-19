@@ -657,23 +657,25 @@ namespace ManufacturingInventory.Common.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("InstanceParameterValue")
-                        .HasColumnType("float");
-
                     b.Property<int>("InventoryAction")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsReturning")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ParameterValue")
+                        .HasColumnType("float");
+
                     b.Property<int>("PartInstanceId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReferenceTransactionId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
@@ -689,13 +691,17 @@ namespace ManufacturingInventory.Common.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LocationId");
+
                     b.HasIndex("PartInstanceId");
+
+                    b.HasIndex("ReferenceTransactionId")
+                        .IsUnique()
+                        .HasFilter("[ReferenceTransactionId] IS NOT NULL");
 
                     b.HasIndex("SessionId");
 
                     b.ToTable("Transactions");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Transaction");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.Unit", b =>
@@ -850,47 +856,6 @@ namespace ManufacturingInventory.Common.Migrations
                     b.HasBaseType("ManufacturingInventory.Common.Model.Entities.Location");
 
                     b.HasDiscriminator().HasValue("Warehouse");
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.IncomingTransaction", b =>
-                {
-                    b.HasBaseType("ManufacturingInventory.Common.Model.Entities.Transaction");
-
-                    b.Property<int>("WarehouseId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("WarehouseId");
-
-                    b.HasDiscriminator().HasValue("IncomingTransaction");
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.OutgoingTransaction", b =>
-                {
-                    b.HasBaseType("ManufacturingInventory.Common.Model.Entities.Transaction");
-
-                    b.Property<int?>("ConsumerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReturningTransactionId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("ConsumerId");
-
-                    b.HasDiscriminator().HasValue("OutgoingTransaction");
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.ReturningTransaction", b =>
-                {
-                    b.HasBaseType("ManufacturingInventory.Common.Model.Entities.Transaction");
-
-                    b.Property<int?>("OutgoingTransactionId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("OutgoingTransactionId")
-                        .IsUnique()
-                        .HasFilter("[OutgoingTransactionId] IS NOT NULL");
-
-                    b.HasDiscriminator().HasValue("ReturningTransaction");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.Alert", b =>
@@ -1054,11 +1019,21 @@ namespace ManufacturingInventory.Common.Migrations
 
             modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.Transaction", b =>
                 {
+                    b.HasOne("ManufacturingInventory.Common.Model.Entities.Location", "Location")
+                        .WithMany("Transactions")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("ManufacturingInventory.Common.Model.Entities.PartInstance", "PartInstance")
                         .WithMany("Transactions")
                         .HasForeignKey("PartInstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ManufacturingInventory.Common.Model.Entities.Transaction", "ReferenceTransaction")
+                        .WithOne()
+                        .HasForeignKey("ManufacturingInventory.Common.Model.Entities.Transaction", "ReferenceTransactionId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ManufacturingInventory.Common.Model.Entities.Session", "Session")
                         .WithMany("Transactions")
@@ -1088,31 +1063,6 @@ namespace ManufacturingInventory.Common.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.IncomingTransaction", b =>
-                {
-                    b.HasOne("ManufacturingInventory.Common.Model.Entities.Warehouse", "Warehouse")
-                        .WithMany("IncomingTransactions")
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.OutgoingTransaction", b =>
-                {
-                    b.HasOne("ManufacturingInventory.Common.Model.Entities.Consumer", "Consumer")
-                        .WithMany("OutgoingTransactions")
-                        .HasForeignKey("ConsumerId")
-                        .OnDelete(DeleteBehavior.NoAction);
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Common.Model.Entities.ReturningTransaction", b =>
-                {
-                    b.HasOne("ManufacturingInventory.Common.Model.Entities.OutgoingTransaction", "OutgoingTransaction")
-                        .WithOne("ReturningTransaction")
-                        .HasForeignKey("ManufacturingInventory.Common.Model.Entities.ReturningTransaction", "OutgoingTransactionId")
-                        .OnDelete(DeleteBehavior.NoAction);
                 });
 #pragma warning restore 612, 618
         }

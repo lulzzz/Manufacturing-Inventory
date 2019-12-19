@@ -189,7 +189,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
 
             ObservableCollection<Transaction> transactions = new ObservableCollection<Transaction>();
-            //var outgoing=this._context.Transactions.OfType<OutgoingTransaction>().Include(e=>e.)
+            //var transactions=this._context.Transactions.Include(e=>e.)
             
         }
 

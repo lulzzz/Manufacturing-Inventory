@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using ManufacturingInventory.Common.Model.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 
 namespace ManufacturingInventory.Common.Model {
     public class ManufacturingContext:DbContext {
@@ -40,6 +43,7 @@ namespace ManufacturingInventory.Common.Model {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseLazyLoadingProxies(false);
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.EnableSensitiveDataLogging();
             //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.
             //optionsBuilder.UseSqlServer("server=172.20.4.20;database=monitoring_dev;Trusted_Connection=True;MultipleActiveResultSets=true");
@@ -55,9 +59,9 @@ namespace ManufacturingInventory.Common.Model {
             builder.Entity<Warehouse>().HasBaseType<Location>();
             builder.Entity<Consumer>().HasBaseType<Location>();
 
-            builder.Entity<OutgoingTransaction>().HasBaseType<Transaction>();
-            builder.Entity<IncomingTransaction>().HasBaseType<Transaction>();
-            builder.Entity<ReturningTransaction>().HasBaseType<Transaction>();
+            //builder.Entity<OutgoingTransaction>().HasBaseType<Transaction>();
+            //builder.Entity<IncomingTransaction>().HasBaseType<Transaction>();
+            //builder.Entity<ReturningTransaction>().HasBaseType<Transaction>();
 
             #region Concurrency
 
@@ -369,23 +373,30 @@ namespace ManufacturingInventory.Common.Model {
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<OutgoingTransaction>()
-                .HasOne(e => e.Consumer)
-                .WithMany(e => e.OutgoingTransactions)
-                .HasForeignKey(e => e.ConsumerId)
+            builder.Entity<Transaction>()
+                .HasOne(e => e.Location)
+                .WithMany(e => e.Transactions)
+                .HasForeignKey(e => e.LocationId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<IncomingTransaction>()
-                .HasOne(e => e.Warehouse)
-                .WithMany(e => e.IncomingTransactions)
-                .HasForeignKey(e => e.WarehouseId)
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.Entity<OutgoingTransaction>()
+            //    .HasOne(e => e.Consumer)
+            //    .WithMany(e => e.OutgoingTransactions)
+            //    .HasForeignKey(e => e.ConsumerId)
+            //    .IsRequired(false)
+            //    .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<ReturningTransaction>()
-                .HasOne(e => e.OutgoingTransaction)
-                .WithOne(e => e.ReturningTransaction)
-                .HasForeignKey<ReturningTransaction>(e => e.OutgoingTransactionId)
+            //builder.Entity<IncomingTransaction>()
+            //    .HasOne(e => e.Warehouse)
+            //    .WithMany(e => e.IncomingTransactions)
+            //    .HasForeignKey(e => e.WarehouseId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Transaction>()
+                .HasOne(e => e.ReferenceTransaction)
+                .WithOne()
+                .HasForeignKey<Transaction>(e => e.ReferenceTransactionId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
