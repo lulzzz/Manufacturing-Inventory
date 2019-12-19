@@ -22,7 +22,7 @@ namespace ManufacturingInventory.ConsoleTesting {
                 Console.WriteLine("Starting Application");
 
                 var context = serviceProvider.GetService<ManufacturingContext>();
-                var parts = context.Parts.Include(e=>e.PartInstances);
+            var parts = context.Parts;
                 foreach (var part in parts) {
                     foreach (var instance in part.PartInstances) {
                         Console.WriteLine("Instance: {0}", instance.Name);

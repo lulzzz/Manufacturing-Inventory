@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManufacturingInventory.Common.Model.Entities {
     public class Part {
-        private readonly ILazyLoader _lazyLoader;
+        private ILazyLoader _lazyLoader;
         private ObservableHashSet<PartInstance> _partInstances;
 
         public int Id { get; set; }
