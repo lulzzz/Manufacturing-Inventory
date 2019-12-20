@@ -11,7 +11,8 @@
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"         
         xmlns:common="clr-namespace:ManufacturingInventory.Common.Application;assembly=ManufacturingInventory.Common"
-        Title="{Binding Title}" Height="600" Width="1100"  >
+        Title="{Binding Title}" Height="600" Width="1100"  
+        WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:EventToCommand Command="{Binding LoadedCommand}" Event="Loaded"/>
         <dx:DXMessageBoxService x:Name="Notice"/>

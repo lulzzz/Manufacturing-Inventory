@@ -84,7 +84,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
                 this.TotalCost = this.UnitCost * this.Quantity;
             } else {
                 this.UnitCost = this.Price.UnitCost;
-                this.TotalCost = this.UnitCost * this.BubblerParameter.Weight;
+                this.TotalCost = this.UnitCost * this.BubblerParameter.NetWeight;
             }
         }
 
@@ -100,7 +100,7 @@ namespace ManufacturingInventory.Common.Model.Entities {
                 this.Price.PartInstanceId = this.Id;
                 this.Price.PartInstance = this;
                 this.UnitCost = this.Price.UnitCost;
-                this.TotalCost = this.UnitCost * this.BubblerParameter.Weight;
+                this.TotalCost = this.UnitCost * this.BubblerParameter.NetWeight;
             }
         }
     }

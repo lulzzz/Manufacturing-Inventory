@@ -48,6 +48,9 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public bool IsReturning { get; set; }
         public byte[] RowVersion { get; set; }
 
+        public double UnitCost { get; set; }
+        public double TotalCost { get; set; }
+
         public int SessionId { get; set; }
         public Session Session { get; set; }
 
@@ -60,6 +63,17 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public int? ReferenceTransactionId { get; set; }
         public Transaction ReferenceTransaction { get; set; }
 
+        [NotMapped]
+        public double Consumed {
+            get {
+                if (this.ReferenceTransaction != null) {
+                    return this.ReferenceTransaction.ParameterValue - this.ParameterValue;
+                } else {
+                    return 0;
+                }
+            }
+        }
+
 
         public Transaction() {
             this.TimeStamp = DateTime.Now;
@@ -68,14 +82,18 @@ namespace ManufacturingInventory.Common.Model.Entities {
         /// <summary>
         /// Inventory Transaction with Tracked Value
         /// </summary>
+        /// <param name="instance">Part Instance</param>
         /// <param name="inventoryAction">Outgoing,Incoming,Returning</param>
         /// <param name="parameterValue">Tracked Value</param>
         /// <param name="isReturning">Is Item Returning</param>
         /// <param name="location">Where Item is Going</param>
-        public Transaction(InventoryAction inventoryAction, double parameterValue, bool isReturning, Location location) {
+        public Transaction(PartInstance instance, InventoryAction inventoryAction, double parameterValue, bool isReturning, Location location) {
+            this.PartInstance = instance;
+            this.ParameterValue = parameterValue;
+            this.UnitCost = this.PartInstance.UnitCost;
+            this.TotalCost = (this.PartInstance.IsBubbler) ? (this.ParameterValue * this.UnitCost) : (this.Quantity * this.UnitCost);
             this.TimeStamp = DateTime.Now;
             this.InventoryAction = inventoryAction;
-            this.ParameterValue = parameterValue;
             this.IsReturning = isReturning;
             this.Location = location;
             this.Quantity = 1;
@@ -84,11 +102,16 @@ namespace ManufacturingInventory.Common.Model.Entities {
         /// <summary>
         /// Returning Inventory Transaction
         /// </summary>
+        /// <param name="instance">Part Instance</param>
         /// <param name="inventoryAction"></param>
         /// <param name="parameterValue"></param>
         /// <param name="location"></param>
         /// <param name="referenceTransaction"></param>
-        public Transaction(InventoryAction inventoryAction, double parameterValue, Location location, Transaction referenceTransaction) {
+        public Transaction(PartInstance instance,InventoryAction inventoryAction, double parameterValue, Location location, Transaction referenceTransaction) {
+            this.PartInstance = instance;
+            this.ParameterValue = parameterValue;
+            this.UnitCost = this.PartInstance.UnitCost;
+            this.TotalCost = (this.PartInstance.IsBubbler) ? (this.ParameterValue * this.UnitCost) : (this.Quantity*this.UnitCost);
             this.TimeStamp = DateTime.Now;
             this.InventoryAction = inventoryAction;
             this.ParameterValue = parameterValue;
@@ -99,15 +122,19 @@ namespace ManufacturingInventory.Common.Model.Entities {
         /// <summary>
         /// Standard Inventory Transaction, Quantity
         /// </summary>
+        /// <param name="instance">Part Instance</param>
         /// <param name="inventoryAction">Outgoing,Incoming,Returning</param>
         /// <param name="quantity">Quantity of Item</param>
         /// <param name="location">Where Item is Going</param>
-        public Transaction(InventoryAction inventoryAction, int quantity, Location location) {
+        public Transaction(PartInstance instance,InventoryAction inventoryAction, int quantity, Location location) {
             this.TimeStamp = DateTime.Now;
             this.InventoryAction = inventoryAction;
             this.Quantity = quantity;
+            this.UnitCost = this.PartInstance.UnitCost;
+            this.TotalCost = this.Quantity * this.UnitCost;
             this.Location = location;
             this.Quantity = 1;
+            this.IsReturning = false;
         }
     }
 }

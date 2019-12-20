@@ -4,14 +4,16 @@ using ManufacturingInventory.Common.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ManufacturingInventory.Common.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    partial class ManufacturingContextModelSnapshot : ModelSnapshot
+    [Migration("20191220161135_TransactionAddFields")]
+    partial class TransactionAddFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

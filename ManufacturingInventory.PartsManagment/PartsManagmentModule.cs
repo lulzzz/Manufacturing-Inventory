@@ -12,7 +12,7 @@ namespace ManufacturingInventory.PartsManagment
         public void OnInitialized(IContainerProvider containerProvider){
             var regionManager = containerProvider.Resolve<IRegionManager>();
             regionManager.RegisterViewWithRegion(Regions.PartsNavigationRegion, typeof(PartsNavigationView));
-            //regionManager.RegisterViewWithRegion(Regions.PartDetailsRegion, typeof(PartsDetailView));
+            regionManager.RegisterViewWithRegion("PartTransactionTableRegion", typeof(PartInstanceTransactionTableView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry){

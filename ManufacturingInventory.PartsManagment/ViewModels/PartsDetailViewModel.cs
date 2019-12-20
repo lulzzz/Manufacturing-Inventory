@@ -98,7 +98,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._attachments, value);
         }
 
-        public ObservableCollection<Transaction> Transaction { 
+        public ObservableCollection<Transaction> Transactions { 
             get => this._transaction;
             set => SetProperty(ref this._transaction, value);
         }
@@ -142,6 +142,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedUsage;
             set => SetProperty(ref this._selectedUsage, value);
         }
+
         public bool IsNotBubbler { 
             get => this._isNotBubbler;
             set => SetProperty(ref this._isNotBubbler, value);
@@ -160,6 +161,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e=>e.BubblerParameter)
+                .Include(e=>e.Transactions)
+                    .ThenInclude(e=>e.Location)
+                .Include(e=>e.Transactions)
+                    .ThenInclude(e=>e.Session)
+                .Include(e=>e.Transactions)
+                    .ThenInclude(e=>e.ReferenceTransaction)
+                    .ThenInclude(e=>e.Location)
                 .Where(e=>e.PartId==this._selectedPart.Id)
                 .ToListAsync();
 
@@ -173,22 +181,35 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             var warehouses =await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
             this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-            if (this._selectedPart.Warehouse != null) {
-                this.SelectedWarehouse = warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
-            }
+            this.DispatcherService.BeginInvoke(() => {
+                if (this._selectedPart.Warehouse != null) {
+                    this.SelectedWarehouse = warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
+                }
+            });
 
+            var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
+            this.DispatcherService.BeginInvoke(() => {
+
+                if (this._selectedPart.Usage != null) {
+                    this.SelectedUsage = usageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
+                }
+
+            });
             var orgs =await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
             this.Organizations = new ObservableCollection<Organization>(orgs);
             if (this._selectedPart.Organization != null) {
                 this.SelectedOrganization = orgs.FirstOrDefault(e => e.Id==this._selectedPart.Id);
             }
 
-            var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
-            if (this._selectedPart.Usage != null) {
-                this.SelectedUsage = usageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-            }
 
-            ObservableCollection<Transaction> transactions = new ObservableCollection<Transaction>();
+
+            var transactions = (from instance in this.PartInstances
+                                from transaction in instance.Transactions
+                                select transaction).ToList();
+
+            this.Transactions = new ObservableCollection<Transaction>(transactions);
+
+
             //var transactions=this._context.Transactions.Include(e=>e.)
             
         }
