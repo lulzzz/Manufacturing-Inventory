@@ -17,6 +17,7 @@ using System.Linq;
 using ManufacturingInventory.Common.Model.Entities;
 using Prism.Modularity;
 using ManufacturingInventory.PartsManagment;
+using ManufacturingInventory.PartsManagment.Internal;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -34,6 +35,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             if (this.userService.IsValid()) {
                 var container = containerRegistry.GetContainer();
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
+                container.Register<IModuleCommands, TransactionCommands>();
 
                 containerRegistry.Register<ILogInService, LogInService>();
                 containerRegistry.Register<IDomainManager, DomainManager>();
