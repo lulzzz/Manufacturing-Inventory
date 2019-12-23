@@ -70,10 +70,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public override bool KeepAlive => false;
 
-        public Part SelectedPart { 
+        public Part SelectedPart {
             get => this._selectedPart;
-            set => SetProperty(ref this._selectedPart,value); 
+            set => SetProperty(ref this._selectedPart, value);
         }
+
         public ObservableCollection<PartInstance> PartInstances { 
             get => this._partInstances; 
             set => this._partInstances = value; 
@@ -218,7 +219,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             var part = navigationContext.Parameters[ParameterKeys.SelectedPart] as Part;
             var isNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
             var isEdit =Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
-            if (part!=null){
+            if (part is Part) {
                 this.SelectedPart = part;
                 this._isEdit = isEdit;
                 this._isNewPart = isNew;
@@ -229,7 +230,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
             var part = navigationContext.Parameters[ParameterKeys.SelectedPart] as Part;
-            if (part != null) {
+            if (part is Part) {
                 return this.SelectedPart != null && this.SelectedPart.Id != part.Id;
             } else {
                 return true;

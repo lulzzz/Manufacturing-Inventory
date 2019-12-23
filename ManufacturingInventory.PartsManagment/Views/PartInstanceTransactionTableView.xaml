@@ -72,7 +72,11 @@
                                                Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:TableView.RowCellMenuCustomizations>
-                        <dxb:BarButtonItem Content="Undo Transaction"
+                        <dxb:BarButtonItem Content="View Instance In Table"
+                                           Glyph="{dx:DXImage Image=Right_16x16.png}"
+                                           Command="{Binding Path=View.DataContext.ViewDetailsCommand}"
+                                           IsEnabled="True" />
+                        <!--<dxb:BarButtonItem Content="Undo Transaction"
                                            Glyph="{dx:DXImage Image=Undo_16x16.png}"
                                            Command="{Binding Path=View.DataContext.UndoTransactionCommand}"
                                            IsEnabled="True" />
@@ -80,7 +84,7 @@
                         <dxb:BarButtonItem Content="View Instance In Table"
                                            Glyph="{dx:DXImage Image=Undo_16x16.png}"
                                            Command="{Binding Path=View.DataContext.ViewInstanceCommand}"
-                                           IsEnabled="True" />
+                                           IsEnabled="True" />-->
                     </dxg:TableView.RowCellMenuCustomizations>
                 </dxg:TableView>
             </dxg:GridControl.View>

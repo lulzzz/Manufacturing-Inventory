@@ -17,22 +17,41 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Prism;
 
+
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTransactionTableViewModel : InventoryViewModelBase{
+        private IRegionManager _regionManager;
+
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
-        private IModuleCommands _moduleCommands;
+        private Transaction _selectedTransaction;
 
+        public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
 
-
-        public PartInstanceTransactionTableViewModel(IModuleCommands moduleCommands) {
-            this._moduleCommands = moduleCommands;
+        public PartInstanceTransactionTableViewModel(IRegionManager regionManager) {
+            this._regionManager = regionManager;
+            this.ViewDetailsCommand = new PrismCommands.DelegateCommand(this.ViewTransactionDetailsHandler);
         }
 
-        public override bool KeepAlive => throw new NotImplementedException();
+        public override bool KeepAlive => false;
 
         public ObservableCollection<Transaction> Transactions {
             get => this._transaction;
             set => SetProperty(ref this._transaction, value);
+        }
+        
+        public Transaction SelectedTransaction { 
+            get => this._selectedTransaction;
+            set => SetProperty(ref this._selectedTransaction, value);
+        }
+
+        private void ViewTransactionDetailsHandler() {
+            if (this.SelectedTransaction!=null){
+                this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
+                parameters.Add(ParameterKeys.IsEdit, false);
+                this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, AppViews.TransactionDetailsView, parameters);
+            }
         }
     }
 }

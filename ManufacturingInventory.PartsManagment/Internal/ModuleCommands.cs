@@ -15,5 +15,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
             get => this._viewDetailsCommand;
         }
 
+
+
     }
 }

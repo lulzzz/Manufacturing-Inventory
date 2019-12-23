@@ -8,6 +8,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public static string PartsDetailView { get => "PartsDetailView"; }
         public static string PartsManagmentMainView { get => "PartsManagmentMainView"; }
         public static string PartsNavigationView { get => "PartsNavigationView"; }
+        public static string TransactionDetailsView { get => "TransactionDetailsView"; }
 
     }
 }

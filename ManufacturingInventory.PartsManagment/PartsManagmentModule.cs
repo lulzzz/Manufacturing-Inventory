@@ -19,6 +19,7 @@ namespace ManufacturingInventory.PartsManagment
             containerRegistry.RegisterForNavigation<PartsManagmentMainView>(AppViews.PartsManagmentMainView);
             containerRegistry.RegisterForNavigation<PartsDetailView>(AppViews.PartsDetailView);
             containerRegistry.RegisterForNavigation<PartInstanceDetailsView>(AppViews.PartInstanceDetailsView);
+            containerRegistry.RegisterForNavigation<TransactionDetailsView>(AppViews.TransactionDetailsView);
         }
     }
 }

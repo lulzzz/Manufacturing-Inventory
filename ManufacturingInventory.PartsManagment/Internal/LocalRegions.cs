@@ -5,5 +5,6 @@ using System.Text;
 namespace ManufacturingInventory.PartsManagment.Internal {
     public static class LocalRegions {
         public static string InstanceTableRegion { get => "InstanceTableRegion"; }
+        public static string DetailsRegion { get => "DetailsRegion"; }
     }
 }
