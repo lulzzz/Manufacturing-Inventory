@@ -19,7 +19,7 @@ using Prism;
 
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
-    public class PartInstanceTransactionTableViewModel : InventoryViewModelBase{
+    public class TransactionTableViewModel : InventoryViewModelBase {
         private IRegionManager _regionManager;
 
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
@@ -27,7 +27,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
 
-        public PartInstanceTransactionTableViewModel(IRegionManager regionManager) {
+        public TransactionTableViewModel(IRegionManager regionManager) {
             this._regionManager = regionManager;
             this.ViewDetailsCommand = new PrismCommands.DelegateCommand(this.ViewTransactionDetailsHandler);
         }

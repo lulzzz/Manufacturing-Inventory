@@ -20,8 +20,8 @@ namespace ManufacturingInventory.PartsManagment.Views {
     /// <summary>
     /// Interaction logic for PartInstanceTransactionTableView.xaml
     /// </summary>
-    public partial class PartInstanceTransactionTableView : UserControl {
-        public PartInstanceTransactionTableView() {
+    public partial class TransactionTableView : UserControl {
+        public TransactionTableView() {
             InitializeComponent();
             RegionContext.GetObservableContext(this).PropertyChanged += this.PartTransactionsChanged;
         }
@@ -29,7 +29,7 @@ namespace ManufacturingInventory.PartsManagment.Views {
         private void PartTransactionsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
             var transactions = (ObservableCollection<Transaction>)context.Value;
-            (DataContext as PartInstanceTransactionTableViewModel).Transactions = transactions;
+            (DataContext as TransactionTableViewModel).Transactions = transactions;
         }
     }
 }

@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="ManufacturingInventory.PartsManagment.Views.AttachmentsTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+    <dxb:BarManager >
+        <dxb:BarManager.Bars>
+            <dxb:Bar ShowDragWidget="False"
+                     ShowSizeGrip="False"
+                     AllowCollapse="False"
+                     AllowCustomizationMenu="False"
+                     AllowDrop="False"
+                     AllowHide="False"
+                     AllowQuickCustomization="False">
+                <dxb:BarButtonItem Content="Upload File"
+                                   Command="{Binding NewAttachmentCommand}"
+                                   Glyph="{dx:DXImage Image=Add_16x16.png}"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   ShowScreenTip="True"
+                                   ToolTipService.ToolTip="Upload New Attachment" />
+                <dxb:BarButtonItem Content="Open File"
+                                   Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                   Command="{Binding Path=View.DataContext.OpenFileCommand}"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   ShowScreenTip="True"
+                                   ToolTipService.ToolTip="Open Attachment" />
+                <dxb:BarButtonItem Content="Download File"
+                                   Glyph="{dx:DXImage Image=Down_16x16.png}"
+                                   Command="{Binding Path=View.DataContext.DownloadFileCommand}"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   ShowScreenTip="True"
+                                   ToolTipService.ToolTip="Download Attachment" />
+                <dxb:BarButtonItem Content="Delete File"
+                                   Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                   Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   ShowScreenTip="True"
+                                   ToolTipService.ToolTip="Delete Attachment" />
+            </dxb:Bar>
+        </dxb:BarManager.Bars>
+        <dxg:GridControl x:Name="_productAttachments"
+                         ItemsSource="{Binding Attachments}"
+                         SelectedItem="{Binding SelectedAttachment, Mode=TwoWay}">
+            <dxg:GridControl.View>
+                <dxg:TableView>
+                    <dxg:TableView.RowCellMenuCustomizations>
+                        <dxb:BarButtonItem Content="Open File"
+                                           Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                           Command="{Binding Path=View.DataContext.OpenFileCommand}" />
+                        <dxb:BarButtonItem Content="Download File"
+                                           Glyph="{dx:DXImage Image=Down_16x16.png}"
+                                           Command="{Binding Path=View.DataContext.DownloadFileCommand}" />
+                        <dxb:BarButtonItem Content="Delete File"
+                                           Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                           Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}" />
+                    </dxg:TableView.RowCellMenuCustomizations>
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridColumn FieldName="Id"
+                            Visible="False" />
+            <dxg:GridColumn FieldName="Created"
+                            Visible="False" />
+            <dxg:GridColumn FieldName="Name" />
+            <dxg:GridColumn FieldName="Description" />
+            <dxg:GridColumn FieldName="Extension" />
+        </dxg:GridControl>
+        </dxb:BarManager>
+</UserControl>
