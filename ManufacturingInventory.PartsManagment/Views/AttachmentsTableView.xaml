@@ -11,9 +11,31 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
-    <dxb:BarManager >
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}"/>
+        <dx:DialogService x:Name="FileNameDialog"
+                          DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:FileNameView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="300" />
+                    <Setter Property="Height"
+                            Value="350" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog" Title="{Binding Title}" />
+        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog" Title="{Binding Title}" />
+    </dxmvvm:Interaction.Behaviors>
+    <dxb:BarManager>
         <dxb:BarManager.Bars>
             <dxb:Bar ShowDragWidget="False"
                      ShowSizeGrip="False"

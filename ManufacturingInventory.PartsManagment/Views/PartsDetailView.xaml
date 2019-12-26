@@ -25,7 +25,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:DispatcherService x:Name="PartDetailsDispatcher"/>
+        <dxmvvm:DispatcherService x:Name="PartDetailsDispatcher" />
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
         <dxlc:GroupBox>
@@ -123,11 +123,11 @@
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Attachments" Glyph="{dx:DXImage Image=LoadFrom_16x16.png}" TabIndex="3">
                         <ContentControl prism:RegionManager.RegionName="AttachmentTableRegion"
-                                        prism:RegionManager.RegionContext="{Binding Attachments}" />
+                                        prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}"/>
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Transactions" Glyph="{dx:DXImage Image=AgendaView_16x16.png}" TabIndex="4">
                         <ContentControl prism:RegionManager.RegionName="PartTransactionTableRegion" 
-                                        prism:RegionManager.RegionContext="{Binding Transactions}" />
+                                        prism:RegionManager.RegionContext="{Binding Transactions}"/>
                     </dx:DXTabItem>
                                        
                 </dx:DXTabControl>

@@ -17,9 +17,6 @@ using System.Collections.ObjectModel;
 using ManufacturingInventory.Common.Model.Entities;
 
 namespace ManufacturingInventory.PartsManagment.Views {
-    /// <summary>
-    /// Interaction logic for PartInstanceTransactionTableView.xaml
-    /// </summary>
     public partial class TransactionTableView : UserControl {
         public TransactionTableView() {
             InitializeComponent();

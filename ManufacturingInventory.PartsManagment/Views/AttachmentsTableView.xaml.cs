@@ -1,5 +1,11 @@
-﻿using System;
+﻿using ManufacturingInventory.Common.Model.Entities;
+using ManufacturingInventory.PartsManagment.Internal;
+using ManufacturingInventory.PartsManagment.ViewModels;
+using Prism.Common;
+using Prism.Regions;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +24,17 @@ namespace ManufacturingInventory.PartsManagment.Views {
     public partial class AttachmentsTableView : UserControl {
         public AttachmentsTableView() {
             InitializeComponent();
+            RegionContext.GetObservableContext(this).PropertyChanged += this.AttachmentsTableView_PropertyChanged;
+        }
+
+        private void AttachmentsTableView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            var context = (ObservableObject<object>)sender;
+            var attachmentContext = (AttachmentContext)context.Value;
+
+            var attachments = attachmentContext.Attachments;
+            var partId = attachmentContext.PartId;
+            (DataContext as AttachmentsTableViewModel).PartId = partId;
+            (DataContext as AttachmentsTableViewModel).Attachments = attachments;
         }
     }
 }

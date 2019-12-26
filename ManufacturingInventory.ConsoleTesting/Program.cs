@@ -11,12 +11,12 @@ namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
 
-            //CreateLocations();
-            //CreateDistibutors();
-            //CreateCategories();
-            //DistributorPriceTesting();
-            //TransactionTesting();
-            //ReturnTransactionTest();
+            CreateLocations();
+            CreateDistibutors();
+            CreateCategories();
+            DistributorPriceTesting();
+            TransactionTesting();
+            ReturnTransactionTest();
             //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
         }
 

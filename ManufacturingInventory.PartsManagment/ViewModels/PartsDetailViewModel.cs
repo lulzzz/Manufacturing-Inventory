@@ -40,17 +40,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ObservableCollection<PartInstance> _partInstances = new ObservableCollection<PartInstance>();
         private ObservableCollection<Warehouse> _warehouses = new ObservableCollection<Warehouse>();
         private ObservableCollection<Organization> _organizations = new ObservableCollection<Organization>();
-        private ObservableCollection<Attachment> _attachments = new ObservableCollection<Attachment>();
+        //private ObservableCollection<Attachment> _attachments = new ObservableCollection<Attachment>();
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
         private ObservableCollection<Usage> _usageList = new ObservableCollection<Usage>();
 
         private Part _selectedPart;
         private Organization _selectedOrganization;
         private Warehouse _selectedWarehouse;
-        private Attachment _selectedAttachment;
+        //private Attachment _selectedAttachment;
         private Transaction _selectedTransaction;
         private PartInstance _selectedPartInstance;
         private Usage _selectedUsage;
+        private AttachmentContext _attachmentContext;
 
 
         public AsyncCommand UndoTransactionCommand { get; set; }
@@ -94,10 +95,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._organizations, value);
         }
 
-        public ObservableCollection<Attachment> Attachments { 
-            get => this._attachments;
-            set => SetProperty(ref this._attachments, value);
-        }
+        //public ObservableCollection<Attachment> Attachments { 
+        //    get => this._attachments;
+        //    set => SetProperty(ref this._attachments, value);
+        //}
 
         public ObservableCollection<Transaction> Transactions { 
             get => this._transaction;
@@ -119,10 +120,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedWarehouse, value);
         }
 
-        public Attachment SelectedAttachment { 
-            get => this._selectedAttachment;
-            set => SetProperty(ref this._selectedAttachment, value);
-        }
+        //public Attachment SelectedAttachment { 
+        //    get => this._selectedAttachment;
+        //    set => SetProperty(ref this._selectedAttachment, value);
+        //}
 
         public Transaction SelectedTransaction { 
             get => this._selectedTransaction;
@@ -154,6 +155,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
+        public AttachmentContext AttachmentContext { 
+            get => this._attachmentContext;
+            set => SetProperty(ref this._attachmentContext, value);
+        }
+
         private async Task LoadAsync() {
             var instances = await this._context.PartInstances.AsNoTracking()
                 .Include(e => e.Attachments)
@@ -177,8 +183,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             this.PartInstances =new ObservableCollection<PartInstance>(instances);
 
-            var attachments = this._context.Attachments.Where(e => e.PartId == this.SelectedPart.Id);
-            this.Attachments = new ObservableCollection<Attachment>(attachments);
+            //var attachments = this._context.Attachments.Where(e => e.PartId == this.SelectedPart.Id);
+            //this.Attachments = new ObservableCollection<Attachment>(attachments);
+            //AttachmentContext context = new AttachmentContext();
+            //context.Attachments = this.Attachments;
+            //context.PartId = this.SelectedPart.Id;
+            //this.AttachmentContext = context;
 
             var warehouses =await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
             this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
@@ -190,28 +200,22 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
             this.DispatcherService.BeginInvoke(() => {
-
                 if (this._selectedPart.Usage != null) {
                     this.SelectedUsage = usageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
                 }
-
             });
+
             var orgs =await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
             this.Organizations = new ObservableCollection<Organization>(orgs);
             if (this._selectedPart.Organization != null) {
                 this.SelectedOrganization = orgs.FirstOrDefault(e => e.Id==this._selectedPart.Id);
             }
 
-
-
             var transactions = (from instance in this.PartInstances
                                 from transaction in instance.Transactions
                                 select transaction).ToList();
 
             this.Transactions = new ObservableCollection<Transaction>(transactions);
-
-
-            //var transactions=this._context.Transactions.Include(e=>e.)
             
         }
 
