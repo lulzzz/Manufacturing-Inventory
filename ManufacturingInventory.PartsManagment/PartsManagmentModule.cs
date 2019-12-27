@@ -11,15 +11,17 @@ namespace ManufacturingInventory.PartsManagment
     {
         public void OnInitialized(IContainerProvider containerProvider){
             var regionManager = containerProvider.Resolve<IRegionManager>();
-            regionManager.RegisterViewWithRegion(Regions.PartsNavigationRegion, typeof(PartsNavigationView));
-            regionManager.RegisterViewWithRegion("PartTransactionTableRegion", typeof(TransactionTableView));
+            regionManager.RegisterViewWithRegion(LocalRegions.PartsNavigationRegion, typeof(PartsNavigationView));
+            regionManager.RegisterViewWithRegion(LocalRegions.TransactionTableRegion, typeof(TransactionTableView));
+            regionManager.RegisterViewWithRegion(LocalRegions.PartInstanceTableRegion, typeof(PartInstanceTableView));
+            regionManager.RegisterViewWithRegion(LocalRegions.AttachmentTableRegion, typeof(AttachmentsTableView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry){
-            containerRegistry.RegisterForNavigation<PartsManagmentMainView>(AppViews.PartsManagmentMainView);
-            containerRegistry.RegisterForNavigation<PartsDetailView>(AppViews.PartsDetailView);
-            containerRegistry.RegisterForNavigation<PartInstanceDetailsView>(AppViews.PartInstanceDetailsView);
-            containerRegistry.RegisterForNavigation<TransactionDetailsView>(AppViews.TransactionDetailsView);
+            containerRegistry.RegisterForNavigation<PartsManagmentMainView>(ModuleViews.PartsManagmentMainView);
+            containerRegistry.RegisterForNavigation<PartsDetailView>(ModuleViews.PartsDetailView);
+            containerRegistry.RegisterForNavigation<PartInstanceDetailsView>(ModuleViews.PartInstanceDetailsView);
+            containerRegistry.RegisterForNavigation<TransactionDetailsView>(ModuleViews.TransactionDetailsView);
         }
     }
 }

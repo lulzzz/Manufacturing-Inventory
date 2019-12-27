@@ -118,16 +118,16 @@
                         </dxlc:LayoutGroup>
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Part Instances" Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}" TabIndex="1">
-                        <ContentControl prism:RegionManager.RegionName="PartInstanceTableRegion"
-                                        prism:RegionManager.RegionContext="{Binding PartInstances}" />
+                        <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartInstanceTableRegion}"
+                                        prism:RegionManager.RegionContext="{Binding SelectedPart.Id}" />
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Attachments" Glyph="{dx:DXImage Image=LoadFrom_16x16.png}" TabIndex="3">
-                        <ContentControl prism:RegionManager.RegionName="AttachmentTableRegion"
+                        <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.AttachmentTableRegion}"
                                         prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}"/>
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Transactions" Glyph="{dx:DXImage Image=AgendaView_16x16.png}" TabIndex="4">
-                        <ContentControl prism:RegionManager.RegionName="PartTransactionTableRegion" 
-                                        prism:RegionManager.RegionContext="{Binding Transactions}"/>
+                        <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.TransactionTableRegion}" 
+                                        prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}"/>
                     </dx:DXTabItem>
                                        
                 </dx:DXTabControl>

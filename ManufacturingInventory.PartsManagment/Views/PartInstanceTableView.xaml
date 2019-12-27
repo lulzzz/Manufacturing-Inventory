@@ -7,11 +7,11 @@
     xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"        
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" 
+    xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"  
     mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
@@ -23,6 +23,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="PartInstanceTableDispatcherService" />
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}"/>
+    </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <dxb:BarManager.Bars>
             <dxb:Bar ShowDragWidget="False"
@@ -55,24 +59,25 @@
                          ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
                          SelectedItem="{Binding SelectedPartInstance,Mode=TwoWay,IsAsync=True}"
                          AllowUpdateTwoWayBoundPropertiesOnSynchronization="True"
-                         AutoExpandAllGroups="True">
-            <!--<dxmvvm:Interaction.Behaviors>
-                                            <common:DeferredColumnFitBehavior/>
-                                        </dxmvvm:Interaction.Behaviors>-->
+                         AutoExpandAllGroups="True" SelectionMode="Row">
+            <dxmvvm:Interaction.Behaviors>
+                <common:GridExportService x:Name="PartInstanceTableExportService" />
+            </dxmvvm:Interaction.Behaviors>
             <dxg:GridControl.View>
-                <dxg:TableView x:Name="tableview1"
+                <dxg:TableView x:Name="_instanceTableView"
                                ShowSearchPanelMode="Always"
                                SearchPanelNullText="Search By Rank"
                                AllowGrouping="True"
                                ShowGroupPanel="True"
                                SearchColumns="Name"
+                               AllowEditing="False"
                                FontSize="12"
                                BestFitArea="All"
                                BestFitMode="Smart"
                                AllowBestFit="True">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand EventName="Loaded"
-                                               Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}" />
+                                               Command="{Binding ElementName=_instanceTableView, Path=TableViewCommands.BestFitColumns}" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:TableView.RowCellMenuCustomizations>
                         <dxb:BarButtonItem Content="View Details"

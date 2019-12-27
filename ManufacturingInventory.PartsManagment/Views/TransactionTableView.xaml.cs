@@ -25,8 +25,8 @@ namespace ManufacturingInventory.PartsManagment.Views {
 
         private void PartTransactionsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
-            var transactions = (ObservableCollection<Transaction>)context.Value;
-            (DataContext as TransactionTableViewModel).Transactions = transactions;
+            var transactionContext = (int)context.Value;
+            (DataContext as TransactionTableViewModel).SelectedPartId = transactionContext;
         }
     }
 }

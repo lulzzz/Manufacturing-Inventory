@@ -161,27 +161,27 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task LoadAsync() {
-            var instances = await this._context.PartInstances.AsNoTracking()
-                .Include(e => e.Attachments)
-                .Include(e => e.CurrentLocation)
-                .Include(e => e.Condition)
-                .Include(e => e.Price)
-                .Include(e => e.PartType)
-                .Include(e=>e.BubblerParameter)
-                .Include(e=>e.Transactions)
-                    .ThenInclude(e=>e.Location)
-                .Include(e=>e.Transactions)
-                    .ThenInclude(e=>e.Session)
-                .Include(e=>e.Transactions)
-                    .ThenInclude(e=>e.ReferenceTransaction)
-                    .ThenInclude(e=>e.Location)
-                .Where(e=>e.PartId==this._selectedPart.Id)
-                .ToListAsync();
+            //var instances = await this._context.PartInstances.AsNoTracking()
+            //    .Include(e => e.Attachments)
+            //    .Include(e => e.CurrentLocation)
+            //    .Include(e => e.Condition)
+            //    .Include(e => e.Price)
+            //    .Include(e => e.PartType)
+            //    .Include(e=>e.BubblerParameter)
+            //    .Include(e=>e.Transactions)
+            //        .ThenInclude(e=>e.Location)
+            //    .Include(e=>e.Transactions)
+            //        .ThenInclude(e=>e.Session)
+            //    .Include(e=>e.Transactions)
+            //        .ThenInclude(e=>e.ReferenceTransaction)
+            //        .ThenInclude(e=>e.Location)
+            //    .Where(e=>e.PartId==this._selectedPart.Id)
+            //    .ToListAsync();
 
             this.IsBubbler = this.SelectedPart.HoldsBubblers;
             this.IsNotBubbler = !this.IsBubbler;
 
-            this.PartInstances =new ObservableCollection<PartInstance>(instances);
+            //this.PartInstances =new ObservableCollection<PartInstance>(instances);
 
             //var attachments = this._context.Attachments.Where(e => e.PartId == this.SelectedPart.Id);
             //this.Attachments = new ObservableCollection<Attachment>(attachments);
@@ -211,11 +211,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.SelectedOrganization = orgs.FirstOrDefault(e => e.Id==this._selectedPart.Id);
             }
 
-            var transactions = (from instance in this.PartInstances
-                                from transaction in instance.Transactions
-                                select transaction).ToList();
+            //var transactions = (from instance in this.PartInstances
+            //                    from transaction in instance.Transactions
+            //                    select transaction).ToList();
 
-            this.Transactions = new ObservableCollection<Transaction>(transactions);
+            //this.Transactions = new ObservableCollection<Transaction>(transactions);
             
         }
 

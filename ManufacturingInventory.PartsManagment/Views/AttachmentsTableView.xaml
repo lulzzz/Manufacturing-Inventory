@@ -74,7 +74,7 @@
                          ItemsSource="{Binding Attachments}"
                          SelectedItem="{Binding SelectedAttachment, Mode=TwoWay}">
             <dxg:GridControl.View>
-                <dxg:TableView>
+                <dxg:TableView ShowGroupPanel="False">
                     <dxg:TableView.RowCellMenuCustomizations>
                         <dxb:BarButtonItem Content="Open File"
                                            Glyph="{dx:DXImage Image=Open_16x16.png}"

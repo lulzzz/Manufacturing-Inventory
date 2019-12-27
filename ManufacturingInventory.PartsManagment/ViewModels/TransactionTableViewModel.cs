@@ -21,14 +21,19 @@ using Prism;
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class TransactionTableViewModel : InventoryViewModelBase {
         private IRegionManager _regionManager;
+        private ManufacturingContext _context;
 
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
         private Transaction _selectedTransaction;
+        private int _selectedPartId;
 
+        public AsyncCommand InitializeCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
 
-        public TransactionTableViewModel(IRegionManager regionManager) {
+        public TransactionTableViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,ManufacturingContext context) {
             this._regionManager = regionManager;
+            this._context = context;
+            this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ViewDetailsCommand = new PrismCommands.DelegateCommand(this.ViewTransactionDetailsHandler);
         }
 
@@ -44,14 +49,24 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedTransaction, value);
         }
 
+        public int SelectedPartId { 
+            get => this._selectedPartId;
+            set => SetProperty(ref this._selectedPartId, value);
+        }
+
         private void ViewTransactionDetailsHandler() {
             if (this.SelectedTransaction!=null){
                 this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
                 parameters.Add(ParameterKeys.IsEdit, false);
-                this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, AppViews.TransactionDetailsView, parameters);
+                this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, ModuleViews.TransactionDetailsView, parameters);
             }
+        }
+
+        private async Task InitializeHandler() {
+            var transactions = await this._context.Transactions.Include(e => e.PartInstance).Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
+            this.Transactions = new ObservableCollection<Transaction>(transactions);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._attachments,value);
         }
 
-        public int PartId {
+        public int SelectedPartId {
             get => this._partId;
             set => SetProperty(ref this._partId, value);
         }
@@ -93,7 +93,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                                 if (success) {
                                     Attachment attachment = new Attachment(DateTime.Now, this._fileNameViewModel.FileName, "");
                                     attachment.Description = this._fileNameViewModel.Description;
-                                    attachment.PartId = this.PartId;
+                                    attachment.PartId = this.SelectedPartId;
                                     attachment.FileReference = dest;
                                     attachment.Extension = ext;
                                     ///var temp = this._dataManager.UploadProductAttachment(attachment);
@@ -200,9 +200,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
     
         private async Task InitializeHandler() {
-            var attachments =await this._context.Attachments.Where(e => e.PartId == this.PartId).ToListAsync();
+            var attachments =await this._context.Attachments.Where(e => e.PartId == this.SelectedPartId).ToListAsync();
             this.Attachments = new ObservableCollection<Attachment>(attachments);
         }
-    
     }
 }

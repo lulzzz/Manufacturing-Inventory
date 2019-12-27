@@ -64,39 +64,39 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private void ViewPartDetailsHandler() {
             if (this.SelectedPart != null) {
-                this._regionManager.Regions[Regions.PartDetailsRegion].RemoveAll();
-                this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
                 parameters.Add(ParameterKeys.IsEdit, false);
                 parameters.Add(ParameterKeys.IsNew, false);
-                this._regionManager.RequestNavigate(Regions.PartDetailsRegion, AppViews.PartsDetailView, parameters);
+                this._regionManager.RequestNavigate(LocalRegions.PartDetailsRegion, ModuleViews.PartsDetailView, parameters);
             }
         }
 
         private void EditPartDetailsHandler() {
             if (this.SelectedPart != null) {
                 this._editInProgress = true;
-                this._regionManager.Regions[Regions.PartDetailsRegion].RemoveAll();
-                this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
                 parameters.Add(ParameterKeys.IsNew, false);
                 parameters.Add(ParameterKeys.IsEdit, true);
-                this._regionManager.RequestNavigate(Regions.PartDetailsRegion, AppViews.PartsDetailView, parameters);
+                this._regionManager.RequestNavigate(LocalRegions.PartDetailsRegion, ModuleViews.PartsDetailView, parameters);
             }
         }
 
         private void NewPartHandler() {
             if (this.SelectedPart != null) {
                 this._editInProgress = true;
-                this._regionManager.Regions[Regions.PartDetailsRegion].RemoveAll();
-                this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
                 parameters.Add(ParameterKeys.IsNew, true);
                 parameters.Add(ParameterKeys.IsEdit, false);
-                this._regionManager.RequestNavigate(Regions.PartDetailsRegion,AppViews.PartsDetailView, parameters);
+                this._regionManager.RequestNavigate(LocalRegions.PartDetailsRegion, ModuleViews.PartsDetailView, parameters);
             }
         }
 
