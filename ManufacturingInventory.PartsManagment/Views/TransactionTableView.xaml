@@ -28,12 +28,18 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:DispatcherService x:Name="TransactionTableDispatcherService"/>
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
+        <dxmvvm:DispatcherService x:Name="TransactionTableDispatcher" />
+        <dxmvvm:EventToCommand EventName="Loaded"
+                               Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <dxb:BarManager.Bars>
-            <dxb:Bar ShowDragWidget="False" ShowSizeGrip="False" AllowCollapse="False" AllowCustomizationMenu="False" AllowDrop="False" AllowHide="False"
+            <dxb:Bar ShowDragWidget="False"
+                     ShowSizeGrip="False"
+                     AllowCollapse="False"
+                     AllowCustomizationMenu="False"
+                     AllowDrop="False"
+                     AllowHide="False"
                      AllowQuickCustomization="False">
                 <dxb:BarButtonItem x:Name="_transactionExportExcel"
                                    Command="{Binding ExportTransactionsCommand}"
@@ -56,28 +62,29 @@
             </dxb:Bar>
         </dxb:BarManager.Bars>
         <dxg:GridControl x:Name="_transactions"
-                             ItemsSource="{Binding Transactions,IsAsync=True,Mode=TwoWay}"
-                             SelectedItem="{Binding SelectedTransaction,Mode=TwoWay,IsAsync=True}">
+                         ItemsSource="{Binding Transactions,IsAsync=True,Mode=TwoWay}"
+                         SelectedItem="{Binding SelectedTransaction,Mode=TwoWay,IsAsync=True}"
+                         ShowLoadingPanel="{Binding ShowTableLoading,Mode=TwoWay}">
             <dxmvvm:Interaction.Behaviors>
-                <common:GridExportService x:Name="PartInstanceTableExportService" />
+                <common:GridExportService x:Name="TransactionTableExportService" />
             </dxmvvm:Interaction.Behaviors>
             <dxg:GridControl.View>
-                    <dxg:TableView SearchColumns="Rank"
-                                   SearchPanelNullText="Search by Rank"
-                                   FontSize="12"
-                                   BestFitArea="All"
-                                   BestFitMode="Smart"
-                                   AllowBestFit="True">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand EventName="Loaded"
-                                                   Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}" />
-                        </dxmvvm:Interaction.Behaviors>
-                        <dxg:TableView.RowCellMenuCustomizations>
-                            <dxb:BarButtonItem Content="View Details"
-                                               Glyph="{dx:DXImage Image=Right_16x16.png}"
-                                               Command="{Binding Path=View.DataContext.ViewDetailsCommand}"
-                                               IsEnabled="True" />
-                            <!--<dxb:BarButtonItem Content="Undo Transaction"
+                <dxg:TableView SearchColumns="Rank"
+                               SearchPanelNullText="Search by Rank"
+                               FontSize="12"
+                               BestFitArea="All"
+                               BestFitMode="Smart"
+                               AllowBestFit="True">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="Loaded"
+                                               Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}" />
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:TableView.RowCellMenuCustomizations>
+                        <dxb:BarButtonItem Content="View Details"
+                                           Glyph="{dx:DXImage Image=Right_16x16.png}"
+                                           Command="{Binding Path=View.DataContext.ViewDetailsCommand}"
+                                           IsEnabled="True" />
+                        <!--<dxb:BarButtonItem Content="Undo Transaction"
                                            Glyph="{dx:DXImage Image=Undo_16x16.png}"
                                            Command="{Binding Path=View.DataContext.UndoTransactionCommand}"
                                            IsEnabled="True" />
@@ -86,66 +93,66 @@
                                            Glyph="{dx:DXImage Image=Undo_16x16.png}"
                                            Command="{Binding Path=View.DataContext.ViewInstanceCommand}"
                                            IsEnabled="True" />-->
-                        </dxg:TableView.RowCellMenuCustomizations>
-                    </dxg:TableView>
-                </dxg:GridControl.View>
-                <dxg:GridControl.Bands>
-                    <dxg:GridControlBand Header="None"
-                                         OverlayHeaderByChildren="True"
-                                         VisibleIndex="0">
-                        <dxg:GridColumn FieldName="Id"
-                                        Visible="False" />
-                        <dxg:GridColumn FieldName="TimeStamp" />
-                        <dxg:GridColumn FieldName="InventoryAction"
-                                        Header="Action"
-                                        AllowGrouping="True"
-                                        GroupIndex="0" />
-                        <dxg:GridColumn FieldName="Session.UserName"
-                                        Header="Username" />
-                        <dxg:GridColumn FieldName="PartInstance.Name"
-                                        Header="Item" />
-                        <dxg:GridColumn FieldName="PartInstance.SerialNumber"
-                                        Header="Serial Number" />
-                        <dxg:GridColumn FieldName="PartInstance.BatchNumber"
-                                        Header="Lot Number" />
-                    </dxg:GridControlBand>
-                    <dxg:GridControlBand Header="Transaction Info"
-                                         VisibleIndex="1"
-                                         Visible="{Binding IsNotBubbler,Mode=TwoWay}">
-                        <dxg:GridColumn FieldName="Quantity"
-                                        Header="Quantity" />
-                        <dxg:GridColumn FieldName="PartInstance.UnitCost"
-                                        Header="Unit Cost">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings MaskType="Numeric"
-                                                      MaskUseAsDisplayFormat="True"
-                                                      Mask="c"
-                                                      AllowNullInput="True" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="TotalCost"
-                                        Header="Total Cost">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:TextEditSettings MaskType="Numeric"
-                                                      MaskUseAsDisplayFormat="True"
-                                                      Mask="c" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                    </dxg:GridControlBand>
-                    <dxg:GridControlBand Header="Bubbler Info"
-                                         HorizontalHeaderContentAlignment="Center"
-                                         VisibleIndex="1"
-                                         Visible="{Binding IsBubbler,Mode=TwoWay}">
-                        <dxg:GridColumn FieldName="ParameterValue"
-                                        Header="Weight" />
-                        <dxg:GridColumn FieldName="Consumed" />
-                        <dxg:GridColumn FieldName="ReferenceTransaction.Location.Name"
-                                        Header="Returning From" />
-                    </dxg:GridControlBand>
-                </dxg:GridControl.Bands>
-            </dxg:GridControl>
-        </dxb:BarManager>
-        <!--<dxb:BarContainerControl DockPanel.Dock="Top">
+                    </dxg:TableView.RowCellMenuCustomizations>
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Bands>
+                <dxg:GridControlBand Header="None"
+                                     OverlayHeaderByChildren="True"
+                                     VisibleIndex="0">
+                    <dxg:GridColumn FieldName="Id"
+                                    Visible="False" />
+                    <dxg:GridColumn FieldName="TimeStamp" />
+                    <dxg:GridColumn FieldName="InventoryAction"
+                                    Header="Action"
+                                    AllowGrouping="True"
+                                    GroupIndex="0" />
+                    <dxg:GridColumn FieldName="Session.UserName"
+                                    Header="Username" />
+                    <dxg:GridColumn FieldName="PartInstance.Name"
+                                    Header="Item" />
+                    <dxg:GridColumn FieldName="PartInstance.SerialNumber"
+                                    Header="Serial Number" />
+                    <dxg:GridColumn FieldName="PartInstance.BatchNumber"
+                                    Header="Lot Number" />
+                </dxg:GridControlBand>
+                <dxg:GridControlBand Header="Transaction Info"
+                                     VisibleIndex="1"
+                                     Visible="{Binding IsNotBubbler,Mode=TwoWay}">
+                    <dxg:GridColumn FieldName="Quantity"
+                                    Header="Quantity" />
+                    <dxg:GridColumn FieldName="PartInstance.UnitCost"
+                                    Header="Unit Cost">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:TextEditSettings MaskType="Numeric"
+                                                  MaskUseAsDisplayFormat="True"
+                                                  Mask="c"
+                                                  AllowNullInput="True" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="TotalCost"
+                                    Header="Total Cost">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:TextEditSettings MaskType="Numeric"
+                                                  MaskUseAsDisplayFormat="True"
+                                                  Mask="c" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </dxg:GridControlBand>
+                <dxg:GridControlBand Header="Bubbler Info"
+                                     HorizontalHeaderContentAlignment="Center"
+                                     VisibleIndex="1"
+                                     Visible="{Binding IsBubbler,Mode=TwoWay}">
+                    <dxg:GridColumn FieldName="ParameterValue"
+                                    Header="Weight" />
+                    <dxg:GridColumn FieldName="Consumed" />
+                    <dxg:GridColumn FieldName="ReferenceTransaction.Location.Name"
+                                    Header="Returning From" />
+                </dxg:GridControlBand>
+            </dxg:GridControl.Bands>
+        </dxg:GridControl>
+    </dxb:BarManager>
+    <!--<dxb:BarContainerControl DockPanel.Dock="Top">
             <dxb:ToolBarControl ShowDragWidget="False"
                                 ShowBackground="False"
                                 AllowCustomizationMenu="False"

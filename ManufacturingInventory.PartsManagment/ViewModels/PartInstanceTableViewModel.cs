@@ -11,7 +11,6 @@ using ManufacturingInventory.PartsManagment.Internal;
 using Prism.Events;
 using Prism.Regions;
 using PrismCommands = Prism.Commands;
-using ManufacturingInventory.PartsManagment.Internal;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
@@ -22,12 +21,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTableViewModel : InventoryViewModelBase {
 
         protected IExportService PartInstanceTableExportService { get => ServiceContainer.GetService<IExportService>("PartInstanceTableExportService"); }
-        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PartInstanceTableDispatcherService"); }
+        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PartInstanceTableDispatcher"); }
 
         private ObservableCollection<PartInstance> _partInstances;
         private PartInstance _selectedInstance;
         private int _selectedPartId;
         private bool _isEdit;
+        private bool _showTableLoading;
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
@@ -49,8 +49,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override bool KeepAlive => false;
 
         public ObservableCollection<PartInstance> PartInstances { 
-            get => this._partInstances; 
-            set => this._partInstances = value; 
+            get => this._partInstances;
+            set => SetProperty(ref this._partInstances, value);
         }
 
         public PartInstance SelectedInstance { 
@@ -63,7 +63,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedPartId, value);
         }
 
-
+        public bool ShowTableLoading { 
+            get => this._showTableLoading;
+            set => SetProperty(ref this._showTableLoading, value);
+        }
 
         private void ViewInstanceDetailsHandler() {
             if (this._selectedInstance != null) {
@@ -97,6 +100,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task InitializeHandler() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             var partInstances = await this._context.PartInstances
                 .Include(e => e.Transactions)
                 .ThenInclude(e => e.Session)
@@ -107,6 +111,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 .Include(e => e.Condition)
                 .Where(e => e.PartId == this.SelectedPartId).ToListAsync();
             this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
         }
     }
 }

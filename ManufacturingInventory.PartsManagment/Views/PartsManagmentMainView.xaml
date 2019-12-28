@@ -11,6 +11,7 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              xmlns:common="clr-namespace:ManufacturingInventory.PartsManagment.Internal"
              mc:Ignorable="d"

@@ -43,6 +43,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.RefreshDataCommand = new AsyncCommand(this.RefreshDataHandler);
             this.ViewPartDetailsCommand = new PrismCommands.DelegateCommand(this.ViewPartDetailsHandler);
             this.EditPartCommand = new PrismCommands.DelegateCommand(this.EditPartDetailsHandler);
+         
         }
 
         public override bool KeepAlive => false;
@@ -117,6 +118,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task PopulateAsync() {
             if (!this._isInitialized) {
+                this._regionManager.Regions.Remove(LocalRegions.AttachmentTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
                 this.IsLoading = true;
                 var tempParts = await this._context.Parts
                     .AsNoTracking()

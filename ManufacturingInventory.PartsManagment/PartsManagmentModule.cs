@@ -10,7 +10,7 @@ namespace ManufacturingInventory.PartsManagment
     public class PartsManagmentModule : IModule
     {
         public void OnInitialized(IContainerProvider containerProvider){
-            var regionManager = containerProvider.Resolve<IRegionManager>();
+            var regionManager = containerProvider.Resolve<IRegionManager>();         
             regionManager.RegisterViewWithRegion(LocalRegions.PartsNavigationRegion, typeof(PartsNavigationView));
             regionManager.RegisterViewWithRegion(LocalRegions.TransactionTableRegion, typeof(TransactionTableView));
             regionManager.RegisterViewWithRegion(LocalRegions.PartInstanceTableRegion, typeof(PartInstanceTableView));

@@ -20,12 +20,16 @@ using Prism;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class TransactionTableViewModel : InventoryViewModelBase {
+
         private IRegionManager _regionManager;
         private ManufacturingContext _context;
+
+        protected IDispatcherService Dispatcher { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
 
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
         private Transaction _selectedTransaction;
         private int _selectedPartId;
+        private bool _showTableLoading;
 
         public AsyncCommand InitializeCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
@@ -54,9 +58,14 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedPartId, value);
         }
 
+        public bool ShowTableLoading {
+            get => this._showTableLoading;
+            set => SetProperty(ref this._showTableLoading, value);
+        }
+
         private void ViewTransactionDetailsHandler() {
             if (this.SelectedTransaction!=null){
-                this._regionManager.Regions[Regions.PartInstanceDetailsRegion].RemoveAll();
+                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
                 parameters.Add(ParameterKeys.IsEdit, false);
@@ -65,8 +74,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task InitializeHandler() {
+            this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
             var transactions = await this._context.Transactions.Include(e => e.PartInstance).Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
             this.Transactions = new ObservableCollection<Transaction>(transactions);
+            this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = false);
         }
     }
 }

@@ -98,15 +98,18 @@
             </dxr:RibbonControl>
             <dxdo:DockLayoutManager FloatingMode="Desktop">
                 <dxdo:LayoutGroup>
-                    <dxdo:DocumentGroup x:Name="_views" DestroyOnClosingChildren="False" prism:RegionManager.RegionName="{x:Static common:Regions.MainWindowRegion}" 
-                                        CaptionLocation="Top" 
-                                        ShowTabForSinglePage="True" 
-                                        GroupBorderStyle="GroupBox" 
+                    <dxdo:DocumentGroup x:Name="_views"
+                                        DestroyOnClosingChildren="False"
+                                        prism:RegionManager.RegionName="{x:Static common:Regions.MainWindowRegion}"
+                                        CaptionLocation="Top"
+                                        ShowTabForSinglePage="True"
+                                        GroupBorderStyle="GroupBox"
                                         AllowFloat="True">
                         <dxdo:TabbedGroup.ItemStyle>
                             <Style TargetType="{x:Type dxdo:LayoutPanel}">
                                 <Setter Property="Caption" Value="{Binding Content.PanelCaption, RelativeSource={RelativeSource Self}}"/>
-                                <Setter Property="IsActive" Value="{Binding Content.IsActive,RelativeSource={RelativeSource Self},Mode=TwoWay}"/>
+                                <Setter Property="IsActive"
+                                        Value="{Binding Content.IsActive,RelativeSource={RelativeSource Self},Mode=TwoWay}" />
                                 <Setter Property="ClosingBehavior" Value="ImmediatelyRemove"/>
                             </Style>
                         </dxdo:TabbedGroup.ItemStyle>

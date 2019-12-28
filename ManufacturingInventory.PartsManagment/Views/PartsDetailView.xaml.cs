@@ -20,7 +20,9 @@ namespace ManufacturingInventory.PartsManagment.Views
     {
         public PartsDetailView()
         {
+           
             InitializeComponent();
+            //this._partDetailsTabControl.TabContentCacheMode = DevExpress.Xpf.Core.TabContentCacheMode.CacheAllTabs;
         }
     }
 }

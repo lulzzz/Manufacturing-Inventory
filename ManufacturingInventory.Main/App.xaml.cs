@@ -51,6 +51,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             ApplicationThemeHelper.UpdateApplicationThemeName();
             ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             GridControl.AllowInfiniteGridSize = true;
+            //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
 
             using var context= new ManufacturingContext();
 
