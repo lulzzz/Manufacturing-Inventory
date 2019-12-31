@@ -65,8 +65,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private void ViewPartDetailsHandler() {
             if (this.SelectedPart != null) {
-                this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
+                this._regionManager.Regions.Remove(LocalRegions.AttachmentTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
                 parameters.Add(ParameterKeys.IsEdit, false);
@@ -78,8 +82,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private void EditPartDetailsHandler() {
             if (this.SelectedPart != null) {
                 this._editInProgress = true;
-                this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
+                this._regionManager.Regions.Remove(LocalRegions.AttachmentTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
                 parameters.Add(ParameterKeys.IsNew, false);
@@ -91,8 +99,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private void NewPartHandler() {
             if (this.SelectedPart != null) {
                 this._editInProgress = true;
-                this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
+                this._regionManager.Regions.Remove(LocalRegions.AttachmentTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
+                this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
                 NavigationParameters parameters = new NavigationParameters();
                 parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
                 parameters.Add(ParameterKeys.IsNew, true);
@@ -118,6 +130,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task PopulateAsync() {
             if (!this._isInitialized) {
+                //this._regionManager.Regions[LocalRegions.PartDetailsRegion].RemoveAll();
+                //this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
                 this._regionManager.Regions.Remove(LocalRegions.AttachmentTableRegion);
                 this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
                 this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);

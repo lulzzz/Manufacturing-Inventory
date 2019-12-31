@@ -46,81 +46,10 @@
                     </dx:DXTabControl.View>
                     <dx:DXTabItem Header="Summary"
                                   Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}"
-                                  TabIndex="0">
-                        <dxlc:LayoutGroup Orientation="Vertical">
-                            <dxlc:LayoutGroup>
-                                <dxlc:LayoutItem Label="Name"
-                                                 LabelPosition="Top"
-                                                 LabelHorizontalAlignment="Center">
-                                    <dxe:TextEdit Text="{Binding SelectedPart.Name}"
-                                                  IsReadOnly="False"
-                                                  HorizontalContentAlignment="Left" />
-                                </dxlc:LayoutItem>
-                                <dxlc:LayoutItem Label="Usage"
-                                                 LabelPosition="Top"
-                                                 LabelHorizontalAlignment="Center"
-                                                 BorderBrush="Black">
-                                    <dxe:ComboBoxEdit ItemsSource="{Binding UsageList,Mode=TwoWay,IsAsync=True}"
-                                                      SelectedItem="{Binding SelectedUsage,Mode=TwoWay,IsAsync=True}"
-                                                      ApplyItemTemplateToSelectedItem="True"
-                                                      IsTextEditable="False">
-                                        <dxe:ComboBoxEdit.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Name}"
-                                                           HorizontalAlignment="Stretch" />
-                                            </DataTemplate>
-                                        </dxe:ComboBoxEdit.ItemTemplate>
-                                    </dxe:ComboBoxEdit>
-                                </dxlc:LayoutItem>
-                                <dxlc:LayoutItem Label="Organization"
-                                                 LabelPosition="Top"
-                                                 LabelHorizontalAlignment="Center"
-                                                 BorderBrush="Black">
-                                    <dxe:ComboBoxEdit ItemsSource="{Binding Organizations,IsAsync=True,Mode=TwoWay}"
-                                                      SelectedItem="{Binding SelectedOrganization,Mode=TwoWay}"
-                                                      ApplyItemTemplateToSelectedItem="True"
-                                                      IsTextEditable="False"
-                                                      IsSynchronizedWithCurrentItem="True">
-                                        <dxe:ComboBoxEdit.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Name}"
-                                                           HorizontalAlignment="Stretch" />
-                                            </DataTemplate>
-                                        </dxe:ComboBoxEdit.ItemTemplate>
-                                    </dxe:ComboBoxEdit>
-                                </dxlc:LayoutItem>
-                                <dxlc:LayoutItem Label="Warehouse"
-                                                 LabelPosition="Top"
-                                                 LabelHorizontalAlignment="Center"
-                                                 BorderBrush="Black">
-                                    <dxe:ComboBoxEdit ItemsSource="{Binding Warehouses,Mode=TwoWay,IsAsync=True}"
-                                                      SelectedItem="{Binding SelectedWareHouse,Mode=TwoWay,IsAsync=True}"
-                                                      ApplyItemTemplateToSelectedItem="True"
-                                                      IsTextEditable="False">
-                                        <dxe:ComboBoxEdit.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Name}"
-                                                           HorizontalAlignment="Stretch" />
-                                            </DataTemplate>
-                                        </dxe:ComboBoxEdit.ItemTemplate>
-                                    </dxe:ComboBoxEdit>
-                                </dxlc:LayoutItem>
-                            </dxlc:LayoutGroup>
-                            <dxlc:LayoutGroup>
-                                <dxlc:LayoutItem Label="Description"
-                                                 LabelPosition="Top"
-                                                 LabelHorizontalAlignment="Center"
-                                                 BorderBrush="Black">
-                                    <dxe:TextEdit  Text="{Binding SelectedPart.Description}"
-                                                   MinHeight="50"
-                                                   TextWrapping="WrapWithOverflow"
-                                                   AcceptsReturn="True"
-                                                   AcceptsTab="True"
-                                                   HorizontalContentAlignment="Left"
-                                                   VerticalContentAlignment="Top" />
-                                </dxlc:LayoutItem>
-                            </dxlc:LayoutGroup>
-                        </dxlc:LayoutGroup>
+                                  TabIndex="0"
+                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartSummaryRegion}"
+                                  prism:RegionManager.RegionContext="{Binding SelectedPart}">
+                        
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Part Instances"
                                   Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"

@@ -190,26 +190,26 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             //context.PartId = this.SelectedPart.Id;
             //this.AttachmentContext = context;
 
-            var warehouses =await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
-            this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-            this.DispatcherService.BeginInvoke(() => {
-                if (this._selectedPart.Warehouse != null) {
-                    this.SelectedWarehouse = warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
-                }
-            });
+            //var warehouses =await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
+            //this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
+            //this.DispatcherService.BeginInvoke(() => {
+            //    if (this._selectedPart.Warehouse != null) {
+            //        this.SelectedWarehouse = warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
+            //    }
+            //});
 
-            var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
-            this.DispatcherService.BeginInvoke(() => {
-                if (this._selectedPart.Usage != null) {
-                    this.SelectedUsage = usageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-                }
-            });
+            //var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
+            //this.DispatcherService.BeginInvoke(() => {
+            //    if (this._selectedPart.Usage != null) {
+            //        this.SelectedUsage = usageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
+            //    }
+            //});
 
-            var orgs =await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
-            this.Organizations = new ObservableCollection<Organization>(orgs);
-            if (this._selectedPart.Organization != null) {
-                this.SelectedOrganization = orgs.FirstOrDefault(e => e.Id==this._selectedPart.Id);
-            }
+            //var orgs =await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
+            //this.Organizations = new ObservableCollection<Organization>(orgs);
+            //if (this._selectedPart.Organization != null) {
+            //    this.SelectedOrganization = orgs.FirstOrDefault(e => e.Id==this._selectedPart.Id);
+            //}
 
             //var transactions = (from instance in this.PartInstances
             //                    from transaction in instance.Transactions
