@@ -39,12 +39,39 @@
                               IsReadOnly="False"
                               HorizontalContentAlignment="Left" />
             </dxlc:LayoutItem>
+            <dxlc:LayoutItem Label="Holds Bubblers"
+                             LabelPosition="Top"
+                             LabelHorizontalAlignment="Center">
+                <dxe:CheckEdit EditValue="{Binding SelectedPart.HoldsBubblers}"
+                               HorizontalAlignment="Center" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Label="Warehouse"
+                             LabelPosition="Top"
+                             LabelHorizontalAlignment="Center"
+                             BorderBrush="Black">
+                <dxe:ComboBoxEdit x:Name="_warehouseCombo"
+                                  DisplayMember="Name"
+                                  ItemsSource="{Binding Warehouses,Mode=TwoWay,IsAsync=True}"
+                                  SelectedItem="{Binding SelectedWareHouse,Mode=TwoWay,IsAsync=True}"
+                                  SelectedIndex="{Binding SelectedWarehouseIndex,Mode=TwoWay,IsAsync=True}"
+                                  IsTextEditable="False">
+                    <dxe:ComboBoxEdit.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"
+                                       HorizontalAlignment="Stretch" />
+                        </DataTemplate>
+                    </dxe:ComboBoxEdit.ItemTemplate>
+                </dxe:ComboBoxEdit>
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+        <dxlc:LayoutGroup>
             <dxlc:LayoutItem Label="Usage"
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
                 <dxe:ComboBoxEdit ItemsSource="{Binding UsageList,Mode=TwoWay,IsAsync=True}"
-                                  SelectedItem="{Binding SelectedUsage,Mode=TwoWay,IsAsync=True}"
+                                  SelectedItem="{Binding SelectedUsage,Mode=TwoWay}"
+                                  SelectedIndex="{Binding SelectedUsageIndex,Mode=TwoWay,IsAsync=True}"
                                   ApplyItemTemplateToSelectedItem="True"
                                   IsTextEditable="False">
                     <dxe:ComboBoxEdit.ItemTemplate>
@@ -60,25 +87,9 @@
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
                 <dxe:ComboBoxEdit ItemsSource="{Binding Organizations,IsAsync=True,Mode=TwoWay}"
-                                  SelectedItem="{Binding SelectedOrganization,Mode=TwoWay}"
+                                  SelectedItem="{Binding SelectedOrganization}"
                                   ApplyItemTemplateToSelectedItem="True"
-                                  IsTextEditable="False"
-                                  IsSynchronizedWithCurrentItem="True">
-                    <dxe:ComboBoxEdit.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}"
-                                       HorizontalAlignment="Stretch" />
-                        </DataTemplate>
-                    </dxe:ComboBoxEdit.ItemTemplate>
-                </dxe:ComboBoxEdit>
-            </dxlc:LayoutItem>
-            <dxlc:LayoutItem Label="Warehouse"
-                             LabelPosition="Top"
-                             LabelHorizontalAlignment="Center"
-                             BorderBrush="Black">
-                <dxe:ComboBoxEdit ItemsSource="{Binding Warehouses,Mode=TwoWay,IsAsync=True}"
-                                  SelectedItem="{Binding SelectedWareHouse,Mode=TwoWay,IsAsync=True}"
-                                  ApplyItemTemplateToSelectedItem="True"
+                                  SelectedIndex="{Binding SelectedOrganizationIndex,Mode=TwoWay,IsAsync=True}"
                                   IsTextEditable="False">
                     <dxe:ComboBoxEdit.ItemTemplate>
                         <DataTemplate>
@@ -88,6 +99,7 @@
                     </dxe:ComboBoxEdit.ItemTemplate>
                 </dxe:ComboBoxEdit>
             </dxlc:LayoutItem>
+
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup>
             <dxlc:LayoutItem Label="Description"

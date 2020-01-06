@@ -37,7 +37,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Organization _selectedOrganization;
         private Warehouse _selectedWarehouse;
         private Usage _selectedUsage;
-
+        private int _selectedWarehouseIndex;
+        private int _selectedUsageIndex;
+        private int _selectedOrganizationIndex;
         public AsyncCommand InitializeCommand { get; private set; }
 
         public PartSummaryViewModel(ManufacturingContext context,IRegionManager regionManager,IEventAggregator eventAggregator) {
@@ -71,17 +73,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public Organization SelectedOrganization {
             get => this._selectedOrganization;
-            set => SetProperty(ref this._selectedOrganization, value);
+            set => SetProperty(ref this._selectedOrganization, value, "SelectedOrganization");
         }
 
         public Warehouse SelectedWarehouse {
             get => this._selectedWarehouse;
-            set => SetProperty(ref this._selectedWarehouse, value);
+            set => SetProperty(ref this._selectedWarehouse, value, "SelectedWarehouse");
         }
 
         public Usage SelectedUsage {
             get => this._selectedUsage;
-            set => SetProperty(ref this._selectedUsage, value);
+            set => SetProperty(ref this._selectedUsage, value, "SelectedUsage");
         }
 
         public bool IsBubbler {
@@ -89,26 +91,40 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
+        public int SelectedWarehouseIndex { 
+            get => this._selectedWarehouseIndex;
+            set => SetProperty(ref this._selectedWarehouseIndex, value);
+        }
+
+        public int SelectedUsageIndex { 
+            get => this._selectedUsageIndex;
+            set => SetProperty(ref this._selectedUsageIndex, value);
+        }
+
+        public int SelectedOrganizationIndex { 
+            get => this._selectedOrganizationIndex;
+            set => SetProperty(ref this._selectedOrganizationIndex, value);
+        }
+
         private async Task LoadAsync() {
             var warehouses = await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
             this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-            this.DispatcherService.BeginInvoke(() => {
-                if (this._selectedPart.Warehouse != null) {
-                    this.SelectedWarehouse = warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
-                }
-            });
+            if (this._selectedPart.Warehouse != null) {               
+                this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
+                this.SelectedWarehouseIndex = this.Warehouses.IndexOf(this.SelectedWarehouse);
+            }
 
             var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
-            this.DispatcherService.BeginInvoke(() => {
-                if (this._selectedPart.Usage != null) {
-                    this.SelectedUsage = usageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-                }
-            });
+            this.UsageList =new ObservableCollection<Usage>(usageList);
+            if (this._selectedPart.Usage != null) {
+                this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
+            }
 
             var orgs = await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
             this.Organizations = new ObservableCollection<Organization>(orgs);
             if (this._selectedPart.Organization != null) {
-                this.SelectedOrganization = orgs.FirstOrDefault(e => e.Id == this._selectedPart.Id);
+
+                this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.Id);
             }
         }
     }
