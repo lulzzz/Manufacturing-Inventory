@@ -5,12 +5,431 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"                 
             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+            xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
             xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"                 
             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+            xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+            xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
+            xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
             xmlns:prism="http://prismlibrary.com/"
             prism:ViewModelLocator.AutoWireViewModel="True"      
             xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
-            mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+            mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
+        <dx:DialogService x:Name="FileNameDialog" DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:FileNameView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="300" />
+                    <Setter Property="Height"
+                            Value="350" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog"
+                                      Title="{Binding Title}" />
+        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog"
+                                      Title="{Binding Title}" />
+        <dx:DXMessageBoxService x:Name="PartInstanceDetailsMessageService"/>
+        <dxmvvm:DispatcherService x:Name="PartInstanceDetailDispatcher" />
+    </dxmvvm:Interaction.Behaviors>
+    <dx:LoadingDecorator>
+        <dxlc:GroupBox>
+            <dxlc:GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="Part Instance Details"
+                               HorizontalAlignment="Center"
+                               FontSize="16" />
+                </DataTemplate>
+            </dxlc:GroupBox.HeaderTemplate>
+            <dxlc:LayoutGroup Orientation="Vertical">
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem Label="Name" LabelHorizontalAlignment="Center" LabelPosition="Top">
+                        <dxe:TextEdit EditValue="{Binding SelectedPartInstance.Name}"/>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Serial Number"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:TextEdit EditValue="{Binding SelectedPartInstance.SerialNumber}"/>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Batch Number"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:TextEdit EditValue="{Binding SelectedPartInstance.BatchNumber}" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem Label="Current Location"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:ComboBoxEdit ItemsSource="{Binding Locations}"
+                                          SelectedIndex="{Binding SelectedLocationIndex}"
+                                          SelectedItem="{Binding SelectedLocation}"
+                                          ApplyItemTemplateToSelectedItem="True"
+                                          IsTextEditable="False">
+                            <dxe:ComboBoxEdit.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </dxe:ComboBoxEdit.ItemTemplate>
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Type"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:ComboBoxEdit ItemsSource="{Binding PartTypes}"
+                                          SelectedIndex="{Binding SelectedPartTypeIndex}"
+                                          SelectedItem="{Binding SelectedPartType}"
+                                          ApplyItemTemplateToSelectedItem="True"
+                                          IsTextEditable="False">
+                            <dxe:ComboBoxEdit.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </dxe:ComboBoxEdit.ItemTemplate>
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Condition"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:ComboBoxEdit ItemsSource="{Binding Conditions,Mode=TwoWay,IsAsync=True}"
+                                          SelectedIndex="{Binding SelectedConditionIndex,Mode=TwoWay,IsAsync=True}"
+                                          SelectedItem="{Binding SelectedCondition,Mode=TwoWay,IsAsync=True}"
+                                          ApplyItemTemplateToSelectedItem="True"
+                                          IsTextEditable="False">
+                            <dxe:ComboBoxEdit.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </dxe:ComboBoxEdit.ItemTemplate>
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Visibility="{Binding CostVisibility}">
+                    <dxlc:LayoutItem Label="Unit Cost"
+                                     LabelPosition="Top"
+                                     LabelHorizontalAlignment="Center">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.UnitCost,Mode=TwoWay}"
+                                      NullValue="0"
+                                      NullText="0.000"
+                                      MinValue="0"
+                                      Increment="1"
+                                      DisplayFormatString="c3"
+                                      HorizontalContentAlignment="Center"
+                                      IsReadOnly="True"/>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Total Cost"
+                                     LabelPosition="Top"
+                                     LabelHorizontalAlignment="Center">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.TotalCost,Mode=TwoWay}"
+                                      NullValue="0"
+                                      NullText="0.000"
+                                      MinValue="0"
+                                      Increment="1"
+                                      DisplayFormatString="c3"
+                                      HorizontalContentAlignment="Center"
+                                      IsReadOnly="True" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Visibility="{Binding StockVisibility}">
+                    <dxlc:LayoutItem Label="Quantity"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.Quantity}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Min Quantity"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.MinQuantity}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Safe Quantity"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.SafeQuantity}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Visibility="{Binding WeightVisibility}">
+                    <dxlc:LayoutItem Label="Net"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.NetWeight}"
+                                      NullText="0" MinValue="0" Increment="1" MaskType="Numeric" 
+                                      HorizontalContentAlignment="Center"/>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Tare"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.Tare}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Gross"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.GrossWeight}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Measured"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.Measured}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Weight"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.Weight}"
+                                      NullText="0"
+                                      MinValue="0"
+                                      Increment="1"
+                                      MaskType="Numeric"
+                                      HorizontalContentAlignment="Center" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dx:DXTabControl>
+                    <dx:DXTabItem Header="Transactions"
+                                  Glyph="{dx:DXImage Image=AgendaView_16x16.png}">
+                        <dxb:BarManager>
+                            <dxb:BarManager.Bars>
+                                <dxb:Bar ShowDragWidget="False"
+                                         ShowSizeGrip="False"
+                                         AllowCollapse="False"
+                                         AllowCustomizationMenu="False"
+                                         AllowDrop="False"
+                                         AllowHide="False"
+                                         AllowQuickCustomization="False">
+                                    <dxb:BarButtonItem x:Name="_transactionExportExcel"
+                                                       Command="{Binding ExportTransactionsCommand}"
+                                                       CommandParameter="Xlsx"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       Content="Export Excel"
+                                                       Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                    <dxb:BarButtonItem x:Name="_transactionExportPDF"
+                                                       Command="{Binding ExportTransactionsCommand}"
+                                                       CommandParameter="Pdf"
+                                                       Content="Export PDF"
+                                                       Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}"
+                                                       BarItemDisplayMode="ContentAndGlyph" />
+                                    <dxb:BarButtonItem x:Name="_transactionExportCSV"
+                                                       Command="{Binding ExportTransactionsCommand}"
+                                                       CommandParameter="Csv"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       Content="Export CSV"
+                                                       Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}" />
+                                </dxb:Bar>
+                            </dxb:BarManager.Bars>
+                            <dxg:GridControl x:Name="_transactions"
+                                             ItemsSource="{Binding SelectedPartInstance.Transactions,IsAsync=True,Mode=TwoWay}"
+                                             ShowLoadingPanel="{Binding ShowTransactionTableLoading,Mode=TwoWay}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <common:GridExportService x:Name="TransactionTableExportService" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView ShowSearchPanelMode="Never"
+                                                   FontSize="11"
+                                                   BestFitArea="All"
+                                                   BestFitMode="Smart"
+                                                   AllowBestFit="True">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="Loaded"
+                                                                   Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Content="View Details"
+                                                               Glyph="{dx:DXImage Image=Right_16x16.png}"
+                                                               Command="{Binding Path=View.DataContext.ViewDetailsCommand}"
+                                                               IsEnabled="True" />
+                                            <dxb:BarButtonItem Content="Return Item"
+                                                               Glyph="{dx:DXImage Image=Undo_16x16.png}"
+                                                               Command="{Binding Path=View.DataContext.UndoTransactionCommand}"
+                                                               IsEnabled="True" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                                <dxg:GridControl.Bands>
+                                    <dxg:GridControlBand Header="None"
+                                                         OverlayHeaderByChildren="True"
+                                                         VisibleIndex="0">
+                                        <dxg:GridColumn FieldName="Id"
+                                                        Visible="False" />
+                                        <dxg:GridColumn FieldName="TimeStamp" />
+                                        <dxg:GridColumn FieldName="InventoryAction"
+                                                        Header="Action"
+                                                        AllowGrouping="True"
+                                                        GroupIndex="0" />
+                                        <dxg:GridColumn FieldName="Session.UserName"
+                                                        Header="Username" />
+                                        <dxg:GridColumn FieldName="PartInstance.Name"
+                                                        Header="Item" />
+                                        <dxg:GridColumn FieldName="PartInstance.SerialNumber"
+                                                        Header="Serial Number" />
+                                        <dxg:GridColumn FieldName="PartInstance.BatchNumber"
+                                                        Header="Lot Number" />
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Transaction Info"
+                                                         VisibleIndex="1"
+                                                         Visible="{Binding IsNotBubbler,Mode=TwoWay}">
+                                        <dxg:GridColumn FieldName="Quantity"
+                                                        Header="Quantity" />
+                                        <dxg:GridColumn FieldName="PartInstance.UnitCost"
+                                                        Header="Unit Cost">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings MaskType="Numeric"
+                                                                      MaskUseAsDisplayFormat="True"
+                                                                      Mask="c"
+                                                                      AllowNullInput="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn FieldName="TotalCost"
+                                                        Header="Total Cost">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings MaskType="Numeric"
+                                                                      MaskUseAsDisplayFormat="True"
+                                                                      Mask="c" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Bubbler Info"
+                                                         HorizontalHeaderContentAlignment="Center"
+                                                         VisibleIndex="1"
+                                                         Visible="{Binding IsBubbler,Mode=TwoWay}">
+                                        <dxg:GridColumn FieldName="ParameterValue"
+                                                        Header="Weight" />
+                                        <dxg:GridColumn FieldName="Consumed" />
+                                        <dxg:GridColumn FieldName="ReferenceTransaction.Location.Name"
+                                                        Header="Returning From" />
+                                    </dxg:GridControlBand>
+                                </dxg:GridControl.Bands>
+                            </dxg:GridControl>
+                        </dxb:BarManager>
+                    </dx:DXTabItem>
+                    <dx:DXTabItem Header="Attachments"
+                                  Glyph="{dx:DXImage Image=LoadFrom_16x16.png}">
+                        <dxb:BarManager>
+                            <dxb:BarManager.Bars>
+                                <dxb:Bar ShowDragWidget="False"
+                                         ShowSizeGrip="False"
+                                         AllowCollapse="False"
+                                         AllowCustomizationMenu="False"
+                                         AllowDrop="False"
+                                         AllowHide="False"
+                                         AllowQuickCustomization="False">
+                                    <dxb:BarButtonItem Content="Upload File"
+                                                       Command="{Binding NewAttachmentCommand}"
+                                                       Glyph="{dx:DXImage Image=Add_16x16.png}"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       ShowScreenTip="True"
+                                                       ToolTipService.ToolTip="Upload New Attachment" />
+                                    <dxb:BarButtonItem Content="Open File"
+                                                       Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                                       Command="{Binding Path=View.DataContext.OpenFileCommand}"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       ShowScreenTip="True"
+                                                       ToolTipService.ToolTip="Open Attachment" />
+                                    <dxb:BarButtonItem Content="Download File"
+                                                       Glyph="{dx:DXImage Image=Down_16x16.png}"
+                                                       Command="{Binding Path=View.DataContext.DownloadFileCommand}"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       ShowScreenTip="True"
+                                                       ToolTipService.ToolTip="Download Attachment" />
+                                    <dxb:BarButtonItem Content="Delete File"
+                                                       Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                                       Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       ShowScreenTip="True"
+                                                       ToolTipService.ToolTip="Delete Attachment" />
+                                </dxb:Bar>
+                            </dxb:BarManager.Bars>
+                            <dxg:GridControl x:Name="_instanceTransactions"
+                                             ItemsSource="{Binding Attachments}"
+                                             SelectedItem="{Binding SelectedAttachment, Mode=TwoWay}"
+                                             ShowLoadingPanel="{Binding ShowAttachmentTableLoading,Mode=TwoWay}"
+                                             FontSize="10">
+                                <dxg:GridControl.View>
+                                    <dxg:TableView ShowGroupPanel="False">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItem Content="Open File"
+                                                               Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                                               Command="{Binding Path=View.DataContext.OpenFileCommand}" />
+                                            <dxb:BarButtonItem Content="Download File"
+                                                               Glyph="{dx:DXImage Image=Down_16x16.png}"
+                                                               Command="{Binding Path=View.DataContext.DownloadFileCommand}" />
+                                            <dxb:BarButtonItem Content="Delete File"
+                                                               Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                                               Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                                <dxg:GridColumn FieldName="Id"
+                                                Visible="False" />
+                                <dxg:GridColumn FieldName="Created"
+                                                Visible="False" />
+                                <dxg:GridColumn FieldName="Name" />
+                                <dxg:GridColumn FieldName="Description" />
+                                <dxg:GridColumn FieldName="Extension" />
+                            </dxg:GridControl>
+                        </dxb:BarManager>
+                    </dx:DXTabItem>
+                </dx:DXTabControl>
+                <dxlc:LayoutItem Label="Save or Cancel Changes"
+                                 Style="{StaticResource LayoutItemStyle}"
+                                 VerticalAlignment="Bottom"
+                                 Visibility="{Binding SaveCancelVisibility}">
+                    <dxlc:LayoutGroup Orientation="Horizontal">
+                        <dx:SimpleButton Content="Save Changes"
+                                         Height="50"
+                                         Command="{Binding SaveCommand}" />
+                        <dx:SimpleButton Content="Discard Changes"
+                                         Height="50"
+                                         Command="{Binding DiscardCommand}" />
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxlc:GroupBox>
+    </dx:LoadingDecorator>
 </UserControl>

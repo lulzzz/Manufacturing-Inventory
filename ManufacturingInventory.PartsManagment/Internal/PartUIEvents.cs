@@ -4,7 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.PartsManagment.Internal {
+
+    public class ReloadEvent:PubSubEvent<int> { }
+
     public class PartEditDoneEvent:PubSubEvent { }
+
     public class PartInstanceEditDoneEvent : PubSubEvent { }
 
     public class LoadPartDetailsEvent : PubSubEvent { }

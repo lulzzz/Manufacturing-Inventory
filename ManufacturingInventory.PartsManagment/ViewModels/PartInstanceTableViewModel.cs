@@ -44,6 +44,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager = regionManager;
             this._isEdit = false;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
+            this.ViewInstanceDetailsCommand = new PrismCommands.DelegateCommand(this.ViewInstanceDetailsHandler);
+            this.EditInstanceCommand = new PrismCommands.DelegateCommand(this.EditInstanceHandler);
         }
 
         public override bool KeepAlive => false;
@@ -53,7 +55,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._partInstances, value);
         }
 
-        public PartInstance SelectedInstance { 
+        public PartInstance SelectedPartInstance { 
             get => this._selectedInstance;
             set => SetProperty(ref this._selectedInstance,value); 
         }
@@ -66,25 +68,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public bool ShowTableLoading { 
             get => this._showTableLoading;
             set => SetProperty(ref this._showTableLoading, value);
-        }
-
-        private void ViewInstanceDetailsHandler() {
-            if (this._selectedInstance != null) {
-                NavigationParameters parameters= new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedInstance);
-                parameters.Add(ParameterKeys.IsEdit, this._isEdit);
-                this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
-            }
-        }
-
-        private void EditInstanceHandler() {
-            if (this._selectedInstance != null) {
-                this._isEdit = true;
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedInstance);
-                parameters.Add(ParameterKeys.IsEdit, this._isEdit);
-                this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
-            }
         }
 
         private async Task ExportPartInstancesHandler(ExportFormat format) {
@@ -112,6 +95,27 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 .Where(e => e.PartId == this.SelectedPartId).ToListAsync();
             this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
+        }
+
+        private void ViewInstanceDetailsHandler() {
+            if (this.SelectedPartInstance != null) {
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
+                parameters.Add(ParameterKeys.IsEdit, false);
+                parameters.Add(ParameterKeys.IsNew, false);
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+            }
+
+        }
+
+        private void EditInstanceHandler() {
+            if (this.SelectedPartInstance != null) {
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
+                parameters.Add(ParameterKeys.IsEdit, true);
+                parameters.Add(ParameterKeys.IsNew, false);
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+            }
         }
     }
 }
