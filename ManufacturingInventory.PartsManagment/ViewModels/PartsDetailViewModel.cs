@@ -48,7 +48,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._context = context;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
-            //this._eventAggregator.GetEvent<LoadPartDetailsEvent>().Subscribe(async ()=>await this.LoadAsync(),ThreadOption.BackgroundThread);
             this.SelectedTabIndex = 0;
         }
 
@@ -83,9 +82,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             var part = navigationContext.Parameters[ParameterKeys.SelectedPart] as Part;
-            var isNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
-            var isEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
             if (part is Part) {
+                var isNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
+                var isEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
                 this.SelectedPart = part;
                 this._isEdit = isEdit;
                 this._isNewPart = isNew;

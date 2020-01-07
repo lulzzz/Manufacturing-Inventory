@@ -35,7 +35,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
             if (this.userService.IsValid()) {
                 var container = containerRegistry.GetContainer();
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
-                container.Register<IModuleCommands, TransactionCommands>();
 
                 containerRegistry.Register<ILogInService, LogInService>();
                 containerRegistry.Register<IDomainManager, DomainManager>();
@@ -43,7 +42,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
             } else {
                 this.Shutdown();
             }
-
         }
 
         protected override void OnStartup(StartupEventArgs e) {

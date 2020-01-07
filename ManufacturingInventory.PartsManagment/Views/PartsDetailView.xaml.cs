@@ -18,11 +18,11 @@ namespace ManufacturingInventory.PartsManagment.Views
     /// </summary>
     public partial class PartsDetailView : UserControl
     {
+        public string PanelCaption { get { return "Part Details"; } }
+
         public PartsDetailView()
         {
-           
             InitializeComponent();
-            //this._partDetailsTabControl.TabContentCacheMode = DevExpress.Xpf.Core.TabContentCacheMode.CacheAllTabs;
         }
     }
 }

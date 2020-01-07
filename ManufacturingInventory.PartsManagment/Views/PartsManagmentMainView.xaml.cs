@@ -28,5 +28,6 @@ namespace ManufacturingInventory.PartsManagment.Views {
             InitializeComponent();
             this.IsActive = true;
         }
+
     }
 }

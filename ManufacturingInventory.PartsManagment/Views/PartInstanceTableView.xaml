@@ -25,8 +25,7 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="PartInstanceTableDispatcher" />
-        <dxmvvm:EventToCommand EventName="Loaded"
-                               Command="{Binding InitializeCommand}" />
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <dxb:BarManager.Bars>
@@ -57,26 +56,20 @@
             </dxb:Bar>
         </dxb:BarManager.Bars>
         <dxg:GridControl x:Name="_listOfPartInstances"
+                         Style="{StaticResource GridControlStyle}"
                          ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
                          SelectedItem="{Binding SelectedPartInstance,Mode=TwoWay,IsAsync=True}"
-                         AutoExpandAllGroups="True"
-                         SelectionMode="Row"
                          ShowLoadingPanel="{Binding ShowTableLoading,Mode=TwoWay}">
             <dxmvvm:Interaction.Behaviors>
                 <common:GridExportService x:Name="PartInstanceTableExportService" />
             </dxmvvm:Interaction.Behaviors>
             <dxg:GridControl.View>
                 <dxg:TableView x:Name="_instanceTableView"
+                               Style="{StaticResource TableViewStyleNoMaster}"
                                ShowSearchPanelMode="Always"
-                               SearchPanelNullText="Search By Rank"
-                               AllowGrouping="True"
-                               ShowGroupPanel="True"
+                               SearchPanelNullText="Search By Name"
                                SearchColumns="Name"
-                               AllowEditing="False"
-                               FontSize="12"
-                               BestFitArea="All"
-                               BestFitMode="Smart"
-                               AllowBestFit="True">
+                               AutoWidth="False">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand EventName="Loaded"
                                                Command="{Binding ElementName=_instanceTableView, Path=TableViewCommands.BestFitColumns}" />

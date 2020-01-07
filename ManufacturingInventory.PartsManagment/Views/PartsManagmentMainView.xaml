@@ -17,45 +17,55 @@
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="PanelStyle"
+               TargetType="{x:Type dxdo:LayoutPanel}">
+            <Setter Property="ShowCloseButton"
+                    Value="False" />
+            <Setter Property="AllowClose"
+                    Value="False" />
+        </Style>
+    </UserControl.Resources>
     <dx:LoadingDecorator>
-        <dxdo:LayoutPanel ShowCloseButton="False"
-                          ShowPinButton="False"
-                          ShowBorder="False"
-                          ShowControlBox="False"
-                          ShowHideButton="False">
-            <dxlc:DockLayoutControl>
-                <ContentControl prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartsNavigationRegion}" 
-                                dxlc:DockLayoutControl.Dock="Left" 
-                                dxlc:DockLayoutControl.AllowHorizontalSizing="True" 
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch" />
-                <ContentControl prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartDetailsRegion}"
-                                dxlc:DockLayoutControl.Dock="Client"
-                                dxlc:DockLayoutControl.AllowHorizontalSizing="True"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch"/>
-                <ContentControl  prism:RegionManager.RegionName="{x:Static common:LocalRegions.DetailsRegion}"
-                                 dxlc:DockLayoutControl.Dock="Right"
-                                 dxlc:DockLayoutControl.AllowHorizontalSizing="True"
-                                 VerticalAlignment="Stretch"
-                                 HorizontalAlignment="Stretch" />
-            </dxlc:DockLayoutControl>
-            <!--<dxlc:LayoutControl>
-                <dxlc:LayoutGroup Orientation="Horizontal">
-                    <dxlc:LayoutItem VerticalAlignment="Stretch"
-                                     dxlc:LayoutControl.AllowHorizontalSizing="True">
-                        <ContentControl prism:RegionManager.RegionName="{x:Static common:Regions.PartsNavigationRegion}" />
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem VerticalAlignment="Stretch"
-                                     dxlc:LayoutControl.AllowHorizontalSizing="True">
-                        <ContentControl prism:RegionManager.RegionName="{x:Static common:Regions.PartDetailsRegion}" />
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem VerticalAlignment="Stretch"
-                                     dxlc:LayoutControl.AllowHorizontalSizing="True">
-                        <ContentControl  prism:RegionManager.RegionName="{x:Static common:Regions.PartInstanceDetailsRegion}" />
-                    </dxlc:LayoutItem>
-                </dxlc:LayoutGroup>
-            </dxlc:LayoutControl>-->
-        </dxdo:LayoutPanel>
+        <dxdo:DockLayoutManager x:Name="PartManagmentDockLayoutManager" FloatingMode="Window">
+            <dxdo:LayoutGroup Name="root">
+                <dxdo:LayoutPanel x:Name="_navPane"
+                                  prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartsNavigationRegion}"
+                                  CaptionHorizontalAlignment="Center"
+                                  Style="{StaticResource PanelStyle}">
+                    <dxdo:LayoutPanel.CaptionTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="Navigation"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </dxdo:LayoutPanel.CaptionTemplate>
+                </dxdo:LayoutPanel>
+                <dxdo:LayoutPanel x:Name="_mainDetailsPane"
+                                  prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartDetailsRegion}"
+                                  CaptionHorizontalAlignment="Center"
+                                  Style="{StaticResource PanelStyle}">
+                    <dxdo:LayoutPanel.CaptionTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="Part Details"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </dxdo:LayoutPanel.CaptionTemplate>
+                </dxdo:LayoutPanel>
+                <dxdo:LayoutPanel x:Name="_detailsPane"
+                                  prism:RegionManager.RegionName="{x:Static common:LocalRegions.DetailsRegion}"
+                                  CaptionHorizontalAlignment="Center"
+                                  Style="{StaticResource PanelStyle}">
+                    <dxdo:LayoutPanel.CaptionTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="Details"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </dxdo:LayoutPanel.CaptionTemplate>
+                </dxdo:LayoutPanel>
+            </dxdo:LayoutGroup>
+        </dxdo:DockLayoutManager>
     </dx:LoadingDecorator>
 </UserControl>

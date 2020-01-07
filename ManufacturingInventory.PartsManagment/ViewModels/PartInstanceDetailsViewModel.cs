@@ -30,6 +30,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isNew = false;
         private bool _isBubbler = false;
         private bool _isNotBubbler = false;
+        private bool _isInitialized = false;
 
         private ObservableCollection<Condition> _conditions;
         private ObservableCollection<Location> _locations;
@@ -55,7 +56,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._context = context;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializedHandler);
-            this.SaveCommand = new AsyncCommand(this.SaveHandler,false);
+            this.SaveCommand = new AsyncCommand(this.SaveHandler);
             this.CancelCommand = new AsyncCommand(this.DiscardHandler);
         }
 
@@ -121,6 +122,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
+        public bool IsEdit {
+            get => this._isEdit;
+            set => SetProperty(ref this._isEdit, !value);
+        }
+
         public Visibility CostVisibility { 
             get => this._costVisibility;
             set => SetProperty(ref this._costVisibility, value);
@@ -142,14 +148,31 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public async Task InitializedHandler() {
-            var conditions = await this._context.Categories.OfType<Condition>().ToListAsync();
-            this.Conditions = new ObservableCollection<Condition>(conditions);
+            if (!this._isInitialized) {
+                var conditions = await this._context.Categories.OfType<Condition>().ToListAsync();
+                this.Conditions = new ObservableCollection<Condition>(conditions);
 
-            var types = await this._context.Categories.OfType<PartType>().ToListAsync();
-            this.PartTypes = new ObservableCollection<PartType>(types);
+                var types = await this._context.Categories.OfType<PartType>().ToListAsync();
+                this.PartTypes = new ObservableCollection<PartType>(types);
 
-            var locations = await this._context.Locations.ToListAsync();
-            this.Locations = new ObservableCollection<Location>(locations);
+                var locations = await this._context.Locations.ToListAsync();
+                this.Locations = new ObservableCollection<Location>(locations);
+                if (this.SelectedPartInstance != null) {
+
+                    if (this.SelectedPartInstance.Condition != null) {
+                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                    }
+
+                    if (this.SelectedPartInstance.CurrentLocation != null) {
+                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                    }
+
+                    if (this.SelectedPartInstance.PartType != null) {
+                        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                    }
+                }
+                this._isInitialized = true;
+            }
         }
 
         public async Task SaveHandler() {
@@ -193,13 +216,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.DispatcherService.BeginInvoke(() => {
                         this.MessageBoxService.ShowMessage("Save Done, Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
                     });
-                    this._eventAggregator.GetEvent<ReloadEvent>().Publish(this.SelectedPartInstance.PartId);
+                    ReloadEventTraveler traveler = new ReloadEventTraveler() {
+                        PartId = this.SelectedPartInstance.PartId,
+                        PartInstanceId = this.SelectedPartInstance.Id
+                    };
+                    this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
+                    this.SaveCancelVisibility = Visibility.Collapsed;
+                    this.IsEdit = false;
                 } catch {
                     this.DispatcherService.BeginInvoke(() => {
                         this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
                     });
                 }
-
             }
         }
 
@@ -217,10 +245,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
-
             if (partInstance is PartInstance) {
+                this._isInitialized = false;
                 this.SelectedPartInstance = partInstance;
-                this._isEdit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
+                var edit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
                 this._isNew = (bool)navigationContext.Parameters[ParameterKeys.IsNew];
                 this.IsBubbler = this.SelectedPartInstance.IsBubbler;
                 this.IsNotBubbler = !this.IsBubbler;
@@ -228,26 +256,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.StockVisibility = (this._isBubbler) ? Visibility.Collapsed : Visibility.Visible;
                 this.CostVisibility = (this.SelectedPartInstance.CostReported) ? Visibility.Visible : Visibility.Collapsed;
                 this.WeightVisibility = (this._isBubbler) ? Visibility.Visible : Visibility.Collapsed;
-                this.SaveCancelVisibility = (this._isEdit || this._isNew) ? Visibility.Visible : Visibility.Collapsed;
+                this.SaveCancelVisibility = (edit || this._isNew) ? Visibility.Visible : Visibility.Collapsed;
 
-
-                if (this.SelectedPartInstance.Condition != null) {
-                    this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
-                    //this.SelectedConditionIndex = this.Conditions.IndexOf(this.SelectedCondition);
-                }
-
-                if (this.SelectedPartInstance.CurrentLocation != null) {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                    });
-
-                    //this.SelectedLocationIndex = this.Locations.IndexOf(this.SelectedLocation);
-                }
-
-                if (this.SelectedPartInstance.PartType != null) {
-                    this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
-                    //this.SelectedPartTypeIndex = this.PartTypes.IndexOf(this.SelectedPartType);
-                }
+                this.IsEdit = edit;
             }
         }
     }

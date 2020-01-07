@@ -32,7 +32,7 @@
         <dxmvvm:EventToCommand EventName="Loaded"
                                Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
-    <dxb:BarManager>
+    <dxb:BarManager HorizontalAlignment="Stretch" >
         <dxb:BarManager.Bars>
             <dxb:Bar ShowDragWidget="False"
                      ShowSizeGrip="False"
@@ -64,20 +64,16 @@
         <dxg:GridControl x:Name="_transactions"
                          ItemsSource="{Binding Transactions,IsAsync=True,Mode=TwoWay}"
                          SelectedItem="{Binding SelectedTransaction,Mode=TwoWay,IsAsync=True}"
-                         ShowLoadingPanel="{Binding ShowTableLoading,Mode=TwoWay}">
+                         ShowLoadingPanel="{Binding IsLoading,Mode=TwoWay}">
             <dxmvvm:Interaction.Behaviors>
                 <common:GridExportService x:Name="TransactionTableExportService" />
             </dxmvvm:Interaction.Behaviors>
             <dxg:GridControl.View>
-                <dxg:TableView SearchColumns="Rank"
-                               SearchPanelNullText="Search by Rank"
-                               FontSize="12"
-                               BestFitArea="All"
-                               BestFitMode="Smart"
-                               AllowBestFit="True">
+                <dxg:TableView x:Name="_transactionsTblView"
+                               Style="{StaticResource TableViewStyleNoMasterNoSearch}"
+                               SearchPanelNullText="Search by Rank">
                     <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:EventToCommand EventName="Loaded"
-                                               Command="{Binding ElementName=tableview1, Path=TableViewCommands.BestFitColumns}" />
+                        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding ElementName=_transactionsTblView, Path=TableViewCommands.BestFitColumns}" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:TableView.RowCellMenuCustomizations>
                         <dxb:BarButtonItem Content="View Details"

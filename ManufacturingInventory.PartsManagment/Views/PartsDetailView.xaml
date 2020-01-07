@@ -28,51 +28,49 @@
         <dxmvvm:DispatcherService x:Name="PartDetailsDispatcher" />
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
-        <dxlc:GroupBox>
-            <dxlc:GroupBox.HeaderTemplate>
-                <DataTemplate>
-                    <TextBlock Text="Part Details" HorizontalAlignment="Center" FontSize="16"/>
-                </DataTemplate>
-            </dxlc:GroupBox.HeaderTemplate>
-            <dxlc:DockLayoutControl>
-                <dx:DXTabControl x:Name="_partDetailsTabControl"
-                                 dxlc:DockLayoutControl.Dock="Client"
-                                 SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
-                    <dx:DXTabControl.TabContentCacheMode>
-                        <dx:TabContentCacheMode>CacheTabsOnSelecting</dx:TabContentCacheMode>
-                    </dx:DXTabControl.TabContentCacheMode>
-                    <dx:DXTabControl.View>
-                        <dx:TabControlStretchView />
-                    </dx:DXTabControl.View>
-                    <dx:DXTabItem Header="Summary"
-                                  Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}"
-                                  TabIndex="0"
-                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartSummaryRegion}"
-                                  prism:RegionManager.RegionContext="{Binding SelectedPart}">
-                        
-                    </dx:DXTabItem>
-                    <dx:DXTabItem Header="Part Instances"
-                                  Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
-                                  TabIndex="1"
-                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartInstanceTableRegion}"
-                                  prism:RegionManager.RegionContext="{Binding SelectedPart.Id}" />
-                    <dx:DXTabItem Header="Attachments"
-                                  Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
-                                  TabIndex="2"
-                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.AttachmentTableRegion}"
-                                  prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}"/>
-                    <dx:DXTabItem Header="Transactions"
-                                  Glyph="{dx:DXImage Image=AgendaView_16x16.png}"
-                                  TabIndex="3"
-                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.TransactionTableRegion}"
-                                  prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}" />
-                </dx:DXTabControl>
-                <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Bottom" Visibility="{Binding Visibility,Mode=TwoWay}" Height="50">
-                    <dx:SimpleButton Content="Save" Command="{Binding SavePartCommand}" Glyph="{dx:DXImage Image=Save_32x32.png}"/>
-                    <dx:SimpleButton Content="Cancel" Command="{Binding CancelPartCommand}" Glyph="{dx:DXImage Image=Cancel_32x32.png}"/>
-                </dxlc:LayoutGroup>
-            </dxlc:DockLayoutControl>
-        </dxlc:GroupBox>
+        <dxlc:DockLayoutControl>
+            <dx:DXTabControl x:Name="_partDetailsTabControl"
+                             dxlc:DockLayoutControl.Dock="Client"
+                             SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
+                <dx:DXTabControl.TabContentCacheMode>
+                    <dx:TabContentCacheMode>CacheTabsOnSelecting</dx:TabContentCacheMode>
+                </dx:DXTabControl.TabContentCacheMode>
+                <dx:DXTabControl.View>
+                    <dx:TabControlStretchView />
+                </dx:DXTabControl.View>
+                <dx:DXTabItem Header="Summary"
+                              Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}"
+                              TabIndex="0"
+                              prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartSummaryRegion}"
+                              prism:RegionManager.RegionContext="{Binding SelectedPart}"></dx:DXTabItem>
+                <dx:DXTabItem Header="Part Instances"
+                              Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
+                              TabIndex="1"
+                              prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartInstanceTableRegion}"
+                              prism:RegionManager.RegionContext="{Binding SelectedPart.Id}"
+                              HorizontalContentAlignment="Stretch" />
+                <dx:DXTabItem Header="Attachments"
+                              Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
+                              TabIndex="2"
+                              prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.AttachmentTableRegion}"
+                              prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}" />
+                <dx:DXTabItem Header="Transactions"
+                              Glyph="{dx:DXImage Image=AgendaView_16x16.png}"
+                              TabIndex="3"
+                              prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.TransactionTableRegion}"
+                              prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}" />
+            </dx:DXTabControl>
+            <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Bottom"
+                              Visibility="{Binding Visibility,Mode=TwoWay}"
+                              Height="50">
+                <dx:SimpleButton Content="Save"
+                                 Command="{Binding SavePartCommand}"
+                                 Glyph="{dx:DXImage Image=Save_32x32.png}" />
+                <dx:SimpleButton Content="Cancel"
+                                 Command="{Binding CancelPartCommand}"
+                                 Glyph="{dx:DXImage Image=Cancel_32x32.png}" />
+            </dxlc:LayoutGroup>
+        </dxlc:DockLayoutControl>
     </dx:LoadingDecorator>    
     
 </UserControl>

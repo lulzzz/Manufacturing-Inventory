@@ -18,6 +18,7 @@ namespace ManufacturingInventory.PartsManagment.Views
     /// </summary>
     public partial class PartsNavigationView : UserControl
     {
+        public string PanelCaption { get { return "Parts"; } }
         public PartsNavigationView()
         {
             InitializeComponent();

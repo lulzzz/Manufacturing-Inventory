@@ -5,7 +5,12 @@ using System.Text;
 
 namespace ManufacturingInventory.PartsManagment.Internal {
 
-    public class ReloadEvent:PubSubEvent<int> { }
+    public class ReloadEventTraveler {
+        public int PartId { get; set; }
+        public int PartInstanceId { get; set; }
+    }
+
+    public class ReloadEvent:PubSubEvent<ReloadEventTraveler> { }
 
     public class PartEditDoneEvent:PubSubEvent { }
 

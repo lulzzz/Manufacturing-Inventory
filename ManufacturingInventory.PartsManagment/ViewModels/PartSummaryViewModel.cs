@@ -27,7 +27,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private bool _isNewPart = false;
         private bool _isEdit = false;
-        private bool _isBubbler;
+        private bool _isBubbler = false;
 
         private ObservableCollection<Warehouse> _warehouses = new ObservableCollection<Warehouse>();
         private ObservableCollection<Organization> _organizations = new ObservableCollection<Organization>();

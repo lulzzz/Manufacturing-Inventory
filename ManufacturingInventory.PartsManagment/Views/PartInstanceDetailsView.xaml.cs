@@ -18,6 +18,8 @@ namespace ManufacturingInventory.PartsManagment.Views
     /// </summary>
     public partial class PartInstanceDetailsView : UserControl
     {
+        public string PanelCaption { get { return "Part Instance Details"; } }
+
         public PartInstanceDetailsView()
         {
             InitializeComponent();
