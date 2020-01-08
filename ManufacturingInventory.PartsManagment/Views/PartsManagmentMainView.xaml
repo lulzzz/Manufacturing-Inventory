@@ -28,6 +28,7 @@
     </UserControl.Resources>
     <dx:LoadingDecorator>
         <dxdo:DockLayoutManager x:Name="PartManagmentDockLayoutManager" FloatingMode="Window">
+            
             <dxdo:LayoutGroup Name="root">
                 <dxdo:LayoutPanel x:Name="_navPane"
                                   prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartsNavigationRegion}"

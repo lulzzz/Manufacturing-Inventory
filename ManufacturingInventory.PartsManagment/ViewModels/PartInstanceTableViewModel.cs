@@ -35,6 +35,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public AsyncCommand InitializeCommand { get; private set;  }
         public AsyncCommand<string> ExportTransactionsCommand { get; private set; }
+        public PrismCommands.DelegateCommand AddToOutgoingCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewInstanceDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
 
@@ -47,6 +48,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ViewInstanceDetailsCommand = new PrismCommands.DelegateCommand(this.ViewInstanceDetailsHandler);
             this.EditInstanceCommand = new PrismCommands.DelegateCommand(this.EditInstanceHandler);
             this._eventAggregator.GetEvent<ReloadEvent>().Subscribe(async (traveler) => await this.ReloadHandler(traveler));
+            this.AddToOutgoingCommand = new PrismCommands.DelegateCommand(this.AddToOutgoingHandler);
         }
 
         public override bool KeepAlive => false;
@@ -109,6 +111,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 parameters.Add(ParameterKeys.IsEdit, false);
                 parameters.Add(ParameterKeys.IsNew, false);
                 this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+            }
+        }
+
+        private void AddToOutgoingHandler() {
+            if (this.SelectedPartInstance != null) {
+                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckoutView, parameters);
             }
         }
 

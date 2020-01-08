@@ -82,6 +82,10 @@
                                            Glyph="{dx:DXImage Image=Action_Edit.png}"
                                            Command="{Binding Path=View.DataContext.EditInstanceCommand}" />
                         <dxb:BarItemSeparator />
+                        <dxb:BarButtonItem Content="Add To Outgoing"
+                                           Glyph="{dx:DXImage Image=Right_16x16.png}"
+                                           Command="{Binding Path=View.DataContext.AddToOutgoingCommand}" />
+                        <dxb:BarItemSeparator />
                     </dxg:TableView.RowCellMenuCustomizations>
                 </dxg:TableView>
             </dxg:GridControl.View>

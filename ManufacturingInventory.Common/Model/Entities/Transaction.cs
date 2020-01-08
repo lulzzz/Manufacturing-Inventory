@@ -136,5 +136,16 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.Quantity = 1;
             this.IsReturning = false;
         }
+
+        public Transaction(PartInstance instance, InventoryAction inventoryAction) {
+            this.PartInstance = instance;
+            this.UnitCost = instance.UnitCost;
+            this.TimeStamp = DateTime.Now;
+            if (instance.IsBubbler) {
+                this.ParameterValue = instance.BubblerParameter.Weight;
+                this.Quantity = 1;
+            }
+            this.InventoryAction = inventoryAction;
+        }
     }
 }
