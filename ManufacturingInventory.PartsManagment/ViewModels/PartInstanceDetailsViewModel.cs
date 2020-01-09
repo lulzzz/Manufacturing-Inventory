@@ -179,7 +179,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             var partInstance = this._context.PartInstances.Include(e => e.BubblerParameter).FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);
             if (partInstance != null) {
                 if (this.SelectedPartInstance.Condition != null) {
-                    if (this.SelectedCondition.Id != this.SelectedPartInstance.ConditionId) {
+                    if (this.SelectedCondition.Id != partInstance.ConditionId) {
                         partInstance.ConditionId = this.SelectedCondition.Id;
                     }
                 }

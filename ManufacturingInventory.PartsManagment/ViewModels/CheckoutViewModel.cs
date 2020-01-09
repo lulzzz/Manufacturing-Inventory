@@ -18,6 +18,9 @@ using ManufacturingInventory.Common.Application.UI.Services;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using ManufacturingInventory.Common.Buisness.Interfaces;
+using ManufacturingInventory.Common.Model.DbContextExtensions;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class CheckoutViewModel : InventoryViewModelNavigationBase {
@@ -27,6 +30,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private ManufacturingContext _context;
         private IEventAggregator _eventAggregator;
+        private IUserService _userService;
 
         private string _quantityLabel;
 
@@ -36,6 +40,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private PartInstance _selectedPartInstance;
         private Transaction _newTransaction = new Transaction();
         private Consumer _selectedConsumer;
+        private DateTime _timeStamp;
         private double _measuredWeight;
         private double _weight;
         private double _totalCost;
@@ -52,15 +57,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand CancelCommand { get; private set; }
 
 
-        public CheckoutViewModel(ManufacturingContext context,IEventAggregator eventAggregator) {
+        public CheckoutViewModel(ManufacturingContext context,IEventAggregator eventAggregator,IUserService userService) {
             this._context = context;
             this._eventAggregator = eventAggregator;
+            this._userService = userService;
             this.InitializeCommand = new AsyncCommand(this.LoadHandler);
             this.CheckOutCommand = new AsyncCommand(this.CheckOutHandler);
             this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler,this.CanAdd);
             this.RemoveFromOutgoingCommand = new AsyncCommand(this.RemoveFromOutgoingHandler);
             this.CancelCommand = new AsyncCommand(this.CancelHandler);
             this.ExportOutgoingCommand = new AsyncCommand<ExportFormat>(this.ExportOutputHandler);
+
+            this._eventAggregator.GetEvent<AddToOutgoingEvent>().Subscribe(this.RecievePartInstance);
         }
 
         public override bool KeepAlive => false;
@@ -138,45 +146,109 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedConsumer;
             set => SetProperty(ref this._selectedConsumer, value);
         }
+        public DateTime TimeStamp { 
+            get => this._timeStamp;
+            set => SetProperty(ref this._timeStamp, value);
+        }
+
+        private void RecievePartInstance(PartInstance instance) {
+            this.TimeStamp = DateTime.Now;
+            this.SelectedPartInstance = instance;
+            this.IsBubbler = !instance.IsBubbler;
+            this.IsNotBubbler = instance.IsBubbler;
+            this.QuantityLabel = (instance.IsBubbler) ? "Quantity" : "Enter Quantity";
+            if (instance.IsBubbler) {
+                this.Quantity = instance.Quantity;
+            } else {
+                this.Quantity = 0;
+            }
+        }
 
         private async Task AddToOutgoingHandler() {
             await Task.Run(() => {
-                if (this.IsBubbler) {
-                    this.NewTransaction.TotalCost = this.TotalCost;
-                    this.NewTransaction.ParameterValue = this.Weight;
-                    this.NewTransaction.IsReturning = true;
+                var transaction = this.Transactions.FirstOrDefault(e => e.PartInstance.Id == this.SelectedPartInstance.Id);
+                if (transaction==null) {
+                    Transaction newTransaction = new Transaction(this.SelectedPartInstance, InventoryAction.OUTGOING,this.TimeStamp, this.Weight, true, this.SelectedConsumer);
+                    DispatcherService.BeginInvoke(() => {
+                        this.Transactions.Add(newTransaction);
+                        this.MessageBoxService.ShowMessage("Item added to Output", "Success");
+                    });
+                    this.SelectedPartInstance = null;
+                    this.NewTransaction = null;
+                    this.SelectedConsumer = null;
                 } else {
-
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.MessageBoxService.ShowMessage("Error: Outgoing Already Contains Item", "Error", MessageButton.OK, MessageIcon.Error);
+                    });
                 }
-                this.NewTransaction.Quantity = this.Quantity;
-                this.NewTransaction.LocationId = this.SelectedConsumer.Id;
-                
-                DispatcherService.BeginInvoke(() => {
-                    this.Transactions.Add(this.NewTransaction);
-                    this.MessageBoxService.ShowMessage("Item added to Output", "Success");
-                });
             });
         }
 
         private async Task RemoveFromOutgoingHandler() {
-
+            if (this.SelectedTransaction != null) {
+                await Task.Run(() => {
+                    this.DispatcherService.BeginInvoke(() => {
+                        if (this.Transactions.Remove(this.SelectedTransaction)) {
+                            this.MessageBoxService.ShowMessage("Item Removed from Outgoing List", "Success", MessageButton.OK, MessageIcon.Information);
+                        } else {
+                            this.MessageBoxService.ShowMessage("Error Removing Item From Outgoing", "Error", MessageButton.OK, MessageIcon.Error);
+                        }
+                    });
+                });
+            }
         }
 
-        private async Task CheckOutHandler() {
+        private async Task CheckOutHandler() {           
+            if (this.Transactions.Count > 0) {
+                this.Transactions.ToList().ForEach(async (transaction)=> {
+                    transaction.SessionId = this._userService.CurrentSession.Id;
+                    transaction.PartInstance.CostReported = false;
+                    this._context.Entry<PartInstance>(transaction.PartInstance).State = EntityState.Modified;
+                    this._context.Entry<Location>(transaction.Location).State = EntityState.Modified;
+                    await this._context.Transactions.AddAsync(transaction);
+                });
+                try {
+                    await this._context.SaveChangesAsync();
+                } catch (DbUpdateException e) {
+                    this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage(e.Message, "Error", MessageButton.OK, MessageIcon.Error));
+                    this._context.UndoDbContext();
+                } catch (Exception e) {
+                    this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage(e.Message, "Error", MessageButton.OK, MessageIcon.Error));
+                    this._context.UndoDbContext();
+                }
 
+                this.DispatcherService.BeginInvoke(() => {
+                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+                });
+            }
         }
 
         private async Task CancelHandler() {
-
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+                });
+            });
         }
 
         private bool CanAdd() {
-            return this.SelectedConsumer != null && this.Quantity >= 1;
+            bool canAdd = true;
+            if (this.SelectedPartInstance != null) {
+                if (this.IsBubbler) {
+                    canAdd = (this.Weight > 0) && (this.Weight <= this.SelectedPartInstance.BubblerParameter.NetWeight);
+                } else {
+                    canAdd = (this.Quantity > 0) && (this.Quantity <= this.SelectedPartInstance.Quantity);
+                }
+            } else {
+                canAdd = false;
+            }
+            canAdd = canAdd & (this.SelectedConsumer != null);
+            return canAdd;
         }
 
         private async Task LoadHandler() {
             if (!this._isInitialized) {
-                var consumers = await this._context.Locations.OfType<Consumer>().ToListAsync();
+                var consumers = await this._context.Locations.AsNoTracking().OfType<Consumer>().ToListAsync();
                 this.Consumers = new ObservableCollection<Consumer>(consumers);
                 this._isInitialized = true;
             }
@@ -189,7 +261,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     using (FileStream file = File.Create(path)) {
                         this.ExportService.Export(file, format);
                     }
-                    Process.Start(path);
+                    using(var process=new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
                 });
             });
         }
@@ -197,21 +274,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
             if (partInstance is PartInstance) {
-                if (partInstance.Quantity >= 1) {
-                    Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING);
-                    this.SelectedPartInstance = partInstance;
-                    this.NewTransaction = transaction;
-                    this._isInitialized = false;
-                    
-                    this.IsBubbler = !partInstance.IsBubbler;
-                    this.IsNotBubbler = partInstance.IsBubbler;
-                    this.QuantityLabel = (this._isBubbler) ? "Quantity" : "Enter Quantity";
-                    if (partInstance.IsBubbler) {
-                        this.TotalCost = partInstance.TotalCost;
-                        this.Quantity = partInstance.Quantity;
-                    }
+                this._isInitialized = false;
+                this.SelectedPartInstance = partInstance;
+                this.IsBubbler = !partInstance.IsBubbler;
+                this.IsNotBubbler = partInstance.IsBubbler;
+                this.QuantityLabel = (partInstance.IsBubbler) ? "Quantity" : "Enter Quantity";
+                if (partInstance.IsBubbler) {
+                    this.Quantity = partInstance.Quantity;
                 } else {
-                    this.MessageBoxService.ShowMessage("Error: Item must have a Quantity of 1 or more", "Error", MessageButton.OK, MessageIcon.Error);
+                    this.Quantity = 0;
                 }
             }
         }

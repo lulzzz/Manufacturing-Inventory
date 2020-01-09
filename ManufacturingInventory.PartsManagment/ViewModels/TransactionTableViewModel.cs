@@ -30,6 +30,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Transaction _selectedTransaction;
         private int _selectedPartId;
         private bool _showTableLoading;
+        private bool _isBubbler;
+        private bool _isNotBubbler;
+
+
 
         public AsyncCommand InitializeCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
@@ -63,6 +67,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._showTableLoading, value);
         }
 
+        public bool IsBubbler {
+            get => this._isBubbler;
+            set => SetProperty(ref this._isBubbler, value);
+        }
+
+        public bool IsNotBubbler {
+            get => this._isNotBubbler;
+            set => SetProperty(ref this._isNotBubbler, value);
+        }
+
         private void ViewTransactionDetailsHandler() {
             if (this.SelectedTransaction!=null){
                 this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
@@ -75,9 +89,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task InitializeHandler() {
             this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
-            var transactions = await this._context.Transactions.Include(e => e.PartInstance).Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
-            this.Transactions = new ObservableCollection<Transaction>(transactions);
-            this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = false);
+            var part = await this._context.Parts.AsNoTracking().FirstOrDefaultAsync(e => e.Id == this.SelectedPartId);
+            var transactions = await this._context.Transactions.AsNoTracking()
+                .Include(e => e.PartInstance)
+                .Include(e=>e.Location)
+                .Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
+
+            this.Dispatcher.BeginInvoke(() => {
+                this.Transactions = new ObservableCollection<Transaction>(transactions);
+                this.IsBubbler = part.HoldsBubblers;
+                this.IsNotBubbler = !this.IsBubbler;
+                this.ShowTableLoading = false;
+            });
         }
     }
 }

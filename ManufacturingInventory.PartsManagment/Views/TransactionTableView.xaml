@@ -98,6 +98,8 @@
                                     Header="Action"
                                     AllowGrouping="True"
                                     GroupIndex="0" />
+                    <dxg:GridColumn FieldName="Location.Name"
+                                    Header="Location" />
                     <dxg:GridColumn FieldName="Session.UserName"
                                     Header="Username" />
                     <dxg:GridColumn FieldName="PartInstance.Name"
@@ -106,6 +108,9 @@
                                     Header="Serial Number" />
                     <dxg:GridColumn FieldName="PartInstance.BatchNumber"
                                     Header="Lot Number" />
+                    <dxg:GridColumn FieldName="Quantity"
+                                    Header="Quantity"
+                                    Visible="{Binding IsBubbler}" />
                 </dxg:GridControlBand>
                 <dxg:GridControlBand Header="Transaction Info"
                                      VisibleIndex="1"

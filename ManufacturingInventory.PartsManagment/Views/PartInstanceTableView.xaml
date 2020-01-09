@@ -25,6 +25,7 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="PartInstanceTableDispatcher" />
+        <dx:DXMessageBoxService x:Name="PartInstanceTableMessageBoxService" />
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
@@ -105,6 +106,9 @@
                                     AllowGrouping="True" />
                     <dxg:GridColumn FieldName="IsResuable"
                                     Header="Reusable?" />
+                    <dxg:GridColumn FieldName="Quantity"
+                                    Header="Quantity" 
+                                    Visible="{Binding IsBubbler}"/>
                     <dxg:GridColumn FieldName="UnitCost"
                                     Header="Unit Cost">
                         <dxg:GridColumn.EditSettings>

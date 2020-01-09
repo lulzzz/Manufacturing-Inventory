@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManufacturingInventory.Common.Model.Entities {
 
-    public class PartInstance {
+    public class PartInstance:ICloneable {
         public int Id { get; set; }
         public string Name { get; set; }
         public string SkuNumber { get; set; }
@@ -100,6 +100,10 @@ namespace ManufacturingInventory.Common.Model.Entities {
                 this.UnitCost = this.Price.UnitCost;
                 this.TotalCost = this.UnitCost * this.BubblerParameter.NetWeight;
             }
+        }
+
+        public object Clone() {
+            return this.MemberwiseClone();
         }
     }
 }

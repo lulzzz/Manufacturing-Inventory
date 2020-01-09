@@ -47,7 +47,7 @@
                                           HorizontalContentAlignment="Center" IsReadOnly="True"/>
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Date" LabelPosition="Top" LabelHorizontalAlignment="Center">
-                                <dxe:DateEdit EditValue="{Binding NewTransaction.TimeStamp,Mode=TwoWay}"
+                                <dxe:DateEdit EditValue="{Binding TimeStamp,Mode=TwoWay}"
                                               HorizontalContentAlignment="Center" />
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
@@ -208,13 +208,15 @@
                         <dxg:GridColumn FieldName="PartInstance.Name"
                                         Header="Item"
                                         AllowEditing="False" />
+                        <dxg:GridColumn FieldName="Location.Name"
+                                        Header="Location"
+                                        AllowEditing="False" />
                         <dxg:GridColumn FieldName="PartInstance.SerialNumber"
                                         Header="Serial Number" AllowEditing="False"/>
                         <dxg:GridColumn FieldName="PartInstance.BatchNumber"
                                         Header="Batch Number"
                                         AllowEditing="False" />
                         <dxg:GridColumn FieldName="Quantity" Header="Quantity" 
-                                        Visible="{Binding IsNotBubbler,Mode=TwoWay}" 
                                         AllowEditing="True"/>
                         <dxg:GridColumn FieldName="ParameterValue"
                                         Header="Weight"
