@@ -71,11 +71,9 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.BubblerParameter = param;
         }
 
-        public void UpdateWeight(double measured) {
-            
+        public void UpdateWeight(double measured) {        
             this.BubblerParameter.Measured = measured;
             this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
-            this.UpdatePrice();
         }
 
         public void UpdatePrice() {

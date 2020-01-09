@@ -17,6 +17,7 @@ using System.Linq;
 using ManufacturingInventory.Common.Application.UI.Services;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class CheckoutViewModel : InventoryViewModelNavigationBase {
@@ -29,32 +30,44 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private string _quantityLabel;
 
-        private ObservableCollection<Transaction> _transaction;
+        private ObservableCollection<Transaction> _transactions=new ObservableCollection<Transaction>();
         private ObservableCollection<Consumer> _consumers;
         private Transaction _selectedTransaction;
         private PartInstance _selectedPartInstance;
         private Transaction _newTransaction = new Transaction();
+        private Consumer _selectedConsumer;
+        private double _measuredWeight;
+        private double _weight;
+        private double _totalCost;
+        private int _quantity;
         private bool _isBubbler = false;
         private bool _isNotBubbler = false;
         private bool _isInitialized = false;
 
         public AsyncCommand InitializeCommand { get; private set; }
-        public AsyncCommand<string> ExportOutgoingCommand { get; private set; }
+        public AsyncCommand<ExportFormat> ExportOutgoingCommand { get; private set; }
         public AsyncCommand AddToOutgoingCommand { get; private set; }
         public AsyncCommand RemoveFromOutgoingCommand { get; private set; }
+        public AsyncCommand CheckOutCommand { get; private set; }
+        public AsyncCommand CancelCommand { get; private set; }
 
 
         public CheckoutViewModel(ManufacturingContext context,IEventAggregator eventAggregator) {
             this._context = context;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.LoadHandler);
+            this.CheckOutCommand = new AsyncCommand(this.CheckOutHandler);
+            this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler,this.CanAdd);
+            this.RemoveFromOutgoingCommand = new AsyncCommand(this.RemoveFromOutgoingHandler);
+            this.CancelCommand = new AsyncCommand(this.CancelHandler);
+            this.ExportOutgoingCommand = new AsyncCommand<ExportFormat>(this.ExportOutputHandler);
         }
 
         public override bool KeepAlive => false;
 
-        public ObservableCollection<Transaction> Transaction { 
-            get => this._transaction;
-            set => SetProperty(ref this._transaction, value);
+        public ObservableCollection<Transaction> Transactions { 
+            get => this._transactions;
+            set => SetProperty(ref this._transactions, value);
         }
 
         public ObservableCollection<Consumer> Consumers {
@@ -92,6 +105,75 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._quantityLabel, value);
         }
 
+        public double MeasuredWeight { 
+            get => this._measuredWeight;
+            set {
+                this.SelectedPartInstance.UpdateWeight(value);
+                this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
+                this.SetProperty(ref this._measuredWeight, value);
+            }
+        }
+
+        public double Weight {
+            get => this._weight;
+            set => SetProperty(ref this._weight, value);
+        }
+
+        public double TotalCost { 
+            get => this._totalCost;
+            set => SetProperty(ref this._totalCost,value);
+        }
+
+        public int Quantity { 
+            get => this._quantity;
+            set {
+                if (this.SelectedPartInstance.IsBubbler) {
+                    this.TotalCost = this.SelectedPartInstance.UnitCost * value;
+                }
+                SetProperty(ref this._quantity, value);
+            }
+        }
+
+        public Consumer SelectedConsumer { 
+            get => this._selectedConsumer;
+            set => SetProperty(ref this._selectedConsumer, value);
+        }
+
+        private async Task AddToOutgoingHandler() {
+            await Task.Run(() => {
+                if (this.IsBubbler) {
+                    this.NewTransaction.TotalCost = this.TotalCost;
+                    this.NewTransaction.ParameterValue = this.Weight;
+                    this.NewTransaction.IsReturning = true;
+                } else {
+
+                }
+                this.NewTransaction.Quantity = this.Quantity;
+                this.NewTransaction.LocationId = this.SelectedConsumer.Id;
+                
+                DispatcherService.BeginInvoke(() => {
+                    this.Transactions.Add(this.NewTransaction);
+                    this.MessageBoxService.ShowMessage("Item added to Output", "Success");
+                });
+            });
+        }
+
+        private async Task RemoveFromOutgoingHandler() {
+
+        }
+
+        private async Task CheckOutHandler() {
+
+        }
+
+        private async Task CancelHandler() {
+
+        }
+
+        private bool CanAdd() {
+            return this.SelectedConsumer != null && this.Quantity >= 1;
+        }
+
         private async Task LoadHandler() {
             if (!this._isInitialized) {
                 var consumers = await this._context.Locations.OfType<Consumer>().ToListAsync();
@@ -115,13 +197,22 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
             if (partInstance is PartInstance) {
-                Transaction transaction = new Transaction(partInstance,InventoryAction.OUTGOING);
-                this.SelectedPartInstance = partInstance;
-                this.NewTransaction = transaction;
-                this._isInitialized = false;
-                this.IsBubbler = partInstance.IsBubbler;
-                this.IsNotBubbler = !partInstance.IsBubbler;
-                this.QuantityLabel = (this._isBubbler) ? "Quantity" : "Enter Quantity";
+                if (partInstance.Quantity >= 1) {
+                    Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING);
+                    this.SelectedPartInstance = partInstance;
+                    this.NewTransaction = transaction;
+                    this._isInitialized = false;
+                    
+                    this.IsBubbler = !partInstance.IsBubbler;
+                    this.IsNotBubbler = partInstance.IsBubbler;
+                    this.QuantityLabel = (this._isBubbler) ? "Quantity" : "Enter Quantity";
+                    if (partInstance.IsBubbler) {
+                        this.TotalCost = partInstance.TotalCost;
+                        this.Quantity = partInstance.Quantity;
+                    }
+                } else {
+                    this.MessageBoxService.ShowMessage("Error: Item must have a Quantity of 1 or more", "Error", MessageButton.OK, MessageIcon.Error);
+                }
             }
         }
 
@@ -132,7 +223,5 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override void OnNavigatedFrom(NavigationContext navigationContext) { 
 
         }
-
-
     }
 }

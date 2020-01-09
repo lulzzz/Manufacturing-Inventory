@@ -26,8 +26,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:DispatcherService x:Name="CheckoutMessageBoxService" />
-        <dx:DXMessageBoxService x:Name="CheckoutDispatcherService" />
+        <dxmvvm:DispatcherService x:Name="CheckoutDispatcherService" />
+        <dx:DXMessageBoxService x:Name="CheckoutMessageBoxService" />
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
@@ -72,7 +72,7 @@
                                          LabelPosition="Top"
                                          LabelHorizontalAlignment="Center">
                             <dxe:SpinEdit TextWrapping="Wrap"
-                                          Text="{Binding NewTransaction.Quantity}"
+                                          Text="{Binding Quantity}"
                                           Increment="1"
                                           MinValue="0"
                                           MaskType="Numeric"
@@ -86,14 +86,14 @@
                                           AllowSpinOnMouseWheel="False"
                                           Increment="1"
                                           MaskType="Numeric"
-                                          Mask="##.##"
+                                          Mask="#####.##"
                                           MinValue="0"
                                           dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Calculated Weight"
                                          LabelHorizontalAlignment="Center"
                                          LabelPosition="Top">
-                            <dxe:SpinEdit Text="{Binding NewTransaction.ParameterValue,Mode=TwoWay}"
+                            <dxe:SpinEdit Text="{Binding Weight,Mode=TwoWay}"
                                           AllowSpinOnMouseWheel="False"
                                           Increment="1"
                                           MaskType="Numeric"
@@ -101,30 +101,31 @@
                                           MinValue="0"
                                           dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
                         </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                    <dxlc:LayoutGroup>
                         <dxlc:LayoutItem Label="Unit Cost"
                                          LabelPosition="Top"
                                          LabelHorizontalAlignment="Center">
                             <dxe:SpinEdit TextWrapping="Wrap"
                                           IsReadOnly="True"
-                                          Text="{Binding SelectedPartInstance.UnitCost}"
+                                          EditValue="{Binding SelectedPartInstance.UnitCost}"
                                           Increment="1"
                                           MinValue="0"
                                           MaskType="Numeric"
-                                          Mask="c"/>
+                                          Mask="$####.##"/>
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Total Cost"
                                          LabelPosition="Top"
                                          LabelHorizontalAlignment="Center">
                             <dxe:SpinEdit TextWrapping="Wrap"
                                           IsReadOnly="True"
-                                          Text="{Binding NewTransaction.TotalCost}"
+                                          EditValue="{Binding TotalCost}"
                                           Increment="1"
                                           MinValue="0"
                                           MaskType="Numeric"
-                                          Mask="c" />
+                                          Mask="$####.##" />
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
-                    
                     <dxlc:LayoutGroup Orientation="Horizontal">
                         <dxlc:LayoutItem Label="Consumer"
                                          LabelPosition="Top"
