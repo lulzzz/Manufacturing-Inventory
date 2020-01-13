@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWpf>True</UseWpf>
-    <FileVersion>1.2.127.0109</FileVersion>
+    <FileVersion>1.2.140.0113</FileVersion>
   </PropertyGroup>
 
   <!--<ItemGroup>
@@ -51,9 +51,5 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\Interfaces\" />
   </ItemGroup>
 </Project>

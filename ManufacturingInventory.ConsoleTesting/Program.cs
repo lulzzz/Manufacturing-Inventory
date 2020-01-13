@@ -2,23 +2,100 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using IWshRuntimeLibrary;
+using ManufacturingInventory.Common.Buisness.Concrete;
 using ManufacturingInventory.Common.Model;
 using ManufacturingInventory.Common.Model.Entities;
+using ManufacturingInventory.Common.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
-        public static void Main(string[] args) {
+        //public static void Main(string[] args) {
+        //    Console.WriteLine("Testing Service Started:");
+        //    var context = new ManufacturingContext();
+        //    var service = new PartInstanceService(context,new UserService());
+        //    var instance = service.GetPartInstance(e => e.Id == 7,false);
+        //    var location = context.Locations.FirstOrDefault(e => e.Id == 4);
+        //    var condition = context.Categories.OfType<Condition>().FirstOrDefault(e => e.Id == 1);
+            
+        //    instance.LocationId = location.Id;
+        //    instance.ConditionId = condition.Id;
+        //    instance.UpdateWeight(2600);
+        //    var updated=service.Update(instance,false);
+        //    //if (updated != null) {
+        //    //    Console.WriteLine("Success");
+        //    //} else {
+        //    //    Console.WriteLine("Error Saving");
+        //    //}
+        //    if (updated != null) {
+        //        if (service.SaveChanges()) {
+        //            Console.WriteLine("Success");
+        //        } else {
+        //            Console.WriteLine("Save Failed");
+        //        }
+        //    } else {
+        //        Console.WriteLine("Update Failed");
+        //    }
+        //    Console.ReadKey();
 
-            CreateLocations();
-            CreateDistibutors();
-            CreateCategories();
-            DistributorPriceTesting();
-            TransactionTesting();
-            ReturnTransactionTest();
-            //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
+
+        //    //CreateLocations();
+        //    //CreateDistibutors();
+        //    //CreateCategories();
+        //    //DistributorPriceTesting();
+        //    //TransactionTesting();
+        //    //ReturnTransactionTest();
+        //    //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
+        //}
+        public static async Task<int> Main(string[] args) {
+            var context = new ManufacturingContext();
+            var partInstance = await context.PartInstances.FirstOrDefaultAsync(e => e.Id == 1);
+            partInstance.Quantity = 4442;
+            var entry=context.Update(partInstance);
+
+            await context.SaveChangesAsync();
+            Console.WriteLine("Updated,Press Any Key To Continue");
+            Console.ReadKey();
+            entry.State = EntityState.Detached;
+            var entity = entry.Entity;
+            entity.Quantity = 888;
+            await context.SaveChangesAsync();
+            Console.WriteLine("Saved Again");
+            Console.ReadKey();
+
+            return 1;
         }
+
+        #region EntityServiceTesting
+
+        public static async Task TestPartInstanceService() {
+            Console.WriteLine("Testing Service Started:");
+            var context = new ManufacturingContext();
+            var service = new PartInstanceService(context);
+            var instance = await service.GetEntityAsync(e => e.Id == 7, false);
+            var location = await context.Locations.FirstOrDefaultAsync(e => e.Id == 4);
+            var condition = await context.Categories.OfType<Condition>().FirstOrDefaultAsync(e => e.Id == 1);
+
+            instance.LocationId = location.Id;
+            instance.ConditionId = condition.Id;
+            instance.UpdateWeight(2600);
+            var updated = await service.UpdateAsync(instance, false);
+            if (updated != null) {
+                if (service.SaveChanges()) {
+                    Console.WriteLine("Success");
+                } else {
+                    Console.WriteLine("Save Failed");
+                }
+            } else {
+                Console.WriteLine("Update Failed");
+            }
+            Console.ReadKey();
+        }
+
+        #endregion
+
 
         #region DatabaseTesting
 

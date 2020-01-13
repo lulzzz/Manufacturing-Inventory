@@ -28,7 +28,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("CheckoutDispatcherService"); }
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("ExportOutgoingService"); }
 
-        private ManufacturingContext _context;
+        //private ManufacturingContext _context;
+        private IPartManagerService _partManagerService;
         private IEventAggregator _eventAggregator;
         private IUserService _userService;
 
@@ -57,8 +58,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand CancelCommand { get; private set; }
 
 
-        public CheckoutViewModel(ManufacturingContext context,IEventAggregator eventAggregator,IUserService userService) {
-            this._context = context;
+        public CheckoutViewModel(IPartManagerService partManagerService,IEventAggregator eventAggregator,IUserService userService) {
+            this._partManagerService = partManagerService;
             this._eventAggregator = eventAggregator;
             this._userService = userService;
             this.InitializeCommand = new AsyncCommand(this.LoadHandler);
@@ -116,7 +117,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public double MeasuredWeight { 
             get => this._measuredWeight;
             set {
-                this.SelectedPartInstance.UpdateWeight(value);
+               this.SelectedPartInstance.UpdateWeight(value);
                 this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
                 this.SetProperty(ref this._measuredWeight, value);
             }
@@ -146,6 +147,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedConsumer;
             set => SetProperty(ref this._selectedConsumer, value);
         }
+
         public DateTime TimeStamp { 
             get => this._timeStamp;
             set => SetProperty(ref this._timeStamp, value);
@@ -198,30 +200,44 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        private async Task CheckOutHandler() {           
+        private async Task CheckOutHandler() {
             if (this.Transactions.Count > 0) {
-                this.Transactions.ToList().ForEach(async (transaction)=> {
-                    transaction.SessionId = this._userService.CurrentSession.Id;
-                    transaction.PartInstance.CostReported = false;
-                    this._context.Entry<PartInstance>(transaction.PartInstance).State = EntityState.Modified;
-                    this._context.Entry<Location>(transaction.Location).State = EntityState.Modified;
-                    await this._context.Transactions.AddAsync(transaction);
-                });
-                try {
-                    await this._context.SaveChangesAsync();
-                } catch (DbUpdateException e) {
-                    this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage(e.Message, "Error", MessageButton.OK, MessageIcon.Error));
-                    this._context.UndoDbContext();
-                } catch (Exception e) {
-                    this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage(e.Message, "Error", MessageButton.OK, MessageIcon.Error));
-                    this._context.UndoDbContext();
+                bool success=await this._partManagerService.BatchCheckOutAsync(this._transactions.ToList());
+                if (success) {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.MessageBoxService.ShowMessage("Done", "Success", MessageButton.OK, MessageIcon.Information);
+                        this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+                    });
+                } else {
+                    this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage("Something Failed", "Error", MessageButton.OK, MessageIcon.Error));
                 }
-
-                this.DispatcherService.BeginInvoke(() => {
-                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
-                });
             }
         }
+
+        //private async Task CheckOutHandler() {           
+        //    if (this.Transactions.Count > 0) {
+        //        this.Transactions.ToList().ForEach(async (transaction)=> {
+        //            transaction.SessionId = this._userService.CurrentSession.Id;
+        //            transaction.PartInstance.CostReported = false;
+        //            this._context.Entry<PartInstance>(transaction.PartInstance).State = EntityState.Modified;
+        //            this._context.Entry<Location>(transaction.Location).State = EntityState.Modified;
+        //            await this._context.Transactions.AddAsync(transaction);
+        //        });
+        //        try {
+        //            await this._context.SaveChangesAsync();
+        //        } catch (DbUpdateException e) {
+        //            this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage(e.Message, "Error", MessageButton.OK, MessageIcon.Error));
+        //            this._context.UndoDbContext();
+        //        } catch (Exception e) {
+        //            this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage(e.Message, "Error", MessageButton.OK, MessageIcon.Error));
+        //            this._context.UndoDbContext();
+        //        }
+
+        //        this.DispatcherService.BeginInvoke(() => {
+        //            this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+        //        });
+        //    }
+        //}
 
         private async Task CancelHandler() {
             await Task.Run(() => {
@@ -248,7 +264,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task LoadHandler() {
             if (!this._isInitialized) {
-                var consumers = await this._context.Locations.AsNoTracking().OfType<Consumer>().ToListAsync();
+                //var consumers = await this._context.Locations.AsNoTracking().OfType<Consumer>().ToListAsync();
+                var consumers = (await this._partManagerService.LocationService.GetEntityListAsync()).OfType<Consumer>();
                 this.Consumers = new ObservableCollection<Consumer>(consumers);
                 this._isInitialized = true;
             }

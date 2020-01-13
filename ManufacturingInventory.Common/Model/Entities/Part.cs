@@ -39,5 +39,25 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.Warehouse = warehouse;
             this.Usage = usage;
         }
+
+        public Part(Part part) {
+            this.Name = part.Name;
+            this.Description = part.Description;
+            this.HoldsBubblers = part.HoldsBubblers;
+            this.OgranizationId = part.OgranizationId;
+            this.WarehouseId = part.WarehouseId;
+            this.UsageId = part.WarehouseId;
+            this.UsageId = part.UsageId;
+        }
+
+        public void Set(Part part) {
+            this.Name = part.Name;
+            this.Description = part.Description;
+            this.HoldsBubblers = part.HoldsBubblers;
+            this.OgranizationId = part.OgranizationId;
+            this.WarehouseId = part.WarehouseId;
+            this.UsageId = part.WarehouseId;
+            this.UsageId = part.UsageId;
+        }
     }
 }

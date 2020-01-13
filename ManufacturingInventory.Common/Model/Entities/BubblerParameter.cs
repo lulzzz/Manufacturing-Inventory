@@ -32,5 +32,27 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.Tare = tare;
             this.PartInstance = instance;
         }
+
+        public void Set(BubblerParameter bubbler) {
+            this.Weight = bubbler.Weight;
+            this.NetWeight = bubbler.NetWeight;
+            this.Tare = bubbler.Tare;
+            this.GrossWeight = bubbler.GrossWeight;
+            this.Measured =bubbler.Measured;
+            this.DateInstalled = bubbler.DateInstalled;
+            this.DateRemoved = bubbler.DateRemoved;
+        }
+
+        public bool Compare(BubblerParameter rhs) {
+            return (this.NetWeight == rhs.NetWeight) 
+                && (this.GrossWeight == rhs.GrossWeight) 
+                && (this.Weight == rhs.Weight) 
+                && (this.Measured==rhs.Measured) 
+                && (this.Tare == rhs.Tare) 
+                && (this.DateInstalled == rhs.DateInstalled) 
+                && (this.DateRemoved == rhs.DateRemoved);
+        }
+
+
     }
 }

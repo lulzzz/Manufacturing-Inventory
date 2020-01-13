@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ManufacturingInventory.PartsManagment.Internal.Services {
+namespace ManufacturingInventory.Common.Data {
     public interface IEntityService<T> where T:class {
         Task LoadAsync();
         void Load();
@@ -16,10 +16,13 @@ namespace ManufacturingInventory.PartsManagment.Internal.Services {
         Task<T> AddAsync(T entity,bool save);
         T Delete(T entity,bool save);
         Task<T> DeleteAsync(T entity,bool save);
-        T GetPartInstance(Expression<Func<T, bool>> expression);
-        Task<T> GetPartInstanceAsync(Expression<Func<T, bool>> expression);
-        IEnumerable<T> GetPartInstanceList(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
-        Task<IEnumerable<T>> GetPartInstanceListAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+
+        T GetEntity(Expression<Func<T, bool>> expression,bool tracking);
+        Task<T> GetEntityAsync(Expression<Func<T, bool>> expression, bool tracking);
+        IEnumerable<T> GetEntityList(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+        Task<IEnumerable<T>> GetEntityListAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
+        Task<bool> SaveChangesAsync(bool undoIfFail);
+        bool SaveChanges(bool undoIfFail);
         Task<bool> SaveChangesAsync();
         bool SaveChanges();
     }

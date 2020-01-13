@@ -16,6 +16,11 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.ItemsAtLocation = new ObservableHashSet<PartInstance>();
             this.Transactions = new ObservableHashSet<Transaction>();
         }
+
+        public void Set(Location location) {
+            this.Name = location.Name;
+            this.Description = location.Description;
+        }
     }
 
     public class Warehouse : Location {

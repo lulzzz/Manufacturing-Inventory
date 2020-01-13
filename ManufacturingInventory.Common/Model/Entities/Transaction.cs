@@ -104,18 +104,16 @@ namespace ManufacturingInventory.Common.Model.Entities {
         }
 
         public Transaction(PartInstance instance, InventoryAction inventoryAction,DateTime timeStamp, double parameterValue, bool isReturning, Location location) {
+            this.PartInstanceId = instance.Id;
             this.PartInstance = instance;
             this.ParameterValue = parameterValue;
-            this.UnitCost = this.PartInstance.UnitCost;
-            this.TotalCost = (this.PartInstance.IsBubbler) ? (this.PartInstance.TotalCost) : (this.Quantity * this.UnitCost);
+            this.UnitCost = instance.UnitCost;
+            this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost) : (this.Quantity * this.UnitCost);
             this.TimeStamp = timeStamp;
             this.InventoryAction = inventoryAction;
             this.IsReturning = isReturning;
-            this.Location = location;
-            this.PartInstance.CurrentLocation = location;
+            this.LocationId = location.Id;
             this.Quantity = 1;
-            this.PartInstance.CostReported = false;
-            this.PartInstance.Quantity = 0;
         }
 
         /// <summary>
@@ -171,6 +169,19 @@ namespace ManufacturingInventory.Common.Model.Entities {
             }
 
             this.InventoryAction = inventoryAction;
+        }
+
+        public void Set(Transaction transaction) {
+            this.TimeStamp = transaction.TimeStamp;
+            this.InventoryAction = transaction.InventoryAction;
+            this.Quantity = transaction.Quantity;
+            this.ParameterValue = transaction.ParameterValue;
+            this.UnitCost = transaction.UnitCost;
+            this.TotalCost = transaction.UnitCost;
+            this.SessionId = transaction.SessionId;
+            this.PartInstanceId = transaction.PartInstanceId;
+            this.LocationId = transaction.LocationId;
+            this.ReferenceTransactionId = transaction.ReferenceTransactionId;
         }
 
         public object Clone() {

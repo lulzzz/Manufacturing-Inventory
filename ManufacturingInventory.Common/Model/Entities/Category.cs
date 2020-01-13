@@ -12,6 +12,21 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public Category() {
 
         }
+
+        public Category(string name,string description) {
+            this.Name = name;
+            this.Description = description;
+        }
+
+        public Category(Category category) {
+            this.Name = category.Name;
+            this.Description = category.Description;
+        }
+
+        public void Set(Category category) {
+            this.Name = category.Name;
+            this.Description = category.Description;
+        }
     }
 
     public partial class Organization : Category {
@@ -21,16 +36,25 @@ namespace ManufacturingInventory.Common.Model.Entities {
             this.Parts = new ObservableHashSet<Part>();
         }
 
-        public Organization(string name, string description) : this() {
-            this.Name = name;
-            this.Description = description;
+        public Organization(string name, string description) :base(name,description) {
+            this.Parts = new ObservableHashSet<Part>();
         }
+
+        public Organization(Organization organization) : base(organization) { }
     }
 
     public partial class Condition : Category {
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 
         public Condition() {
+            this.PartInstances = new ObservableHashSet<PartInstance>();
+        }
+
+        public Condition(string name, string description) : base(name, description) {
+            this.PartInstances = new ObservableHashSet<PartInstance>();
+        }
+
+        public Condition(Condition condition):base(condition) {
             this.PartInstances = new ObservableHashSet<PartInstance>();
         }
     }
@@ -41,11 +65,28 @@ namespace ManufacturingInventory.Common.Model.Entities {
         public Usage() {
             this.Parts = new ObservableHashSet<Part>();
         }
+
+        public Usage(string name, string description) : base(name, description) {
+            this.Parts = new ObservableHashSet<Part>();
+        }
+
+        public Usage(Usage usage):base(usage) {
+            this.Parts = new ObservableHashSet<Part>();
+        }
     }
 
     public partial class PartType : Category {
         public virtual ICollection<PartInstance> PartInstances { get; set; }
+
         public PartType() {
+            this.PartInstances = new ObservableHashSet<PartInstance>();
+        }
+
+        public PartType(string name, string description) : base(name, description) {
+            this.PartInstances = new ObservableHashSet<PartInstance>();
+        }
+
+        public PartType(PartType type):base(type) {
             this.PartInstances = new ObservableHashSet<PartInstance>();
         }
     }
