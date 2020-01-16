@@ -9,6 +9,15 @@ using ManufacturingInventory.Common.Model.Entities;
 
 namespace ManufacturingInventory.PartsManagment.Internal {
 
+    public class PartManagmentResponce {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        
+        public PartManagmentResponce(bool success,string message) {
+            this.Success = success;
+            this.Message = message;
+        }
+    }
 
     public interface IPartManagerService {
 
@@ -18,21 +27,15 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         IEntityService<Part> PartService { get; }
         IEntityService<PartInstance> PartInstanceService { get; }
         IEntityService<Location> LocationService { get; }
-        IEntityService<Condition> ConditionService { get; }
-        //IEntityService<Usage> UsageService { get; }
-        //IEntityService<Organization> OrganizationService { get; }
+        IEntityService<Category> CategoryService { get; }
         //IEntityService<Attachment> AttachmentService { get; }
         IEntityService<Transaction> TransactionService { get; }
-        //IEntityService<Price> PriceService { get; }
 
-        bool BatchCheckOut(IList<Transaction> transactions);
-        Task<bool> BatchCheckOutAsync(IList<Transaction> transactions);
+        PartManagmentResponce CheckOut(IList<Transaction> transactions, bool isBubbler);
+        Task<PartManagmentResponce> CheckOutAsync(IList<Transaction> transactions,bool isBubbler);
 
-        bool CheckIn(Transaction transaction);
-        Task<bool> CheckInAsync(Transaction transaction);
-
-        bool CheckOut(Transaction transaction);
-        Task<bool> CheckOutAsync(Transaction transaction,bool save);
+        PartManagmentResponce CheckIn(Transaction transaction);
+        Task<PartManagmentResponce> CheckInAsync(Transaction transaction);
 
         bool DeletePart(Part part,bool save);
         Task<bool> DeletePartAsync(Part part, bool save);

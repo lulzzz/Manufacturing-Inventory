@@ -5,8 +5,6 @@ using System.Text;
 using DevExpress.Mvvm;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Common.Application.UI.Services;
-using ManufacturingInventory.Common.Model;
-using ManufacturingInventory.Common.Model.Entities;
 using ManufacturingInventory.PartsManagment.Internal;
 using Prism.Events;
 using Prism.Regions;
@@ -16,6 +14,9 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Infrastructure.Model.Services;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTableViewModel : InventoryViewModelBase {
@@ -33,9 +34,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isBubbler;
         private bool _isNotBubbler;
 
-        private IPartManagerService _partManagerService;
+        //private IPartManagerService _partManagerService;
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
+        private IEntityProvider<PartInstance> _provider;
         //private ManufacturingContext _context;
 
         public AsyncCommand InitializeCommand { get; private set;  }
@@ -44,9 +46,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public PrismCommands.DelegateCommand ViewInstanceDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
 
-        public PartInstanceTableViewModel(IPartManagerService partManagerService, IEventAggregator eventAggregator,IRegionManager regionManager) {
-            //this._context = context;
-            this._partManagerService = partManagerService;
+        public PartInstanceTableViewModel(IEntityProvider<PartInstance> provider, IEventAggregator eventAggregator,IRegionManager regionManager) {
+            this._provider = provider;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this._isEdit = false;
@@ -103,37 +104,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
-        //private async Task InitializeHandler() {
-        //    this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-        //    var part =await this._context.Parts.AsNoTracking().FirstOrDefaultAsync(e => e.Id == this.SelectedPartId);
-
-        //    var partInstances = await this._context.PartInstances
-        //        .AsNoTracking()
-        //        .Include(e => e.Transactions)
-        //            .ThenInclude(e => e.Session)
-        //        .Include(e => e.PartType)
-        //        .Include(e => e.CurrentLocation)
-        //        .Include(e => e.Price)
-        //        .Include(e => e.BubblerParameter)
-        //        .Include(e => e.Condition)
-        //        .Where(e => e.PartId == this.SelectedPartId).ToListAsync();
-
-        //    this.DispatcherService.BeginInvoke(() => {
-        //        this.IsBubbler = part.HoldsBubblers;
-        //        this.IsNotBubbler = !this.IsBubbler;
-        //        this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
-        //        this.ShowTableLoading = false; 
-        //    });
-        //}
-
         private async Task InitializeHandler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-
-            var part = await this._partManagerService.PartService.GetEntityAsync(e => e.Id == this.SelectedPartId,false);
-            var partInstances = await this._partManagerService.PartInstanceService.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
+            var partInstances = await this._provider.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
+            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+            //var part = await this._partManagerService.PartService.GetEntityAsync(e => e.Id == this.SelectedPartId,false);
+            //var partInstances = await this._partManagerService.PartInstanceService.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = part.HoldsBubblers;
+                this.IsBubbler = bubbler;
                 this.IsNotBubbler = !this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.ShowTableLoading = false;
@@ -183,7 +162,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DispatcherService.BeginInvoke(() => {
                 this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
             });
-            await this.InitializeHandler();
+            await this.ReloadHandler(new ReloadEventTraveler() { PartId=this.SelectedPartId,PartInstanceId=0});
         }
 
         //private async Task ReloadHandler(ReloadEventTraveler traveler) {
@@ -221,16 +200,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task ReloadHandler(ReloadEventTraveler traveler) {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-            await this._partManagerService.PartInstanceService.LoadAsync();
-            await this._partManagerService.PartService.LoadAsync();
 
-            var part = await this._partManagerService.PartService.GetEntityAsync(e => e.Id == traveler.PartId, false);
-
-            var partInstances = await this._partManagerService.PartInstanceService.GetEntityListAsync(e => e.PartId == traveler.PartId);
+            await this._provider.LoadAsync();
+            var partInstances = await this._provider.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
+            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = part.HoldsBubblers;
-                this.IsNotBubbler = !this.IsBubbler;
+                this.IsBubbler = bubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
                 this.ShowTableLoading = false;

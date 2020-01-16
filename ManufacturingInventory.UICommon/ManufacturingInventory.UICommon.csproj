@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <FileVersion>1.0.1.0116</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
+    <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources\CommonControlResources.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+  </ItemGroup>
+
+</Project>

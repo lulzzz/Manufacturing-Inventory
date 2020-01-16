@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <FileVersion>1.0.1.0116</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Effortless.Net.Encryption" Version="1.0.0" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

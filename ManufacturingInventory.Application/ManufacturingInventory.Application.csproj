@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <FileVersion>1.0.1.0116</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

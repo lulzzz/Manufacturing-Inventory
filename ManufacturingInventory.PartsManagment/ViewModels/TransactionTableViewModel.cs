@@ -6,9 +6,7 @@ using Prism.Regions;
 using DevExpress.Mvvm;
 using PrismCommands = Prism.Commands;
 using Prism.Events;
-using ManufacturingInventory.Common.Model;
 using System.Windows;
-using ManufacturingInventory.Common.Model.Entities;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ManufacturingInventory.PartsManagment.Internal;
@@ -16,13 +14,16 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Prism;
-
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Services;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class TransactionTableViewModel : InventoryViewModelBase {
 
         private IRegionManager _regionManager;
-        private ManufacturingContext _context;
+        //private ManufacturingContext _context;
+        IEntityProvider<Transaction> _provider;
+        private IPartManagerService _partManager;
 
         protected IDispatcherService Dispatcher { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
 
@@ -38,9 +39,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand InitializeCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
 
-        public TransactionTableViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,ManufacturingContext context) {
+        public TransactionTableViewModel(IEntityProvider<Transaction> provider,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._regionManager = regionManager;
-            this._context = context;
+            this._provider = provider;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ViewDetailsCommand = new PrismCommands.DelegateCommand(this.ViewTransactionDetailsHandler);
         }
@@ -89,11 +90,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task InitializeHandler() {
             this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
-            var part = await this._context.Parts.AsNoTracking().FirstOrDefaultAsync(e => e.Id == this.SelectedPartId);
-            var transactions = await this._context.Transactions.AsNoTracking()
-                .Include(e => e.PartInstance)
-                .Include(e=>e.Location)
-                .Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
+            //var part = await this._context.Parts.AsNoTracking().FirstOrDefaultAsync(e => e.Id == this.SelectedPartId);
+            var part = await this._partManager.PartService.GetEntityAsync(e => e.Id == this.SelectedPartId,false);
+            var transactions = await this._partManager.TransactionService.GetEntityListAsync(e => e.PartInstance.PartId == this.SelectedPartId);
+            //var transactions = await this._context.Transactions.AsNoTracking()
+            //    .Include(e => e.PartInstance)
+            //    .Include(e=>e.Location)
+            //    .Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
 
             this.Dispatcher.BeginInvoke(() => {
                 this.Transactions = new ObservableCollection<Transaction>(transactions);

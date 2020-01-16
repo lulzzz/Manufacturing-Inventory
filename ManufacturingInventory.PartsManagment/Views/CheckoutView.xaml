@@ -76,43 +76,46 @@
                                           Increment="1"
                                           MinValue="0"
                                           MaskType="Numeric"
-                                          IsReadOnly="{Binding IsNotBubbler}"
+                                          IsReadOnly="{Binding IsBubbler}"
                                           dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
                         </dxlc:LayoutItem>
-                        <dxlc:LayoutItem Label="Enter Measured Weight"
-                                         LabelHorizontalAlignment="Center"
-                                         LabelPosition="Top">
-                            <dxe:SpinEdit Text="{Binding MeasuredWeight,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          AllowSpinOnMouseWheel="False"
-                                          Increment="1"
-                                          MaskType="Numeric"
-                                          Mask="#####.##"
-                                          MinValue="0"
-                                          dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem Label="Calculated Weight"
-                                         LabelHorizontalAlignment="Center"
-                                         LabelPosition="Top">
-                            <dxe:SpinEdit Text="{Binding Weight,Mode=TwoWay}"
-                                          AllowSpinOnMouseWheel="False"
-                                          Increment="1"
-                                          MaskType="Numeric"
-                                          Mask="##.##"
-                                          MinValue="0"
-                                          dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
-                        </dxlc:LayoutItem>
+                        <dxlc:LayoutGroup Visibility="{Binding IsBubbler,Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                            <dxlc:LayoutItem Label="Enter Measured Weight"
+                                             LabelHorizontalAlignment="Center"
+                                             LabelPosition="Top">
+                                <dxe:SpinEdit Text="{Binding MeasuredWeight,Mode=TwoWay}"
+                                              AllowSpinOnMouseWheel="False"
+                                              Increment="1"
+                                              MaskType="Numeric"
+                                              Mask="#####.##"
+                                              MinValue="0"
+                                              dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
+                            </dxlc:LayoutItem>
+                            <dxlc:LayoutItem Label="Calculated Weight"
+                                             LabelHorizontalAlignment="Center"
+                                             LabelPosition="Top">
+                                <dxe:SpinEdit Text="{Binding Weight,Mode=TwoWay}"
+                                              AllowSpinOnMouseWheel="False"
+                                              Increment="1"
+                                              MaskType="Numeric"
+                                              Mask="####.##"
+                                              MinValue="0"
+                                              dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
+                            </dxlc:LayoutItem>
+                        </dxlc:LayoutGroup>
+
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup>
                         <dxlc:LayoutItem Label="Unit Cost"
                                          LabelPosition="Top"
                                          LabelHorizontalAlignment="Center">
                             <dxe:SpinEdit TextWrapping="Wrap"
-                                          IsReadOnly="True"
                                           EditValue="{Binding SelectedPartInstance.UnitCost}"
                                           Increment="1"
                                           MinValue="0"
                                           MaskType="Numeric"
-                                          Mask="$####.##"/>
+                                          Mask="$####.##"
+                                          IsReadOnly="True"/>
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Total Cost"
                                          LabelPosition="Top"

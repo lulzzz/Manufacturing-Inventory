@@ -16,6 +16,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Condition = ManufacturingInventory.Common.Model.Entities.Condition;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceDetailsViewModel : InventoryViewModelNavigationBase {
@@ -25,13 +27,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private ManufacturingContext _context;
-        IEntityService<PartInstance> _entityService;
+        //private IPartManagerService _partManager;
+        private IRepository<PartInstance> _repository;
 
         private bool _isEdit = false;
         private bool _isNew = false;
         private bool _isBubbler = false;
-        private bool _isNotBubbler = false;
         private bool _isInitialized = false;
 
         private ObservableCollection<Condition> _conditions;
@@ -45,6 +46,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Location _selectedLocation;
         private Condition _selectedCondition;
         private PartType _selectedPartType;
+        private double _measuredWeight;
+        private double _weight;
+        private double _grossWeight;
+        private double _netWeight;
+        private double _unitCost;
+        private double _totalCost;
+        private int _quantity;
         private int _selectedConditionIndex;
         private int _selectedPartTypeIndex;
         private int _selectedLocationIndex;
@@ -53,11 +61,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
 
-        public PartInstanceDetailsViewModel(ManufacturingContext context,IEventAggregator eventAggregator,IRegionManager regionManager,IEntityService<PartInstance> entityService) {
+        public PartInstanceDetailsViewModel(, IEventAggregator eventAggregator,IRegionManager regionManager) {
+            this._repository = repository;
             this._regionManager = regionManager;
-            this._context = context;
             this._eventAggregator = eventAggregator;
-            this._entityService = entityService;
             this.InitializeCommand = new AsyncCommand(this.InitializedHandler);
             this.SaveCommand = new AsyncCommand(this.SaveHandler);
             this.CancelCommand = new AsyncCommand(this.DiscardHandler);
@@ -100,26 +107,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedCondition, value);
         }
 
-        public int SelectedConditionIndex { 
-            get => this._selectedConditionIndex;
-            set => SetProperty(ref this._selectedConditionIndex, value);
-        }
-
-        public int SelectedPartTypeIndex { 
-            get => this._selectedPartTypeIndex;
-            set => SetProperty(ref this._selectedPartTypeIndex, value);
-        }
-
-        public int SelectedLocationIndex { 
-            get => this._selectedLocationIndex;
-            set => SetProperty(ref this._selectedLocationIndex, value);
-        }
-
-        public bool IsNotBubbler {
-            get => this._isNotBubbler;
-            set => SetProperty(ref this._isNotBubbler, value);
-        }
-
         public bool IsBubbler {
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
@@ -127,7 +114,75 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public bool IsEdit {
             get => this._isEdit;
-            set => SetProperty(ref this._isEdit, !value);
+            set => SetProperty(ref this._isEdit, value);
+        }
+
+        public double Weight {
+            get => this._weight;
+            set => this.SetProperty(ref this._weight, value);
+        }
+
+        public double Measured {
+            get => this._measuredWeight;
+            set {
+                if (this.SelectedPartInstance != null) {
+                    this.SelectedPartInstance.UpdateWeight(value);
+                    this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
+                }
+                this.SetProperty(ref this._measuredWeight, value);
+            }
+        }
+
+
+        public double GrossWeight {
+            get => this._grossWeight;
+            set {
+                if (this.IsBubbler) {
+                    this.SelectedPartInstance.BubblerParameter.GrossWeight = value;
+                    this.SelectedPartInstance.UpdateWeight();
+                    this.Weight = this.SelectedPartInstance.BubblerParameter.Measured;
+                    this.SelectedPartInstance.UpdatePrice();
+                }
+                SetProperty(ref this._grossWeight, value);
+            }
+        }
+
+        public double NetWeight {
+            get => this._netWeight;
+            set {
+                if (this.IsBubbler) {
+                    this.SelectedPartInstance.BubblerParameter.NetWeight = value;
+                    this.SelectedPartInstance.UpdateWeight();
+                    this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
+                    this.TotalCost = this.SelectedPartInstance.TotalCost;
+                }
+                SetProperty(ref this._netWeight, value);
+            }
+        }
+
+        public double UnitCost {
+            get => this._unitCost;
+            set {
+                this.SelectedPartInstance.Price.UnitCost = value;
+                this.SelectedPartInstance.UpdatePrice();
+                this.TotalCost = this.SelectedPartInstance.TotalCost;
+                SetProperty(ref this._unitCost, value);
+            }
+        }
+
+        public double TotalCost {
+            get => this._totalCost;
+            set => SetProperty(ref this._totalCost, value);
+        }
+
+        public int Quantity {
+            get => this._quantity;
+            set {
+                if (!this.IsBubbler) {
+                    this.TotalCost = this.SelectedPartInstance.UnitCost * value;
+                }
+                SetProperty(ref this._quantity, value);
+            }
         }
 
         public Visibility CostVisibility { 
@@ -152,13 +207,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
-                var conditions = await this._context.Categories.OfType<Condition>().ToListAsync();
-                this.Conditions = new ObservableCollection<Condition>(conditions);
 
-                var types = await this._context.Categories.OfType<PartType>().ToListAsync();
-                this.PartTypes = new ObservableCollection<PartType>(types);
+                var categories =await this._partManager.CategoryService.GetEntityListAsync();
+                this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
 
-                var locations = await this._context.Locations.ToListAsync();
+                var locations = await this._partManager.LocationService.GetEntityListAsync();
                 this.Locations = new ObservableCollection<Location>(locations);
                 if (this.SelectedPartInstance != null) {
 
@@ -179,7 +233,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public async Task SaveHandler() {
-            var updated=await this._entityService.UpdateAsync(this.SelectedPartInstance,true);
+            if (this.SelectedCondition != null) {
+                this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
+            }
+
+            if (this.SelectedLocation != null) {
+                this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
+            }
+
+            if (this.SelectedPartType != null) {
+                this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
+            }
+
+            var updated=await this._partManager.PartInstanceService.UpdateAsync(this.SelectedPartInstance,true);
             if (updated!=null) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage("Save Done, Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
@@ -274,7 +340,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 var edit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
                 this._isNew = (bool)navigationContext.Parameters[ParameterKeys.IsNew];
                 this.IsBubbler = this.SelectedPartInstance.IsBubbler;
-                this.IsNotBubbler = !this.IsBubbler;
+                if (this.IsBubbler) {
+                    this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
+                    this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
+                    this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
+                }
+                this.UnitCost = this.SelectedPartInstance.UnitCost;
+                
 
                 this.StockVisibility = (this._isBubbler) ? Visibility.Collapsed : Visibility.Visible;
                 this.CostVisibility = (this.SelectedPartInstance.CostReported) ? Visibility.Visible : Visibility.Collapsed;

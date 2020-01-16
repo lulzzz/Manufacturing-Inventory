@@ -7,8 +7,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using ManufacturingInventory.Common.Buisness.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManufacturingInventory.PartsManagment.Internal {
+
+
     public class PartManagmentService : IPartManagerService {
 
         public ManufacturingContext Context { get; private set; }
@@ -18,7 +21,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public IEntityService<Part> PartService { get; private set; }
         public IEntityService<PartInstance> PartInstanceService { get; private set; }
         public IEntityService<Location> LocationService { get; private set; }
-        public IEntityService<Condition> ConditionService { get; private set; }
+        public IEntityService<Category> CategoryService { get; private set; }
         //public IEntityService<Usage> UsageService { get; private set; }
        //public IEntityService<Organization> OrganizationService { get; private set; }
         public IEntityService<Transaction> TransactionService { get; private set; }
@@ -29,56 +32,75 @@ namespace ManufacturingInventory.PartsManagment.Internal {
             this.PartService = new PartService(context);
             this.PartInstanceService = new PartInstanceService(context);
             this.LocationService = new LocationService(context);
-            this.ConditionService = new ConditionService(context);
+            this.CategoryService = new CategoryService(context);
             this.TransactionService = new TransactionService(context);
         }
 
-        public bool CheckIn(Transaction transaction) => throw new NotImplementedException();
-        public Task<bool> CheckInAsync(Transaction transaction) => throw new NotImplementedException();
 
-        public bool BatchCheckOut(IList<Transaction> transactions) => throw new NotImplementedException();
+        public PartManagmentResponce CheckOut(IList<Transaction> transactions, bool isBubbler) => throw new NotImplementedException();
 
-        public async Task<bool> BatchCheckOutAsync(IList<Transaction> transactions) {
-            bool success = true;
+        public async Task<PartManagmentResponce> CheckOutAsync(IList<Transaction> transactions,bool isBubbler) {
+            
             List<Task> tasks = new List<Task>();
-            foreach(var transaction in transactions) {
-                transaction.SessionId = this.UserService.CurrentSession.Id;
-                success = success & await this.CheckOutAsync(transaction, true);
+            StringBuilder succeeded = new StringBuilder();
+            StringBuilder failed = new StringBuilder();
+            bool success = true;
+            failed.AppendLine("Failed Items: ");
+            succeeded.AppendLine("Successful Items: ");
+            Category used;
+            if (isBubbler) {
+                used = await this.CategoryService.GetEntityAsync(e => e.Name == "Used", false);
+            } else {
+                used = null;
             }
-            return success;
-            //if (success) {
-            //    return await this.SaveChangesAsync(true);
-            //} else {
-            //    await this.UndoChangesAsync();
-            //    return false;
-            //}
+            foreach (var transaction in transactions) {
+                this.ConfigureTransaction(transaction, transaction.InventoryAction,(Condition)used);
+                var val=await this.Context.SaveChangesAsync();
+                if (val>0) {
+                    succeeded.AppendFormat("PartInstance: {0}", transaction.PartInstance.Name).AppendLine();
+                } else {
+                    success = false;
+                    failed.AppendFormat("PartInstance: {0}", transaction.PartInstance.Name).AppendLine();
+                }
+            }
+            succeeded.AppendLine(failed.ToString());
+            return new PartManagmentResponce(success, succeeded.ToString());
         }
 
-        public bool CheckOut(Transaction transaction) => throw new NotImplementedException();
 
-        public async Task<bool> CheckOutAsync(Transaction transaction,bool save) {
-            var partInstance = await this.PartInstanceService.GetEntityAsync(e => e.Id == transaction.PartInstance.Id,true);
-            var location =await this.LocationService.GetEntityAsync(e => e.Id == transaction.Location.Id, true);
-            if(partInstance!=null && location != null) {
-                partInstance.LocationId = location.Id;
-                if (partInstance.IsBubbler) {
-                    partInstance.CostReported = false;
-                    partInstance.Quantity = 0;
-                }
-                var checkOut=await this.TransactionService.AddAsync(transaction, false);
-                if (checkOut != null) {
-                    if (save) {
-                        return await this.SaveChangesAsync();
-                    } else {
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
+        private void ConfigureTransaction(Transaction transaction,InventoryAction action,Condition condition=null) {
+            transaction.SessionId = this.UserService.CurrentSession.Id;
+            if (transaction.PartInstance.IsBubbler) {
+                transaction.PartInstance.UpdateQuantity(-1);
+                transaction.PartInstance.CostReported = false;           
             } else {
-                return false;
+                transaction.PartInstance.UpdateQuantity(0 - transaction.Quantity);
+            }
+            transaction.PartInstance.CurrentLocation = transaction.Location;
+            if (condition != null) {
+                transaction.PartInstance.Condition = condition;
+                var entry = this.Context.Entry<Condition>(condition);
+                if (entry.State == EntityState.Detached) {
+                    entry.State = EntityState.Modified;
+                }
+            }
+            var locEntry=this.Context.Entry<Location>(transaction.Location);
+            if (locEntry.State == EntityState.Detached) {
+                locEntry.State = EntityState.Modified;
+            }
+            var instanceEntry=this.Context.Entry<PartInstance>(transaction.PartInstance);
+            if (instanceEntry.State == EntityState.Detached) {
+                instanceEntry.State = EntityState.Modified;
+            }
+            if (transaction.PartInstance.IsBubbler) {
+                //this.Context.Update(transaction.PartInstance.BubblerParameter);
+                var bubblerEntry=this.Context.Entry<BubblerParameter>(transaction.PartInstance.BubblerParameter);
+                if (bubblerEntry.State == EntityState.Detached) {
+                    bubblerEntry.State = EntityState.Modified;
+                }
             }
 
+            this.Context.AddAsync<Transaction>(transaction);
         }
 
         public bool DeletePart(Part part, bool save) => throw new NotImplementedException();
@@ -87,7 +109,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public void LoadAll() {
             this.PartInstanceService.Load();
             this.LocationService.Load();
-            this.ConditionService.Load();
+            this.CategoryService.Load();
             this.TransactionService.Load();
             this.PartService.Load();
         }
@@ -95,7 +117,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public async Task LoadAllAsync() {
             await this.PartInstanceService.LoadAsync();
             await this.LocationService.LoadAsync();
-            await this.ConditionService.LoadAsync();
+            await this.CategoryService.LoadAsync();
             await this.TransactionService.LoadAsync();
             await this.PartService.LoadAsync();
         }
@@ -139,14 +161,8 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         }
 
         public async Task<bool> SaveChangesAsync() {
-            try {
-                if (this.Context.ChangeTracker.HasChanges()) {
-                    await this.Context.SaveChangesAsync();
-                }
-                return true;
-            } catch(Exception e) {
-                return false;
-            }
+            await this.Context.SaveChangesAsync();
+            return true;
         }
 
         public bool SaveChanges() {
@@ -159,5 +175,8 @@ namespace ManufacturingInventory.PartsManagment.Internal {
                 return false;
             }
         }
+
+        public PartManagmentResponce CheckIn(Transaction transaction) => throw new NotImplementedException();
+        public Task<PartManagmentResponce> CheckInAsync(Transaction transaction) => throw new NotImplementedException();
     }
 }

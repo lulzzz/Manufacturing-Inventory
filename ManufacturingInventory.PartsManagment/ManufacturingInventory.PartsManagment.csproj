@@ -3,13 +3,16 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
-    <FileVersion>1.0.263.0113</FileVersion>
+    <FileVersion>1.0.337.0116</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ManufacturingInventory.Application\ManufacturingInventory.Application.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

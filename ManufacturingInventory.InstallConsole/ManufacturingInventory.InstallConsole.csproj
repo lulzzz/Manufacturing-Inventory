@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <FileVersion>1.0.24.0108</FileVersion>
+    <FileVersion>1.0.25.0116</FileVersion>
     <StartupObject>ManufacturingInventory.InstallConsole.Program</StartupObject>
   </PropertyGroup>
 

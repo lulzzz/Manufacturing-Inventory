@@ -6,15 +6,15 @@ using Prism.Regions;
 using DevExpress.Mvvm;
 using PrismCommands = Prism.Commands;
 using Prism.Events;
-using ManufacturingInventory.Common.Model;
 using System.Windows;
-using ManufacturingInventory.Common.Model.Entities;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ManufacturingInventory.PartsManagment.Internal;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartSummaryViewModel : InventoryViewModelBase {
@@ -23,7 +23,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private ManufacturingContext _context;
+        private IRepository<Part> _repository;
+        //private ManufacturingContext _context;
 
         private bool _isNewPart = false;
         private bool _isEdit = false;
@@ -42,8 +43,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private int _selectedOrganizationIndex;
         public AsyncCommand InitializeCommand { get; private set; }
 
-        public PartSummaryViewModel(ManufacturingContext context,IRegionManager regionManager,IEventAggregator eventAggregator) {
-            this._context = context;
+        public PartSummaryViewModel(IRepository<Part> repository, IRegionManager regionManager,IEventAggregator eventAggregator) {
+            this._repository = repository;
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
@@ -107,25 +108,26 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task LoadAsync() {
-            var warehouses = await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
-            this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-            if (this._selectedPart.Warehouse != null) {               
-                this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
-                this.SelectedWarehouseIndex = this.Warehouses.IndexOf(this.SelectedWarehouse);
-            }
+            //var warehouses = await this._context.Locations.AsNoTracking().OfType<Warehouse>().ToListAsync();
+            //var warehouses = (await this._partManager.LocationService.GetEntityListAsync()).OfType<Warehouse>();
+            //this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
+            //if (this._selectedPart.Warehouse != null) {               
+            //    this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
+            //    this.SelectedWarehouseIndex = this.Warehouses.IndexOf(this.SelectedWarehouse);
+            //}
 
-            var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
-            this.UsageList =new ObservableCollection<Usage>(usageList);
-            if (this._selectedPart.Usage != null) {
-                this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-            }
+            //var usageList = await this._context.Categories.AsNoTracking().OfType<Usage>().ToListAsync();
+            //this.UsageList =new ObservableCollection<Usage>(usageList);
+            //if (this._selectedPart.Usage != null) {
+            //    this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
+            //}
 
-            var orgs = await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
-            this.Organizations = new ObservableCollection<Organization>(orgs);
-            if (this._selectedPart.Organization != null) {
+            //var orgs = await this._context.Categories.AsNoTracking().OfType<Organization>().ToListAsync();
+            //this.Organizations = new ObservableCollection<Organization>(orgs);
+            //if (this._selectedPart.Organization != null) {
 
-                this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.Id);
-            }
+            //    this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.Id);
+            //}
         }
     }
 }

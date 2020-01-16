@@ -7,17 +7,20 @@ using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Docking;
 using DevExpress.Xpf.Prism;
-using ManufacturingInventory.Common.Buisness.Interfaces;
-using ManufacturingInventory.Common.Buisness.Concrete;
-using ManufacturingInventory.Common.Model;
 using ManufacturingInventory.ManufacturingApplication.ViewModels;
 using ManufacturingInventory.ManufacturingApplication.Views;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using ManufacturingInventory.Common.Model.Entities;
 using Prism.Modularity;
 using ManufacturingInventory.PartsManagment;
 using ManufacturingInventory.PartsManagment.Internal;
+using ManufacturingInventory.Domain.Buisness.Concrete;
+using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Infrastructure.Model;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Application.UseCases;
+using ManufacturingInventory.Application.Boundaries.Checkout;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -39,6 +42,13 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 containerRegistry.Register<ILogInService, LogInService>();
                 containerRegistry.Register<IDomainManager, DomainManager>();
                 containerRegistry.RegisterInstance<IUserService>(this.userService);
+
+                containerRegistry.Register<IUseCase<CheckOutBubblerInput, CheckOutOutput>, CheckOutBubbler>();
+                containerRegistry.Register<IRepository<Category>, CategoryRepository>();
+                containerRegistry.Register<IRepository<Location>, LocationRepository>();
+                containerRegistry.Register<IRepository<PartInstance>, PartInstanceRepository>();
+                containerRegistry.Register<IRepository<Part>, PartRepository>();
+                containerRegistry.Register<IUnitOfWork, UnitOfWork>();
             } else {
                 this.Shutdown();
             }

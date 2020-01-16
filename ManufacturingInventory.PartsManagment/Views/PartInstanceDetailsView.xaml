@@ -61,19 +61,19 @@
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:TextEdit EditValue="{Binding SelectedPartInstance.Name}"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Serial Number"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:TextEdit EditValue="{Binding SelectedPartInstance.SerialNumber}"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Batch Number"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:TextEdit EditValue="{Binding SelectedPartInstance.BatchNumber}"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup>
@@ -85,7 +85,7 @@
                                           SelectedItem="{Binding SelectedLocation}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
-                                          IsReadOnly="{Binding IsEdit}">
+                                          IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}"
@@ -102,7 +102,7 @@
                                           SelectedItem="{Binding SelectedPartType}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
-                                          IsReadOnly="{Binding IsEdit}">
+                                          IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}"
@@ -119,7 +119,7 @@
                                           SelectedItem="{Binding SelectedCondition}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
-                                          IsReadOnly="{Binding IsEdit}">
+                                          IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}"
@@ -129,122 +129,132 @@
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
-                <dxlc:LayoutGroup Visibility="{Binding CostVisibility}">
+                <dxlc:LayoutGroup >
                     <dxlc:LayoutItem Label="Unit Cost"
                                      LabelPosition="Top"
                                      LabelHorizontalAlignment="Center">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.UnitCost,Mode=TwoWay}"
-                                      IsReadOnly="{Binding IsEdit}"
-                                      NullValue="0"
-                                      NullText="0.000"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding UnitCost,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
-                                      DisplayFormatString="c3"
-                                      HorizontalContentAlignment="Center" />
+                                      MaskType="Numeric"
+                                      Mask="$######.###"
+                                      MaskUseAsDisplayFormat="True"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}"  />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Total Cost"
                                      LabelPosition="Top"
                                      LabelHorizontalAlignment="Center">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.TotalCost,Mode=TwoWay}"
-                                      NullValue="0"
-                                      NullText="0.000"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding TotalCost,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
-                                      DisplayFormatString="c3"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      MaskType="Numeric"
+                                      Mask="$######.###"
+                                      MaskUseAsDisplayFormat="True"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="True"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Visibility="{Binding StockVisibility}">
                     <dxlc:LayoutItem Label="Quantity"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.Quantity}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding Quantity}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="d"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Min Quantity"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.MinQuantity}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding SelectedPartInstance.MinQuantity}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="d"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Safe Quantity"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.SafeQuantity}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding SelectedPartInstance.SafeQuantity}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="d"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Visibility="{Binding WeightVisibility}">
                     <dxlc:LayoutItem Label="Net"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.NetWeight}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding NetWeight,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="f"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Tare"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.Tare}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding Tare,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="f"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Gross"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.GrossWeight}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding GrossWeight,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="f"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Measured"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.Measured}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding Measured,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="f"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Weight"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
-                        <dxe:SpinEdit EditValue="{Binding SelectedPartInstance.BubblerParameter.Weight}"
-                                      NullText="0"
-                                      MinValue="0"
+                        <dxe:SpinEdit Text="{Binding Weight,Mode=TwoWay}"
+                                      AllowSpinOnMouseWheel="False"
                                       Increment="1"
                                       MaskType="Numeric"
-                                      HorizontalContentAlignment="Center"
-                                      IsReadOnly="{Binding IsEdit}" />
+                                      Mask="f"
+                                      MinValue="0"
+                                      dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="True" />
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dx:DXTabControl>
@@ -320,7 +330,7 @@
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Transaction Info"
                                                          VisibleIndex="1"
-                                                         Visible="{Binding IsNotBubbler,Mode=TwoWay}">
+                                                         Visible="{Binding IsBubbler,Converter={dxmvvm:BooleanNegationConverter}}">
                                         <dxg:GridColumn FieldName="Quantity"
                                                         Header="Quantity" />
                                         <dxg:GridColumn FieldName="PartInstance.UnitCost"

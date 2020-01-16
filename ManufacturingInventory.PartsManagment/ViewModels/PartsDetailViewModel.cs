@@ -5,15 +5,15 @@ using Prism.Regions;
 using DevExpress.Mvvm;
 using PrismCommands = Prism.Commands;
 using Prism.Events;
-using ManufacturingInventory.Common.Model;
 using System.Windows;
-using ManufacturingInventory.Common.Model.Entities;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ManufacturingInventory.PartsManagment.Internal;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartsDetailViewModel:InventoryViewModelNavigationBase {
@@ -26,7 +26,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private ManufacturingContext _context;
+        private IRepository<PartInstance> _repository;
 
         private int _selectedTabIndex = 0;
         private Visibility _visibility;
@@ -44,8 +44,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewInstanceCommand { get; private set; }
 
-        public PartsDetailViewModel(IEventAggregator eventAggregator, IRegionManager regionManager, ManufacturingContext context) {
-            this._context = context;
+        public PartsDetailViewModel(IEventAggregator eventAggregator, IRegionManager regionManager, IRepository<PartInstance> repository) {
+            this._repository =repository;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.SelectedTabIndex = 0;

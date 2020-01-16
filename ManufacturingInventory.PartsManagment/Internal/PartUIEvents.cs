@@ -1,4 +1,4 @@
-﻿using ManufacturingInventory.Common.Model.Entities;
+﻿using ManufacturingInventory.Infrastructure.Model.Entities;
 using Prism.Events;
 using System;
 using System.Collections.Generic;

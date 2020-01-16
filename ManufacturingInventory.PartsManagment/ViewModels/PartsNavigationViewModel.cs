@@ -7,13 +7,12 @@ using DevExpress.Mvvm;
 using PrismCommands = Prism.Commands;
 using System;
 using Prism.Events;
-using ManufacturingInventory.Common.Model;
 using System.Collections.ObjectModel;
-using ManufacturingInventory.Common.Model.Entities;
 using System.Threading.Tasks;
 using ManufacturingInventory.PartsManagment.Internal;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartsNavigationViewModel : InventoryViewModelBase {
@@ -22,7 +21,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private ManufacturingContext _context;
+        //private ManufacturingContext _context;
+        IPartManagerService _partManager;
 
         private ObservableCollection<Part> _parts = new ObservableCollection<Part>();
         private Part _selectedPart = new Part();
@@ -35,8 +35,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public PrismCommands.DelegateCommand ViewPartDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditPartCommand { get; private set; }
 
-        public PartsNavigationViewModel(ManufacturingContext context,IEventAggregator eventAggregator,IRegionManager regionManager) {
-            this._context = context;
+        public PartsNavigationViewModel(IPartManagerService partManager,IEventAggregator eventAggregator,IRegionManager regionManager) {
+            this._partManager = partManager; 
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.PopulateAsync);
@@ -102,11 +102,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.IsLoading = true;
                 this.CleanupRegions();
             });
-            var tempParts = await this._context.Parts
-                .AsNoTracking()
-                .Include(e => e.Organization)
-                .Include(e => e.Warehouse)
-                .Include(e => e.Usage).ToListAsync();
+            await this._partManager.LoadAllAsync();
+            var tempParts = await this._partManager.PartService.GetEntityListAsync();
+            //var tempParts = await this._context.Parts
+            //    .AsNoTracking()
+            //    .Include(e => e.Organization)
+            //    .Include(e => e.Warehouse)
+            //    .Include(e => e.Usage).ToListAsync();
 
             this.DispatcherService.BeginInvoke(() => {
                 this.Parts = new ObservableCollection<Part>(tempParts);
@@ -121,11 +123,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.CleanupRegions();
                 });
 
-                var tempParts = await this._context.Parts
-                    .AsNoTracking()
-                    .Include(e => e.Organization)
-                    .Include(e => e.Warehouse)
-                    .Include(e => e.Usage).ToListAsync();
+                var tempParts = await this._partManager.PartService.GetEntityListAsync();
 
                 this.DispatcherService.BeginInvoke(() => {
                     this.Parts = new ObservableCollection<Part>(tempParts);
