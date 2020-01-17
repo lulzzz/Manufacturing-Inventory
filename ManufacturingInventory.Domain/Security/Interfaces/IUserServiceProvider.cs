@@ -1,4 +1,4 @@
-﻿using ManufacturingInventory.Domain.Model.Entities;
+﻿using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.Domain.Buisness.Interfaces {
     public interface IUserServiceProvider {

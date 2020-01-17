@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using Effortless.Net.Encryption;
 using ManufacturingInventory.Domain.Buisness.Interfaces;
-using ManufacturingInventory.Domain.Model;
-using ManufacturingInventory.Domain.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManufacturingInventory.Domain.Buisness.Concrete {

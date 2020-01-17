@@ -30,7 +30,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         //private IPartManagerService _partManagerService;
         private IEventAggregator _eventAggregator;
         private IUserService _userService;
-        private ICheckOutUseCase _checkOut;
+        private ICheckOutBubblerUseCase _checkOut;
 
         private string _quantityLabel;
 
@@ -59,7 +59,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand CancelCommand { get; private set; }
 
 
-        public CheckoutViewModel(ICheckOutUseCase checkOut,IEventAggregator eventAggregator) {
+        public CheckoutViewModel(ICheckOutBubblerUseCase checkOut,IEventAggregator eventAggregator) {
             this._checkOut = checkOut;
             this._eventAggregator = eventAggregator;
             this.TimeStamp = DateTime.Now;
@@ -172,7 +172,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     Transaction newTransaction = new Transaction(this.SelectedPartInstance, InventoryAction.OUTGOING,this.TimeStamp, this.Weight, true, this.SelectedConsumer);
                     DispatcherService.BeginInvoke(() => {
                         this.Transactions.Add(newTransaction);
-
                         this.MessageBoxService.ShowMessage("Item added to Output", "Success");
                     });
                     this.SelectedPartInstance = null;
@@ -205,8 +204,44 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task CheckOutHandler() {
             if (this._transactions.Any()) {
-                //var response = await this._partManagerService.CheckOutAsync(this._transactions.ToList(),this.IsBubbler);
-                //if (response.Success) {
+                CheckOutBubblerInput input = new CheckOutBubblerInput();
+                await Task.Run(() => {
+                    foreach (var transaction in this.Transactions) {
+                        input.Items.Add(new CheckOutBubblerInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId.Value, transaction.Quantity,
+                            transaction.UnitCost, transaction.TotalCost, 2100, transaction.ParameterValue));
+                    }
+                });
+
+                var response=await this._checkOut.Execute(input);
+
+                var succeeded = response.OutputList.Where(e => e.Success == true);
+                var failed = response.OutputList.Where(e => e.Success == false);
+
+                StringBuilder okayBuilder = new StringBuilder();
+                StringBuilder failBuilder = new StringBuilder();
+
+                okayBuilder.AppendLine("Succeeded: ");
+                failBuilder.AppendLine("Failed: ");
+                
+                foreach(var success in succeeded) {
+                    okayBuilder.AppendLine(success.Transaction.PartInstance.Name);
+                }
+
+                foreach(var fail in failed) {
+                    failBuilder.AppendLine(fail.Transaction.PartInstance.Name);
+                }
+
+                okayBuilder.AppendLine();
+                okayBuilder.AppendLine(failBuilder.ToString());
+
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(okayBuilder.ToString(), "Success", MessageButton.OK, MessageIcon.Information);
+                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+                });
+
+                //var response=await this._checkOut.Execute()
+                //var response = await this._partManagerService.CheckOutAsync(this._transactions.ToList(), this.IsBubbler);
+                //if (response.) {
                 //    this.DispatcherService.BeginInvoke(() => {
                 //        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
                 //        this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();

@@ -27,8 +27,9 @@ namespace ManufacturingInventory.PartsManagment.Views {
 
         private void PartInstanceTableView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
-            var instanceContext = (int)context.Value;
-            (DataContext as PartInstanceTableViewModel).SelectedPartId = instanceContext;
+            var instanceContext = (DataTraveler)context.Value;
+            (DataContext as PartInstanceTableViewModel).SelectedPartId = instanceContext.PartId;
+            (DataContext as PartInstanceTableViewModel).IsBubbler = instanceContext.HoldsBubblers;
         }
     }
 }

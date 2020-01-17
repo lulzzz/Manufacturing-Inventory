@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.Boundaries.PartDetails {
-    public interface IPartSummaryUseCase:IUseCase<PartSummaryInput,PartSummaryOutput> {
+    public interface IPartSummaryEditUseCase:IUseCase<PartSummaryEditInput,PartSummaryEditOutput> {
         Task<IEnumerable<Warehouse>> GetWarehouses();
-        Task<IEnumerable<Organization>> GetOrganizations();
-        Task<IEnumerable<Usage>> GetUsages();
+        Task<IEnumerable<Category>> GetCategories();
+        Task<Part> GetPart(int id);
     }
 }

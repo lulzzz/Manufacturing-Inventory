@@ -4,11 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using IWshRuntimeLibrary;
-using ManufacturingInventory.Common.Buisness.Concrete;
-using ManufacturingInventory.Common.Model;
-using ManufacturingInventory.Common.Model.Entities;
-using ManufacturingInventory.Common.Data;
 using Microsoft.EntityFrameworkCore;
+using ManufacturingInventory.Infrastructure.Model;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
@@ -70,533 +67,533 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         #region EntityServiceTesting
 
-        public static async Task TestPartInstanceService() {
-            Console.WriteLine("Testing Service Started:");
-            var context = new ManufacturingContext();
-            var service = new PartInstanceService(context);
-            var instance = await service.GetEntityAsync(e => e.Id == 7, false);
-            var location = await context.Locations.FirstOrDefaultAsync(e => e.Id == 4);
-            var condition = await context.Categories.OfType<Condition>().FirstOrDefaultAsync(e => e.Id == 1);
+        //public static async Task TestPartInstanceService() {
+        //    Console.WriteLine("Testing Service Started:");
+        //    var context = new ManufacturingContext();
+        //    var service = new PartInstanceService(context);
+        //    var instance = await service.GetEntityAsync(e => e.Id == 7, false);
+        //    var location = await context.Locations.FirstOrDefaultAsync(e => e.Id == 4);
+        //    var condition = await context.Categories.OfType<Condition>().FirstOrDefaultAsync(e => e.Id == 1);
 
-            instance.LocationId = location.Id;
-            instance.ConditionId = condition.Id;
-            instance.UpdateWeight(2600);
-            var updated = await service.UpdateAsync(instance, false);
-            if (updated != null) {
-                if (service.SaveChanges()) {
-                    Console.WriteLine("Success");
-                } else {
-                    Console.WriteLine("Save Failed");
-                }
-            } else {
-                Console.WriteLine("Update Failed");
-            }
-            Console.ReadKey();
-        }
+        //    instance.LocationId = location.Id;
+        //    instance.ConditionId = condition.Id;
+        //    instance.UpdateWeight(2600);
+        //    var updated = await service.UpdateAsync(instance, false);
+        //    if (updated != null) {
+        //        if (service.SaveChanges()) {
+        //            Console.WriteLine("Success");
+        //        } else {
+        //            Console.WriteLine("Save Failed");
+        //        }
+        //    } else {
+        //        Console.WriteLine("Update Failed");
+        //    }
+        //    Console.ReadKey();
+        //}
 
         #endregion
 
 
-        #region DatabaseTesting
+        //#region DatabaseTesting
 
-        public static void InitialCreate() {
-            using var context = new ManufacturingContext();
+        //public static void InitialCreate() {
+        //    using var context = new ManufacturingContext();
 
-            var tma = context.PartInstances
-                .Include(e => e.Price).Include(e => e.BubblerParameter)
-                .Single(e => e.SerialNumber == "1000006109");
-            tma.UpdateWeight(2100);
-            context.Entry<PartInstance>(tma).State = EntityState.Modified;
-            context.SaveChanges();
-            Console.WriteLine("Weight Changed");
-            Console.ReadKey();
-        }
+        //    var tma = context.PartInstances
+        //        .Include(e => e.Price).Include(e => e.BubblerParameter)
+        //        .Single(e => e.SerialNumber == "1000006109");
+        //    tma.UpdateWeight(2100);
+        //    context.Entry<PartInstance>(tma).State = EntityState.Modified;
+        //    context.SaveChanges();
+        //    Console.WriteLine("Weight Changed");
+        //    Console.ReadKey();
+        //}
 
-        public static void CreateLocations() {
-            using var context = new ManufacturingContext();
-            var warehouse1 = new Warehouse();
-            warehouse1.Name = "Epi System Parts";
-            warehouse1.Description = "Storage room for replacement epi parts";
+        //public static void CreateLocations() {
+        //    using var context = new ManufacturingContext();
+        //    var warehouse1 = new Warehouse();
+        //    warehouse1.Name = "Epi System Parts";
+        //    warehouse1.Description = "Storage room for replacement epi parts";
 
-            var warehouse2 = new Warehouse();
-            warehouse2.Name = "IT Storage Room";
-            warehouse2.Description = "Storage Room for all things IT";
+        //    var warehouse2 = new Warehouse();
+        //    warehouse2.Name = "IT Storage Room";
+        //    warehouse2.Description = "Storage Room for all things IT";
 
-            var consumer1 = new Consumer();
-            consumer1.Name = "System B01";
-            consumer1.Description = "B01 EPI System";
+        //    var consumer1 = new Consumer();
+        //    consumer1.Name = "System B01";
+        //    consumer1.Description = "B01 EPI System";
 
-            var consumer2 = new Consumer();
-            consumer2.Name = "System A01";
-            consumer2.Description = "B01 EPI System";
+        //    var consumer2 = new Consumer();
+        //    consumer2.Name = "System A01";
+        //    consumer2.Description = "B01 EPI System";
 
-            var consumer3 = new Consumer();
-            consumer3.Name = "System B02";
-            consumer3.Description = "B02 EPI System";
+        //    var consumer3 = new Consumer();
+        //    consumer3.Name = "System B02";
+        //    consumer3.Description = "B02 EPI System";
 
-            var consumer4 = new Consumer();
-            consumer4.Name = "System B03";
-            consumer4.Description = "B03 EPI System";
+        //    var consumer4 = new Consumer();
+        //    consumer4.Name = "System B03";
+        //    consumer4.Description = "B03 EPI System";
 
-            var consumer5 = new Consumer();
-            consumer5.Name = "System A02";
-            consumer5.Description = "A02 EPI System";
+        //    var consumer5 = new Consumer();
+        //    consumer5.Name = "System A02";
+        //    consumer5.Description = "A02 EPI System";
 
-            var consumer6 = new Consumer();
-            consumer6.Name = "System A03";
-            consumer6.Description = "A03 EPI System";
+        //    var consumer6 = new Consumer();
+        //    consumer6.Name = "System A03";
+        //    consumer6.Description = "A03 EPI System";
 
-            var consumer7 = new Consumer();
-            consumer7.Name = "System A04";
-            consumer7.Description = "A04 EPI System";
+        //    var consumer7 = new Consumer();
+        //    consumer7.Name = "System A04";
+        //    consumer7.Description = "A04 EPI System";
 
-            context.Locations.Add(warehouse1);
-            context.Locations.Add(warehouse2);
+        //    context.Locations.Add(warehouse1);
+        //    context.Locations.Add(warehouse2);
 
-            context.Locations.Add(consumer1);
-            context.Locations.Add(consumer2);
-            context.Locations.Add(consumer3);
-            context.Locations.Add(consumer4);
-            context.Locations.Add(consumer5);
-            context.Locations.Add(consumer6);
-            context.Locations.Add(consumer7);
-            context.SaveChanges();
-            Console.WriteLine("Locations Created,Press Any key To Continue");
-            Console.ReadKey();
-        }
+        //    context.Locations.Add(consumer1);
+        //    context.Locations.Add(consumer2);
+        //    context.Locations.Add(consumer3);
+        //    context.Locations.Add(consumer4);
+        //    context.Locations.Add(consumer5);
+        //    context.Locations.Add(consumer6);
+        //    context.Locations.Add(consumer7);
+        //    context.SaveChanges();
+        //    Console.WriteLine("Locations Created,Press Any key To Continue");
+        //    Console.ReadKey();
+        //}
 
-        public static void CreateDistibutors() {
-            using var context = new ManufacturingContext();
+        //public static void CreateDistibutors() {
+        //    using var context = new ManufacturingContext();
 
-            Distributor dist1 = new Distributor();
-            dist1.Name = "Distributor B";
+        //    Distributor dist1 = new Distributor();
+        //    dist1.Name = "Distributor B";
 
-            Distributor dist2 = new Distributor();
-            dist2.Name = "Distributor A";
+        //    Distributor dist2 = new Distributor();
+        //    dist2.Name = "Distributor A";
 
-            Distributor dist3 = new Distributor();
-            dist3.Name = "Distributor C";
+        //    Distributor dist3 = new Distributor();
+        //    dist3.Name = "Distributor C";
 
-            Distributor dist4 = new Distributor();
-            dist4.Name = "Distributor D";
+        //    Distributor dist4 = new Distributor();
+        //    dist4.Name = "Distributor D";
 
-            Distributor dist5 = new Distributor();
-            dist5.Name = "Distributor E";
+        //    Distributor dist5 = new Distributor();
+        //    dist5.Name = "Distributor E";
 
-            Distributor dist6 = new Distributor();
-            dist6.Name = "Akzo Nobel";
+        //    Distributor dist6 = new Distributor();
+        //    dist6.Name = "Akzo Nobel";
 
-            context.Distributors.Add(dist1);
-            context.Distributors.Add(dist2);
-            context.Distributors.Add(dist3);
-            context.Distributors.Add(dist4);
-            context.Distributors.Add(dist5);
-            context.Distributors.Add(dist6);
+        //    context.Distributors.Add(dist1);
+        //    context.Distributors.Add(dist2);
+        //    context.Distributors.Add(dist3);
+        //    context.Distributors.Add(dist4);
+        //    context.Distributors.Add(dist5);
+        //    context.Distributors.Add(dist6);
 
-            context.SaveChanges();
-            Console.WriteLine("Distributors Created,Press any key to continue");
-            Console.ReadKey();
-        }
+        //    context.SaveChanges();
+        //    Console.WriteLine("Distributors Created,Press any key to continue");
+        //    Console.ReadKey();
+        //}
 
-        public static void CreateCategories() {
-            using var context = new ManufacturingContext();
+        //public static void CreateCategories() {
+        //    using var context = new ManufacturingContext();
 
-            Condition condition1 = new Condition();
-            condition1.Name = "Used";
-            condition1.Description = "Partial";
+        //    Condition condition1 = new Condition();
+        //    condition1.Name = "Used";
+        //    condition1.Description = "Partial";
 
-            Condition condition2 = new Condition();
-            condition2.Name = "New";
-            condition2.Description = "Unused";
+        //    Condition condition2 = new Condition();
+        //    condition2.Name = "New";
+        //    condition2.Description = "Unused";
 
-            Condition condition3 = new Condition();
-            condition3.Name = "Empty";
-            condition3.Description = "Empty";
+        //    Condition condition3 = new Condition();
+        //    condition3.Name = "Empty";
+        //    condition3.Description = "Empty";
 
-            var Usage1 = new Usage();
-            Usage1.Name = "System B01";
-            Usage1.Description = "B01 EPI System";
+        //    var Usage1 = new Usage();
+        //    Usage1.Name = "System B01";
+        //    Usage1.Description = "B01 EPI System";
 
-            var Usage2 = new Usage();
-            Usage2.Name = "System A01";
-            Usage2.Description = "B01 EPI System";
+        //    var Usage2 = new Usage();
+        //    Usage2.Name = "System A01";
+        //    Usage2.Description = "B01 EPI System";
 
-            var Usage3 = new Usage();
-            Usage3.Name = "System B02";
-            Usage3.Description = "B02 EPI System";
+        //    var Usage3 = new Usage();
+        //    Usage3.Name = "System B02";
+        //    Usage3.Description = "B02 EPI System";
 
-            var Usage4 = new Usage();
-            Usage4.Name = "System B03";
-            Usage4.Description = "B03 EPI System";
+        //    var Usage4 = new Usage();
+        //    Usage4.Name = "System B03";
+        //    Usage4.Description = "B03 EPI System";
 
-            var Usage5 = new Usage();
-            Usage5.Name = "System A02";
-            Usage5.Description = "A02 EPI System";
+        //    var Usage5 = new Usage();
+        //    Usage5.Name = "System A02";
+        //    Usage5.Description = "A02 EPI System";
 
-            var Usage6 = new Usage();
-            Usage6.Name = "System A03";
-            Usage6.Description = "A03 EPI System";
+        //    var Usage6 = new Usage();
+        //    Usage6.Name = "System A03";
+        //    Usage6.Description = "A03 EPI System";
 
-            var Usage7 = new Usage();
-            Usage7.Name = "System A04";
-            Usage7.Description = "A04 EPI System";
+        //    var Usage7 = new Usage();
+        //    Usage7.Name = "System A04";
+        //    Usage7.Description = "A04 EPI System";
 
-            var org1 = new Organization("System Parts", "");
-            var org2 = new Organization("Facility Parts", "");
-
-
-            context.Categories.Add(condition1);
-            context.Categories.Add(condition2);
-            context.Categories.Add(condition3);
-
-            context.Categories.Add(org1);
-            context.Categories.Add(org2);
-            context.Categories.Add(Usage1);
-            context.Categories.Add(Usage2);
-            context.Categories.Add(Usage3);
-            context.Categories.Add(Usage4);
-            context.Categories.Add(Usage5);
-            context.Categories.Add(Usage6);
-            context.Categories.Add(Usage7);
-
-            context.SaveChanges();
-            Console.WriteLine("Categories Created!");
-            Console.ReadKey();
+        //    var org1 = new Organization("System Parts", "");
+        //    var org2 = new Organization("Facility Parts", "");
 
 
+        //    context.Categories.Add(condition1);
+        //    context.Categories.Add(condition2);
+        //    context.Categories.Add(condition3);
 
-        }
+        //    context.Categories.Add(org1);
+        //    context.Categories.Add(org2);
+        //    context.Categories.Add(Usage1);
+        //    context.Categories.Add(Usage2);
+        //    context.Categories.Add(Usage3);
+        //    context.Categories.Add(Usage4);
+        //    context.Categories.Add(Usage5);
+        //    context.Categories.Add(Usage6);
+        //    context.Categories.Add(Usage7);
+
+        //    context.SaveChanges();
+        //    Console.WriteLine("Categories Created!");
+        //    Console.ReadKey();
+
+
+
+        //}
         
-        public static void DistributorPriceTesting() {
-            using var context = new ManufacturingContext();
-
-            var warehouse = context.Locations.OfType<Warehouse>().FirstOrDefault(e => e.Name == "Epi System Parts");
-            var condition = context.Categories.OfType<Condition>().FirstOrDefault(e => e.Name == "New");
-            var usage = context.Categories.OfType<Organization>().FirstOrDefault(e => e.Name == "System Parts");
-            if (warehouse != null && condition!=null && usage!=null) {
-
-                var dist = context.Distributors.FirstOrDefault(e => e.Name == "Distributor A");
-                var dist2 = context.Distributors.FirstOrDefault(e => e.Name == "Akzo Nobel");
-
-                if (dist != null && dist2 != null) {
-                    var part = CreatePart("Process Chemicals", warehouse);
-                    var instance1 = CreatePartInstance("IPA", part, 8, 4, 2);
-                    instance1.Condition = condition;
-                    var instance2 = CreatePartInstance("Acetone", part, 16, 2, 1);
-                    instance2.Condition = condition;
-
-                    var p1 = CreatePrice(4.99, 10, dist, instance1);
-                    instance1.UpdatePrice(p1);
-                    dist.Prices.Add(p1);
-                    context.Prices.Add(p1);
-
-
-                    var p2 = CreatePrice(4.99, 10, dist, instance2);
-                    instance2.UpdatePrice(p2);
-                    dist.Prices.Add(p2);
-                    context.Prices.Add(p2);
-
-
-                    part.PartInstances.Add(instance1);
-                    part.PartInstances.Add(instance1);
-
-                    context.PartInstances.Add(instance1);
-                    context.PartInstances.Add(instance2);
-
-                    context.Parts.Add(part);
-
-                    var part2 = CreatePart("Bubblers", warehouse);
-                    var tma1 = CreateBubbler("TMA", part2, 380, 2243, 0, "1607AL1203", "1000006109");
-                    var tma2 = CreateBubbler("TMA", part2, 380, 2316, 0, "1509AL1152", "1000009476");
-                    var tma3 = CreateBubbler("TMA", part2, 380, 2283, 0, "1604AL1190", "1000000192");
-                    var tmg1 = CreateBubbler("TMG", part2, 600, 2497, 1, "1211GM2059", "600VW2676");
-                    var tmg2 = CreateBubbler("TMG", part2, 600, 2526, 1, "1507GM2598", "1000000813");
-                    tma1.Condition = condition;
-                    tma2.Condition = condition;
-                    tma3.Condition = condition;
-                    tmg1.Condition = condition;
-                    tmg2.Condition = condition;
-
-
-                    part2.PartInstances.Add(tma1);
-                    part2.PartInstances.Add(tma2);
-                    part2.PartInstances.Add(tma3);
-                    part2.PartInstances.Add(tma1);
-                    part2.PartInstances.Add(tmg1);
-                    part2.PartInstances.Add(tmg2);
-
-                    var p1_2 = CreatePrice(64.25, 0, dist2, tma1);
-                    var p2_2 = CreatePrice(65.04, 0, dist2, tma2);
-                    var p3_2 = CreatePrice(38.45, 0, dist2, tma3);
-                    var p4_2 = CreatePrice(45.78, 0, dist2, tmg1);
-                    var p5_2 = CreatePrice(62.88, 0, dist2, tmg2);
-
-                    tma1.UpdatePrice(p1_2);
-                    tma2.UpdatePrice(p2_2);
-                    tma3.UpdatePrice(p3_2);
-                    tmg1.UpdatePrice(p4_2);
-                    tmg2.UpdatePrice(p5_2);
-
-                    dist2.Prices.Add(p1_2);
-                    dist2.Prices.Add(p2_2);
-                    dist2.Prices.Add(p3_2);
-                    dist2.Prices.Add(p4_2);
-                    dist2.Prices.Add(p5_2);
-
-                    context.Prices.Add(p1_2);
-                    context.Prices.Add(p2_2);
-                    context.Prices.Add(p3_2);
-                    context.Prices.Add(p4_2);
-                    context.Prices.Add(p5_2);
-
-                    context.Parts.Add(part2);
-
-
-                    context.Entry<Distributor>(dist).State = EntityState.Modified;
-                    context.Entry<Distributor>(dist2).State = EntityState.Modified;
-                    context.SaveChanges();
-                    Console.WriteLine("Parts Created,Press any key to continue");
-                } else {
-                    Console.WriteLine("Error Finding Distributor");
-                }
-            } else {
-                Console.WriteLine("Error finding warehous");
-            }
-            Console.ReadKey();
-        }
-
-        public static Part CreatePart(string name, Warehouse warehouse) {
-            var part = new Part();
-            part.Name = name;
-            part.Warehouse = (Warehouse)warehouse;
-            return part;
-        }
-
-        public static PartInstance CreatePartInstance(string name, Part part, int quantity, int safe, int min) {
-            Random rand = new Random();
-            var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "", false);
-            partInstance.Quantity = quantity;
-            partInstance.SafeQuantity = safe;
-            partInstance.MinQuantity = min;
-            partInstance.CostReported = true;
-            partInstance.CurrentLocation = part.Warehouse;
-            //partInstance.CostCalcMethod = CostCalcMethod.QUANTITY;
-            return partInstance;
-        }
-
-        public static PartInstance CreateBubbler(string name, Part part, double net, double gross, double tare, string lot, string sn) {
-            var param = new BubblerParameter(net, gross, tare);
-            var bubbler = new PartInstance(part, name, sn, lot, "", true, param);
-            bubbler.Part = part;
-            bubbler.CurrentLocation = part.Warehouse;
-            bubbler.CostReported = true;
-            return bubbler;
-        }
-
-        public static Price CreatePrice(double unitCost, int min, Distributor distributor, PartInstance instance) {
-            Price price = new Price();
-            price.UnitCost = unitCost;
-            price.MinOrder = min;
-            price.TimeStamp = DateTime.Now;
-            price.Distributor = distributor;
-            price.PartInstance = instance;
-            return price;
-        }
-
-        public static void CreateParts() {
-            using var context = new ManufacturingContext();
-
-            var warehouse = context.Locations.OfType<Warehouse>().FirstOrDefault(e => e.Name == "Epi System Parts");
-            if (warehouse != null) {
-                Unit unit = new Unit("Gram", "g", 10, 0);
-                Parameter parameter = new Parameter("Bubbler Weight", "");
-                parameter.Unit = unit;
-
-                context.Units.Add(unit);
-                context.Parameters.Add(parameter);
-
-                Part part = new Part();
-                part.Name = "Bubblers";
-                part.Description = "Bubblers";
-                part.Warehouse = warehouse;
-
-                context.Parts.Add(part);
-
-                PartInstance partInstance = new PartInstance(part, "TMA", "", "", "", false);
-                partInstance.Quantity = 1;
-                partInstance.CurrentLocation = warehouse;
-
-                context.PartInstances.Add(partInstance);
-
-                InstanceParameter instanceParameter = new InstanceParameter(partInstance, parameter);
-                instanceParameter.MinValue = 200;
-                instanceParameter.SafeValue = 400;
-                instanceParameter.Value = 1861;
-                instanceParameter.Tracked = true;
-
-                context.InstanceParameters.Add(instanceParameter);
-
-                context.SaveChanges();
-                Console.WriteLine("Should be done!");
-
-            } else {
-                Console.WriteLine("Error finding warehouse");
-            }
-            Console.ReadKey();
-        }
-
-        public static void ReturnTransactionTest() {
-            using var context = new ManufacturingContext();
-
-            var outTransaction = context.Transactions.OfType<Transaction>()
-                .Include(e => e.Location)
-                .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.CurrentLocation)
-                .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.Part)
-                        .ThenInclude(e => e.Warehouse)
-                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.Price)
-                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
-                .Include(e=>e.Session)
-                    .ThenInclude(e=>e.User)
-                .FirstOrDefault(e => e.Id == 1);
-
-            var user = context.Users
-                .Include(e => e.Sessions)
-                    .ThenInclude(e => e.Transactions)
-                .Include(e => e.Permission)
-                .FirstOrDefault(e => e.FirstName == "Andrew");
-
-            var condition = context.Categories.OfType<Condition>().FirstOrDefault(e => e.Name == "Used");
-
-
-            if (outTransaction != null && user != null && condition!=null) {
-                //var partInstance = context.PartInstances.Include(e => e.Id == outTransaction.PartInstanceId);
-                Session session = new Session(user);
-                context.Sessions.Add(session);
-
-                var partInstance = context.Entry<PartInstance>((PartInstance)outTransaction.PartInstance).Entity;
-
-                partInstance.CurrentLocation = partInstance.Part.Warehouse;
-                partInstance.UpdateWeight(1900);
-                partInstance.Condition = condition;
-
-                Transaction returnTransaction = new Transaction(partInstance,InventoryAction.RETURNING,partInstance.BubblerParameter.Weight,partInstance.Part.Warehouse,outTransaction);
-                //returnTransaction.InventoryAction = InventoryAction.RETURNING;
-                //returnTransaction.Quantity = 1;
-                //returnTransaction.ParameterValue = partInstance.BubblerParameter.Weight;
-                //returnTransaction.ReferenceTransaction = outTransaction;
-                //returnTransaction.PartInstance = partInstance;
-                returnTransaction.Session = session;
-                context.Transactions.Add(returnTransaction);
-
-                context.Entry<PartInstance>(partInstance).State = EntityState.Modified;
-                context.Entry<Warehouse>(partInstance.Part.Warehouse).State = EntityState.Modified;
-                //context.Entry<InstanceParameter>(partInstance.InstanceParameter).State = EntityState.Modified;
-                context.Entry<Transaction>(outTransaction).State = EntityState.Modified;
-                context.Transactions.Add(returnTransaction);
-
-                context.SaveChanges();
-
-                Console.WriteLine("Should be done, maybe....");
-            } else {
-                Console.WriteLine("Error finding transaction");
-            }
-            Console.ReadKey();
-        }
-
-        public static void TransactionTesting() {
-            using var context = new ManufacturingContext();
-
-            var consumer = context.Locations.OfType<Consumer>()
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.CurrentLocation)
-                .Include(e => e.Transactions)
-                .FirstOrDefault(e => e.Name == "System B03");
-
-            var tma1 = context.PartInstances.OfType<PartInstance>()
-                .Include(e => e.Part)
-                    .ThenInclude(e => e.Warehouse)
-                .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
-                .FirstOrDefault(e => e.SerialNumber == "1000006109");
-
-            var user = context.Users
-                .Include(e => e.Sessions)
-                    .ThenInclude(e => e.Transactions)
-                .Include(e => e.Permission)
-                .FirstOrDefault(e => e.FirstName == "Andrew");
-
-
-            if (tma1 != null && consumer != null && user != null) {
-                Session session = new Session(user);
-                context.Sessions.Add(session);
-
-                tma1.CurrentLocation = consumer;
-                tma1.UpdateWeight(2100);
-
-                Transaction outgoing = new Transaction(tma1,InventoryAction.OUTGOING,tma1.BubblerParameter.Weight,true, consumer);
-                //outgoing.Location = consumer;
-                //outgoing.PartInstance = tma1;
-                //outgoing.InventoryAction = InventoryAction.OUTGOING;
-                //outgoing.IsReturning = true;
-                //outgoing.Quantity = 1;
-                /*outgoing.ParameterValue = tma1.BubblerParameter.Weight; */ //TODO: Cleaup check in/Check out
-                outgoing.Session = session;
-                context.Transactions.Add(outgoing);
-                context.Entry<PartInstance>(tma1).State = EntityState.Modified;
-                context.Entry<Consumer>(consumer).State = EntityState.Modified;
-                context.SaveChanges();
-                Console.WriteLine("Should be done!");
-
-            } else {
-                Console.WriteLine("Error, Consumer or Instance not Found");
-            }
-            Console.ReadKey();
-        }
-
-        public static void InitialUser() {
-            using var context = new ManufacturingContext();
-            Permission permission1 = new Permission() {
-                Name = "InventoryAdminAccount",
-                Description = "Full Inventory Privileges and User Control"
-            };
-
-            Permission permission2 = new Permission() {
-                Name = "InventoryUserAccount",
-                Description = "Inventory View Only"
-            };
-
-            Permission permission3 = new Permission() {
-                Name = "InventoryUserFullAccount",
-                Description = "Full Inventory Privileges"
-            };
-
-            Permission permission4 = new Permission() {
-                Name = "InventoryUserLimitedAccount",
-                Description = "Inventory Check In/Check Out/Create"
-            };
-
-            context.Permissions.Add(permission1);
-            context.Permissions.Add(permission2);
-            context.Permissions.Add(permission3);
-            context.Permissions.Add(permission4);
-
-            User user = new User();
-            user.FirstName = "Andrew";
-            user.LastName = "Elmendorf";
-
-            user.Permission = permission1;
-            context.Users.Add(user);
-            context.SaveChanges();
-            Console.WriteLine("Should be done");
-            Console.ReadKey();
-        }
-
-        #endregion
+        //public static void DistributorPriceTesting() {
+        //    using var context = new ManufacturingContext();
+
+        //    var warehouse = context.Locations.OfType<Warehouse>().FirstOrDefault(e => e.Name == "Epi System Parts");
+        //    var condition = context.Categories.OfType<Condition>().FirstOrDefault(e => e.Name == "New");
+        //    var usage = context.Categories.OfType<Organization>().FirstOrDefault(e => e.Name == "System Parts");
+        //    if (warehouse != null && condition!=null && usage!=null) {
+
+        //        var dist = context.Distributors.FirstOrDefault(e => e.Name == "Distributor A");
+        //        var dist2 = context.Distributors.FirstOrDefault(e => e.Name == "Akzo Nobel");
+
+        //        if (dist != null && dist2 != null) {
+        //            var part = CreatePart("Process Chemicals", warehouse);
+        //            var instance1 = CreatePartInstance("IPA", part, 8, 4, 2);
+        //            instance1.Condition = condition;
+        //            var instance2 = CreatePartInstance("Acetone", part, 16, 2, 1);
+        //            instance2.Condition = condition;
+
+        //            var p1 = CreatePrice(4.99, 10, dist, instance1);
+        //            instance1.UpdatePrice(p1);
+        //            dist.Prices.Add(p1);
+        //            context.Prices.Add(p1);
+
+
+        //            var p2 = CreatePrice(4.99, 10, dist, instance2);
+        //            instance2.UpdatePrice(p2);
+        //            dist.Prices.Add(p2);
+        //            context.Prices.Add(p2);
+
+
+        //            part.PartInstances.Add(instance1);
+        //            part.PartInstances.Add(instance1);
+
+        //            context.PartInstances.Add(instance1);
+        //            context.PartInstances.Add(instance2);
+
+        //            context.Parts.Add(part);
+
+        //            var part2 = CreatePart("Bubblers", warehouse);
+        //            var tma1 = CreateBubbler("TMA", part2, 380, 2243, 0, "1607AL1203", "1000006109");
+        //            var tma2 = CreateBubbler("TMA", part2, 380, 2316, 0, "1509AL1152", "1000009476");
+        //            var tma3 = CreateBubbler("TMA", part2, 380, 2283, 0, "1604AL1190", "1000000192");
+        //            var tmg1 = CreateBubbler("TMG", part2, 600, 2497, 1, "1211GM2059", "600VW2676");
+        //            var tmg2 = CreateBubbler("TMG", part2, 600, 2526, 1, "1507GM2598", "1000000813");
+        //            tma1.Condition = condition;
+        //            tma2.Condition = condition;
+        //            tma3.Condition = condition;
+        //            tmg1.Condition = condition;
+        //            tmg2.Condition = condition;
+
+
+        //            part2.PartInstances.Add(tma1);
+        //            part2.PartInstances.Add(tma2);
+        //            part2.PartInstances.Add(tma3);
+        //            part2.PartInstances.Add(tma1);
+        //            part2.PartInstances.Add(tmg1);
+        //            part2.PartInstances.Add(tmg2);
+
+        //            var p1_2 = CreatePrice(64.25, 0, dist2, tma1);
+        //            var p2_2 = CreatePrice(65.04, 0, dist2, tma2);
+        //            var p3_2 = CreatePrice(38.45, 0, dist2, tma3);
+        //            var p4_2 = CreatePrice(45.78, 0, dist2, tmg1);
+        //            var p5_2 = CreatePrice(62.88, 0, dist2, tmg2);
+
+        //            tma1.UpdatePrice(p1_2);
+        //            tma2.UpdatePrice(p2_2);
+        //            tma3.UpdatePrice(p3_2);
+        //            tmg1.UpdatePrice(p4_2);
+        //            tmg2.UpdatePrice(p5_2);
+
+        //            dist2.Prices.Add(p1_2);
+        //            dist2.Prices.Add(p2_2);
+        //            dist2.Prices.Add(p3_2);
+        //            dist2.Prices.Add(p4_2);
+        //            dist2.Prices.Add(p5_2);
+
+        //            context.Prices.Add(p1_2);
+        //            context.Prices.Add(p2_2);
+        //            context.Prices.Add(p3_2);
+        //            context.Prices.Add(p4_2);
+        //            context.Prices.Add(p5_2);
+
+        //            context.Parts.Add(part2);
+
+
+        //            context.Entry<Distributor>(dist).State = EntityState.Modified;
+        //            context.Entry<Distributor>(dist2).State = EntityState.Modified;
+        //            context.SaveChanges();
+        //            Console.WriteLine("Parts Created,Press any key to continue");
+        //        } else {
+        //            Console.WriteLine("Error Finding Distributor");
+        //        }
+        //    } else {
+        //        Console.WriteLine("Error finding warehous");
+        //    }
+        //    Console.ReadKey();
+        //}
+
+        //public static Part CreatePart(string name, Warehouse warehouse) {
+        //    var part = new Part();
+        //    part.Name = name;
+        //    part.Warehouse = (Warehouse)warehouse;
+        //    return part;
+        //}
+
+        //public static PartInstance CreatePartInstance(string name, Part part, int quantity, int safe, int min) {
+        //    Random rand = new Random();
+        //    var partInstance = new PartInstance(part, name, rand.Next(2345623, 99999999).ToString(), rand.Next(100, 1500).ToString(), "", false);
+        //    partInstance.Quantity = quantity;
+        //    partInstance.SafeQuantity = safe;
+        //    partInstance.MinQuantity = min;
+        //    partInstance.CostReported = true;
+        //    partInstance.CurrentLocation = part.Warehouse;
+        //    //partInstance.CostCalcMethod = CostCalcMethod.QUANTITY;
+        //    return partInstance;
+        //}
+
+        //public static PartInstance CreateBubbler(string name, Part part, double net, double gross, double tare, string lot, string sn) {
+        //    var param = new BubblerParameter(net, gross, tare);
+        //    var bubbler = new PartInstance(part, name, sn, lot, "", true, param);
+        //    bubbler.Part = part;
+        //    bubbler.CurrentLocation = part.Warehouse;
+        //    bubbler.CostReported = true;
+        //    return bubbler;
+        //}
+
+        //public static Price CreatePrice(double unitCost, int min, Distributor distributor, PartInstance instance) {
+        //    Price price = new Price();
+        //    price.UnitCost = unitCost;
+        //    price.MinOrder = min;
+        //    price.TimeStamp = DateTime.Now;
+        //    price.Distributor = distributor;
+        //    price.PartInstance = instance;
+        //    return price;
+        //}
+
+        //public static void CreateParts() {
+        //    using var context = new ManufacturingContext();
+
+        //    var warehouse = context.Locations.OfType<Warehouse>().FirstOrDefault(e => e.Name == "Epi System Parts");
+        //    if (warehouse != null) {
+        //        Unit unit = new Unit("Gram", "g", 10, 0);
+        //        Parameter parameter = new Parameter("Bubbler Weight", "");
+        //        parameter.Unit = unit;
+
+        //        context.Units.Add(unit);
+        //        context.Parameters.Add(parameter);
+
+        //        Part part = new Part();
+        //        part.Name = "Bubblers";
+        //        part.Description = "Bubblers";
+        //        part.Warehouse = warehouse;
+
+        //        context.Parts.Add(part);
+
+        //        PartInstance partInstance = new PartInstance(part, "TMA", "", "", "", false);
+        //        partInstance.Quantity = 1;
+        //        partInstance.CurrentLocation = warehouse;
+
+        //        context.PartInstances.Add(partInstance);
+
+        //        InstanceParameter instanceParameter = new InstanceParameter(partInstance, parameter);
+        //        instanceParameter.MinValue = 200;
+        //        instanceParameter.SafeValue = 400;
+        //        instanceParameter.Value = 1861;
+        //        instanceParameter.Tracked = true;
+
+        //        context.InstanceParameters.Add(instanceParameter);
+
+        //        context.SaveChanges();
+        //        Console.WriteLine("Should be done!");
+
+        //    } else {
+        //        Console.WriteLine("Error finding warehouse");
+        //    }
+        //    Console.ReadKey();
+        //}
+
+        //public static void ReturnTransactionTest() {
+        //    using var context = new ManufacturingContext();
+
+        //    var outTransaction = context.Transactions.OfType<Transaction>()
+        //        .Include(e => e.Location)
+        //        .Include(e => e.PartInstance)
+        //            .ThenInclude(e => e.CurrentLocation)
+        //        .Include(e => e.PartInstance)
+        //            .ThenInclude(e => e.Part)
+        //                .ThenInclude(e => e.Warehouse)
+        //         .Include(e => e.PartInstance)
+        //            .ThenInclude(e => e.Price)
+        //         .Include(e => e.PartInstance)
+        //            .ThenInclude(e => e.BubblerParameter)
+        //        .Include(e=>e.Session)
+        //            .ThenInclude(e=>e.User)
+        //        .FirstOrDefault(e => e.Id == 1);
+
+        //    var user = context.Users
+        //        .Include(e => e.Sessions)
+        //            .ThenInclude(e => e.Transactions)
+        //        .Include(e => e.Permission)
+        //        .FirstOrDefault(e => e.FirstName == "Andrew");
+
+        //    var condition = context.Categories.OfType<Condition>().FirstOrDefault(e => e.Name == "Used");
+
+
+        //    if (outTransaction != null && user != null && condition!=null) {
+        //        //var partInstance = context.PartInstances.Include(e => e.Id == outTransaction.PartInstanceId);
+        //        Session session = new Session(user);
+        //        context.Sessions.Add(session);
+
+        //        var partInstance = context.Entry<PartInstance>((PartInstance)outTransaction.PartInstance).Entity;
+
+        //        partInstance.CurrentLocation = partInstance.Part.Warehouse;
+        //        partInstance.UpdateWeight(1900);
+        //        partInstance.Condition = condition;
+
+        //        Transaction returnTransaction = new Transaction(partInstance,InventoryAction.RETURNING,partInstance.BubblerParameter.Weight,partInstance.Part.Warehouse,outTransaction);
+        //        //returnTransaction.InventoryAction = InventoryAction.RETURNING;
+        //        //returnTransaction.Quantity = 1;
+        //        //returnTransaction.ParameterValue = partInstance.BubblerParameter.Weight;
+        //        //returnTransaction.ReferenceTransaction = outTransaction;
+        //        //returnTransaction.PartInstance = partInstance;
+        //        returnTransaction.Session = session;
+        //        context.Transactions.Add(returnTransaction);
+
+        //        context.Entry<PartInstance>(partInstance).State = EntityState.Modified;
+        //        context.Entry<Warehouse>(partInstance.Part.Warehouse).State = EntityState.Modified;
+        //        //context.Entry<InstanceParameter>(partInstance.InstanceParameter).State = EntityState.Modified;
+        //        context.Entry<Transaction>(outTransaction).State = EntityState.Modified;
+        //        context.Transactions.Add(returnTransaction);
+
+        //        context.SaveChanges();
+
+        //        Console.WriteLine("Should be done, maybe....");
+        //    } else {
+        //        Console.WriteLine("Error finding transaction");
+        //    }
+        //    Console.ReadKey();
+        //}
+
+        //public static void TransactionTesting() {
+        //    using var context = new ManufacturingContext();
+
+        //    var consumer = context.Locations.OfType<Consumer>()
+        //        .Include(e => e.ItemsAtLocation)
+        //            .ThenInclude(e => e.CurrentLocation)
+        //        .Include(e => e.Transactions)
+        //        .FirstOrDefault(e => e.Name == "System B03");
+
+        //    var tma1 = context.PartInstances.OfType<PartInstance>()
+        //        .Include(e => e.Part)
+        //            .ThenInclude(e => e.Warehouse)
+        //        .Include(e => e.CurrentLocation)
+        //        .Include(e => e.Price)
+        //        .Include(e => e.BubblerParameter)
+        //        .FirstOrDefault(e => e.SerialNumber == "1000006109");
+
+        //    var user = context.Users
+        //        .Include(e => e.Sessions)
+        //            .ThenInclude(e => e.Transactions)
+        //        .Include(e => e.Permission)
+        //        .FirstOrDefault(e => e.FirstName == "Andrew");
+
+
+        //    if (tma1 != null && consumer != null && user != null) {
+        //        Session session = new Session(user);
+        //        context.Sessions.Add(session);
+
+        //        tma1.CurrentLocation = consumer;
+        //        tma1.UpdateWeight(2100);
+
+        //        Transaction outgoing = new Transaction(tma1,InventoryAction.OUTGOING,tma1.BubblerParameter.Weight,true, consumer);
+        //        //outgoing.Location = consumer;
+        //        //outgoing.PartInstance = tma1;
+        //        //outgoing.InventoryAction = InventoryAction.OUTGOING;
+        //        //outgoing.IsReturning = true;
+        //        //outgoing.Quantity = 1;
+        //        /*outgoing.ParameterValue = tma1.BubblerParameter.Weight; */ //TODO: Cleaup check in/Check out
+        //        outgoing.Session = session;
+        //        context.Transactions.Add(outgoing);
+        //        context.Entry<PartInstance>(tma1).State = EntityState.Modified;
+        //        context.Entry<Consumer>(consumer).State = EntityState.Modified;
+        //        context.SaveChanges();
+        //        Console.WriteLine("Should be done!");
+
+        //    } else {
+        //        Console.WriteLine("Error, Consumer or Instance not Found");
+        //    }
+        //    Console.ReadKey();
+        //}
+
+        //public static void InitialUser() {
+        //    using var context = new ManufacturingContext();
+        //    Permission permission1 = new Permission() {
+        //        Name = "InventoryAdminAccount",
+        //        Description = "Full Inventory Privileges and User Control"
+        //    };
+
+        //    Permission permission2 = new Permission() {
+        //        Name = "InventoryUserAccount",
+        //        Description = "Inventory View Only"
+        //    };
+
+        //    Permission permission3 = new Permission() {
+        //        Name = "InventoryUserFullAccount",
+        //        Description = "Full Inventory Privileges"
+        //    };
+
+        //    Permission permission4 = new Permission() {
+        //        Name = "InventoryUserLimitedAccount",
+        //        Description = "Inventory Check In/Check Out/Create"
+        //    };
+
+        //    context.Permissions.Add(permission1);
+        //    context.Permissions.Add(permission2);
+        //    context.Permissions.Add(permission3);
+        //    context.Permissions.Add(permission4);
+
+        //    User user = new User();
+        //    user.FirstName = "Andrew";
+        //    user.LastName = "Elmendorf";
+
+        //    user.Permission = permission1;
+        //    context.Users.Add(user);
+        //    context.SaveChanges();
+        //    Console.WriteLine("Should be done");
+        //    Console.ReadKey();
+        //}
+
+        //#endregion
 
         #region InstallTesting
 

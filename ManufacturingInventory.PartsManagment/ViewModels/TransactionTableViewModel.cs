@@ -16,14 +16,14 @@ using System.Linq;
 using Prism;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Application.Boundaries.TransactionEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class TransactionTableViewModel : InventoryViewModelBase {
 
         private IRegionManager _regionManager;
-        //private ManufacturingContext _context;
-        IEntityProvider<Transaction> _provider;
-        private IPartManagerService _partManager;
+        private ITransactionEditUseCase _transactionEdit;
+        private IEventAggregator _eventAggregator;
 
         protected IDispatcherService Dispatcher { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
 
@@ -32,16 +32,14 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private int _selectedPartId;
         private bool _showTableLoading;
         private bool _isBubbler;
-        private bool _isNotBubbler;
-
-
 
         public AsyncCommand InitializeCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
 
-        public TransactionTableViewModel(IEntityProvider<Transaction> provider,IRegionManager regionManager,IEventAggregator eventAggregator) {
+        public TransactionTableViewModel(ITransactionEditUseCase transactionEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._regionManager = regionManager;
-            this._provider = provider;
+            this._transactionEdit = transactionEdit;
+            this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ViewDetailsCommand = new PrismCommands.DelegateCommand(this.ViewTransactionDetailsHandler);
         }
@@ -73,11 +71,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
-        public bool IsNotBubbler {
-            get => this._isNotBubbler;
-            set => SetProperty(ref this._isNotBubbler, value);
-        }
-
         private void ViewTransactionDetailsHandler() {
             if (this.SelectedTransaction!=null){
                 this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
@@ -90,18 +83,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task InitializeHandler() {
             this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
-            //var part = await this._context.Parts.AsNoTracking().FirstOrDefaultAsync(e => e.Id == this.SelectedPartId);
-            var part = await this._partManager.PartService.GetEntityAsync(e => e.Id == this.SelectedPartId,false);
-            var transactions = await this._partManager.TransactionService.GetEntityListAsync(e => e.PartInstance.PartId == this.SelectedPartId);
-            //var transactions = await this._context.Transactions.AsNoTracking()
-            //    .Include(e => e.PartInstance)
-            //    .Include(e=>e.Location)
-            //    .Where(e => e.PartInstance.PartId == this.SelectedPartId).ToListAsync();
+            var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
 
             this.Dispatcher.BeginInvoke(() => {
                 this.Transactions = new ObservableCollection<Transaction>(transactions);
-                this.IsBubbler = part.HoldsBubblers;
-                this.IsNotBubbler = !this.IsBubbler;
                 this.ShowTableLoading = false;
             });
         }

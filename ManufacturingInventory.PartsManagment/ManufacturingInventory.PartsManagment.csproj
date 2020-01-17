@@ -3,7 +3,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
-    <FileVersion>1.0.337.0116</FileVersion>
+    <FileVersion>1.0.352.0117</FileVersion>
+    <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ManufacturingInventory.Common.Application;
-using ManufacturingInventory.Common.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.PartsManagment.Internal;
 using Prism.Events;
 using Prism.Regions;

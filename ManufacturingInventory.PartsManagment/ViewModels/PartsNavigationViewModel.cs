@@ -13,6 +13,9 @@ using ManufacturingInventory.PartsManagment.Internal;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Application.UseCases;
+using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartsNavigationViewModel : InventoryViewModelBase {
@@ -21,8 +24,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        //private ManufacturingContext _context;
-        IPartManagerService _partManager;
+        private IPartNavigationEditUseCase _partEdit;
 
         private ObservableCollection<Part> _parts = new ObservableCollection<Part>();
         private Part _selectedPart = new Part();
@@ -35,8 +37,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public PrismCommands.DelegateCommand ViewPartDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditPartCommand { get; private set; }
 
-        public PartsNavigationViewModel(IPartManagerService partManager,IEventAggregator eventAggregator,IRegionManager regionManager) {
-            this._partManager = partManager; 
+        public PartsNavigationViewModel(IPartNavigationEditUseCase partEdit, IEventAggregator eventAggregator,IRegionManager regionManager) {
+            this._partEdit = partEdit;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.PopulateAsync);
@@ -102,16 +104,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.IsLoading = true;
                 this.CleanupRegions();
             });
-            await this._partManager.LoadAllAsync();
-            var tempParts = await this._partManager.PartService.GetEntityListAsync();
-            //var tempParts = await this._context.Parts
-            //    .AsNoTracking()
-            //    .Include(e => e.Organization)
-            //    .Include(e => e.Warehouse)
-            //    .Include(e => e.Usage).ToListAsync();
+
+            var parts =await this._partEdit.GetParts();
 
             this.DispatcherService.BeginInvoke(() => {
-                this.Parts = new ObservableCollection<Part>(tempParts);
+                this.Parts = new ObservableCollection<Part>(parts);
                 this.IsLoading = false;
             });
         }
@@ -123,10 +120,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.CleanupRegions();
                 });
 
-                var tempParts = await this._partManager.PartService.GetEntityListAsync();
+                var parts = await this._partEdit.GetParts();
 
                 this.DispatcherService.BeginInvoke(() => {
-                    this.Parts = new ObservableCollection<Part>(tempParts);
+                    this.Parts = new ObservableCollection<Part>(parts);
                     this.IsLoading = false;
                 });
                 this._isInitialized = true;
@@ -140,21 +137,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
             this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
             this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
-            //if (this._regionManager.Regions.ContainsRegionWithName(LocalRegions.AttachmentTableRegion)) {
-            //    this._regionManager.Regions[LocalRegions.AttachmentTableRegion].RemoveAll();
-            //}
-
-            //if (this._regionManager.Regions.ContainsRegionWithName(LocalRegions.PartInstanceTableRegion)) {
-            //    this._regionManager.Regions[LocalRegions.PartInstanceTableRegion].RemoveAll();
-            //}
-
-            //if (this._regionManager.Regions.ContainsRegionWithName(LocalRegions.TransactionTableRegion)) {
-            //    this._regionManager.Regions[LocalRegions.TransactionTableRegion].RemoveAll();
-            //}
-
-            //if (this._regionManager.Regions.ContainsRegionWithName(LocalRegions.PartSummaryRegion)) {
-            //    this._regionManager.Regions[LocalRegions.PartSummaryRegion].RemoveAll();
-            //}
         }
     }
 }

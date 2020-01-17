@@ -449,7 +449,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             #endregion
 
-            this.Seed(builder);
+            //this.Seed(builder);
         }
 
         private void Seed(ModelBuilder builder) {

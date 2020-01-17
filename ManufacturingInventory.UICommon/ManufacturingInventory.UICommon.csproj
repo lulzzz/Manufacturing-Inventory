@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
-    <FileVersion>1.0.1.0116</FileVersion>
+    <FileVersion>1.0.8.0117</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

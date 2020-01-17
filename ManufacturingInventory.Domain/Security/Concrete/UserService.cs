@@ -1,6 +1,6 @@
 ﻿using ManufacturingInventory.Domain.Buisness.Interfaces;
-using ManufacturingInventory.Domain.Model;
-using ManufacturingInventory.Domain.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

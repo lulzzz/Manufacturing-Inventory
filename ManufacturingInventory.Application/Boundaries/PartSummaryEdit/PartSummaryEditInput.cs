@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.PartDetails {
-    public class PartSummaryInput {
+    public class PartSummaryEditInput:IInput {
 
-        public PartSummaryInput(int partId, string name, string description, bool holdsBubblers, int? warehouseId, int? organizationId, int? usageId) {
+        public PartSummaryEditInput(int partId, string name, string description, bool holdsBubblers, int? warehouseId, int? organizationId, int? usageId) {
             this.PartId = partId;
             this.Name = name;
             this.Description = description;
@@ -15,6 +15,8 @@ namespace ManufacturingInventory.Application.Boundaries.PartDetails {
             this.UsageId = usageId;
         }
 
+        public bool IsNew { get; set; }
+
         public int PartId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -22,5 +24,6 @@ namespace ManufacturingInventory.Application.Boundaries.PartDetails {
         public int? WarehouseId { get; set; }
         public int? OrganizationId { get; set; }
         public int? UsageId { get; set; }
+
     }
 }

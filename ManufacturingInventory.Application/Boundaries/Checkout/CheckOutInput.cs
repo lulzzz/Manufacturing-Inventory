@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.Checkout {
-    public interface ICheckOutInput<T> {
-        IList<T> Items { get; set; }
-    }
 
     public class CheckOutStandardInput : ICheckOutInput<CheckOutInputData> {
         public IList<CheckOutInputData> Items { get; set; }

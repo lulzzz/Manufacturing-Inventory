@@ -3,7 +3,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.InstallSequence</AssemblyName>
-    <FileVersion>1.0.133.0116</FileVersion>
+    <FileVersion>1.0.134.0117</FileVersion>
+    <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />

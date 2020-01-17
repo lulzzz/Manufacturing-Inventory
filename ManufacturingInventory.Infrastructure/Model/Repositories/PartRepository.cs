@@ -51,6 +51,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public Part Delete(Part entity) => throw new NotImplementedException();
+        
         public Task<Part> DeleteAsync(Part entity) => throw new NotImplementedException();
 
         public Part GetEntity(Expression<Func<Part, bool>> expression) {

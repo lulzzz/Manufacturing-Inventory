@@ -26,7 +26,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private IRepository<PartInstance> _repository;
 
         private int _selectedTabIndex = 0;
         private Visibility _visibility;
@@ -36,16 +35,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isBubbler;
 
         private Part _selectedPart;
+        private DataTraveler _partDataTraveler;
 
-        public AsyncCommand UndoTransactionCommand { get; set; }
-        public AsyncCommand ViewInstanceDetailsCommand { get; private set; }
+
         public AsyncCommand LoadCommand { get; private set; }
 
-        public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
-        public PrismCommands.DelegateCommand ViewInstanceCommand { get; private set; }
-
-        public PartsDetailViewModel(IEventAggregator eventAggregator, IRegionManager regionManager, IRepository<PartInstance> repository) {
-            this._repository =repository;
+        public PartsDetailViewModel(IEventAggregator eventAggregator, IRegionManager regionManager) {
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.SelectedTabIndex = 0;
@@ -58,6 +53,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedPart, value);
         }
 
+        public DataTraveler PartDataTraveler { 
+            get => this._partDataTraveler;
+            set => SetProperty(ref this._partDataTraveler, value);
+        }
 
         public Visibility Visibility {
             get => this._visibility;
@@ -69,7 +68,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedTabIndex, value);
         }
 
-
         public bool IsNotBubbler { 
             get => this._isNotBubbler;
             set => SetProperty(ref this._isNotBubbler, value);
@@ -79,6 +77,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
         }
+
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             var part = navigationContext.Parameters[ParameterKeys.SelectedPart] as Part;
@@ -91,6 +90,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.Visibility = (isEdit || isNew) ? Visibility.Visible : Visibility.Collapsed;
                 this.IsBubbler = this.SelectedPart.HoldsBubblers;
                 this.IsNotBubbler = !this.IsBubbler;
+                this.PartDataTraveler = new DataTraveler() { PartId = this.SelectedPart.Id, HoldsBubblers = this.SelectedPart.HoldsBubblers };
             }
         }
 

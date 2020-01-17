@@ -1,5 +1,4 @@
 ﻿using ManufacturingInventory.Domain.Buisness.Interfaces;
-using ManufacturingInventory.Domain.Model;
 
 namespace ManufacturingInventory.Domain.Buisness.Concrete {
 

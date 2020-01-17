@@ -8,14 +8,17 @@ using System.Windows;
 using DevExpress.Mvvm;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Common.Application.UI.Views;
-using ManufacturingInventory.Common.Model.Entities;
 using Prism.Regions;
 using ManufacturingInventory.Common.Application.UI.ViewModels;
-using ManufacturingInventory.Common.Model;
 using PrismCommands = Prism.Commands;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using Prism.Events;
+using ManufacturingInventory.Application.Boundaries.AttachmentsEdit.Interfaces;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class AttachmentsTableViewModel : InventoryViewModelBase {
@@ -23,7 +26,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private int _partId;
         private Attachment _selectedAttachment;
         private FileNameViewModel _fileNameViewModel;
-        private ManufacturingContext _context;
+
+        private IRegionManager _regionManager;
+        private IEventAggregator _eventAggregator;
+        private IAttachmentPartEditUseCase _attachmentEdit;
 
         public string Filter { get; set; }
         public int FilterIndex { get; set; }
@@ -47,8 +53,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public PrismCommands.DelegateCommand DeleteAttachmentCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
 
-        public AttachmentsTableViewModel(ManufacturingContext context) {
-            this._context = context;
+        public AttachmentsTableViewModel(IAttachmentPartEditUseCase attachmentEdit, IEventAggregator eventAggregator, IRegionManager regionManager) {
+            this._attachmentEdit = attachmentEdit;
+            this._regionManager = regionManager;
+            this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
         }
 
@@ -200,7 +208,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
     
         private async Task InitializeHandler() {
-            var attachments =await this._context.Attachments.Where(e => e.PartId == this.SelectedPartId).ToListAsync();
+            var attachments =await this._attachmentEdit.GetAttachments(this.SelectedPartId);
             this.Attachments = new ObservableCollection<Attachment>(attachments);
         }
     }

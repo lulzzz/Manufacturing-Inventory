@@ -1,23 +1,20 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
-using ManufacturingInventory.Common.Application;
 using Prism.Regions;
 using DevExpress.Mvvm;
 using PrismCommands = Prism.Commands;
 using Prism.Events;
-using ManufacturingInventory.Common.Model;
 using System.Windows;
-using ManufacturingInventory.Common.Model.Entities;
-using ManufacturingInventory.Common.Data;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ManufacturingInventory.PartsManagment.Internal;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using Condition = ManufacturingInventory.Common.Model.Entities.Condition;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Common.Application;
+using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceDetailsViewModel : InventoryViewModelNavigationBase {
@@ -61,7 +58,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
 
-        public PartInstanceDetailsViewModel(, IEventAggregator eventAggregator,IRegionManager regionManager) {
+        public PartInstanceDetailsViewModel(IRepository<PartInstance> repository, IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._repository = repository;
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
@@ -208,60 +205,60 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
 
-                var categories =await this._partManager.CategoryService.GetEntityListAsync();
-                this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
+                //var categories =await this._partManager.CategoryService.GetEntityListAsync();
+                //this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                //this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
 
-                var locations = await this._partManager.LocationService.GetEntityListAsync();
-                this.Locations = new ObservableCollection<Location>(locations);
-                if (this.SelectedPartInstance != null) {
+                //var locations = await this._partManager.LocationService.GetEntityListAsync();
+                //this.Locations = new ObservableCollection<Location>(locations);
+                //if (this.SelectedPartInstance != null) {
 
-                    if (this.SelectedPartInstance.Condition != null) {
-                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
-                    }
+                //    if (this.SelectedPartInstance.Condition != null) {
+                //        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                //    }
 
-                    if (this.SelectedPartInstance.CurrentLocation != null) {
-                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                    }
+                //    if (this.SelectedPartInstance.CurrentLocation != null) {
+                //        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                //    }
 
-                    if (this.SelectedPartInstance.PartType != null) {
-                        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
-                    }
-                }
+                //    if (this.SelectedPartInstance.PartType != null) {
+                //        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                //    }
+                //}
                 this._isInitialized = true;
             }
         }
 
         public async Task SaveHandler() {
-            if (this.SelectedCondition != null) {
-                this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
-            }
+            //if (this.SelectedCondition != null) {
+            //    this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
+            //}
 
-            if (this.SelectedLocation != null) {
-                this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
-            }
+            //if (this.SelectedLocation != null) {
+            //    this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
+            //}
 
-            if (this.SelectedPartType != null) {
-                this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
-            }
+            //if (this.SelectedPartType != null) {
+            //    this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
+            //}
 
-            var updated=await this._partManager.PartInstanceService.UpdateAsync(this.SelectedPartInstance,true);
-            if (updated!=null) {
-                this.DispatcherService.BeginInvoke(() => {
-                    this.MessageBoxService.ShowMessage("Save Done, Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
-                });
-                ReloadEventTraveler traveler = new ReloadEventTraveler() {
-                    PartId = this.SelectedPartInstance.PartId,
-                    PartInstanceId = this.SelectedPartInstance.Id
-                };
-                this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
-                this.SaveCancelVisibility = Visibility.Collapsed;
-                this.IsEdit = false;
-            } else {
-                this.DispatcherService.BeginInvoke(() => {
-                    this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
-                });
-            }
+            //var updated=await this._partManager.PartInstanceService.UpdateAsync(this.SelectedPartInstance,true);
+            //if (updated!=null) {
+            //    this.DispatcherService.BeginInvoke(() => {
+            //        this.MessageBoxService.ShowMessage("Save Done, Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
+            //    });
+            //    ReloadEventTraveler traveler = new ReloadEventTraveler() {
+            //        PartId = this.SelectedPartInstance.PartId,
+            //        PartInstanceId = this.SelectedPartInstance.Id
+            //    };
+            //    this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
+            //    this.SaveCancelVisibility = Visibility.Collapsed;
+            //    this.IsEdit = false;
+            //} else {
+            //    this.DispatcherService.BeginInvoke(() => {
+            //        this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
+            //    });
+            //}
         }
 
         //public async Task SaveHandler() {

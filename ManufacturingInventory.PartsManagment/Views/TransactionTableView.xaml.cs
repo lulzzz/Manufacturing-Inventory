@@ -14,7 +14,7 @@ using Prism.Common;
 using Prism.Regions;
 using ManufacturingInventory.PartsManagment.ViewModels;
 using System.Collections.ObjectModel;
-using ManufacturingInventory.Common.Model.Entities;
+using ManufacturingInventory.PartsManagment.Internal;
 
 namespace ManufacturingInventory.PartsManagment.Views {
     public partial class TransactionTableView : UserControl {
@@ -25,8 +25,9 @@ namespace ManufacturingInventory.PartsManagment.Views {
 
         private void PartTransactionsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
-            var transactionContext = (int)context.Value;
-            (DataContext as TransactionTableViewModel).SelectedPartId = transactionContext;
+            var transactionContext = (DataTraveler)context.Value;
+            (DataContext as TransactionTableViewModel).SelectedPartId = transactionContext.PartId;
+            (DataContext as TransactionTableViewModel).IsBubbler = transactionContext.HoldsBubblers;
         }
     }
 }

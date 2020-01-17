@@ -21,6 +21,12 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
+using ManufacturingInventory.Application.Boundaries.PartDetails;
+using ManufacturingInventory.Application.Boundaries.AttachmentsEdit.Interfaces;
+using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
+using ManufacturingInventory.Application.Boundaries.TransactionEdit;
+using ManufacturingInventory.Infrastructure.Model.Services;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -38,17 +44,32 @@ namespace ManufacturingInventory.ManufacturingApplication {
             if (this.userService.IsValid()) {
                 var container = containerRegistry.GetContainer();
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
+                container.Register<IUnitOfWork,UnitOfWork>(setup: Setup.With(allowDisposableTransient: true));
 
                 containerRegistry.Register<ILogInService, LogInService>();
+                containerRegistry.Register<IFileService, FileService>();
                 containerRegistry.Register<IDomainManager, DomainManager>();
                 containerRegistry.RegisterInstance<IUserService>(this.userService);
 
-                containerRegistry.Register<IUseCase<CheckOutBubblerInput, CheckOutOutput>, CheckOutBubbler>();
+                containerRegistry.Register<ICheckOutBubblerUseCase, CheckOutBubbler>();
+                containerRegistry.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
+                containerRegistry.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
+                containerRegistry.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
+                containerRegistry.Register<IAttachmentPartEditUseCase, AttachmentPartEdit>();
+                containerRegistry.Register<ITransactionEditUseCase,TransactionEdit>();
+                
                 containerRegistry.Register<IRepository<Category>, CategoryRepository>();
                 containerRegistry.Register<IRepository<Location>, LocationRepository>();
                 containerRegistry.Register<IRepository<PartInstance>, PartInstanceRepository>();
                 containerRegistry.Register<IRepository<Part>, PartRepository>();
-                containerRegistry.Register<IUnitOfWork, UnitOfWork>();
+                containerRegistry.Register<IRepository<Attachment>, AttachmentRepository>();
+                containerRegistry.Register<IRepository<Transaction>, TransactionRepository>();
+
+                containerRegistry.Register<IEntityProvider<Category>, CategoryProvider>();
+                containerRegistry.Register<IEntityProvider<Location>, LocationProvider>();
+                containerRegistry.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
+                containerRegistry.Register<IEntityProvider<Part>, PartProvider>();
+                containerRegistry.Register<IEntityProvider<Transaction>, TransactionProvider>();
             } else {
                 this.Shutdown();
             }

@@ -34,11 +34,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isBubbler;
         private bool _isNotBubbler;
 
-        //private IPartManagerService _partManagerService;
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
         private IEntityProvider<PartInstance> _provider;
-        //private ManufacturingContext _context;
 
         public AsyncCommand InitializeCommand { get; private set;  }
         public AsyncCommand<string> ExportTransactionsCommand { get; private set; }
@@ -87,11 +85,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
-        public bool IsNotBubbler { 
-            get => this._isNotBubbler;
-            set => SetProperty(ref this._isNotBubbler, value);
-        }
-
         private async Task ExportPartInstancesHandler(ExportFormat format) {
             await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
@@ -107,13 +100,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             var partInstances = await this._provider.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
-            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
             //var part = await this._partManagerService.PartService.GetEntityAsync(e => e.Id == this.SelectedPartId,false);
             //var partInstances = await this._partManagerService.PartInstanceService.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = bubbler;
-                this.IsNotBubbler = !this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.ShowTableLoading = false;
             });

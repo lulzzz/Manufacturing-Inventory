@@ -1,5 +1,4 @@
 ﻿using ManufacturingInventory.Common.Application;
-using ManufacturingInventory.Common.Model.Entities;
 using ManufacturingInventory.PartsManagment.Internal;
 using ManufacturingInventory.PartsManagment.Views;
 using Prism.Ioc;
@@ -25,8 +24,6 @@ namespace ManufacturingInventory.PartsManagment
             containerRegistry.RegisterForNavigation<PartInstanceDetailsView>(ModuleViews.PartInstanceDetailsView);
             containerRegistry.RegisterForNavigation<TransactionDetailsView>(ModuleViews.TransactionDetailsView);
             containerRegistry.RegisterForNavigation<CheckoutView>(ModuleViews.CheckoutView);
-            containerRegistry.Register<IPartManagerService,PartManagmentService>();
-
         }
     }
 }

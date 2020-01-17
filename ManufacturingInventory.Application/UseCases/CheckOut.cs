@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
 
-    public class CheckOutBubbler : ICheckOutUseCase {
+    public class CheckOutBubbler : ICheckOutBubblerUseCase {
         private IRepository<Transaction> _transactionRepository;
         private IRepository<Location> _locationRepository;
         private IRepository<Category> _categoryRepository;
@@ -58,7 +58,7 @@ namespace ManufacturingInventory.Application.UseCases {
                         val = 0;
                     }
                     if (val > 0) {
-                        output.OutputList.Add(new CheckOutOutputData(transaction, false, "Success"));
+                        output.OutputList.Add(new CheckOutOutputData(transaction, true, "Success"));
 
                     } else {
                         output.OutputList.Add(new CheckOutOutputData(null, false, "Failed Checkout"));

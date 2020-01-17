@@ -42,23 +42,23 @@
                               Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}"
                               TabIndex="0"
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartSummaryRegion}"
-                              prism:RegionManager.RegionContext="{Binding SelectedPart}"></dx:DXTabItem>
+                              prism:RegionManager.RegionContext="{Binding PartDataTraveler}"></dx:DXTabItem>
                 <dx:DXTabItem Header="Part Instances"
                               Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
                               TabIndex="1"
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartInstanceTableRegion}"
-                              prism:RegionManager.RegionContext="{Binding SelectedPart.Id}"
+                              prism:RegionManager.RegionContext="{Binding PartDataTraveler}"
                               HorizontalContentAlignment="Stretch" />
                 <dx:DXTabItem Header="Attachments"
                               Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
                               TabIndex="2"
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.AttachmentTableRegion}"
-                              prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}" />
+                              prism:RegionManager.RegionContext="{Binding PartDataTraveler,Mode=TwoWay}" />
                 <dx:DXTabItem Header="Transactions"
                               Glyph="{dx:DXImage Image=AgendaView_16x16.png}"
                               TabIndex="3"
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.TransactionTableRegion}"
-                              prism:RegionManager.RegionContext="{Binding SelectedPart.Id,Mode=TwoWay}" />
+                              prism:RegionManager.RegionContext="{Binding PartDataTraveler,Mode=TwoWay}" />
             </dx:DXTabControl>
             <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Bottom"
                               Visibility="{Binding Visibility,Mode=TwoWay}"

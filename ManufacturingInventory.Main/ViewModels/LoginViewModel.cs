@@ -5,8 +5,8 @@ using System.Text;
 using DevExpress.Mvvm;
 using Effortless.Net.Encryption;
 using ManufacturingInventory.Common.Application;
-using ManufacturingInventory.Common.Buisness.Concrete;
-using ManufacturingInventory.Common.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Buisness.Concrete;
+using ManufacturingInventory.Domain.Buisness.Interfaces;
 
 namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
     public class LoginViewModel : InventoryViewModelBase {

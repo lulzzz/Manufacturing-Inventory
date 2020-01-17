@@ -27,8 +27,9 @@ namespace ManufacturingInventory.PartsManagment.Views {
 
         private void PartSummaryView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
-            var summaryContext = (Common.Model.Entities.Part)context.Value;
-            (DataContext as PartSummaryViewModel).SelectedPart = summaryContext;
+            var summaryContext = (DataTraveler)context.Value;
+            (DataContext as PartSummaryViewModel).SelectedPartId = summaryContext.PartId;
+            (DataContext as PartSummaryViewModel).IsBubbler = summaryContext.HoldsBubblers;
         }
     }
 }

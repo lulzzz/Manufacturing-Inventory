@@ -12,5 +12,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
         public Task<Price> GetEntityAsync(Expression<Func<Price, bool>> expression) => throw new NotImplementedException();
         public IEnumerable<Price> GetEntityList(Expression<Func<Price, bool>> expression = null, Func<IQueryable<Price>, IOrderedQueryable<Price>> orderBy = null) => throw new NotImplementedException();
         public Task<IEnumerable<Price>> GetEntityListAsync(Expression<Func<Price, bool>> expression = null, Func<IQueryable<Price>, IOrderedQueryable<Price>> orderBy = null) => throw new NotImplementedException();
+        public void Load() => throw new NotImplementedException();
+        public Task LoadAsync() => throw new NotImplementedException();
     }
 }

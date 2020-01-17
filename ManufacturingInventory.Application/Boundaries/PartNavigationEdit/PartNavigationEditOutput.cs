@@ -3,10 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ManufacturingInventory.Application.Boundaries.PartDetails {
-    public class PartSummaryOutput:IOutput {
-
-        public PartSummaryOutput(Part part, bool success, string message) {
+namespace ManufacturingInventory.Application.Boundaries.PartNavigationEdit {
+    public class PartNavigationEditOutput : IOutput {
+        public PartNavigationEditOutput(Part part, bool success, string message) {
             this.Part = part;
             this.Success = success;
             this.Message = message;

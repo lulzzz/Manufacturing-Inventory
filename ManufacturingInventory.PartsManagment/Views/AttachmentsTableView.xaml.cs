@@ -1,5 +1,4 @@
-﻿using ManufacturingInventory.Common.Model.Entities;
-using ManufacturingInventory.PartsManagment.Internal;
+﻿using ManufacturingInventory.PartsManagment.Internal;
 using ManufacturingInventory.PartsManagment.ViewModels;
 using Prism.Common;
 using Prism.Regions;
@@ -29,9 +28,8 @@ namespace ManufacturingInventory.PartsManagment.Views {
 
         private void AttachmentsTableView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
-            var attachmentContext = (int)context.Value;
-
-            (DataContext as AttachmentsTableViewModel).SelectedPartId = attachmentContext;
+            var attachmentContext = (DataTraveler)context.Value;
+            (DataContext as AttachmentsTableViewModel).SelectedPartId = attachmentContext.PartId;
         }
     }
 }
