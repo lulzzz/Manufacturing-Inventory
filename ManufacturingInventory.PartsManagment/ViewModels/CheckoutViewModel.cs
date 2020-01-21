@@ -19,6 +19,7 @@ using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Domain.Buisness.Interfaces;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.Checkout;
+using ManufacturingInventory.Domain.DTOs;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class CheckoutViewModel : InventoryViewModelNavigationBase {
@@ -34,11 +35,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private string _quantityLabel;
 
-        private ObservableCollection<Transaction> _transactions=new ObservableCollection<Transaction>();
+        private ObservableCollection<TransactionDTO> _transactions=new ObservableCollection<TransactionDTO>();
         private ObservableCollection<Consumer> _consumers;
-        private Transaction _selectedTransaction;
+        private TransactionDTO _selectedTransaction;
         private PartInstance _selectedPartInstance;
-        private Transaction _newTransaction = new Transaction();
         private Consumer _selectedConsumer;
         private DateTime _timeStamp;
 
@@ -75,7 +75,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public override bool KeepAlive => false;
 
-        public ObservableCollection<Transaction> Transactions { 
+        public ObservableCollection<TransactionDTO> Transactions { 
             get => this._transactions;
             set => SetProperty(ref this._transactions, value);
         }
@@ -85,7 +85,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._consumers, value);
         }
 
-        public Transaction SelectedTransaction { 
+        public TransactionDTO SelectedTransaction { 
             get => this._selectedTransaction;
             set => SetProperty(ref this._selectedTransaction, value);
         }
@@ -93,11 +93,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public PartInstance SelectedPartInstance { 
             get => this._selectedPartInstance;
             set => SetProperty(ref this._selectedPartInstance, value);
-        }
-
-        public Transaction NewTransaction { 
-            get => this._newTransaction;
-            set => SetProperty(ref this._newTransaction, value);
         }
 
         public bool IsBubbler { 
@@ -167,15 +162,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task AddToOutgoingHandler() {
             await Task.Run(() => {
-                var transaction = this.Transactions.FirstOrDefault(e => e.PartInstance.Id == this.SelectedPartInstance.Id);
+                var transaction = this.Transactions.FirstOrDefault(e => e.PartInstanceId == this.SelectedPartInstance.Id);
                 if (transaction==null) {
-                    Transaction newTransaction = new Transaction(this.SelectedPartInstance, InventoryAction.OUTGOING,this.TimeStamp, this.Weight, true, this.SelectedConsumer);
+                    //Transaction newTransaction = new Transaction(this.SelectedPartInstance, InventoryAction.OUTGOING,this.TimeStamp, this.Weight, true, this.SelectedConsumer);
+                    TransactionDTO newTransaction = new TransactionDTO(this.TimeStamp,
+                        InventoryAction.OUTGOING, this.Quantity, false, this.SelectedPartInstance.UnitCost,
+                        this.TotalCost,this.SelectedPartInstance.Id,this.SelectedPartInstance.Name, this.SelectedConsumer.Name,
+                        this.SelectedConsumer.Id, this.MeasuredWeight, this.Weight);
                     DispatcherService.BeginInvoke(() => {
                         this.Transactions.Add(newTransaction);
                         this.MessageBoxService.ShowMessage("Item added to Output", "Success");
                     });
                     this.SelectedPartInstance = null;
-                    this.NewTransaction = null;
                     this.SelectedConsumer = null;
                     this.Quantity = 0;
                     this.MeasuredWeight = 0;
@@ -202,17 +200,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
+
+
         private async Task CheckOutHandler() {
             if (this._transactions.Any()) {
                 CheckOutBubblerInput input = new CheckOutBubblerInput();
                 await Task.Run(() => {
                     foreach (var transaction in this.Transactions) {
-                        input.Items.Add(new CheckOutBubblerInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId.Value, transaction.Quantity,
-                            transaction.UnitCost, transaction.TotalCost, 2100, transaction.ParameterValue));
+                        input.Items.Add(new CheckOutBubblerInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId, transaction.Quantity,
+                            transaction.UnitCost, transaction.TotalCost, transaction.Measured, transaction.Weight));
                     }
                 });
 
-                var response=await this._checkOut.Execute(input);
+                var response = await this._checkOut.Execute(input);
 
                 var succeeded = response.OutputList.Where(e => e.Success == true);
                 var failed = response.OutputList.Where(e => e.Success == false);
@@ -222,12 +222,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
                 okayBuilder.AppendLine("Succeeded: ");
                 failBuilder.AppendLine("Failed: ");
-                
-                foreach(var success in succeeded) {
+
+                foreach (var success in succeeded) {
                     okayBuilder.AppendLine(success.Transaction.PartInstance.Name);
                 }
 
-                foreach(var fail in failed) {
+                foreach (var fail in failed) {
                     failBuilder.AppendLine(fail.Transaction.PartInstance.Name);
                 }
 

@@ -6,64 +6,143 @@ using System.Threading.Tasks;
 using IWshRuntimeLibrary;
 using Microsoft.EntityFrameworkCore;
 using ManufacturingInventory.Infrastructure.Model;
+using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Domain.Buisness.Concrete;
+using ManufacturingInventory.Application.UseCases;
+using ManufacturingInventory.Application.Boundaries.Checkout;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
-        //public static void Main(string[] args) {
-        //    Console.WriteLine("Testing Service Started:");
-        //    var context = new ManufacturingContext();
-        //    var service = new PartInstanceService(context,new UserService());
-        //    var instance = service.GetPartInstance(e => e.Id == 7,false);
-        //    var location = context.Locations.FirstOrDefault(e => e.Id == 4);
-        //    var condition = context.Categories.OfType<Condition>().FirstOrDefault(e => e.Id == 1);
-            
-        //    instance.LocationId = location.Id;
-        //    instance.ConditionId = condition.Id;
-        //    instance.UpdateWeight(2600);
-        //    var updated=service.Update(instance,false);
-        //    //if (updated != null) {
-        //    //    Console.WriteLine("Success");
-        //    //} else {
-        //    //    Console.WriteLine("Error Saving");
-        //    //}
-        //    if (updated != null) {
-        //        if (service.SaveChanges()) {
-        //            Console.WriteLine("Success");
-        //        } else {
-        //            Console.WriteLine("Save Failed");
-        //        }
-        //    } else {
-        //        Console.WriteLine("Update Failed");
-        //    }
-        //    Console.ReadKey();
+        public static void Main(string[] args) {
+            Console.WriteLine("Testing Service Started:");
+            IUserService userService = new UserService();
+            using var context = new ManufacturingContext();
 
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
 
-        //    //CreateLocations();
-        //    //CreateDistibutors();
-        //    //CreateCategories();
-        //    //DistributorPriceTesting();
-        //    //TransactionTesting();
-        //    //ReturnTransactionTest();
-        //    //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
-        //}
-        public static async Task<int> Main(string[] args) {
-            var context = new ManufacturingContext();
-            var partInstance = await context.PartInstances.FirstOrDefaultAsync(e => e.Id == 1);
-            partInstance.Quantity = 4442;
-            var entry=context.Update(partInstance);
+            if (user != null) {
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+                context.SaveChanges();
+                userService.CurrentUser = user;
+                userService.CurrentSession = session;
+                IRepository<Transaction> transactionRepository = new TransactionRepository(context);
+                IRepository<Location> locationRepository = new LocationRepository(context);
+                IRepository<Category> categoryRepository = new CategoryRepository(context);
+                IRepository<PartInstance> partInstanceRepository = new PartInstanceRepository(context);
+                IUnitOfWork unitOfWork = new UnitOfWork(context);
+                CheckOutBubbler checkOut = new CheckOutBubbler(userService, transactionRepository, locationRepository, categoryRepository, partInstanceRepository, unitOfWork);
 
-            await context.SaveChangesAsync();
-            Console.WriteLine("Updated,Press Any Key To Continue");
-            Console.ReadKey();
-            entry.State = EntityState.Detached;
-            var entity = entry.Entity;
-            entity.Quantity = 888;
-            await context.SaveChangesAsync();
-            Console.WriteLine("Saved Again");
+                //var location = context.Locations.AsNoTracking().FirstOrDefault(e => e.Id == 3);
+                //var instance = context.PartInstances
+                //    .Include(e => e.BubblerParameter)
+                //    .Include(e => e.CurrentLocation)
+                //    .AsNoTracking()
+                //    .FirstOrDefault(e => e.Id == 3);
+                CheckOutBubblerInput input = new CheckOutBubblerInput();
+                input.Items.Add(new CheckOutBubblerInputData(DateTime.Now, 3, 3, 1, 5.25, 52.65, 2300, 0));
+                checkOut.Execute(input).Wait();
+                Console.WriteLine("Maybe");
+            } else {
+                Console.WriteLine("Error: UserService Failed");
+            }
+
             Console.ReadKey();
 
-            return 1;
+            //CreateLocations();
+            //CreateDistibutors();
+            //CreateCategories();
+            //DistributorPriceTesting();
+            //TransactionTesting();
+            //ReturnTransactionTest();
+            //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
         }
+
+        public static void UseCaseTesting() {
+            Console.WriteLine("Testing Service Started:");
+            IUserService userService = new UserService();
+            using var context = new ManufacturingContext();
+
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+
+            if (user != null) {
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+                context.SaveChanges();
+                userService.CurrentUser = user;
+                userService.CurrentSession = session;
+                IRepository<Transaction> transactionRepository = new TransactionRepository(context);
+                IRepository<Location> locationRepository = new LocationRepository(context);
+                IRepository<Category> categoryRepository = new CategoryRepository(context);
+                IRepository<PartInstance> partInstanceRepository = new PartInstanceRepository(context);
+                IUnitOfWork unitOfWork = new UnitOfWork(context);
+                CheckOutBubbler checkOut = new CheckOutBubbler(userService, transactionRepository, locationRepository, categoryRepository, partInstanceRepository, unitOfWork);
+
+                //var location = context.Locations.AsNoTracking().FirstOrDefault(e => e.Id == 3);
+                //var instance = context.PartInstances
+                //    .Include(e => e.BubblerParameter)
+                //    .Include(e => e.CurrentLocation)
+                //    .AsNoTracking()
+                //    .FirstOrDefault(e => e.Id == 3);
+                CheckOutBubblerInput input = new CheckOutBubblerInput();
+                input.Items.Add(new CheckOutBubblerInputData(DateTime.Now, 3, 3, 1, 5.25, 52.65, 2300, 5400));
+                checkOut.Execute(input).Wait();
+                Console.WriteLine("Maybe");
+                Console.ReadKey();
+
+
+            } else {
+                Console.WriteLine("Error: UserService Failed");
+            }
+        }
+
+
+        //public static async Task<int> Main(string[] args) {
+        //    IUserService userService = new UserService();
+        //    using var context = new ManufacturingContext();
+        //    var user = context.Users
+        //        .Include(e => e.Sessions)
+        //            .ThenInclude(e => e.Transactions)
+        //        .Include(e => e.Permission)
+        //        .FirstOrDefault(e => e.FirstName == "Andrew");
+
+        //    if (user != null) {
+        //        Session session = new Session(user);
+        //        context.Sessions.Add(session);
+        //        context.SaveChanges();
+        //        userService.CurrentUser = user;
+        //        userService.CurrentSession = session;
+        //    } else {
+
+        //    }
+
+
+        //    IRepository<Transaction> transactionRepository = new TransactionRepository(context);
+        //    IRepository<Location> locationRepository = new LocationRepository(context);
+        //    IRepository<Category> categoryRepository = new CategoryRepository(context);
+        //    IRepository<PartInstance> partInstanceRepository = new PartInstanceRepository(context);
+        //    IUnitOfWork unitOfWork = new UnitOfWork(context);
+
+        //    CheckOutBubbler checkOut = new CheckOutBubbler(userService, transactionRepository, locationRepository, categoryRepository, partInstanceRepository, unitOfWork);
+
+        //    var location = context.Locations.FirstOrDefault(e => e.Id == 3);
+        //    var instance = context.PartInstances.Include(e => e.BubblerParameter).Include(e => e.CurrentLocation).FirstOrDefault(e => e.Id == 3);
+        //    CheckOutBubblerInput input = new CheckOutBubblerInput();
+        //    input.Items.Add(new CheckOutBubblerInputData(DateTime.Now, instance.Id, location.Id, 1, instance.UnitCost, 52.65, 2300, 5400));
+        //    checkOut.Execute(input).Wait();
+
+        //    return 1;
+        //}
 
         #region EntityServiceTesting
 

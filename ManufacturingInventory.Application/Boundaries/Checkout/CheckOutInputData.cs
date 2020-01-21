@@ -30,7 +30,8 @@ namespace ManufacturingInventory.Application.Boundaries.Checkout {
 
         public CheckOutBubblerInputData(DateTime timeStamp, int partInstanceId, int locationId, int quantity, double unitCost, double totalCost,double measuredWeight,double weight) 
             : base(timeStamp, partInstanceId, locationId, quantity, unitCost, totalCost) {
-            
+            this.Weight = weight;
+            this.MeasuredWeight = measuredWeight;
         }
 
         public double Weight { get; set; }

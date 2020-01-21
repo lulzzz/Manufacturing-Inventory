@@ -100,38 +100,58 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             }
         }
 
+
         public async Task<PartInstance> UpdateAsync(PartInstance entity) {
-            var instance = await this.GetEntityAsync(e => e.Id == entity.Id);
-            if (instance != null) {
-                instance.Name = entity.Name;
-                instance.IsBubbler = entity.IsBubbler;
-                instance.Quantity = entity.Quantity;
-                instance.MinQuantity = entity.MinQuantity;
-                instance.SafeQuantity = entity.SafeQuantity;
-                instance.SerialNumber = entity.SerialNumber;
-                instance.TotalCost = entity.TotalCost;
-                instance.UnitCost = entity.UnitCost;
-                instance.BatchNumber = entity.BatchNumber;
-                instance.CostReported = entity.CostReported;
-                instance.IsResuable = entity.IsResuable;
-                instance.SkuNumber = entity.SkuNumber;
-
-                instance.ConditionId = entity.ConditionId;
-                instance.LocationId = entity.LocationId;
-                instance.PartTypeId = entity.PartTypeId;
-
-                if (entity.IsBubbler && entity.BubblerParameter != null) {
-                    if (!instance.BubblerParameter.Compare(entity.BubblerParameter)) {
-                        instance.BubblerParameter.Set(entity.BubblerParameter);
-                        this._context.Entry<BubblerParameter>(instance.BubblerParameter).State = EntityState.Modified;
-                    }
-                }
-
-                return (await Task.Run(() => this._context.PartInstances.Update(instance))).Entity;
-            } else {
-                return null;
-            }
+            return await Task.Run(() => {
+                var entry = this._context.Entry<PartInstance>(entity);
+                entry.State = EntityState.Modified;
+                return entry.Entity;
+            });
         }
+
+        //public async Task<PartInstance> UpdateAsync(PartInstance entity) {
+        //    var instance = await this._context.PartInstances
+        //        .Include(e => e.Transactions)
+        //            .ThenInclude(e => e.Session)
+        //        .Include(e => e.Transactions)
+        //            .ThenInclude(e => e.Location)
+        //        .Include(e => e.PartType)
+        //        .Include(e => e.CurrentLocation)
+        //        .Include(e => e.Price)
+        //        .Include(e => e.BubblerParameter)
+        //        .Include(e => e.Condition)
+        //        .Include(e => e.Part)
+        //        .FirstOrDefaultAsync(e => e.Id == entity.Id);
+        //    if (instance != null) {
+        //        instance.Name = entity.Name;
+        //        instance.IsBubbler = entity.IsBubbler;
+        //        instance.Quantity = entity.Quantity;
+        //        instance.MinQuantity = entity.MinQuantity;
+        //        instance.SafeQuantity = entity.SafeQuantity;
+        //        instance.SerialNumber = entity.SerialNumber;
+        //        instance.TotalCost = entity.TotalCost;
+        //        instance.UnitCost = entity.UnitCost;
+        //        instance.BatchNumber = entity.BatchNumber;
+        //        instance.CostReported = entity.CostReported;
+        //        instance.IsResuable = entity.IsResuable;
+        //        instance.SkuNumber = entity.SkuNumber;
+
+        //        instance.ConditionId = entity.ConditionId;
+        //        instance.LocationId = entity.LocationId;
+        //        instance.PartTypeId = entity.PartTypeId;
+
+        //        if (entity.IsBubbler && entity.BubblerParameter != null) {
+        //            if (!instance.BubblerParameter.Compare(entity.BubblerParameter)) {
+        //                instance.BubblerParameter.Set(entity.BubblerParameter);
+        //                //this._context.Entry<BubblerParameter>(instance.BubblerParameter).State = EntityState.Modified;
+        //            }
+        //        }
+
+        //        return instance;
+        //    } else {
+        //        return null;
+        //    }
+        //}
 
         public async Task<PartInstance> AddAsync(PartInstance entity) {
             var instance = await this._context.PartInstances.AsNoTracking().FirstOrDefaultAsync(e => e.Id == entity.Id);

@@ -19,9 +19,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
     //    public DateTime? Updated { get; set; }
 
     //    public Distributor() {
-    //        this.Prices = new ObservableHashSet<Price>();
-    //        this.Contacts = new ObservableHashSet<Contact>();
-    //        this.Attachments = new ObservableHashSet<Attachment>();
+    //        this.Prices = new HashSet<Price>();
+    //        this.Contacts = new HashSet<Contact>();
+    //        this.Attachments = new HashSet<Attachment>();
     //    }
 
     //    public Distributor(string name,string description) {
@@ -43,9 +43,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<Attachment> Attachments { get; set; }
 
         public Distributor() {
-            this.Prices = new ObservableHashSet<Price>();
-            this.Contacts = new ObservableHashSet<Contact>();
-            this.Attachments = new ObservableHashSet<Attachment>();
+            this.Prices = new HashSet<Price>();
+            this.Contacts = new HashSet<Contact>();
+            this.Attachments = new HashSet<Attachment>();
         }
 
         public Distributor(string name, string description):this() {

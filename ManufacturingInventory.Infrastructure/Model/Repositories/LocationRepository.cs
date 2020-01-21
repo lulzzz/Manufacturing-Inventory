@@ -22,8 +22,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             }
 
             return this._context.Locations.Add(entity).Entity;
-
-
         }
 
         public async Task<Location> AddAsync(Location entity) {
@@ -85,12 +83,12 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<Location> GetEntityAsync(Expression<Func<Location, bool>> expression) {
+            return await this._context.Locations
+                .Include(e => e.ItemsAtLocation)
+                .Include(e => e.Transactions)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(expression);
 
-                return await this._context.Locations
-                    .Include(e => e.ItemsAtLocation)
-                    .Include(e => e.Transactions)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<Location> GetEntityList(Expression<Func<Location, bool>> expression = null, Func<IQueryable<Location>, IOrderedQueryable<Location>> orderBy = null) {

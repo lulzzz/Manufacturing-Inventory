@@ -46,22 +46,20 @@ namespace ManufacturingInventory.Application.UseCases {
                 if (partInstance != null && location != null) {
                     partInstance.UpdateWeight(item.MeasuredWeight);
                     partInstance.UpdateQuantity(-1);
-                    partInstance.CostReported = false;                   
-                    Transaction transaction = new Transaction(partInstance, InventoryAction.INCOMING, item.TimeStamp, item.Weight, true, location);
-                    transaction.SessionId = this._userService.CurrentSession.Id;
+                    partInstance.CostReported = false;
+                    partInstance.LocationId = location.Id;
+                    Transaction transaction = new Transaction(partInstance, InventoryAction.INCOMING, item.TimeStamp, partInstance.BubblerParameter.Weight, true, location);
+                    transaction.SessionId = this._userService.CurrentSession.Id;                    
                     await this._partInstanceRepository.UpdateAsync(partInstance);
                     await this._transactionRepository.AddAsync(transaction);
                     int val;
-                    try {
                         val=await this._unitOfWork.Save();
-                    } catch {
-                        val = 0;
-                    }
+
                     if (val > 0) {
                         output.OutputList.Add(new CheckOutOutputData(transaction, true, "Success"));
 
                     } else {
-                        output.OutputList.Add(new CheckOutOutputData(null, false, "Failed Checkout"));
+                        output.OutputList.Add(new CheckOutOutputData(transaction, false, "Failed Checkout"));
                     }
                 } else {
                     output.OutputList.Add(new CheckOutOutputData(null, false, "PartInstance or Location Not Found"));

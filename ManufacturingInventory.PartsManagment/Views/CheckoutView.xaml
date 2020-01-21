@@ -191,7 +191,8 @@
                             <services:GridExportService x:Name="ExportOutgoingService"/>
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.View>
-                            <dxg:TableView AllowEditing="True" ShowEditFormOnDoubleClick="True"
+                            <dxg:TableView AllowEditing="True"
+                                           ShowEditFormOnDoubleClick="True"
                                            EditFormPostMode="Immediate"
                                            EditFormShowMode="InlineHideRow"
                                            ShowGroupPanel="False"
@@ -204,28 +205,20 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                        <dxg:GridColumn FieldName="Id"
-                                        Visible="False"
-                                        AllowEditing="false" />
                         <dxg:GridColumn FieldName="TimeStamp" AllowEditing="False"/>
-                        <dxg:GridColumn FieldName="PartInstance.Name"
+                        <dxg:GridColumn FieldName="PartInstanceName"
                                         Header="Item"
                                         AllowEditing="False" />
-                        <dxg:GridColumn FieldName="Location.Name"
+                        <dxg:GridColumn FieldName="LocationName"
                                         Header="Location"
-                                        AllowEditing="False" />
-                        <dxg:GridColumn FieldName="PartInstance.SerialNumber"
-                                        Header="Serial Number" AllowEditing="False"/>
-                        <dxg:GridColumn FieldName="PartInstance.BatchNumber"
-                                        Header="Batch Number"
                                         AllowEditing="False" />
                         <dxg:GridColumn FieldName="Quantity" Header="Quantity" 
                                         AllowEditing="True"/>
-                        <dxg:GridColumn FieldName="ParameterValue"
+                        <dxg:GridColumn FieldName="Weight"
                                         Header="Weight"
                                         Visible="{Binding IsBubbler,Mode=TwoWay}"
                                         AllowEditing="False" />
-                        <dxg:GridColumn FieldName="PartInstance.UnitCost"
+                        <dxg:GridColumn FieldName="UnitCost"
                                         Header="Unit Cost"
                                         AllowEditing="False">
                             <dxg:GridColumn.EditSettings>

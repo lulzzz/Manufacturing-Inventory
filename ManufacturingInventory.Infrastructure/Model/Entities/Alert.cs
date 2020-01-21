@@ -16,7 +16,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<UserAlert> UserAlerts { get; set; }
 
         public Alert() {
-            this.UserAlerts = new ObservableHashSet<UserAlert>();
+            this.UserAlerts = new HashSet<UserAlert>();
         }
     }
 }

@@ -104,15 +104,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         }
 
         public Transaction(PartInstance instance, InventoryAction inventoryAction,DateTime timeStamp, double parameterValue, bool isReturning, Location location) {
-            this.PartInstance = instance;
+            //this.PartInstance = instance;
             this.PartInstanceId = instance.Id;
             this.ParameterValue = parameterValue;
             this.UnitCost = instance.UnitCost;
-            this.TotalCost = (this.PartInstance.IsBubbler) ? (instance.TotalCost) : (this.Quantity * this.UnitCost);
+            this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost) : (this.Quantity * this.UnitCost);
             this.TimeStamp = timeStamp;
             this.InventoryAction = inventoryAction;
             this.IsReturning = isReturning;
-            this.Location = location;
+            //this.Location = location;
             this.LocationId = location.Id;
             this.Quantity = 1;
         }

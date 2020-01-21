@@ -42,8 +42,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<Transaction> Transactions { get; set; }
 
         public PartInstance() {
-            this.Transactions = new ObservableHashSet<Transaction>();
-            this.Attachments = new ObservableHashSet<Attachment>();
+            this.Transactions = new HashSet<Transaction>();
+            this.Attachments = new HashSet<Attachment>();
         }
 
         public PartInstance(Part part, string name, string serialNumber, string batchNumber, string skuNumber,bool isBubbler) : this() {

@@ -13,8 +13,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<Transaction> Transactions { get; set; }
 
         public Location() {
-            this.ItemsAtLocation = new ObservableHashSet<PartInstance>();
-            this.Transactions = new ObservableHashSet<Transaction>();
+            this.ItemsAtLocation = new HashSet<PartInstance>();
+            this.Transactions = new HashSet<Transaction>();
         }
 
         public void Set(Location location) {
@@ -28,8 +28,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         //public ICollection<IncomingTransaction> IncomingTransactions { get; set; }
 
         public Warehouse() {
-            this.StoredParts = new ObservableHashSet<Part>();
-            //this.IncomingTransactions = new ObservableHashSet<IncomingTransaction>();
+            this.StoredParts = new HashSet<Part>();
+            //this.IncomingTransactions = new HashSet<IncomingTransaction>();
         }
     }
 
@@ -37,7 +37,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         //public ICollection<OutgoingTransaction> OutgoingTransactions { get; set; }
 
         public Consumer() {
-            //this.OutgoingTransactions = new ObservableHashSet<OutgoingTransaction>();
+            //this.OutgoingTransactions = new HashSet<OutgoingTransaction>();
         }
     }
 }

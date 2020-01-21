@@ -17,7 +17,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<InstanceParameter> InstanceParameters { get; set; }
 
         public Parameter() {
-            this.InstanceParameters = new ObservableHashSet<InstanceParameter>();
+            this.InstanceParameters = new HashSet<InstanceParameter>();
         }
 
         public Parameter(string name, string description) : this() {

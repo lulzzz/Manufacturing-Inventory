@@ -13,7 +13,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<Parameter> Parameters { get; set; }
 
         public Unit() {
-            this.Parameters = new ObservableHashSet<Parameter>();
+            this.Parameters = new HashSet<Parameter>();
         }
 
         public Unit(string name, string shortName, int power, int exponent) : this() {

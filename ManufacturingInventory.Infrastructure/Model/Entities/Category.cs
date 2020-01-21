@@ -33,11 +33,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<Part> Parts { get; set; }
 
         public Organization() {
-            this.Parts = new ObservableHashSet<Part>();
+            this.Parts = new HashSet<Part>();
         }
 
         public Organization(string name, string description) :base(name,description) {
-            this.Parts = new ObservableHashSet<Part>();
+            this.Parts = new HashSet<Part>();
         }
 
         public Organization(Organization organization) : base(organization) { }
@@ -47,15 +47,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 
         public Condition() {
-            this.PartInstances = new ObservableHashSet<PartInstance>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
 
         public Condition(string name, string description) : base(name, description) {
-            this.PartInstances = new ObservableHashSet<PartInstance>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
 
         public Condition(Condition condition):base(condition) {
-            this.PartInstances = new ObservableHashSet<PartInstance>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
     }
 
@@ -63,15 +63,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<Part> Parts { get; set; }
 
         public Usage() {
-            this.Parts = new ObservableHashSet<Part>();
+            this.Parts = new HashSet<Part>();
         }
 
         public Usage(string name, string description) : base(name, description) {
-            this.Parts = new ObservableHashSet<Part>();
+            this.Parts = new HashSet<Part>();
         }
 
         public Usage(Usage usage):base(usage) {
-            this.Parts = new ObservableHashSet<Part>();
+            this.Parts = new HashSet<Part>();
         }
     }
 
@@ -79,15 +79,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 
         public PartType() {
-            this.PartInstances = new ObservableHashSet<PartInstance>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
 
         public PartType(string name, string description) : base(name, description) {
-            this.PartInstances = new ObservableHashSet<PartInstance>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
 
         public PartType(PartType type):base(type) {
-            this.PartInstances = new ObservableHashSet<PartInstance>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
     }
 }

@@ -24,8 +24,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<Session> Sessions { get; set; }
 
         public User() {
-            this.UserAlerts = new ObservableHashSet<UserAlert>();
-            this.Sessions = new ObservableHashSet<Session>();
+            this.UserAlerts = new HashSet<UserAlert>();
+            this.Sessions = new HashSet<Session>();
         }
     }
 }

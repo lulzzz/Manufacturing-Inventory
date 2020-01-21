@@ -16,12 +16,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<Transaction> Transactions { get; set; }
 
         public Session() {
-            this.Transactions = new ObservableHashSet<Transaction>();
+            this.Transactions = new HashSet<Transaction>();
         }
 
         public Session(User user) : this() {
             this.In = DateTime.Now;
             this.User = user;
+            //this.UserId = user.Id;
         }
     }
 }

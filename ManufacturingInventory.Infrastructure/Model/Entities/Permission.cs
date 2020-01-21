@@ -13,7 +13,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<User> Users { get; set; }
 
         public Permission() {
-            this.Users = new ObservableHashSet<User>();
+            this.Users = new HashSet<User>();
         }
 
         public Permission(string name,string description) : this() {

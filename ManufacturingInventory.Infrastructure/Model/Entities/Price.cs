@@ -26,7 +26,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public virtual ICollection<Attachment> Attachments { get; set; }
 
         public Price() {
-            this.Attachments = new ObservableHashSet<Attachment>();
+            this.Attachments = new HashSet<Attachment>();
         }
     }
 }

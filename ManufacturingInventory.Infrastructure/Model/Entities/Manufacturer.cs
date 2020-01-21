@@ -16,9 +16,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<PartManufacturer> PartManufacturers { get; set; }
 
         public Manufacturer() {
-            this.Contacts = new ObservableHashSet<Contact>();
-            this.Attachments = new ObservableHashSet<Attachment>();
-            this.PartManufacturers = new ObservableHashSet<PartManufacturer>();
+            this.Contacts = new HashSet<Contact>();
+            this.Attachments = new HashSet<Attachment>();
+            this.PartManufacturers = new HashSet<PartManufacturer>();
         }
 
         public Manufacturer(string name, string description, string comments) : this() {
