@@ -15,6 +15,7 @@ using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Common.Application;
 using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
+using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceDetailsViewModel : InventoryViewModelNavigationBase {
@@ -25,7 +26,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
         //private IPartManagerService _partManager;
-        private IRepository<PartInstance> _repository;
+        //private IRepository<PartInstance> _repository;
+        private IPartInstanceDetailsEditUseCase _editInstance;
 
         private bool _isEdit = false;
         private bool _isNew = false;
@@ -58,12 +60,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
 
-        public PartInstanceDetailsViewModel(IRepository<PartInstance> repository, IEventAggregator eventAggregator,IRegionManager regionManager) {
-            this._repository = repository;
+        public PartInstanceDetailsViewModel(IPartInstanceDetailsEditUseCase editInstance, IEventAggregator eventAggregator,IRegionManager regionManager) {
+            this._editInstance = editInstance;
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializedHandler);
-            this.SaveCommand = new AsyncCommand(this.SaveHandler);
+            this.SaveCommand = new AsyncCommand(this.SaveHandler,this.CanSave);
             this.CancelCommand = new AsyncCommand(this.DiscardHandler);
         }
 
@@ -205,60 +207,57 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
 
-                //var categories =await this._partManager.CategoryService.GetEntityListAsync();
-                //this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                //this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
+                var categories = await this._editInstance.GetCategories();
+                this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
 
-                //var locations = await this._partManager.LocationService.GetEntityListAsync();
-                //this.Locations = new ObservableCollection<Location>(locations);
-                //if (this.SelectedPartInstance != null) {
+                var locations = await this._editInstance.GetLocations();
+                this.Locations = new ObservableCollection<Location>(locations);
+                if (this.SelectedPartInstance != null) {
 
-                //    if (this.SelectedPartInstance.Condition != null) {
-                //        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
-                //    }
+                    if (this.SelectedPartInstance.Condition != null) {
+                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                    }
 
-                //    if (this.SelectedPartInstance.CurrentLocation != null) {
-                //        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                //    }
+                    if (this.SelectedPartInstance.CurrentLocation != null) {
+                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                    }
 
-                //    if (this.SelectedPartInstance.PartType != null) {
-                //        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
-                //    }
-                //}
+                    if (this.SelectedPartInstance.PartType != null) {
+                        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                    }
+                }
                 this._isInitialized = true;
             }
         }
 
         public async Task SaveHandler() {
-            //if (this.SelectedCondition != null) {
-            //    this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
-            //}
 
-            //if (this.SelectedLocation != null) {
-            //    this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
-            //}
+            if (this.SelectedPartType != null) {
+                this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
+            }
+            this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
+            this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
 
-            //if (this.SelectedPartType != null) {
-            //    this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
-            //}
 
-            //var updated=await this._partManager.PartInstanceService.UpdateAsync(this.SelectedPartInstance,true);
-            //if (updated!=null) {
-            //    this.DispatcherService.BeginInvoke(() => {
-            //        this.MessageBoxService.ShowMessage("Save Done, Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
-            //    });
-            //    ReloadEventTraveler traveler = new ReloadEventTraveler() {
-            //        PartId = this.SelectedPartInstance.PartId,
-            //        PartInstanceId = this.SelectedPartInstance.Id
-            //    };
-            //    this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
-            //    this.SaveCancelVisibility = Visibility.Collapsed;
-            //    this.IsEdit = false;
-            //} else {
-            //    this.DispatcherService.BeginInvoke(() => {
-            //        this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
-            //    });
-            //}
+            PartInstanceDetailsEditInput input = new PartInstanceDetailsEditInput(this.SelectedPartInstance, false);
+            var output = await this._editInstance.Execute(input);
+            if (output.Success) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(output.Message+Environment.NewLine+"Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
+                });
+                ReloadEventTraveler traveler = new ReloadEventTraveler() {
+                    PartId = this.SelectedPartInstance.PartId,
+                    PartInstanceId = this.SelectedPartInstance.Id
+                };
+                this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
+                this.SaveCancelVisibility = Visibility.Collapsed;
+                this.IsEdit = false;
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
+                });
+            }
         }
 
         //public async Task SaveHandler() {
@@ -318,7 +317,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         //}
 
         public async Task DiscardHandler() {
+            ReloadEventTraveler traveler = new ReloadEventTraveler() {
+                PartId = this.SelectedPartInstance.PartId,
+                PartInstanceId = this.SelectedPartInstance.Id
+            };
+            this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
+            this.IsEdit = false;
+            this.SaveCancelVisibility = Visibility.Collapsed;
+        }
 
+        public bool CanSave() {
+            return this.SelectedCondition != null && this.SelectedLocation != null;
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
@@ -334,23 +343,21 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             if (partInstance is PartInstance) {
                 this._isInitialized = false;
                 this.SelectedPartInstance = partInstance;
-                var edit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
+                this.IsEdit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
                 this._isNew = (bool)navigationContext.Parameters[ParameterKeys.IsNew];
                 this.IsBubbler = this.SelectedPartInstance.IsBubbler;
                 if (this.IsBubbler) {
                     this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
                     this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
                     this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
+                    
                 }
-                this.UnitCost = this.SelectedPartInstance.UnitCost;
-                
-
+                this.UnitCost = this.SelectedPartInstance.UnitCost;            
                 this.StockVisibility = (this._isBubbler) ? Visibility.Collapsed : Visibility.Visible;
                 this.CostVisibility = (this.SelectedPartInstance.CostReported) ? Visibility.Visible : Visibility.Collapsed;
                 this.WeightVisibility = (this._isBubbler) ? Visibility.Visible : Visibility.Collapsed;
-                this.SaveCancelVisibility = (edit || this._isNew) ? Visibility.Visible : Visibility.Collapsed;
+                this.SaveCancelVisibility = (this.IsEdit || this._isNew) ? Visibility.Visible : Visibility.Collapsed;
 
-                this.IsEdit = edit;
             }
         }
     }

@@ -16,31 +16,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public PartInstance Add(PartInstance entity) {
-            var instance = this._context.PartInstances.AsNoTracking().FirstOrDefault(e => e.Id == entity.Id);
+            var instance = this.GetEntity(e => e.Id == entity.Id);
             if (instance != null) {
                 return null;
             }
-
-            if (entity.Part != null && entity.CurrentLocation != null && entity.Price != null) {
-
-                if (entity.PartType != null) {
-                    this._context.Entry<PartType>(entity.PartType).State = EntityState.Modified;
-                }
-
-                if (entity.Condition != null) {
-                    this._context.Entry<Condition>(entity.Condition).State = EntityState.Modified;
-                }
-
-                if (entity.BubblerParameter != null) {
-                    this._context.Entry<BubblerParameter>(entity.BubblerParameter).State = EntityState.Modified;
-                }
-                this._context.Entry<Part>(entity.Part).State = EntityState.Modified;
-                this._context.Entry<Location>(entity.CurrentLocation).State = EntityState.Modified;
-
-                return entity;
-            } else {
-                return entity;
-            }
+            return this._context.Add(entity).Entity;
         }
 
         public PartInstance Delete(PartInstance entity) {
@@ -87,12 +67,38 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.LocationId = entity.LocationId;
                 instance.PartTypeId = entity.PartTypeId;
 
-                if (entity.IsBubbler && entity.BubblerParameter != null) {
-                    if (!instance.BubblerParameter.Compare(entity.BubblerParameter)) {
-                        instance.BubblerParameter.Set(entity.BubblerParameter);
-                        this._context.Entry<BubblerParameter>(instance.BubblerParameter).State = EntityState.Modified;
-                    }
-                }
+                //if (entity.BubblerParameter != null) {
+                //    instance.BubblerParameter.Set(entity.BubblerParameter);
+                //}
+                return this._context.PartInstances.Update(instance).Entity;
+            } else {
+                return null;
+            }
+        }
+
+        public async Task<PartInstance> UpdateAsync(PartInstance entity) {
+            var instance = await this.GetEntityAsync(e => e.Id == entity.Id);
+            if (instance != null) {
+                instance.Name = entity.Name;
+                instance.IsBubbler = entity.IsBubbler;
+                instance.Quantity = entity.Quantity;
+                instance.MinQuantity = entity.MinQuantity;
+                instance.SafeQuantity = entity.SafeQuantity;
+                instance.SerialNumber = entity.SerialNumber;
+                instance.TotalCost = entity.TotalCost;
+                instance.UnitCost = entity.UnitCost;
+                instance.BatchNumber = entity.BatchNumber;
+                instance.CostReported = entity.CostReported;
+                instance.IsResuable = entity.IsResuable;
+                instance.SkuNumber = entity.SkuNumber;
+
+                instance.ConditionId = entity.ConditionId;
+                instance.LocationId = entity.LocationId;
+                instance.PartTypeId = entity.PartTypeId;
+
+                //if (entity.BubblerParameter != null) {
+                //    instance.BubblerParameter.Set(entity.BubblerParameter);
+                //}
 
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
@@ -100,195 +106,98 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             }
         }
 
-
-        public async Task<PartInstance> UpdateAsync(PartInstance entity) {
-            return await Task.Run(() => {
-                var entry = this._context.Entry<PartInstance>(entity);
-                entry.State = EntityState.Modified;
-                return entry.Entity;
-            });
-        }
-
-        //public async Task<PartInstance> UpdateAsync(PartInstance entity) {
-        //    var instance = await this._context.PartInstances
-        //        .Include(e => e.Transactions)
-        //            .ThenInclude(e => e.Session)
-        //        .Include(e => e.Transactions)
-        //            .ThenInclude(e => e.Location)
-        //        .Include(e => e.PartType)
-        //        .Include(e => e.CurrentLocation)
-        //        .Include(e => e.Price)
-        //        .Include(e => e.BubblerParameter)
-        //        .Include(e => e.Condition)
-        //        .Include(e => e.Part)
-        //        .FirstOrDefaultAsync(e => e.Id == entity.Id);
-        //    if (instance != null) {
-        //        instance.Name = entity.Name;
-        //        instance.IsBubbler = entity.IsBubbler;
-        //        instance.Quantity = entity.Quantity;
-        //        instance.MinQuantity = entity.MinQuantity;
-        //        instance.SafeQuantity = entity.SafeQuantity;
-        //        instance.SerialNumber = entity.SerialNumber;
-        //        instance.TotalCost = entity.TotalCost;
-        //        instance.UnitCost = entity.UnitCost;
-        //        instance.BatchNumber = entity.BatchNumber;
-        //        instance.CostReported = entity.CostReported;
-        //        instance.IsResuable = entity.IsResuable;
-        //        instance.SkuNumber = entity.SkuNumber;
-
-        //        instance.ConditionId = entity.ConditionId;
-        //        instance.LocationId = entity.LocationId;
-        //        instance.PartTypeId = entity.PartTypeId;
-
-        //        if (entity.IsBubbler && entity.BubblerParameter != null) {
-        //            if (!instance.BubblerParameter.Compare(entity.BubblerParameter)) {
-        //                instance.BubblerParameter.Set(entity.BubblerParameter);
-        //                //this._context.Entry<BubblerParameter>(instance.BubblerParameter).State = EntityState.Modified;
-        //            }
-        //        }
-
-        //        return instance;
-        //    } else {
-        //        return null;
-        //    }
-        //}
-
         public async Task<PartInstance> AddAsync(PartInstance entity) {
-            var instance = await this._context.PartInstances.AsNoTracking().FirstOrDefaultAsync(e => e.Id == entity.Id);
+            var instance = await this.GetEntityAsync(e => e.Id == entity.Id);
             if (instance != null) {
                 return null;
             }
-
-            if (entity.Part != null && entity.CurrentLocation != null && entity.Price != null) {
-
-                if (entity.PartType != null) {
-                    this._context.Entry<PartType>(entity.PartType).State = EntityState.Modified;
-                }
-
-                if (entity.Condition != null) {
-                    this._context.Entry<Condition>(entity.Condition).State = EntityState.Modified;
-                }
-
-                if (entity.BubblerParameter != null) {
-                    this._context.Entry<BubblerParameter>(entity.BubblerParameter).State = EntityState.Modified;
-                }
-                this._context.Entry<Part>(entity.Part).State = EntityState.Modified;
-                this._context.Entry<Location>(entity.CurrentLocation).State = EntityState.Modified;
-                return (await this._context.PartInstances.AddAsync(entity)).Entity;
-            } else {
-                return null;
-            }
+            return (await this._context.AddAsync(entity)).Entity;
         }
 
         public PartInstance GetEntity(Expression<Func<PartInstance, bool>> expression) {
             return this._context.PartInstances
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .AsNoTracking()
                 .FirstOrDefault(expression);
         }
 
         public async Task<PartInstance> GetEntityAsync(Expression<Func<PartInstance, bool>> expression) {
             return await this._context.PartInstances
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<PartInstance> GetEntityList(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
+                .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .Include(e => e.Condition)
                 .AsNoTracking();
 
+
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return orderBy(query).AsNoTracking().ToList();
+                return orderBy(query).ToList();
             } else {
-                return query.AsNoTracking().ToList();
+                return query.ToList();
             }
         }
 
         public async Task<IEnumerable<PartInstance>> GetEntityListAsync(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
+                .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .Include(e => e.Condition)
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return await orderBy(query).AsNoTracking().ToListAsync();
+                return await orderBy(query).ToListAsync();
             } else {
-                return await query.AsNoTracking().ToListAsync();
+                return await query.ToListAsync();
             }
         }
 
         public void Load() {
             this._context.PartInstances
-                 .Include(e => e.Transactions)
-                     .ThenInclude(e => e.Session)
-                 .Include(e => e.Transactions)
-                     .ThenInclude(e => e.Location)
-                 .Include(e => e.PartType)
-                 .Include(e => e.CurrentLocation)
-                 .Include(e => e.Price)
-                 .Include(e => e.BubblerParameter)
-                 .Include(e => e.Condition)
-                 .Include(e => e.Part)
-                 .AsNoTracking()
-                 .Load();
+                .Include(e => e.Price)
+                .Include(e => e.PartType)
+                .Include(e => e.CurrentLocation)
+                .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
+                .Include(e => e.Part)
+                .Load();
         }
 
         public async Task LoadAsync() {
             await this._context.PartInstances
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .AsNoTracking()
                 .LoadAsync();
         }
     }

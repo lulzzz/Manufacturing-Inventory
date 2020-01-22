@@ -11,41 +11,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         RETURNING
     }
 
-    //public class Transaction {
-    //    public int Id { get; set; }
-    //    public DateTime TimeStamp { get; set; }
-    //    public InventoryAction InventoryAction { get; set; }
-    //    public bool IsReturning { get; set; }
-    //    public byte[] RowVersion { get; set; }
-
-    //    public int? OutgoingTransactionId { get; set; }
-    //    public virtual Transaction OutgoingTransaction { get; set; }
-
-    //    public int SessionId { get; set; }
-    //    public virtual Session Session { get; set; }
-
-    //    public int PartInstanceId { get; set; }
-    //    public virtual PartInstance PartInstance { get; set; }
-
-    //    public int LocationId { get; set; }
-    //    public virtual Location Location { get; set; }
-
-    //    public int Quantity { get; set; }
-
-    //    public double TrackedValue { get; set; }
-
-    //    public int? InstanceParameterId { get; set; }
-    //    public virtual InstanceParameter InstanceParameter { get; set; }
-
-    //}
-
     public class Transaction:ICloneable {
         public int Id { get; set; }
         public DateTime TimeStamp { get; set; }
         public InventoryAction InventoryAction { get; set; }
         public int Quantity { get; set; }
-        public double ParameterValue { get; set; }
-        public bool IsReturning { get; set; }
+        public double MeasuredWeight { get; set; }
+        public double Weight { get; set; }
         public byte[] RowVersion { get; set; }
 
         public double UnitCost { get; set; }
@@ -57,7 +29,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int PartInstanceId { get; set; }
         public PartInstance PartInstance { get; set; }
 
-        public int? LocationId { get; set; }
+        public int LocationId { get; set; }
         public Location Location { get; set; }
 
         public int? ReferenceTransactionId { get; set; }
@@ -67,7 +39,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public double Consumed {
             get {
                 if (this.ReferenceTransaction != null) {
-                    return this.ReferenceTransaction.ParameterValue - this.ParameterValue;
+                    return this.ReferenceTransaction.Weight - this.Weight;
                 } else {
                     return 0;
                 }
@@ -87,14 +59,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         /// <param name="parameterValue">Tracked Value</param>
         /// <param name="isReturning">Is Item Returning</param>
         /// <param name="location">Where Item is Going</param>
-        public Transaction(PartInstance instance, InventoryAction inventoryAction, double parameterValue, bool isReturning, Location location) {
+        public Transaction(PartInstance instance, InventoryAction inventoryAction,double measured, double weight, bool isReturning, Location location) {
             this.TimeStamp = DateTime.Now;
             this.PartInstance = instance;
-            this.ParameterValue = parameterValue;
-            this.UnitCost = this.PartInstance.UnitCost;
-            this.TotalCost = (this.PartInstance.IsBubbler) ? (this.PartInstance.TotalCost) : (this.Quantity * this.UnitCost);
+            this.Weight = weight;
+            this.MeasuredWeight = measured;
+            this.UnitCost = instance.UnitCost;
+            this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost) : (this.Quantity * this.UnitCost);
             this.InventoryAction = inventoryAction;
-            this.IsReturning = isReturning;
             this.Location = location;
             this.PartInstance.CurrentLocation = location;
             this.Quantity = 1;
@@ -106,12 +78,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public Transaction(PartInstance instance, InventoryAction inventoryAction,DateTime timeStamp, double parameterValue, bool isReturning, Location location) {
             //this.PartInstance = instance;
             this.PartInstanceId = instance.Id;
-            this.ParameterValue = parameterValue;
+            this.Weight = parameterValue;
             this.UnitCost = instance.UnitCost;
             this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost) : (this.Quantity * this.UnitCost);
             this.TimeStamp = timeStamp;
             this.InventoryAction = inventoryAction;
-            this.IsReturning = isReturning;
             //this.Location = location;
             this.LocationId = location.Id;
             this.Quantity = 1;
@@ -125,14 +96,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         /// <param name="parameterValue"></param>
         /// <param name="location"></param>
         /// <param name="referenceTransaction"></param>
-        public Transaction(PartInstance instance,InventoryAction inventoryAction, double parameterValue, Location location, Transaction referenceTransaction) {
+        public Transaction(PartInstance instance,InventoryAction inventoryAction,double measured ,double weight, Location location, Transaction referenceTransaction) {
             this.PartInstance = instance;
-            this.ParameterValue = parameterValue;
-            this.UnitCost = this.PartInstance.UnitCost;
-            this.TotalCost = (this.PartInstance.IsBubbler) ? (this.ParameterValue * this.UnitCost) : (this.Quantity*this.UnitCost);
+            this.MeasuredWeight = measured;
+            this.Weight = weight;
+            this.UnitCost = instance.UnitCost;
+            this.TotalCost = (this.PartInstance.IsBubbler) ? (instance.TotalCost) : (this.Quantity*this.UnitCost);
             this.TimeStamp = DateTime.Now;
             this.InventoryAction = inventoryAction;
-            this.ParameterValue = parameterValue;
             this.Location = location;
             this.ReferenceTransaction = referenceTransaction;
         }
@@ -152,7 +123,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.TotalCost = this.Quantity * this.UnitCost;
             this.Location = location;
             this.Quantity = 1;
-            this.IsReturning = false;
         }
 
         public Transaction(PartInstance instance, InventoryAction inventoryAction) {
@@ -176,7 +146,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.TimeStamp = transaction.TimeStamp;
             this.InventoryAction = transaction.InventoryAction;
             this.Quantity = transaction.Quantity;
-            this.ParameterValue = transaction.ParameterValue;
+            this.Weight = transaction.Weight;
             this.UnitCost = transaction.UnitCost;
             this.TotalCost = transaction.UnitCost;
             this.SessionId = transaction.SessionId;

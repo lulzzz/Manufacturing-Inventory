@@ -15,10 +15,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
 
         public PartInstance GetEntity(Expression<Func<PartInstance, bool>> expression) {
             return this._context.PartInstances
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Price)
@@ -31,8 +27,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
 
         public async Task<PartInstance> GetEntityAsync(Expression<Func<PartInstance, bool>> expression) {
             return await this._context.PartInstances
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Price)
@@ -45,10 +39,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
 
         public IEnumerable<PartInstance> GetEntityList(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Price)
@@ -58,22 +48,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return orderBy(query).AsNoTracking().ToList();
+                return orderBy(query).ToList();
             } else {
-                return query.AsNoTracking().ToList();
+                return query.ToList();
             }
         }
 
         public async Task<IEnumerable<PartInstance>> GetEntityListAsync(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Price)
@@ -83,22 +69,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return await orderBy(query).AsNoTracking().ToListAsync();
+                return await orderBy(query).ToListAsync();
             } else {
-                return await query.AsNoTracking().ToListAsync();
+                return await query.ToListAsync();
             }
         }
 
         public void Load() {
             this._context.PartInstances
-                 .Include(e => e.Transactions)
-                     .ThenInclude(e => e.Session)
-                 .Include(e => e.Transactions)
-                     .ThenInclude(e => e.Location)
                  .Include(e => e.PartType)
                  .Include(e => e.CurrentLocation)
                  .Include(e => e.Price)
@@ -111,10 +93,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
 
         public async Task LoadAsync() {
             await this._context.PartInstances
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Session)
-                .Include(e => e.Transactions)
-                    .ThenInclude(e => e.Location)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Price)

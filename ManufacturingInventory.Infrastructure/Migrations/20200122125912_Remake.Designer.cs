@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200117202513_ReworkInfrastructure")]
-    partial class ReworkInfrastructure
+    [Migration("20200122125912_Remake")]
+    partial class Remake
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -546,32 +546,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permissions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Full Inventory Privileges and User Control",
-                            Name = "InventoryAdminAccount"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Inventory View Only",
-                            Name = "InventoryUserAccount"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Full Inventory Privileges",
-                            Name = "InventoryUserFullAccount"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Inventory Check In/Check Out/Create",
-                            Name = "InventoryUserLimitedAccount"
-                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Price", b =>
@@ -662,13 +636,10 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<int>("InventoryAction")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsReturning")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("LocationId")
+                    b.Property<int>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<double>("ParameterValue")
+                    b.Property<double>("MeasuredWeight")
                         .HasColumnType("float");
 
                     b.Property<int>("PartInstanceId")
@@ -695,6 +666,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("float");
 
                     b.Property<double>("UnitCost")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Weight")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -788,17 +762,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FirstName = "Andrew",
-                            LastName = "Elmendorf",
-                            PermissionId = 1,
-                            StorePassword = false,
-                            UserName = "AElmendo"
-                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.UserAlert", b =>
@@ -1030,7 +993,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Location", "Location")
                         .WithMany("Transactions")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "PartInstance")
                         .WithMany("Transactions")

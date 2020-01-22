@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
     public class PartInstance:ICloneable {
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string SkuNumber { get; set; }
@@ -71,13 +74,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.BubblerParameter = param;
         }
 
-        public void UpdateWeight(double measured) {        
-            this.BubblerParameter.Measured = measured;
-            this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
+        public void UpdateWeight(double measured) {
+            this.BubblerParameter.UpdateWeight(measured);
+            //this.BubblerParameter.Measured = measured;
+            //this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
         }
 
         public void UpdateWeight() {
-            this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
+            this.BubblerParameter.UpdateWeight();
+            //this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
             this.UpdatePrice();
         }
 

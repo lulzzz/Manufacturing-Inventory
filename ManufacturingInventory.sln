@@ -36,10 +36,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.Appl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.Common", "ManufacturingInventory.Common\ManufacturingInventory.Common.csproj", "{EF09A82D-F893-40F1-AF0B-8F4CCF4F22EC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{993F5EE9-8753-4610-A3B9-DA616EC2E14E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.Tests", "ManufacturingInventory.Tests\ManufacturingInventory.Tests.csproj", "{8C5267AB-6AD4-45B0-9316-B35910BB67BD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,10 +82,6 @@ Global
 		{EF09A82D-F893-40F1-AF0B-8F4CCF4F22EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF09A82D-F893-40F1-AF0B-8F4CCF4F22EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF09A82D-F893-40F1-AF0B-8F4CCF4F22EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8C5267AB-6AD4-45B0-9316-B35910BB67BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C5267AB-6AD4-45B0-9316-B35910BB67BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C5267AB-6AD4-45B0-9316-B35910BB67BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C5267AB-6AD4-45B0-9316-B35910BB67BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,7 +98,6 @@ Global
 		{D74EE399-B276-42BE-AE34-DB49CA50855E} = {5E99EEEF-A85B-4669-BB6F-F3A75C64227C}
 		{B49E76D5-F7B7-4236-8B7B-43F5E4747B0B} = {5E99EEEF-A85B-4669-BB6F-F3A75C64227C}
 		{EF09A82D-F893-40F1-AF0B-8F4CCF4F22EC} = {5E99EEEF-A85B-4669-BB6F-F3A75C64227C}
-		{8C5267AB-6AD4-45B0-9316-B35910BB67BD} = {993F5EE9-8753-4610-A3B9-DA616EC2E14E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09344567-FB58-498F-9B9B-4DEDB1165687}

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,8 @@ using Microsoft.Extensions.Options;
 
 namespace ManufacturingInventory.Infrastructure.Model {
     public class ManufacturingContext:DbContext {
+        [NotMapped]
+        public static int count = 0;
 
         public DbSet<Part> Parts { get; set; }
         public DbSet<PartInstance> PartInstances { get; set; }
@@ -41,6 +45,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
         public ManufacturingContext() : base() {
             this.ChangeTracker.LazyLoadingEnabled = false;
             this.ChangeTracker.AutoDetectChangesEnabled = false;
+            Interlocked.Increment(ref count);
             //this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
@@ -382,21 +387,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .HasOne(e => e.Location)
                 .WithMany(e => e.Transactions)
                 .HasForeignKey(e => e.LocationId)
-                .IsRequired(false)
+                .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Entity<OutgoingTransaction>()
-            //    .HasOne(e => e.Consumer)
-            //    .WithMany(e => e.OutgoingTransactions)
-            //    .HasForeignKey(e => e.ConsumerId)
-            //    .IsRequired(false)
-            //    .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Entity<IncomingTransaction>()
-            //    .HasOne(e => e.Warehouse)
-            //    .WithMany(e => e.IncomingTransactions)
-            //    .HasForeignKey(e => e.WarehouseId)
-            //    .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Transaction>()
                 .HasOne(e => e.ReferenceTransaction)
@@ -450,6 +442,10 @@ namespace ManufacturingInventory.Infrastructure.Model {
             #endregion
 
             //this.Seed(builder);
+        }
+
+        ~ManufacturingContext() {
+            Interlocked.Decrement(ref count);
         }
 
         private void Seed(ModelBuilder builder) {

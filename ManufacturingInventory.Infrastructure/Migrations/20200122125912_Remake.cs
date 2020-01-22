@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
-    public partial class ReworkInfrastructure : Migration
+    public partial class Remake : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -434,14 +434,14 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     TimeStamp = table.Column<DateTime>(nullable: false),
                     InventoryAction = table.Column<int>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
-                    ParameterValue = table.Column<double>(nullable: false),
-                    IsReturning = table.Column<bool>(nullable: false),
+                    MeasuredWeight = table.Column<double>(nullable: false),
+                    Weight = table.Column<double>(nullable: false),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     UnitCost = table.Column<double>(nullable: false),
                     TotalCost = table.Column<double>(nullable: false),
                     SessionId = table.Column<int>(nullable: false),
                     PartInstanceId = table.Column<int>(nullable: false),
-                    LocationId = table.Column<int>(nullable: true),
+                    LocationId = table.Column<int>(nullable: false),
                     ReferenceTransactionId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -545,22 +545,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         principalTable: "Prices",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.InsertData(
-                table: "Permissions",
-                columns: new[] { "Id", "Description", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Full Inventory Privileges and User Control", "InventoryAdminAccount" },
-                    { 2, "Inventory View Only", "InventoryUserAccount" },
-                    { 3, "Full Inventory Privileges", "InventoryUserFullAccount" },
-                    { 4, "Inventory Check In/Check Out/Create", "InventoryUserLimitedAccount" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Email", "EncryptedPassword", "Extension", "FirstName", "IV", "Key", "LastName", "PermissionId", "StorePassword", "UserName" },
-                values: new object[] { 1, null, null, null, "Andrew", null, null, "Elmendorf", 1, false, "AElmendo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alerts_PartInstanceId",

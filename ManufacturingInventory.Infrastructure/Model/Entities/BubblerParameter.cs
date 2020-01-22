@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
     public class BubblerParameter {
@@ -17,13 +19,19 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public PartInstance PartInstance { get; set; }
 
         public BubblerParameter() {
-
+            this.GrossWeight = 0;
+            this.NetWeight = 0;
+            this.Tare = 0;
+            this.Weight = 0;
+            this.Measured = 0;
         }
 
         public BubblerParameter(double net,double gross,double tare) {
             this.GrossWeight = gross;
             this.NetWeight = net;
             this.Tare = tare;
+            this.Measured = 0;
+            this.Weight = 0;
         }
 
         public BubblerParameter(PartInstance instance,double net, double gross, double tare) {
@@ -31,6 +39,17 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.NetWeight = net;
             this.Tare = tare;
             this.PartInstance = instance;
+            this.Measured = 0;
+            this.Weight = 0;
+        }
+
+        public void UpdateWeight(double measured) {
+            this.Measured = measured;
+            this.Weight = this.NetWeight - (this.GrossWeight - this.Measured);
+        }
+
+        public void UpdateWeight() {
+            this.Weight = this.NetWeight - (this.GrossWeight - this.Measured);
         }
 
         public void Set(BubblerParameter bubbler) {
@@ -41,6 +60,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Measured =bubbler.Measured;
             this.DateInstalled = bubbler.DateInstalled;
             this.DateRemoved = bubbler.DateRemoved;
+            this.UpdateWeight();
         }
 
         public bool Compare(BubblerParameter rhs) {

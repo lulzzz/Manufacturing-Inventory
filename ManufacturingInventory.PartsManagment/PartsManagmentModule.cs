@@ -2,6 +2,8 @@
 using ManufacturingInventory.PartsManagment.Internal;
 using ManufacturingInventory.PartsManagment.Views;
 using Prism.Ioc;
+using DryIoc;
+using Prism.DryIoc;
 using Prism.Modularity;
 using Prism.Regions;
 

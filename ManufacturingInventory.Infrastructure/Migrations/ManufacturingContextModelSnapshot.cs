@@ -660,13 +660,10 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<int>("InventoryAction")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsReturning")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("LocationId")
+                    b.Property<int>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<double>("ParameterValue")
+                    b.Property<double>("MeasuredWeight")
                         .HasColumnType("float");
 
                     b.Property<int>("PartInstanceId")
@@ -693,6 +690,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("float");
 
                     b.Property<double>("UnitCost")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Weight")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -1028,7 +1028,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Location", "Location")
                         .WithMany("Transactions")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "PartInstance")
                         .WithMany("Transactions")

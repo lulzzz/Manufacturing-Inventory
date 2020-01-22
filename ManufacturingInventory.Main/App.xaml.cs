@@ -43,33 +43,36 @@ namespace ManufacturingInventory.ManufacturingApplication {
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {
             if (this.userService.IsValid()) {
                 var container = containerRegistry.GetContainer();
+                container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
-                container.Register<IUnitOfWork,UnitOfWork>(setup: Setup.With(allowDisposableTransient: true));
+                container.Register<IUnitOfWork,UnitOfWork>(setup:Setup.With(allowDisposableTransient: true));
 
-                containerRegistry.Register<ILogInService, LogInService>();
-                containerRegistry.Register<IFileService, FileService>();
-                containerRegistry.Register<IDomainManager, DomainManager>();
-                containerRegistry.RegisterInstance<IUserService>(this.userService);
+                container.Register<ICheckOutBubblerUseCase, CheckOutBubbler>();
+                container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
+                container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
+                container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
+                container.Register<IAttachmentPartEditUseCase, AttachmentPartEdit>();
+                container.Register<ITransactionEditUseCase, TransactionEdit>();
 
-                containerRegistry.Register<ICheckOutBubblerUseCase, CheckOutBubbler>();
-                containerRegistry.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
-                containerRegistry.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
-                containerRegistry.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
-                containerRegistry.Register<IAttachmentPartEditUseCase, AttachmentPartEdit>();
-                containerRegistry.Register<ITransactionEditUseCase,TransactionEdit>();
-                
-                containerRegistry.Register<IRepository<Category>, CategoryRepository>();
-                containerRegistry.Register<IRepository<Location>, LocationRepository>();
-                containerRegistry.Register<IRepository<PartInstance>, PartInstanceRepository>();
-                containerRegistry.Register<IRepository<Part>, PartRepository>();
-                containerRegistry.Register<IRepository<Attachment>, AttachmentRepository>();
-                containerRegistry.Register<IRepository<Transaction>, TransactionRepository>();
+                container.Register<IRepository<Category>, CategoryRepository>();
+                container.Register<IRepository<Location>, LocationRepository>();
+                container.Register<IRepository<PartInstance>, PartInstanceRepository>();
+                container.Register<IRepository<Part>, PartRepository>();
+                container.Register<IRepository<Attachment>, AttachmentRepository>();
+                container.Register<IRepository<Transaction>, TransactionRepository>();
+                container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
 
-                containerRegistry.Register<IEntityProvider<Category>, CategoryProvider>();
-                containerRegistry.Register<IEntityProvider<Location>, LocationProvider>();
-                containerRegistry.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
-                containerRegistry.Register<IEntityProvider<Part>, PartProvider>();
-                containerRegistry.Register<IEntityProvider<Transaction>, TransactionProvider>();
+                container.Register<IEntityProvider<Category>, CategoryProvider>();
+                container.Register<IEntityProvider<Location>, LocationProvider>();
+                container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
+                container.Register<IEntityProvider<Part>, PartProvider>();
+                container.Register<IEntityProvider<Transaction>, TransactionProvider>();
+
+                container.Register<ILogInService, LogInService>();
+                container.Register<IFileService, FileService>();
+                container.Register<IDomainManager, DomainManager>();
+                container.RegisterInstance<IUserService>(this.userService);
+
             } else {
                 this.Shutdown();
             }
