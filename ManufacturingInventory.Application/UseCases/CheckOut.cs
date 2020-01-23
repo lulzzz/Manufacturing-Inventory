@@ -60,24 +60,31 @@ namespace ManufacturingInventory.Application.UseCases {
                 //var bubblerParam
                 if (partInstance != null && location != null) {
                     partInstance.UpdateWeight(item.MeasuredWeight);
+                    partInstance.BubblerParameter.DateInstalled = item.TimeStamp;
                     partInstance.UpdateQuantity(-1);
                     partInstance.CostReported = false;
                     partInstance.LocationId = location.Id;
+
                     Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
                         partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight,location,item.TimeStamp);
+
                     transaction.SessionId = this._userService.CurrentSession.Id;
 
                     var bubbler=await this._bubblerRepository.UpdateAsync(partInstance.BubblerParameter);
                     var instance=await this._partInstanceRepository.UpdateAsync(partInstance);
                     var trans=await this._transactionRepository.AddAsync(transaction);
-                    if(bubbler!=null && instance!=null && trans != null) {
+                    StringBuilder builder = new StringBuilder();
+                    if (bubbler!=null && instance!=null && trans != null) {
                         var val = await this._unitOfWork.Save();
-                        StringBuilder builder = new StringBuilder();
-                        builder.AppendFormat("Instance: {0} Weight: {1}", instance.Name, bubbler.Weight).AppendLine();
+                        
+
+                        builder.AppendFormat("Instance: {0} Weight: {1} LinesUpdated: {2}", instance.Name, bubbler.Weight,val).AppendLine();
+
                         output.OutputList.Add(new CheckOutOutputData(trans, true, builder.ToString()));
                     } else {
                         await this._unitOfWork.Undo();
-                        output.OutputList.Add(new CheckOutOutputData(transaction, false, "Failed Checkout"));
+                        builder.AppendFormat("Instance: {0}", partInstance.Name).AppendLine();
+                        output.OutputList.Add(new CheckOutOutputData(transaction, false,builder.ToString()));
                     }
                 } else {
                     output.OutputList.Add(new CheckOutOutputData(null, false, "PartInstance or Location Not Found"));

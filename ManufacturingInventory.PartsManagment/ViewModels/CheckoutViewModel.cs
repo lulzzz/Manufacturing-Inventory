@@ -224,11 +224,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 failBuilder.AppendLine("Failed: ");
 
                 foreach (var success in succeeded) {
-                    okayBuilder.AppendLine(success.Transaction.PartInstance.Name);
+                    okayBuilder.AppendLine(success.Message);
                 }
 
                 foreach (var fail in failed) {
-                    failBuilder.AppendLine(fail.Transaction.PartInstance.Name);
+                    failBuilder.AppendLine(fail.Message);
                 }
 
                 okayBuilder.AppendLine();
@@ -238,17 +238,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.MessageBoxService.ShowMessage(okayBuilder.ToString(), "Success", MessageButton.OK, MessageIcon.Information);
                     this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
                 });
-
-                //var response=await this._checkOut.Execute()
-                //var response = await this._partManagerService.CheckOutAsync(this._transactions.ToList(), this.IsBubbler);
-                //if (response.) {
-                //    this.DispatcherService.BeginInvoke(() => {
-                //        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                //        this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
-                //    });
-                //} else {
-                //    this.DispatcherService.BeginInvoke(() => this.MessageBoxService.ShowMessage("Something Failed", "Error", MessageButton.OK, MessageIcon.Error));
-                //}
             }
         }
 
