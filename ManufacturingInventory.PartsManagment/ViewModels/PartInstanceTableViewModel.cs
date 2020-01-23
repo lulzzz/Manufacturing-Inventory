@@ -155,39 +155,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             await this.ReloadHandler(new ReloadEventTraveler() { PartId=this.SelectedPartId,PartInstanceId=0});
         }
 
-        //private async Task ReloadHandler(ReloadEventTraveler traveler) {
-        //    this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-
-        //    var part = await this._context.Parts.AsNoTracking().FirstOrDefaultAsync(e => e.Id == this.SelectedPartId);
-        //    await this._context.PartInstances
-        //        .Include(e => e.Transactions)
-        //            .ThenInclude(e => e.Session)
-        //        .Include(e => e.PartType)
-        //        .Include(e => e.CurrentLocation)
-        //        .Include(e => e.Price)
-        //        .Include(e => e.BubblerParameter)
-        //        .Include(e => e.Condition)
-        //        .LoadAsync();
-        //    var partInstances = await this._context.PartInstances
-        //        .AsNoTracking()
-        //        .Include(e => e.Transactions)
-        //            .ThenInclude(e => e.Session)
-        //        .Include(e => e.PartType)
-        //        .Include(e => e.CurrentLocation)
-        //        .Include(e => e.Price)
-        //        .Include(e => e.BubblerParameter)
-        //        .Include(e => e.Condition)
-        //        .Where(e => e.PartId == this.SelectedPartId).ToListAsync();
-
-        //    this.DispatcherService.BeginInvoke(() => {
-        //        this.IsBubbler = part.HoldsBubblers;
-        //        this.IsNotBubbler = !this.IsBubbler;
-        //        this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
-        //        this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
-        //        this.ShowTableLoading = false;
-        //    });
-        //}
-
         private async Task ReloadHandler(ReloadEventTraveler traveler) {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
 

@@ -16,18 +16,21 @@ using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Application.Boundaries.PartDetails;
+using System.Text;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartSummaryViewModel : InventoryViewModelBase {
 
         protected IDispatcherService DispatcherService { get { return ServiceContainer.GetService<IDispatcherService>("PartSummaryDispatcher"); } }
+        protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PartSummaryMessageBox"); }
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
         private IPartSummaryEditUseCase _partSummaryEdit;
 
-        private bool _isNewPart = false;
+        private bool _isNew = false;
         private bool _isEdit = false;
+        private bool _canSaveCancel = false;
         private bool _isBubbler = false;
 
         private ObservableCollection<Warehouse> _warehouses = new ObservableCollection<Warehouse>();
@@ -39,9 +42,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Organization _selectedOrganization;
         private Warehouse _selectedWarehouse;
         private Usage _selectedUsage;
-        private int _selectedWarehouseIndex;
-        private int _selectedUsageIndex;
-        private int _selectedOrganizationIndex;
+
+        private string _name;
+        private string _description;
+        private bool _holdsBubblers;
+
+        public AsyncCommand SaveCommand { get; private set; }
+        public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
 
         public PartSummaryViewModel(IPartSummaryEditUseCase partSummaryEdit, IRegionManager regionManager,IEventAggregator eventAggregator) {
@@ -49,9 +56,26 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
+            this.SaveCommand = new AsyncCommand(this.SaveHandler);
+            this.CancelCommand = new AsyncCommand(this.CancelHandler);
         }
 
         public override bool KeepAlive => false;
+
+        public bool IsNew { 
+            get => this._isNew;
+            set => SetProperty(ref this._isNew, value);
+        }
+
+        public bool IsEdit { 
+            get => this._isEdit; 
+            set => SetProperty(ref this._isEdit,value);
+        }
+
+        public bool CanSaveCancel { 
+            get => this._canSaveCancel;
+            set => SetProperty(ref this._canSaveCancel, value);
+        }
 
         public int SelectedPartId { 
             get => this._selectedPartId;
@@ -98,19 +122,55 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
-        public int SelectedWarehouseIndex { 
-            get => this._selectedWarehouseIndex;
-            set => SetProperty(ref this._selectedWarehouseIndex, value);
+        public string Name {
+            get => this._name;
+            set => SetProperty(ref this._name, value);
         }
 
-        public int SelectedUsageIndex { 
-            get => this._selectedUsageIndex;
-            set => SetProperty(ref this._selectedUsageIndex, value);
+        public string Description { 
+            get => this._description;
+            set => SetProperty(ref this._description, value);
         }
 
-        public int SelectedOrganizationIndex { 
-            get => this._selectedOrganizationIndex;
-            set => SetProperty(ref this._selectedOrganizationIndex, value);
+        public bool HoldsBubblers { 
+            get => this._holdsBubblers;
+            set => SetProperty(ref this._holdsBubblers, value);
+        }
+
+        private async Task SaveHandler() {
+            int id = (this.IsNew) ? 0 : this.SelectedPartId;
+            int warehouseId = (this.SelectedWarehouse != null) ? this.SelectedWarehouse.Id : 0;
+            int orgId = (this.SelectedOrganization != null) ? this.SelectedOrganization.Id : 0;
+            int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
+
+
+            PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description,this.IsNew ,this.HoldsBubblers,warehouseId,orgId,useageId);
+
+            var output = await this._partSummaryEdit.Execute(input);
+            if (output.Success) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(output.Message,"Success", MessageButton.OK, MessageIcon.Information);
+                    this._eventAggregator.GetEvent<PartEditDoneEvent>().Publish(output.Part.Id);
+                    this.CanSaveCancel = false;
+                });
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    var responce=this.MessageBoxService.ShowMessage("Save failed"+Environment.NewLine+"Check Input and Try Again?", "Error",MessageButton.YesNo, MessageIcon.Error);
+                    if (responce == MessageResult.No) {
+                        this._eventAggregator.GetEvent<PartEditCancelEvent>().Publish();
+                        this.CanSaveCancel = false;
+                    }
+                });
+            }
+        }
+
+        private async Task CancelHandler() {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    this._eventAggregator.GetEvent<PartEditCancelEvent>().Publish();
+                    this.CanSaveCancel = false;
+                });
+            });
         }
 
 
@@ -118,14 +178,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             var warehouses = await this._partSummaryEdit.GetWarehouses();
             var categories = await this._partSummaryEdit.GetCategories();
             this.SelectedPart = await this._partSummaryEdit.GetPart(this.SelectedPartId);
-            
+                   
             this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
             this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
             this.Organizations = new ObservableCollection<Organization>(categories.OfType<Organization>());
 
             if (this._selectedPart.Warehouse != null) {
                 this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
-                this.SelectedWarehouseIndex = this.Warehouses.IndexOf(this.SelectedWarehouse);
             }
 
             if (this._selectedPart.Usage != null) {

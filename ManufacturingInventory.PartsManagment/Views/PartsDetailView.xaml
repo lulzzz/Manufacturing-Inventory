@@ -60,16 +60,6 @@
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.TransactionTableRegion}"
                               prism:RegionManager.RegionContext="{Binding PartDataTraveler,Mode=TwoWay}" />
             </dx:DXTabControl>
-            <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Bottom"
-                              Visibility="{Binding Visibility,Mode=TwoWay}"
-                              Height="50">
-                <dx:SimpleButton Content="Save"
-                                 Command="{Binding SavePartCommand}"
-                                 Glyph="{dx:DXImage Image=Save_32x32.png}" />
-                <dx:SimpleButton Content="Cancel"
-                                 Command="{Binding CancelPartCommand}"
-                                 Glyph="{dx:DXImage Image=Cancel_32x32.png}" />
-            </dxlc:LayoutGroup>
         </dxlc:DockLayoutControl>
     </dx:LoadingDecorator>    
     

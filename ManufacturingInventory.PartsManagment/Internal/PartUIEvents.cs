@@ -12,7 +12,10 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     }
 
     public class ReloadEvent:PubSubEvent<ReloadEventTraveler> { }
-    public class PartEditDoneEvent:PubSubEvent { }
+
+    public class PartEditDoneEvent:PubSubEvent<int> { }
+    public class PartEditCancelEvent : PubSubEvent { }
+
     public class PartInstanceEditDoneEvent : PubSubEvent { }
     public class LoadPartDetailsEvent : PubSubEvent { }
 

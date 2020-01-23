@@ -29,16 +29,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private int _selectedTabIndex = 0;
         private Visibility _visibility;
-        private bool _isNewPart = false;
-        private bool _isEdit = false;
-        private bool _isNotBubbler;
         private bool _isBubbler;
 
         private Part _selectedPart;
         private DataTraveler _partDataTraveler;
 
-
-        public AsyncCommand LoadCommand { get; private set; }
 
         public PartsDetailViewModel(IEventAggregator eventAggregator, IRegionManager regionManager) {
             this._eventAggregator = eventAggregator;
@@ -68,10 +63,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedTabIndex, value);
         }
 
-        public bool IsNotBubbler { 
-            get => this._isNotBubbler;
-            set => SetProperty(ref this._isNotBubbler, value);
-        }
 
         public bool IsBubbler { 
             get => this._isBubbler;
@@ -85,12 +76,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 var isNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
                 var isEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
                 this.SelectedPart = part;
-                this._isEdit = isEdit;
-                this._isNewPart = isNew;
                 this.Visibility = (isEdit || isNew) ? Visibility.Visible : Visibility.Collapsed;
                 this.IsBubbler = this.SelectedPart.HoldsBubblers;
-                this.IsNotBubbler = !this.IsBubbler;
-                this.PartDataTraveler = new DataTraveler() { PartId = this.SelectedPart.Id, HoldsBubblers = this.SelectedPart.HoldsBubblers };
+                this.PartDataTraveler = new DataTraveler() { PartId = this.SelectedPart.Id, HoldsBubblers = this.SelectedPart.HoldsBubblers,IsNew=isNew,IsEdit=isEdit };
             }
         }
 

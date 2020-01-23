@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
     public class PartNavigationEdit : IPartNavigationEditUseCase {
+        private ManufacturingContext _context;
         private IRepository<Part> _repository;
         private IUnitOfWork _unitOfWork;
 
-        public PartNavigationEdit(IRepository<Part> repository, IUnitOfWork unitOfWork) {
-            this._repository = repository;
-            this._unitOfWork = unitOfWork;
+        public PartNavigationEdit(ManufacturingContext context) {
+            this._context = context;
+            this._repository = new PartRepository(context);
+            this._unitOfWork = new UnitOfWork(context);
         }
 
         public Task<PartNavigationEditOutput> Execute(PartNavigationEditInput input) {

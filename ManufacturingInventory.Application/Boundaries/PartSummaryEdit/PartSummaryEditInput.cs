@@ -5,10 +5,11 @@ using System.Text;
 namespace ManufacturingInventory.Application.Boundaries.PartDetails {
     public class PartSummaryEditInput:IInput {
 
-        public PartSummaryEditInput(int partId, string name, string description, bool holdsBubblers, int? warehouseId, int? organizationId, int? usageId) {
+        public PartSummaryEditInput(int partId, string name, string description, bool isNew,bool holdsBubblers, int? warehouseId, int? organizationId, int? usageId) {
             this.PartId = partId;
             this.Name = name;
             this.Description = description;
+            this.IsNew = isNew;
             this.HoldsBubblers = holdsBubblers;
             this.WarehouseId = warehouseId;
             this.OrganizationId = organizationId;
@@ -16,7 +17,6 @@ namespace ManufacturingInventory.Application.Boundaries.PartDetails {
         }
 
         public bool IsNew { get; set; }
-
         public int PartId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

@@ -34,6 +34,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand RefreshDataCommand { get; private set; }
+        public AsyncCommand NewPartCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewPartDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditPartCommand { get; private set; }
 
@@ -43,8 +44,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.PopulateAsync);
             this.RefreshDataCommand = new AsyncCommand(this.RefreshDataHandler);
-            this.ViewPartDetailsCommand = new PrismCommands.DelegateCommand(this.ViewPartDetailsHandler);
-            this.EditPartCommand = new PrismCommands.DelegateCommand(this.EditPartDetailsHandler);
+            this.ViewPartDetailsCommand = new PrismCommands.DelegateCommand(this.ViewPartDetailsHandler, this.CanNew);
+            this.EditPartCommand = new PrismCommands.DelegateCommand(this.EditPartDetailsHandler, this.CanNew);
+            this.NewPartCommand = new AsyncCommand(this.NewPartHandler,this.CanNew);
+
+            this._eventAggregator.GetEvent<PartEditDoneEvent>().Subscribe(async (partId) => await this.ReloadEditDoneHandler(partId));
+            this._eventAggregator.GetEvent<PartEditCancelEvent>().Subscribe(async () => await this.RefreshDataHandler());
         }
 
         public override bool KeepAlive => false;
@@ -87,20 +92,30 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        private void NewPartHandler() {
-            if (this.SelectedPart != null) {
-                this._editInProgress = true;
-                this.CleanupRegions();
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedPart, this.SelectedPart);
-                parameters.Add(ParameterKeys.IsNew, true);
-                parameters.Add(ParameterKeys.IsEdit, false);
-                this._regionManager.RequestNavigate(LocalRegions.PartDetailsRegion, ModuleViews.PartsDetailView, parameters);
-            }
+        private async Task NewPartHandler() {
+            await Task.Run(() => {
+                if (this.SelectedPart != null) {
+                    this._editInProgress = true;
+                    Part part = new Part();
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.SelectedPart, part);
+                    parameters.Add(ParameterKeys.IsNew, true);
+                    parameters.Add(ParameterKeys.IsEdit, false);
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.CleanupRegions();
+                        this._regionManager.RequestNavigate(LocalRegions.PartDetailsRegion, ModuleViews.PartsDetailView, parameters);
+                    });
+                }
+            });
+        }
+
+        private bool CanNew() {
+            return !this._editInProgress;
         }
 
         private async Task RefreshDataHandler() {
             this.DispatcherService.BeginInvoke(() => {
+                this._editInProgress = false;
                 this.IsLoading = true;
                 this.CleanupRegions();
             });
@@ -109,6 +124,23 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             this.DispatcherService.BeginInvoke(() => {
                 this.Parts = new ObservableCollection<Part>(parts);
+                this.IsLoading = false;
+            });
+        }
+
+        private async Task ReloadEditDoneHandler(int partId) {
+
+            this.DispatcherService.BeginInvoke(() => {
+                this._editInProgress = false;
+                this.IsLoading = true;
+                this.CleanupRegions();
+            });
+
+            var parts = await this._partEdit.GetParts();
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.Parts = new ObservableCollection<Part>(parts);
+                this.SelectedPart = this.Parts.FirstOrDefault(e => e.Id == partId);
                 this.IsLoading = false;
             });
         }

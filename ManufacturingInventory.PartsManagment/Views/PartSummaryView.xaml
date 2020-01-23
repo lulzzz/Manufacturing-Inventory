@@ -28,7 +28,8 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="PartSummaryDispatcher" />
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
+        <dx:DXMessageBoxService x:Name="PartSummaryMessageBox" />
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}"/>
     </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutGroup Orientation="Vertical">
         <dxlc:LayoutGroup>
@@ -36,13 +37,14 @@
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center">
                 <dxe:TextEdit Text="{Binding SelectedPart.Name}"
-                              IsReadOnly="False"
+                              IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                               HorizontalContentAlignment="Left" />
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Holds Bubblers"
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center">
                 <dxe:CheckEdit EditValue="{Binding SelectedPart.HoldsBubblers}"
+                               IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                HorizontalAlignment="Center" />
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Warehouse"
@@ -51,9 +53,10 @@
                              BorderBrush="Black">
                 <dxe:ComboBoxEdit x:Name="_warehouseCombo"
                                   DisplayMember="Name"
-                                  ItemsSource="{Binding Warehouses,Mode=TwoWay,IsAsync=True}"
-                                  SelectedItem="{Binding SelectedWareHouse,Mode=TwoWay,IsAsync=True}"
-                                  SelectedIndex="{Binding SelectedWarehouseIndex,Mode=TwoWay,IsAsync=True}"
+                                  ItemsSource="{Binding Warehouses}"
+                                  SelectedItem="{Binding SelectedWareHouse}"
+                                  ApplyItemTemplateToSelectedItem="True"
+                                  IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                   IsTextEditable="False">
                     <dxe:ComboBoxEdit.ItemTemplate>
                         <DataTemplate>
@@ -69,10 +72,10 @@
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
-                <dxe:ComboBoxEdit ItemsSource="{Binding UsageList,Mode=TwoWay,IsAsync=True}"
-                                  SelectedItem="{Binding SelectedUsage,Mode=TwoWay}"
-                                  SelectedIndex="{Binding SelectedUsageIndex,Mode=TwoWay,IsAsync=True}"
+                <dxe:ComboBoxEdit ItemsSource="{Binding UsageList}"
+                                  SelectedItem="{Binding SelectedUsage}"
                                   ApplyItemTemplateToSelectedItem="True"
+                                  IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                   IsTextEditable="False">
                     <dxe:ComboBoxEdit.ItemTemplate>
                         <DataTemplate>
@@ -86,10 +89,10 @@
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
-                <dxe:ComboBoxEdit ItemsSource="{Binding Organizations,IsAsync=True,Mode=TwoWay}"
+                <dxe:ComboBoxEdit ItemsSource="{Binding Organizations}"
                                   SelectedItem="{Binding SelectedOrganization}"
                                   ApplyItemTemplateToSelectedItem="True"
-                                  SelectedIndex="{Binding SelectedOrganizationIndex,Mode=TwoWay,IsAsync=True}"
+                                  IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                   IsTextEditable="False">
                     <dxe:ComboBoxEdit.ItemTemplate>
                         <DataTemplate>
@@ -112,8 +115,25 @@
                                AcceptsReturn="True"
                                AcceptsTab="True"
                                HorizontalContentAlignment="Left"
-                               VerticalContentAlignment="Top" />
+                               VerticalContentAlignment="Top"
+                               IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}" />
             </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+        <dxlc:LayoutGroup Orientation="Horizontal"
+                          VerticalAlignment="Bottom"
+                          Visibility="{Binding CanSaveCancel,Converter={dxmvvm:BooleanToVisibilityConverter}}">
+            <dx:SimpleButton Content="Save Part"
+                             Command="{Binding SaveCommand}"
+                             Glyph="{dx:DXImage DevAV/Actions/Save_32x32.png}"
+                             ToolTip="Save Part"
+                             Height="50"
+                             Background="Aqua" />
+            <dx:SimpleButton Content="Cancel"
+                             Command="{Binding CancelCommand}"
+                             Glyph="{dx:DXImage Image=Cancel_32x32.png}"
+                             ToolTip="Cancel Outgoing"
+                             Height="50"
+                             Background="Aqua" />
         </dxlc:LayoutGroup>
     </dxlc:LayoutGroup>
 </UserControl>

@@ -30,6 +30,10 @@ namespace ManufacturingInventory.PartsManagment.Views {
             var summaryContext = (DataTraveler)context.Value;
             (DataContext as PartSummaryViewModel).SelectedPartId = summaryContext.PartId;
             (DataContext as PartSummaryViewModel).IsBubbler = summaryContext.HoldsBubblers;
+            (DataContext as PartSummaryViewModel).CanSaveCancel = summaryContext.IsEdit || summaryContext.IsNew;
+            (DataContext as PartSummaryViewModel).IsNew = summaryContext.IsNew;
+            (DataContext as PartSummaryViewModel).IsEdit = summaryContext.IsEdit;
+
         }
     }
 }

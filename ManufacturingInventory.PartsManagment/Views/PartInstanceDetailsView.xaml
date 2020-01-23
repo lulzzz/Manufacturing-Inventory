@@ -81,7 +81,6 @@
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:ComboBoxEdit ItemsSource="{Binding Locations}"
-                                          SelectedIndex="{Binding SelectedLocationIndex}"
                                           SelectedItem="{Binding SelectedLocation}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
@@ -98,7 +97,6 @@
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:ComboBoxEdit ItemsSource="{Binding PartTypes}"
-                                          SelectedIndex="{Binding SelectedPartTypeIndex}"
                                           SelectedItem="{Binding SelectedPartType}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
@@ -115,7 +113,6 @@
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:ComboBoxEdit ItemsSource="{Binding Conditions}"
-                                          SelectedIndex="{Binding SelectedConditionIndex}"
                                           SelectedItem="{Binding SelectedCondition}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"

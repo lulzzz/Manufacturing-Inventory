@@ -260,62 +260,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        //public async Task SaveHandler() {
-        //    var partInstance = this._context.PartInstances.Include(e => e.BubblerParameter).FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);
-        //    if (partInstance != null) {
-        //        if (this.SelectedPartInstance.Condition != null) {
-        //            if (this.SelectedCondition.Id != partInstance.ConditionId) {
-        //                partInstance.ConditionId = this.SelectedCondition.Id;
-        //            }
-        //        }
-
-        //        if (this.SelectedPartInstance.CurrentLocation != null) {
-        //            if (this.SelectedPartInstance.LocationId != this.SelectedLocation.Id) {
-        //                partInstance.LocationId = this.SelectedLocation.Id;
-        //            }
-        //        }
-
-        //        if (this.SelectedPartInstance.PartType != null) {
-        //            if (this.SelectedPartInstance.PartTypeId != this.SelectedPartType.Id) {
-        //                partInstance.PartTypeId = this.SelectedPartType.Id;
-        //            }
-        //        }
-        //        if (this._isBubbler) {
-        //            partInstance.BubblerParameter.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
-        //            partInstance.BubblerParameter.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
-        //            partInstance.BubblerParameter.Tare = this.SelectedPartInstance.BubblerParameter.Tare;
-        //            partInstance.BubblerParameter.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
-        //            if (this.SelectedPartInstance.CostReported) {
-        //                partInstance.UnitCost = this.SelectedPartInstance.UnitCost;
-        //                partInstance.TotalCost = partInstance.UnitCost * partInstance.BubblerParameter.NetWeight;
-        //            }
-        //        } else {
-        //            partInstance.Quantity = this.SelectedPartInstance.Quantity;
-        //            partInstance.UnitCost = this.SelectedPartInstance.UnitCost;
-        //            partInstance.TotalCost = this.SelectedPartInstance.Quantity * this.SelectedPartInstance.UnitCost;
-
-        //        }
-        //        this._context.Entry<PartInstance>(partInstance).State = EntityState.Modified;
-        //        try {
-        //            await this._context.SaveChangesAsync();
-        //            this.DispatcherService.BeginInvoke(() => {
-        //                this.MessageBoxService.ShowMessage("Save Done, Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
-        //            });
-        //            ReloadEventTraveler traveler = new ReloadEventTraveler() {
-        //                PartId = this.SelectedPartInstance.PartId,
-        //                PartInstanceId = this.SelectedPartInstance.Id
-        //            };
-        //            this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
-        //            this.SaveCancelVisibility = Visibility.Collapsed;
-        //            this.IsEdit = false;
-        //        } catch {
-        //            this.DispatcherService.BeginInvoke(() => {
-        //                this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
-        //            });
-        //        }
-        //    }
-        //}
-
         public async Task DiscardHandler() {
             ReloadEventTraveler traveler = new ReloadEventTraveler() {
                 PartId = this.SelectedPartInstance.PartId,

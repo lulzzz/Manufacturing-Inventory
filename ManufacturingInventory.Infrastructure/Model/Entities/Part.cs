@@ -44,20 +44,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Name = part.Name;
             this.Description = part.Description;
             this.HoldsBubblers = part.HoldsBubblers;
-            this.OgranizationId = part.OgranizationId;
             this.WarehouseId = part.WarehouseId;
-            this.UsageId = part.WarehouseId;
             this.UsageId = part.UsageId;
+            this.OgranizationId = part.OgranizationId;
         }
 
         public void Set(Part part) {
             this.Name = part.Name;
             this.Description = part.Description;
             this.HoldsBubblers = part.HoldsBubblers;
-            this.OgranizationId = part.OgranizationId;
             this.WarehouseId = part.WarehouseId;
-            this.UsageId = part.WarehouseId;
             this.UsageId = part.UsageId;
+            this.OgranizationId = part.OgranizationId;
         }
     }
 }
