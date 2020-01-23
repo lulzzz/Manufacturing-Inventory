@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
     public class TransactionEdit : ITransactionEditUseCase {
-        public IRepository<Transaction> _repository;
-        public IUnitOfWork _unitOfWork;
+        private IRepository<Transaction> _repository;
+        private IUnitOfWork _unitOfWork;
+        private ManufacturingContext _context;
 
-        public TransactionEdit(IRepository<Transaction> transactionRepositry, IUnitOfWork unitOfWork) {
-            this._repository = transactionRepositry;
-            this._unitOfWork = unitOfWork;
+        public TransactionEdit(ManufacturingContext context) {
+            this._context = context; 
+            this._repository = new TransactionRepository(context);
+            this._unitOfWork = new UnitOfWork(context);
         }
 
         public async Task<TransactionEditOutput> Execute(TransactionEditInput input) {

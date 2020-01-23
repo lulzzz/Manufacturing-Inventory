@@ -67,52 +67,40 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             return (await Task.Run(() => this._context.Transactions.Remove(transaction))).Entity;
         }
         public Transaction GetEntity(Expression<Func<Transaction, bool>> expression) {
-                return this._context.Transactions
-                    .Include(e => e.Session)
-                    .Include(e => e.PartInstance)
-                        .ThenInclude(e => e.Part)
-                    .Include(e => e.PartInstance)
-                        .ThenInclude(e => e.BubblerParameter)
-                    .Include(e => e.Location)
-                    .Include(e => e.ReferenceTransaction)
-                    .AsNoTracking()
-                    .FirstOrDefault(expression);
+            return this._context.Transactions
+                .Include(e => e.Session)
+                .Include(e => e.PartInstance)
+                .Include(e => e.Location)
+                .Include(e => e.ReferenceTransaction)
+                .FirstOrDefault(expression);
         }
 
 
         public async Task<Transaction> GetEntityAsync(Expression<Func<Transaction, bool>> expression) {
-
-                return await this._context.Transactions
-                    .Include(e => e.Session)
-                    .Include(e => e.PartInstance)
-                        .ThenInclude(e => e.Part)
-                    .Include(e => e.PartInstance)
-                        .ThenInclude(e => e.BubblerParameter)
-                    .Include(e => e.Location)
-                    .Include(e => e.ReferenceTransaction)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(expression);
+            return await this._context.Transactions
+                .Include(e => e.Session)
+                .Include(e => e.PartInstance)
+                .Include(e => e.Location)
+                .Include(e => e.ReferenceTransaction)
+                .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<Transaction> GetEntityList(Expression<Func<Transaction, bool>> expression = null, Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy = null) {
             IQueryable<Transaction> query = this._context.Set<Transaction>()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return orderBy(query).AsNoTracking().ToList();
+                return orderBy(query).ToList();
             } else {
-                return query.AsNoTracking().ToList();
+                return query.ToList();
             }
         }
 
@@ -120,21 +108,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<Transaction> query = this._context.Set<Transaction>()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return await orderBy(query).AsNoTracking().ToListAsync();
+                return await orderBy(query).ToListAsync();
             } else {
-                return await query.AsNoTracking().ToListAsync();
+                return await query.ToListAsync();
             }
         }
 
@@ -144,12 +129,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .AsNoTracking()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
-                .AsNoTracking()
                 .Load();
         }
 
@@ -157,12 +138,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             await this._context.Transactions
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
-                .AsNoTracking()
                 .LoadAsync();
         }
 

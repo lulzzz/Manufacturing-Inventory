@@ -15,16 +15,14 @@ namespace ManufacturingInventory.Application.UseCases {
         private IEntityProvider<Location> _locationProvider;
         private IEntityProvider<Category> _categoryProvider;
         private IUnitOfWork _unitOfWork;
+        private ManufacturingContext _context;
 
-        public PartSummaryEdit(IRepository<Part> partRepository, 
-            IEntityProvider<Location> locationProvider, 
-            IEntityProvider<Category> categoryProvider,
-            IUnitOfWork unitOfWork) {
-
-            this._partRepository = partRepository;
-            this._locationProvider = locationProvider;
-            this._categoryProvider = categoryProvider;
-            this._unitOfWork = unitOfWork;
+        public PartSummaryEdit(ManufacturingContext context) {
+            this._context = context;
+            this._partRepository =new PartRepository(context);
+            this._locationProvider = new LocationProvider(context);
+            this._categoryProvider =new CategoryProvider(context);
+            this._unitOfWork = new UnitOfWork(context);
         }
 
         public async Task<PartSummaryEditOutput> Execute(PartSummaryEditInput input) {

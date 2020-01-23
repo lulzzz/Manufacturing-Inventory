@@ -8,6 +8,9 @@ using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Infrastructure.Model.Services;
+//using Prism.Ioc;
+//using Prism.DryIoc;
+//using DryIoc;
 
 namespace ManufacturingInventory.Application.UseCases {
     public class PartInstanceDetailsEdit : IPartInstanceDetailsEditUseCase {
@@ -18,21 +21,17 @@ namespace ManufacturingInventory.Application.UseCases {
         private IEntityProvider<Location> _locationProvider;
         private IRepository<BubblerParameter> _bubblerRepository;
         private IUnitOfWork _unitOfWork;
+        private ManufacturingContext _context;
 
-        public PartInstanceDetailsEdit(IRepository<PartInstance> instanceRepository,
-            IRepository<Attachment> attachmentRepository, 
-            IEntityProvider<Transaction> transactionProvider, 
-            IEntityProvider<Category> categoryProvider,
-            IEntityProvider<Location> locationProvider,
-            IRepository<BubblerParameter> bubblerRepository,
-            IUnitOfWork unitOfWork) {
-            this._instanceRepository = instanceRepository;
-            this._attachmentRepository = attachmentRepository;
-            this._transactionProvider = transactionProvider;
-            this._categoryProvider = categoryProvider;
-            this._locationProvider = locationProvider;
-            this._bubblerRepository = bubblerRepository;
-            this._unitOfWork = unitOfWork;
+        public PartInstanceDetailsEdit(ManufacturingContext context) {
+            this._context = context;
+            this._instanceRepository = new PartInstanceRepository(context);
+            this._attachmentRepository = new AttachmentRepository(context);
+            this._transactionProvider = new TransactionProvider(context);
+            this._categoryProvider = new CategoryProvider(context);
+            this._locationProvider = new LocationProvider(context);
+            this._bubblerRepository =new BubblerParameterRepository(context);
+            this._unitOfWork = new UnitOfWork(context);
         }
 
         public async Task<IEnumerable<Attachment>> GetAttachments() {
