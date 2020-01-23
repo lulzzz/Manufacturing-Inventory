@@ -50,6 +50,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
+        //public PrismCommands.DelegateCommand SaveCommand { get; private set; }
 
         public PartSummaryViewModel(IPartSummaryEditUseCase partSummaryEdit, IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._partSummaryEdit = partSummaryEdit;
@@ -57,6 +58,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
             this.SaveCommand = new AsyncCommand(this.SaveHandler);
+            //this.SaveCommand = new PrismCommands.DelegateCommand(this.SaveSyncHandler);
             this.CancelCommand = new AsyncCommand(this.CancelHandler);
         }
 
@@ -137,21 +139,51 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._holdsBubblers, value);
         }
 
+
+        private void SaveSyncHandler() {
+            int id = (this.IsNew) ? 0 : this.SelectedPart.Id;
+            int warehouseId = (this.SelectedWarehouse != null) ? this.SelectedWarehouse.Id : 0;
+            int orgId = (this.SelectedOrganization != null) ? this.SelectedOrganization.Id : 0;
+            int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
+
+            PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description, this.IsNew, this.HoldsBubblers, warehouseId, orgId, useageId);
+
+            var output = this._partSummaryEdit.Execute(input);
+            if (output.Success) {
+                this.MessageBoxService.ShowMessage(output.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                this._eventAggregator.GetEvent<PartEditDoneEvent>().Publish(output.Part.Id);
+                this.CanSaveCancel = false;
+                this.IsEdit = false;
+                this.IsNew = false;
+            } else {
+                var responce = this.MessageBoxService.ShowMessage("Save failed" + Environment.NewLine + "Check Input and Try Again?", "Error", MessageButton.YesNo, MessageIcon.Error);
+                if (responce == MessageResult.No) {
+                    this._eventAggregator.GetEvent<PartEditCancelEvent>().Publish();
+                    this.CanSaveCancel = false;
+                    this.IsEdit = false;
+                    this.IsNew = false;
+                }
+            }
+        }
+
         private async Task SaveHandler() {
-            int id = (this.IsNew) ? 0 : this.SelectedPartId;
+            int id = (this.IsNew) ? 0 : this.SelectedPart.Id;
             int warehouseId = (this.SelectedWarehouse != null) ? this.SelectedWarehouse.Id : 0;
             int orgId = (this.SelectedOrganization != null) ? this.SelectedOrganization.Id : 0;
             int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
 
 
+
             PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description,this.IsNew ,this.HoldsBubblers,warehouseId,orgId,useageId);
 
-            var output = await this._partSummaryEdit.Execute(input);
+            var output = await this._partSummaryEdit.ExecuteAsync(input);
             if (output.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(output.Message,"Success", MessageButton.OK, MessageIcon.Information);
                     this._eventAggregator.GetEvent<PartEditDoneEvent>().Publish(output.Part.Id);
                     this.CanSaveCancel = false;
+                    this.IsEdit = false;
+                    this.IsNew = false;
                 });
             } else {
                 this.DispatcherService.BeginInvoke(() => {
@@ -159,6 +191,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     if (responce == MessageResult.No) {
                         this._eventAggregator.GetEvent<PartEditCancelEvent>().Publish();
                         this.CanSaveCancel = false;
+                        this.IsEdit = false;
+                        this.IsNew = false;
                     }
                 });
             }
@@ -169,6 +203,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => {
                     this._eventAggregator.GetEvent<PartEditCancelEvent>().Publish();
                     this.CanSaveCancel = false;
+                    this.IsEdit = false;
+                    this.IsNew = false;
                 });
             });
         }

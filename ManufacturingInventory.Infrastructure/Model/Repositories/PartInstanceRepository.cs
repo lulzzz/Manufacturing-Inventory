@@ -66,10 +66,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.ConditionId = entity.ConditionId;
                 instance.LocationId = entity.LocationId;
                 instance.PartTypeId = entity.PartTypeId;
-
-                //if (entity.BubblerParameter != null) {
-                //    instance.BubblerParameter.Set(entity.BubblerParameter);
-                //}
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -95,10 +91,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.ConditionId = entity.ConditionId;
                 instance.LocationId = entity.LocationId;
                 instance.PartTypeId = entity.PartTypeId;
-
-                //if (entity.BubblerParameter != null) {
-                //    instance.BubblerParameter.Set(entity.BubblerParameter);
-                //}
 
                 return this._context.PartInstances.Update(instance).Entity;
             } else {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace ManufacturingInventory.Application.Boundaries.PartNavigationEdit {
     public interface IPartNavigationEditUseCase:IUseCase<PartNavigationEditInput,PartNavigationEditOutput> {
         Task<Part> GetPart(int id);
-        Task<IEnumerable<Part>> GetParts();
+        Task<IEnumerable<Part>> GetPartsAsync();
+        IEnumerable<Part> GetParts();
     }
 }

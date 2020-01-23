@@ -14,6 +14,7 @@ namespace ManufacturingInventory.Application.UseCases {
 
         public CheckIn(
             IRepository<Transaction> transactionRepository, 
+
             IRepository<Location> locationRepository, 
             IRepository<Category> categoryRepository,
             IUnitOfWork unitOfWork) {

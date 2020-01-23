@@ -48,8 +48,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.EditPartCommand = new PrismCommands.DelegateCommand(this.EditPartDetailsHandler, this.CanNew);
             this.NewPartCommand = new AsyncCommand(this.NewPartHandler,this.CanNew);
 
-            this._eventAggregator.GetEvent<PartEditDoneEvent>().Subscribe(async (partId) => await this.ReloadEditDoneHandler(partId));
-            this._eventAggregator.GetEvent<PartEditCancelEvent>().Subscribe(async () => await this.RefreshDataHandler());
+            this._eventAggregator.GetEvent<PartEditDoneEvent>().Subscribe(async (partId)=>await this.ReloadEditDoneHandler(partId));
+            this._eventAggregator.GetEvent<PartEditCancelEvent>().Subscribe(async () => await this.ReloadEditCancelHandle());
         }
 
         public override bool KeepAlive => false;
@@ -120,7 +120,23 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.CleanupRegions();
             });
 
-            var parts =await this._partEdit.GetParts();
+            var parts =await this._partEdit.GetPartsAsync();
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.Parts = new ObservableCollection<Part>(parts);
+                this.IsLoading = false;
+            });
+        }
+
+        private async Task ReloadEditCancelHandle() {
+
+            this.DispatcherService.BeginInvoke(() => {
+                this._editInProgress = false;
+                this.IsLoading = true;
+                this.CleanupRegions();
+            });
+
+            var parts = await this._partEdit.GetPartsAsync();
 
             this.DispatcherService.BeginInvoke(() => {
                 this.Parts = new ObservableCollection<Part>(parts);
@@ -136,7 +152,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.CleanupRegions();
             });
 
-            var parts = await this._partEdit.GetParts();
+            var parts = await this._partEdit.GetPartsAsync();
 
             this.DispatcherService.BeginInvoke(() => {
                 this.Parts = new ObservableCollection<Part>(parts);
@@ -152,7 +168,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.CleanupRegions();
                 });
 
-                var parts = await this._partEdit.GetParts();
+                var parts = await this._partEdit.GetPartsAsync();
 
                 this.DispatcherService.BeginInvoke(() => {
                     this.Parts = new ObservableCollection<Part>(parts);

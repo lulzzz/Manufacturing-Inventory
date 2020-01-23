@@ -20,7 +20,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 return null;
             }
 
-            return this._context.Parts.Add(part).Entity;
+            return this._context.Parts.Add(entity).Entity;
         }
 
         public async Task<Part> AddAsync(Part entity) {
@@ -29,7 +29,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 return null;
             }
 
-            return (await this._context.Parts.AddAsync(part)).Entity;
+            return (await this._context.Parts.AddAsync(entity)).Entity;
         }
 
         public Part Update(Part entity) {

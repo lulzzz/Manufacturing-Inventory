@@ -5,4 +5,11 @@ namespace ManufacturingInventory.Infrastructure.Model {
         Task<int> Save();
         Task Undo();
     }
+
+    public interface IUnitOfWorkV2 {
+        Task<int> SaveAsync();
+        Task UndoAsync();
+        int Save();
+        void Undo();
+    }
 }

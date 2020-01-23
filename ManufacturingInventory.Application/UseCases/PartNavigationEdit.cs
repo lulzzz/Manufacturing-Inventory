@@ -11,12 +11,10 @@ namespace ManufacturingInventory.Application.UseCases {
     public class PartNavigationEdit : IPartNavigationEditUseCase {
         private ManufacturingContext _context;
         private IRepository<Part> _repository;
-        private ManufacturingContext _context;
 
         public PartNavigationEdit(ManufacturingContext context) {
             this._context = context;
             this._repository = new PartRepository(context);
-            this._unitOfWork = new UnitOfWork(context);
         }
 
         public Task<PartNavigationEditOutput> Execute(PartNavigationEditInput input) {
@@ -27,8 +25,12 @@ namespace ManufacturingInventory.Application.UseCases {
             return await this._repository.GetEntityAsync(e => e.Id == id);
         }
                 
-        public async Task<IEnumerable<Part>> GetParts() {
+        public async Task<IEnumerable<Part>> GetPartsAsync() {
             return await this._repository.GetEntityListAsync();
+        }
+
+        public IEnumerable<Part> GetParts() {
+            return this._repository.GetEntityList();
         }
     }
 }

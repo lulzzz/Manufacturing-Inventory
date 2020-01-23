@@ -48,6 +48,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 //containerRegistry.RegisterSingleton<ManufacturingContext>();
                 //containerRegistry.RegisterSingleton<IUnitOfWork,UnitOfWork>();
                 container.Register<IUnitOfWork,UnitOfWork>(setup:Setup.With(allowDisposableTransient: true));
+                container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
 
                 container.Register<ICheckOutBubblerUseCase, CheckOutBubbler>();
                 container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
