@@ -16,6 +16,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private IEntityProvider<Location> _locationProvider;
         private IEntityProvider<Category> _categoryProvider;
         private IUnitOfWork _unitOfWork;
+        private ManufacturingContext _context;
 
         public PartSummaryEdit(ManufacturingContext context) {
             this._context = context;

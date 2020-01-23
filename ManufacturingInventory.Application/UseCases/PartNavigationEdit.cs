@@ -11,7 +11,7 @@ namespace ManufacturingInventory.Application.UseCases {
     public class PartNavigationEdit : IPartNavigationEditUseCase {
         private ManufacturingContext _context;
         private IRepository<Part> _repository;
-        private IUnitOfWork _unitOfWork;
+        private ManufacturingContext _context;
 
         public PartNavigationEdit(ManufacturingContext context) {
             this._context = context;

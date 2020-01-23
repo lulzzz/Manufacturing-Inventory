@@ -45,6 +45,8 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 var container = containerRegistry.GetContainer();
                 container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
+                //containerRegistry.RegisterSingleton<ManufacturingContext>();
+                //containerRegistry.RegisterSingleton<IUnitOfWork,UnitOfWork>();
                 container.Register<IUnitOfWork,UnitOfWork>(setup:Setup.With(allowDisposableTransient: true));
 
                 container.Register<ICheckOutBubblerUseCase, CheckOutBubbler>();

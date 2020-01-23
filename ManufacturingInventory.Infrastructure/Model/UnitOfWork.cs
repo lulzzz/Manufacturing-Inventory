@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ManufacturingInventory.Infrastructure.Model.DbContextExtensions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,9 @@ namespace ManufacturingInventory.Infrastructure.Model {
         }
 
         public async Task Undo() {
-
+            await Task.Run(() => {
+                this._context.UndoDbContext();
+            });
         }
 
         public void Dispose() {
