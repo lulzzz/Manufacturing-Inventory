@@ -54,9 +54,9 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
             
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-NGE4P2E;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
         }
 

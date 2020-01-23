@@ -51,9 +51,13 @@ namespace ManufacturingInventory.Application.UseCases {
             part.Description = input.Description;
             part.HoldsBubblers = input.HoldsBubblers;
 
-            part.WarehouseId = input.WarehouseId;
-            part.UsageId = input.UsageId;
-            part.OgranizationId = input.OrganizationId;
+            var warehouse = this._locationProvider.GetEntity(e => e.Id == input.WarehouseId);
+            var org = this._categoryProvider.GetEntity(e => e.Id == input.OrganizationId);
+            var usage = this._categoryProvider.GetEntity(e => e.Id == input.UsageId);
+
+            part.Warehouse =(Warehouse) warehouse;
+            part.Usage =(Usage) usage;
+            part.Organization = (Organization)org;
 
             var newPart=this._partRepository.Add(part);
             if (newPart != null) {
@@ -74,9 +78,14 @@ namespace ManufacturingInventory.Application.UseCases {
             instance.Name = input.Name;
             instance.Description = input.Description;
             instance.HoldsBubblers = input.HoldsBubblers;
-            instance.WarehouseId = input.WarehouseId;
-            instance.UsageId = input.UsageId;
-            instance.OgranizationId = input.OrganizationId;
+
+            var warehouse = this._locationProvider.GetEntity(e => e.Id == input.WarehouseId);
+            var org = this._categoryProvider.GetEntity(e => e.Id == input.OrganizationId);
+            var usage = this._categoryProvider.GetEntity(e => e.Id == input.UsageId);
+
+            instance.Warehouse = (Warehouse)warehouse;
+            instance.Usage = (Usage)usage;
+            instance.Organization = (Organization)org;
 
             var updated = this._partRepository.Update(instance);
             if (updated != null) {
@@ -94,26 +103,20 @@ namespace ManufacturingInventory.Application.UseCases {
             if (instanceCheck != null) {
                 return new PartSummaryEditOutput(null, false, "Part Already Exist");
             }
+
             Part part = new Part();
             part.Name = input.Name;
             part.Description = input.Description;
             part.HoldsBubblers = input.HoldsBubblers;
 
-            if (input.WarehouseId.HasValue) {
+            var warehouse = await this._locationProvider.GetEntityAsync(e => e.Id == input.WarehouseId);
+            var org = await this._categoryProvider.GetEntityAsync(e => e.Id == input.OrganizationId);
+            var usage = await this._categoryProvider.GetEntityAsync(e => e.Id == input.UsageId);
 
-            }
+            part.Warehouse = (Warehouse)warehouse;
+            part.Usage = (Usage)usage;
+            part.Organization = (Organization)org;
 
-            if (input.OrganizationId.HasValue) {
-
-            }
-
-            if (input.UsageId.HasValue) {
-
-            }
-
-            part.WarehouseId = input.WarehouseId;
-            part.UsageId = input.UsageId;
-            part.OgranizationId = input.OrganizationId;
 
             var newPart = await this._partRepository.AddAsync(part);
             if (newPart != null) {
@@ -134,9 +137,14 @@ namespace ManufacturingInventory.Application.UseCases {
             instance.Name = input.Name;
             instance.Description = input.Description;
             instance.HoldsBubblers = input.HoldsBubblers;
-            instance.WarehouseId = input.WarehouseId;
-            instance.UsageId = input.UsageId;
-            instance.OgranizationId = input.OrganizationId;
+
+            var warehouse = await this._locationProvider.GetEntityAsync(e => e.Id == input.WarehouseId);
+            var org = await this._categoryProvider.GetEntityAsync(e => e.Id == input.OrganizationId);
+            var usage = await this._categoryProvider.GetEntityAsync(e => e.Id == input.UsageId);
+
+            instance.Warehouse = (Warehouse)warehouse;
+            instance.Usage = (Usage)usage;
+            instance.Organization = (Organization)org;
 
             var updated = await this._partRepository.UpdateAsync(instance);
             if (updated != null) {

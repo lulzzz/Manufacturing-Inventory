@@ -173,7 +173,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
 
 
-
             PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description,this.IsNew ,this.HoldsBubblers,warehouseId,orgId,useageId);
 
             var output = await this._partSummaryEdit.ExecuteAsync(input);

@@ -36,14 +36,14 @@
             <dxlc:LayoutItem Label="Name"
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center">
-                <dxe:TextEdit Text="{Binding SelectedPart.Name}"
+                <dxe:TextEdit Text="{Binding Name}"
                               IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                               HorizontalContentAlignment="Left" />
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Holds Bubblers"
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center">
-                <dxe:CheckEdit EditValue="{Binding SelectedPart.HoldsBubblers}"
+                <dxe:CheckEdit EditValue="{Binding HoldsBubblers}"
                                IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                HorizontalAlignment="Center" />
             </dxlc:LayoutItem>
@@ -109,7 +109,7 @@
                              LabelPosition="Top"
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
-                <dxe:TextEdit  Text="{Binding SelectedPart.Description}"
+                <dxe:TextEdit  Text="{Binding Description}"
                                MinHeight="50"
                                TextWrapping="WrapWithOverflow"
                                AcceptsReturn="True"
