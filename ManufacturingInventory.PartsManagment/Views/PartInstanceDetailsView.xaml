@@ -154,7 +154,7 @@
                                       IsReadOnly="True"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
-                <dxlc:LayoutGroup Visibility="{Binding StockVisibility}">
+                <dxlc:LayoutGroup Visibility="{Binding IsBubbler,Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}">
                     <dxlc:LayoutItem Label="Quantity"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
@@ -192,7 +192,7 @@
                                       IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
-                <dxlc:LayoutGroup Visibility="{Binding WeightVisibility}">
+                <dxlc:LayoutGroup Visibility="{Binding IsBubbler,Converter={dxmvvm:BooleanToVisibilityConverter}}">
                     <dxlc:LayoutItem Label="Net"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
@@ -433,7 +433,7 @@
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"
                                  VerticalAlignment="Bottom"
-                                 Visibility="{Binding SaveCancelVisibility}">
+                                 Visibility="{Binding IsEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
                     <dxlc:LayoutGroup Orientation="Horizontal">
                         <dx:SimpleButton Content="Save Changes"
                                          Height="50"

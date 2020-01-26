@@ -18,6 +18,12 @@ using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
+    public enum MessageType {
+        ERROR,
+        WARNING,
+        INFORMATION
+    }
+
     public class PartInstanceDetailsViewModel : InventoryViewModelNavigationBase {
 
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PartInstanceDetailsMessageService"); }
@@ -52,9 +58,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _unitCost;
         private double _totalCost;
         private int _quantity;
-        private int _selectedConditionIndex;
-        private int _selectedPartTypeIndex;
-        private int _selectedLocationIndex;
+
 
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand SaveCommand { get; private set; }
@@ -184,26 +188,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        public Visibility CostVisibility { 
-            get => this._costVisibility;
-            set => SetProperty(ref this._costVisibility, value);
-        }
-
-        public Visibility StockVisibility { 
-            get => this._stockVisibility;
-            set => SetProperty(ref this._stockVisibility, value);
-        }
-
-        public Visibility WeightVisibility { 
-            get => this._weightVisibility;
-            set => SetProperty(ref this._weightVisibility, value);
-        }
-
-        public Visibility SaveCancelVisibility { 
-            get => this._saveCancelVisibility;
-            set => SetProperty(ref this._saveCancelVisibility, value);
-        }
-
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
 
@@ -251,7 +235,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     PartInstanceId = this.SelectedPartInstance.Id
                 };
                 this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
-                this.SaveCancelVisibility = Visibility.Collapsed;
                 this.IsEdit = false;
             } else {
                 this.DispatcherService.BeginInvoke(() => {
@@ -261,17 +244,38 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public async Task DiscardHandler() {
-            ReloadEventTraveler traveler = new ReloadEventTraveler() {
-                PartId = this.SelectedPartInstance.PartId,
-                PartInstanceId = this.SelectedPartInstance.Id
-            };
-            this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
-            this.IsEdit = false;
-            this.SaveCancelVisibility = Visibility.Collapsed;
+            await Task.Run(() => {
+                ReloadEventTraveler traveler = new ReloadEventTraveler() {
+                    PartId = this.SelectedPartInstance.PartId,
+                    PartInstanceId = this.SelectedPartInstance.Id
+                };
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("","",MessageButton.OK,MessageIcon.Error); 
+                    this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
+                    this.IsEdit = false;
+                });
+
+            });
+
         }
 
         public bool CanSave() {
             return this.SelectedCondition != null && this.SelectedLocation != null;
+        }
+
+        public MessageResult ShowMessage(MessageType messageType,string message) {
+            switch (messageType) {
+                case MessageType.ERROR: {
+                    return this.MessageBoxService.ShowMessage(message, "Error", MessageButton.OK, MessageIcon.Error);
+                }
+                case MessageType.WARNING: {
+                    return this.MessageBoxService.ShowMessage(message, "Warning", MessageButton.OK, MessageIcon.Warning);
+                }
+                case MessageType.INFORMATION: {
+                    return this.MessageBoxService.ShowMessage(message, "Error", MessageButton.OK, MessageIcon.Information);
+                }
+                default: return MessageResult.None;
+            }
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
@@ -294,14 +298,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
                     this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
                     this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
-                    
                 }
-                this.UnitCost = this.SelectedPartInstance.UnitCost;            
-                this.StockVisibility = (this._isBubbler) ? Visibility.Collapsed : Visibility.Visible;
-                this.CostVisibility = (this.SelectedPartInstance.CostReported) ? Visibility.Visible : Visibility.Collapsed;
-                this.WeightVisibility = (this._isBubbler) ? Visibility.Visible : Visibility.Collapsed;
-                this.SaveCancelVisibility = (this.IsEdit || this._isNew) ? Visibility.Visible : Visibility.Collapsed;
-
+                this.UnitCost = this.SelectedPartInstance.UnitCost;
+                this.TotalCost = this.SelectedPartInstance.TotalCost;
             }
         }
     }
