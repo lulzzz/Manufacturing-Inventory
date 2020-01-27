@@ -43,6 +43,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ObservableCollection<Condition> _conditions;
         private ObservableCollection<Location> _locations;
         private ObservableCollection<PartType> _partTypes;
+        private ObservableCollection<Transaction> _transactions;
+        private ObservableCollection<Attachment> _attachments;
+
         private Visibility _costVisibility;
         private Visibility _stockVisibility;
         private Visibility _weightVisibility;
@@ -51,6 +54,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Location _selectedLocation;
         private Condition _selectedCondition;
         private PartType _selectedPartType;
+        private bool _tableLoading;
         private double _measuredWeight;
         private double _weight;
         private double _grossWeight;
@@ -136,7 +140,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-
         public double GrossWeight {
             get => this._grossWeight;
             set {
@@ -188,30 +191,54 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
+        public ObservableCollection<Transaction> Transactions { 
+            get => this._transactions;
+            set => this.SetProperty(ref this._transactions, value);
+        }
+
+        public ObservableCollection<Attachment> Attachments { 
+            get => this._attachments;
+            set => this.SetProperty(ref this._attachments, value);
+        }
+
+        public bool TableLoading { 
+            get => this._tableLoading;
+            set => SetProperty(ref this._tableLoading, value);
+        }
+
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
+                //this.DispatcherService.BeginInvoke(()=>t)
 
                 var categories = await this._editInstance.GetCategories();
-                this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
-
                 var locations = await this._editInstance.GetLocations();
-                this.Locations = new ObservableCollection<Location>(locations);
-                if (this.SelectedPartInstance != null) {
+                var transactions = await this._editInstance.GetTransactions(this.SelectedPartInstance.Id);
+ //               var attachments = await this._editInstance.GetAttachments();
 
-                    if (this.SelectedPartInstance.Condition != null) {
-                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
-                    }
+                this.DispatcherService.BeginInvoke(() => {
 
-                    if (this.SelectedPartInstance.CurrentLocation != null) {
-                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                    }
+                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                    this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
+                    this.Locations = new ObservableCollection<Location>(locations);
+                    this.Transactions = new ObservableCollection<Transaction>(transactions);
+ //                   this.Attachments = new ObservableCollection<Attachment>(attachments);
 
-                    if (this.SelectedPartInstance.PartType != null) {
-                        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                    if (this.SelectedPartInstance != null) {
+
+                        if (this.SelectedPartInstance.Condition != null) {
+                            this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                        }
+
+                        if (this.SelectedPartInstance.CurrentLocation != null) {
+                            this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                        }
+
+                        if (this.SelectedPartInstance.PartType != null) {
+                            this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                        }
                     }
-                }
-                this._isInitialized = true;
+                    this._isInitialized = true;
+                });
             }
         }
 
@@ -220,9 +247,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             if (this.SelectedPartType != null) {
                 this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
             }
-            this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
-            this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
 
+            if (this.SelectedCondition != null) {
+                this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
+            }
+
+            this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
 
             PartInstanceDetailsEditInput input = new PartInstanceDetailsEditInput(this.SelectedPartInstance, false);
             var output = await this._editInstance.Execute(input);
@@ -260,7 +290,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public bool CanSave() {
-            return this.SelectedCondition != null && this.SelectedLocation != null;
+            return this.SelectedLocation != null;
         }
 
         public MessageResult ShowMessage(MessageType messageType,string message) {

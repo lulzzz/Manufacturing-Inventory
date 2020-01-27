@@ -22,20 +22,6 @@ namespace ManufacturingInventory.Application.UseCases {
         private IUserService _userService;
         private IUnitOfWork _unitOfWork;
 
-        //public CheckOutBubbler(
-        //    IUserService userService,
-        //    IRepository<Transaction> transactionRepository,
-        //    IRepository<Location> locationRepository,
-        //    IRepository<Category> categoryRepository,
-        //    IRepository<PartInstance> partInstanceRepository,
-        //    IUnitOfWork unitOfWork) {
-        //    this._userService = userService;
-        //    this._transactionRepository = transactionRepository;
-        //    this._locationRepository = locationRepository;
-        //    this._categoryRepository = categoryRepository;
-        //    this._unitOfWork = unitOfWork;
-        //    this._partInstanceRepository = partInstanceRepository;
-        //}
 
         public CheckOutBubbler(ManufacturingContext context,IUserService userService) {
             this._bubblerRepository = new BubblerParameterRepository(context);
@@ -64,6 +50,12 @@ namespace ManufacturingInventory.Application.UseCases {
                     partInstance.UpdateQuantity(-1);
                     partInstance.CostReported = false;
                     partInstance.LocationId = location.Id;
+                    if (item.ConditionId != 0) {
+                        var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
+                        if (condition != null) {
+                            partInstance.ConditionId = condition.Id;
+                        }
+                    }
 
                     Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
                         partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight,location,item.TimeStamp);
@@ -76,10 +68,7 @@ namespace ManufacturingInventory.Application.UseCases {
                     StringBuilder builder = new StringBuilder();
                     if (bubbler!=null && instance!=null && trans != null) {
                         var val = await this._unitOfWork.Save();
-                        
-
                         builder.AppendFormat("Instance: {0} Weight: {1} LinesUpdated: {2}", instance.Name, bubbler.Weight,val).AppendLine();
-
                         output.OutputList.Add(new CheckOutOutputData(trans, true, builder.ToString()));
                     } else {
                         await this._unitOfWork.Undo();
@@ -91,6 +80,10 @@ namespace ManufacturingInventory.Application.UseCases {
                 }
             }
             return output;
+        }
+
+        public async Task<IEnumerable<Condition>> GetConditions() {
+            return (await this._categoryProvider.GetEntityListAsync()).OfType<Condition>();
         }
     }
 

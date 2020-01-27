@@ -131,7 +131,7 @@
                     </dxg:GridControlBand>
                     <dxg:GridControlBand Header="Stock"
                                          VisibleIndex="1"
-                                         Visible="{Binding IsNotBubbler,Mode=TwoWay}">
+                                         Visible="{Binding IsBubbler,Converter={dxmvvm:BooleanNegationConverter}}">
                         <dxg:GridColumn FieldName="Quantity"
                                         Header="Quantity" />
                         <dxg:GridColumn FieldName="MinQuantity" />

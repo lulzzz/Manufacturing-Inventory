@@ -34,8 +34,8 @@ namespace ManufacturingInventory.Application.UseCases {
             this._unitOfWork = new UnitOfWork(context);
         }
 
-        public async Task<IEnumerable<Attachment>> GetAttachments() {
-            return await this._attachmentRepository.GetEntityListAsync();
+        public async Task<IEnumerable<Attachment>> GetAttachments(int instanceId) {
+            return await this._attachmentRepository.GetEntityListAsync(e => e.PartInstanceId == instanceId);
         }
 
         public async Task<IEnumerable<Category>> GetCategories() {
@@ -44,6 +44,10 @@ namespace ManufacturingInventory.Application.UseCases {
 
         public async Task<IEnumerable<Location>> GetLocations() {
             return await this._locationProvider.GetEntityListAsync();
+        }
+
+        public async Task<IEnumerable<Transaction>> GetTransactions(int instanceId) {
+            return await this._transactionProvider.GetEntityListAsync(e=>e.PartInstanceId==instanceId);
         }
 
         public async Task<PartInstanceDetailsEditOutput> Execute(PartInstanceDetailsEditInput input) {

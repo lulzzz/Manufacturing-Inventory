@@ -8,7 +8,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         public TransactionDTO(DateTime timeStamp, InventoryAction inventoryAction, 
             int quantity, bool isReturning, double unitCost, double totalCost,
             int partInstanceId, string partInstanceName, string locationName, 
-            int locationId,double measured=0,double weight=0, int referenceTransactionId=0) {
+            int locationId,double measured=0,double weight=0, int referenceTransactionId=0,int conditionId=0) {
 
             this.TimeStamp = timeStamp;
             this.InventoryAction = inventoryAction;
@@ -24,6 +24,8 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.LocationId = locationId;
             if(referenceTransactionId!=0)
                 this.ReferenceTransactionId = referenceTransactionId;
+
+            this.ConditionId = conditionId;
         }
 
         public TransactionDTO() {
@@ -43,6 +45,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         public string LocationName { get; set; }
         public int LocationId { get; set; }
         public int ReferenceTransactionId { get; set; }
+        public int ConditionId { get; set; }
 
     }
 }

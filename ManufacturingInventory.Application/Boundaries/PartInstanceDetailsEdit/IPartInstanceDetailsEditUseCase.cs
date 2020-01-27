@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit {
     public interface IPartInstanceDetailsEditUseCase: IUseCase<PartInstanceDetailsEditInput, PartInstanceDetailsEditOutput> {
         Task<IEnumerable<Location>> GetLocations();
-        Task<IEnumerable<Attachment>> GetAttachments();
+        Task<IEnumerable<Attachment>> GetAttachments(int instanceId);
         Task<IEnumerable<Category>> GetCategories();
+        Task<IEnumerable<Transaction>> GetTransactions(int instanceId);
     }
 }

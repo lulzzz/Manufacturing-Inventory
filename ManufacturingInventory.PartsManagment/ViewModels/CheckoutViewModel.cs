@@ -37,8 +37,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private ObservableCollection<TransactionDTO> _transactions=new ObservableCollection<TransactionDTO>();
         private ObservableCollection<Consumer> _consumers;
+        private ObservableCollection<Condition> _conditions;
         private TransactionDTO _selectedTransaction;
         private PartInstance _selectedPartInstance;
+        private Condition _selectedCondition;
         private Consumer _selectedConsumer;
         private DateTime _timeStamp;
 
@@ -84,6 +86,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public ObservableCollection<Consumer> Consumers {
             get => this._consumers;
             set => SetProperty(ref this._consumers, value);
+        }
+
+        public ObservableCollection<Condition> Conditions {
+            get => this._conditions;
+            set => SetProperty(ref this._conditions, value);
         }
 
         public TransactionDTO SelectedTransaction { 
@@ -149,6 +156,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedConsumer, value);
         }
 
+        public Condition SelectedCondition { 
+            get => this._selectedCondition;
+            set => SetProperty(ref this._selectedCondition, value);
+        }
+
         public DateTime TimeStamp { 
             get => this._timeStamp;
             set => SetProperty(ref this._timeStamp, value);
@@ -160,6 +172,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.SelectedPartInstance = instance;
             this.IsBubbler = instance.IsBubbler;
             this.QuantityLabel = (instance.IsBubbler) ? "Quantity" : "Enter Quantity";
+
             if (this.SelectedPartInstance.CostReported) {
                 this.UnitCost = this.SelectedPartInstance.UnitCost;
                 this.TotalCost = this.SelectedPartInstance.TotalCost;
@@ -179,20 +192,23 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             await Task.Run(() => {
                 var transaction = this.Transactions.FirstOrDefault(e => e.PartInstanceId == this.SelectedPartInstance.Id);
                 if (transaction==null) {
-                    //Transaction newTransaction = new Transaction(this.SelectedPartInstance, InventoryAction.OUTGOING,this.TimeStamp, this.Weight, true, this.SelectedConsumer);
+                    int conditionId = (this.SelectedCondition != null) ? this.SelectedCondition.Id : 0;
+
                     TransactionDTO newTransaction = new TransactionDTO(this.TimeStamp,
                         InventoryAction.OUTGOING, this.Quantity, false, this.UnitCost,
                         this.TotalCost,this.SelectedPartInstance.Id,this.SelectedPartInstance.Name, this.SelectedConsumer.Name,
-                        this.SelectedConsumer.Id, this.MeasuredWeight, this.Weight);
+                        this.SelectedConsumer.Id, this.MeasuredWeight, this.Weight,conditionId:conditionId);
+
                     DispatcherService.BeginInvoke(() => {
                         this.Transactions.Add(newTransaction);
                         this.MessageBoxService.ShowMessage("Item added to Output", "Success");
+                        this.SelectedPartInstance = null;
+                        this.SelectedConsumer = null;
+                        this.Quantity = 0;
+                        this.MeasuredWeight = 0;
+                        this.TimeStamp = DateTime.Now;
                     });
-                    this.SelectedPartInstance = null;
-                    this.SelectedConsumer = null;
-                    this.Quantity = 0;
-                    this.MeasuredWeight = 0;
-                    this.TimeStamp = DateTime.Now;
+
                 } else {
                     this.DispatcherService.BeginInvoke(() => {
                         this.MessageBoxService.ShowMessage("Error: Outgoing Already Contains Item", "Error", MessageButton.OK, MessageIcon.Error);
@@ -215,15 +231,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-
-
         private async Task CheckOutHandler() {
             if (this._transactions.Any()) {
                 CheckOutBubblerInput input = new CheckOutBubblerInput();
                 await Task.Run(() => {
                     foreach (var transaction in this.Transactions) {
                         input.Items.Add(new CheckOutBubblerInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId, transaction.Quantity,
-                            transaction.UnitCost, transaction.TotalCost, transaction.Measured, transaction.Weight));
+                            transaction.UnitCost, transaction.TotalCost, transaction.Measured, transaction.Weight,conditionId:transaction.ConditionId));
                     }
                 });
 
@@ -282,8 +296,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task LoadHandler() {
             if (!this._isInitialized) {
                 var consumers = await this._checkOut.GetConsumers();
+                var conditions = await this._checkOut.GetConditions();
                 this.DispatcherService.BeginInvoke(() => {
                     this.Consumers = new ObservableCollection<Consumer>(consumers);
+                    this.Conditions = new ObservableCollection<Condition>(conditions);
                     if (this.SelectedPartInstance.CostReported) {
                         this.UnitCost = this.SelectedPartInstance.UnitCost;
                         this.TotalCost = this.SelectedPartInstance.TotalCost;
@@ -293,7 +309,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     }
                     this._isInitialized = true;
                 });
-
             }
         }
 

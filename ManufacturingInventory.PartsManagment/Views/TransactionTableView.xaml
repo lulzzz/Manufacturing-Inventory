@@ -108,21 +108,19 @@
                                     Header="Serial Number" />
                     <dxg:GridColumn FieldName="PartInstance.BatchNumber"
                                     Header="Lot Number" />
-                    <dxg:GridColumn FieldName="Quantity"
-                                    Header="Quantity"
-                                    Visible="{Binding IsBubbler}" />
                 </dxg:GridControlBand>
                 <dxg:GridControlBand Header="Transaction Info"
-                                     VisibleIndex="1"
-                                     Visible="{Binding IsNotBubbler,Mode=TwoWay}">
+                                     VisibleIndex="1">
                     <dxg:GridColumn FieldName="Quantity"
                                     Header="Quantity" />
+                    <dxg:GridColumn FieldName="Weight" 
+                                    Visible="{Binding IsBubbler}"/>
                     <dxg:GridColumn FieldName="PartInstance.UnitCost"
                                     Header="Unit Cost">
                         <dxg:GridColumn.EditSettings>
                             <dxe:TextEditSettings MaskType="Numeric"
                                                   MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
+                                                  Mask="c3"
                                                   AllowNullInput="True" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
@@ -131,14 +129,14 @@
                         <dxg:GridColumn.EditSettings>
                             <dxe:TextEditSettings MaskType="Numeric"
                                                   MaskUseAsDisplayFormat="True"
-                                                  Mask="c" />
+                                                  Mask="c3" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </dxg:GridControlBand>
                 <dxg:GridControlBand Header="Bubbler Info"
                                      HorizontalHeaderContentAlignment="Center"
                                      VisibleIndex="1"
-                                     Visible="{Binding IsBubbler,Mode=TwoWay}">
+                                     Visible="{Binding IsBubbler}">
                     <dxg:GridColumn FieldName="ParameterValue"
                                     Header="Weight" />
                     <dxg:GridColumn FieldName="Consumed" />
