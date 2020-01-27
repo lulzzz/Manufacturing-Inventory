@@ -119,7 +119,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.IsLoading = true;
                 this.CleanupRegions();
             });
-
+            await this._partEdit.LoadAsync();
             var parts =await this._partEdit.GetPartsAsync();
 
             this.DispatcherService.BeginInvoke(() => {
@@ -135,7 +135,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.IsLoading = true;
                 this.CleanupRegions();
             });
-
+            await this._partEdit.LoadAsync();
             var parts = await this._partEdit.GetPartsAsync();
 
             this.DispatcherService.BeginInvoke(() => {
@@ -152,6 +152,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.CleanupRegions();
             });
 
+            await this._partEdit.LoadAsync();
             var parts = await this._partEdit.GetPartsAsync();
 
             this.DispatcherService.BeginInvoke(() => {

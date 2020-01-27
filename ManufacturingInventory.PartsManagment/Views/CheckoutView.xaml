@@ -110,7 +110,7 @@
                                          LabelPosition="Top"
                                          LabelHorizontalAlignment="Center">
                             <dxe:SpinEdit TextWrapping="Wrap"
-                                          EditValue="{Binding SelectedPartInstance.UnitCost}"
+                                          EditValue="{Binding UnitCost}"
                                           Increment="1"
                                           MinValue="0"
                                           MaskType="Numeric"

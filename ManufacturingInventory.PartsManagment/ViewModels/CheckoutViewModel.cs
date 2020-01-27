@@ -45,6 +45,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _measuredWeight;
         private double _weight;
         private double _totalCost;
+        private double _unitCost;
 
 
         private int _quantity;
@@ -123,6 +124,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._weight, value);
         }
 
+        public double UnitCost {
+            get => this._unitCost;
+            set => SetProperty(ref this._unitCost, value);
+        }
+
         public double TotalCost { 
             get => this._totalCost;
             set => SetProperty(ref this._totalCost,value);
@@ -148,11 +154,20 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._timeStamp, value);
         }
 
+
         private void RecievePartInstance(PartInstance instance) {
             this.TimeStamp = DateTime.Now;
             this.SelectedPartInstance = instance;
             this.IsBubbler = instance.IsBubbler;
             this.QuantityLabel = (instance.IsBubbler) ? "Quantity" : "Enter Quantity";
+            if (this.SelectedPartInstance.CostReported) {
+                this.UnitCost = this.SelectedPartInstance.UnitCost;
+                this.TotalCost = this.SelectedPartInstance.TotalCost;
+            } else {
+                this.UnitCost = 0;
+                this.TotalCost = 0;
+            }
+
             if (instance.IsBubbler) {
                 this.Quantity = instance.Quantity;
             } else {
@@ -166,7 +181,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 if (transaction==null) {
                     //Transaction newTransaction = new Transaction(this.SelectedPartInstance, InventoryAction.OUTGOING,this.TimeStamp, this.Weight, true, this.SelectedConsumer);
                     TransactionDTO newTransaction = new TransactionDTO(this.TimeStamp,
-                        InventoryAction.OUTGOING, this.Quantity, false, this.SelectedPartInstance.UnitCost,
+                        InventoryAction.OUTGOING, this.Quantity, false, this.UnitCost,
                         this.TotalCost,this.SelectedPartInstance.Id,this.SelectedPartInstance.Name, this.SelectedConsumer.Name,
                         this.SelectedConsumer.Id, this.MeasuredWeight, this.Weight);
                     DispatcherService.BeginInvoke(() => {
@@ -266,12 +281,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task LoadHandler() {
             if (!this._isInitialized) {
-                //var consumers = await this._context.Locations.AsNoTracking().OfType<Consumer>().ToListAsync();
-                //await this._partManagerService.LocationService.LoadAsync();
-                //var consumers = (await this._partManagerService.LocationService.GetEntityListAsync()).OfType<Consumer>();
                 var consumers = await this._checkOut.GetConsumers();
-                this.Consumers = new ObservableCollection<Consumer>(consumers);
-                this._isInitialized = true;
+                this.DispatcherService.BeginInvoke(() => {
+                    this.Consumers = new ObservableCollection<Consumer>(consumers);
+                    if (this.SelectedPartInstance.CostReported) {
+                        this.UnitCost = this.SelectedPartInstance.UnitCost;
+                        this.TotalCost = this.SelectedPartInstance.TotalCost;
+                    } else {
+                        this.UnitCost = 0;
+                        this.TotalCost = 0;
+                    }
+                    this._isInitialized = true;
+                });
+
             }
         }
 

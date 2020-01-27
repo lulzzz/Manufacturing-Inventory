@@ -54,7 +54,7 @@
                 <dxe:ComboBoxEdit x:Name="_warehouseCombo"
                                   DisplayMember="Name"
                                   ItemsSource="{Binding Warehouses}"
-                                  SelectedItem="{Binding SelectedWareHouse}"
+                                  SelectedItem="{Binding SelectedWarehouse,Mode=TwoWay}"
                                   ApplyItemTemplateToSelectedItem="True"
                                   IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                   IsTextEditable="False">
@@ -73,7 +73,7 @@
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
                 <dxe:ComboBoxEdit ItemsSource="{Binding UsageList}"
-                                  SelectedItem="{Binding SelectedUsage}"
+                                  SelectedItem="{Binding SelectedUsage,Mode=TwoWay}"
                                   ApplyItemTemplateToSelectedItem="True"
                                   IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                   IsTextEditable="False">
@@ -90,7 +90,7 @@
                              LabelHorizontalAlignment="Center"
                              BorderBrush="Black">
                 <dxe:ComboBoxEdit ItemsSource="{Binding Organizations}"
-                                  SelectedItem="{Binding SelectedOrganization}"
+                                  SelectedItem="{Binding SelectedOrganization,Mode=TwoWay}"
                                   ApplyItemTemplateToSelectedItem="True"
                                   IsReadOnly="{Binding CanSaveCancel,Converter={dxmvvm:BooleanNegationConverter}}"
                                   IsTextEditable="False">

@@ -32,5 +32,13 @@ namespace ManufacturingInventory.Application.UseCases {
         public IEnumerable<Part> GetParts() {
             return this._repository.GetEntityList();
         }
+
+        public async Task LoadAsync() {
+            await this._repository.LoadAsync();
+        }
+
+        public void Load() {
+            this._repository.Load();
+        }
     }
 }

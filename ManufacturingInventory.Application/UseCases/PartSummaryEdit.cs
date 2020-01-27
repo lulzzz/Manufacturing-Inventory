@@ -109,13 +109,25 @@ namespace ManufacturingInventory.Application.UseCases {
             part.Description = input.Description;
             part.HoldsBubblers = input.HoldsBubblers;
 
-            var warehouse = await this._locationProvider.GetEntityAsync(e => e.Id == input.WarehouseId);
-            var org = await this._categoryProvider.GetEntityAsync(e => e.Id == input.OrganizationId);
-            var usage = await this._categoryProvider.GetEntityAsync(e => e.Id == input.UsageId);
+            //var warehouse = await this._locationProvider.GetEntityAsync(e => e.Id == input.WarehouseId);
+            //var org = await this._categoryProvider.GetEntityAsync(e => e.Id == input.OrganizationId);
+            //var usage = await this._categoryProvider.GetEntityAsync(e => e.Id == input.UsageId);
 
-            part.Warehouse = (Warehouse)warehouse;
-            part.Usage = (Usage)usage;
-            part.Organization = (Organization)org;
+            if (input.WarehouseId != 0) {
+                part.WarehouseId = input.WarehouseId;
+            }
+
+            if (input.UsageId != 0) {
+                part.UsageId = input.UsageId;
+            }
+
+            if (input.OrganizationId != 0) {
+                part.OgranizationId = input.OrganizationId;
+            }
+
+            //part.Warehouse = (Warehouse)warehouse;
+            //part.Usage = (Usage)usage;
+            //part.Organization = (Organization)org;
 
 
             var newPart = await this._partRepository.AddAsync(part);
@@ -138,13 +150,17 @@ namespace ManufacturingInventory.Application.UseCases {
             instance.Description = input.Description;
             instance.HoldsBubblers = input.HoldsBubblers;
 
-            var warehouse = await this._locationProvider.GetEntityAsync(e => e.Id == input.WarehouseId);
-            var org = await this._categoryProvider.GetEntityAsync(e => e.Id == input.OrganizationId);
-            var usage = await this._categoryProvider.GetEntityAsync(e => e.Id == input.UsageId);
+            if (input.WarehouseId != 0) {
+                instance.WarehouseId = input.WarehouseId;
+            }
 
-            instance.Warehouse = (Warehouse)warehouse;
-            instance.Usage = (Usage)usage;
-            instance.Organization = (Organization)org;
+            if(input.UsageId != 0) {
+                instance.UsageId = input.UsageId;
+            }
+
+            if(input.OrganizationId != 0) {
+                instance.OgranizationId = input.OrganizationId;
+            }
 
             var updated = await this._partRepository.UpdateAsync(instance);
             if (updated != null) {

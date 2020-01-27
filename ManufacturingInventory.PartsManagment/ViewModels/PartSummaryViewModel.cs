@@ -208,28 +208,35 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
-
         private async Task LoadAsync() {
             var warehouses = await this._partSummaryEdit.GetWarehouses();
             var categories = await this._partSummaryEdit.GetCategories();
-            this.SelectedPart = await this._partSummaryEdit.GetPart(this.SelectedPartId);
-                   
-            this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-            this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
-            this.Organizations = new ObservableCollection<Organization>(categories.OfType<Organization>());
-
-            if (this._selectedPart.Warehouse != null) {
-                this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
+            if (this.IsNew) {
+                this.SelectedPart = new Part();
+            } else {
+                this.SelectedPart = await this._partSummaryEdit.GetPart(this.SelectedPartId);
             }
+            this.DispatcherService.BeginInvoke(() => {
+                this.Name = this.SelectedPart.Name;
+                this.Description = this.SelectedPart.Description;
+                this.HoldsBubblers = this.SelectedPart.HoldsBubblers;
 
-            if (this._selectedPart.Usage != null) {
-                this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-            }
+                this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
+                this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
+                this.Organizations = new ObservableCollection<Organization>(categories.OfType<Organization>());
 
+                if (this._selectedPart.Warehouse != null) {
+                    this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
+                }
 
-            if (this._selectedPart.Organization != null) {
-                this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.Id);
-            }
+                if (this._selectedPart.Usage != null) {
+                    this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
+                }
+
+                if (this._selectedPart.Organization != null) {
+                    this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.Id);
+                }
+            });       
         }
     }
 }

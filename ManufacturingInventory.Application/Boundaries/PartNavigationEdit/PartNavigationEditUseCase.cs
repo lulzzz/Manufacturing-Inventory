@@ -10,5 +10,7 @@ namespace ManufacturingInventory.Application.Boundaries.PartNavigationEdit {
         Task<Part> GetPart(int id);
         Task<IEnumerable<Part>> GetPartsAsync();
         IEnumerable<Part> GetParts();
+        Task LoadAsync();
+        void Load();
     }
 }

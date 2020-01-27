@@ -112,17 +112,17 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
                 .Include(e => e.Attachments)
-                .AsNoTracking()
+                .Include(e => e.PartInstances)
                 .Load();
         }
 
         public async Task LoadAsync() {
-            await this._context.Parts.AsNoTracking()
+            await this._context.Parts
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
                 .Include(e => e.Attachments)
-                .AsNoTracking()
+                .Include(e=>e.PartInstances)
                 .LoadAsync();
         }
     }

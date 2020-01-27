@@ -90,7 +90,10 @@
                         <dxg:GridColumn FieldName="Usage.Name"
                                         Header="Usage"
                                         AllowGrouping="True" />
-                    </dxg:GridControl.Columns>
+                        <dxg:GridColumn FieldName="Warehouse.Name"
+                                        Header="Warehouse"
+                                        AllowGrouping="True" />
+                </dxg:GridControl.Columns>
                 </dxg:GridControl>
             </dxlc:DockLayoutControl>
         <!--</dxlc:GroupBox>-->
