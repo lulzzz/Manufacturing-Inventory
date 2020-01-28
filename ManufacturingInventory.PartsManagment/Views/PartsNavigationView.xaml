@@ -64,13 +64,15 @@
                                  SelectedItem="{Binding SelectedPart,IsAsync=True,Mode=TwoWay}"
                                  dxlc:DockLayoutControl.Dock="Client"
                                  ClipboardCopyMode="ExcludeHeader"
+                                 Style="{StaticResource GridControlStyle}"
                                  ShowLoadingPanel="{Binding IsLoading,Mode=TwoWay}">
                     <dxg:GridControl.View>
                         <dxg:TableView ShowSearchPanelMode="Always"
                                        SearchPanelNullText="Search By Part Number"
                                        AllowGrouping="True"
                                        SearchColumns="Name"
-                                       AllowEditing="False">
+                                       AllowEditing="False"
+                                       Style="{StaticResource TableViewStyleNoMaster}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarButtonItem Content="View Details"
                                                    Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}"

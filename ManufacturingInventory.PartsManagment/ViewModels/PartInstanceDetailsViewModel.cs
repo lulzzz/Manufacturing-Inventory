@@ -18,6 +18,7 @@ using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
+
     public enum MessageType {
         ERROR,
         WARNING,

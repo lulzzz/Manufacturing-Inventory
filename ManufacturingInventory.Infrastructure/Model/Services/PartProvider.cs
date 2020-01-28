@@ -19,7 +19,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
                 .Include(e => e.Attachments)
-                .AsNoTracking()
                 .FirstOrDefault(expression);
         }
 
@@ -29,7 +28,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
                 .Include(e => e.Attachments)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -42,13 +40,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return orderBy(query).AsNoTracking().ToList();
+                return orderBy(query).ToList();
             } else {
-                return query.AsNoTracking().ToList();
+                return query.ToList();
             }
         }
 
@@ -61,13 +59,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return await orderBy(query).AsNoTracking().ToListAsync();
+                return await orderBy(query).ToListAsync();
             } else {
-                return await query.AsNoTracking().ToListAsync();
+                return await query.ToListAsync();
             }
         }
 
@@ -77,7 +75,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
                 .Include(e => e.Attachments)
-                .AsNoTracking()
                 .Load();
         }
 
@@ -87,7 +84,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
                 .Include(e => e.Attachments)
-                .AsNoTracking()
                 .LoadAsync();
         }
     }

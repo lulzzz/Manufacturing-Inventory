@@ -27,6 +27,7 @@ using ManufacturingInventory.Application.Boundaries.AttachmentsEdit.Interfaces;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.TransactionEdit;
 using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Application.Boundaries.ReturnItem;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -56,20 +57,21 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
                 container.Register<IAttachmentPartEditUseCase, AttachmentPartEdit>();
                 container.Register<ITransactionEditUseCase, TransactionEdit>();
+                container.Register<IReturnItemUseCase, ReturnItemUseCase>();
 
-                container.Register<IRepository<Category>, CategoryRepository>();
-                container.Register<IRepository<Location>, LocationRepository>();
-                container.Register<IRepository<PartInstance>, PartInstanceRepository>();
-                container.Register<IRepository<Part>, PartRepository>();
-                container.Register<IRepository<Attachment>, AttachmentRepository>();
-                container.Register<IRepository<Transaction>, TransactionRepository>();
-                container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
+                //container.Register<IRepository<Category>, CategoryRepository>();
+                //container.Register<IRepository<Location>, LocationRepository>();
+                //container.Register<IRepository<PartInstance>, PartInstanceRepository>();
+                //container.Register<IRepository<Part>, PartRepository>();
+                //container.Register<IRepository<Attachment>, AttachmentRepository>();
+                //container.Register<IRepository<Transaction>, TransactionRepository>();
+                //container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
 
-                container.Register<IEntityProvider<Category>, CategoryProvider>();
-                container.Register<IEntityProvider<Location>, LocationProvider>();
-                container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
-                container.Register<IEntityProvider<Part>, PartProvider>();
-                container.Register<IEntityProvider<Transaction>, TransactionProvider>();
+                //container.Register<IEntityProvider<Category>, CategoryProvider>();
+                //container.Register<IEntityProvider<Location>, LocationProvider>();
+                //container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
+                //container.Register<IEntityProvider<Part>, PartProvider>();
+                //container.Register<IEntityProvider<Transaction>, TransactionProvider>();
 
                 container.Register<ILogInService, LogInService>();
                 container.Register<IFileService, FileService>();

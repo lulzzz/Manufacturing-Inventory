@@ -9,5 +9,6 @@ namespace ManufacturingInventory.Application.Boundaries.Checkout {
     public interface ICheckOutBubblerUseCase:IUseCase<CheckOutBubblerInput, CheckOutOutput> {
         Task<IEnumerable<Consumer>> GetConsumers();
         Task<IEnumerable<Condition>> GetConditions();
+
     }
 }

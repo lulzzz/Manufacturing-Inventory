@@ -82,7 +82,7 @@
                                            IsEnabled="True" />
                         <dxb:BarButtonItem Content="Return Item"
                                            Glyph="{dx:DXImage Image=Undo_16x16.png}"
-                                           Command="{Binding Path=View.DataContext.UndoTransactionCommand}"
+                                           Command="{Binding Path=View.DataContext.ReturnItemCommand}"
                                            IsEnabled="True"/>
                     </dxg:TableView.RowCellMenuCustomizations>
                 </dxg:TableView>

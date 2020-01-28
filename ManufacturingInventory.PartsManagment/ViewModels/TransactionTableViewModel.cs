@@ -34,14 +34,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isBubbler;
 
         public AsyncCommand InitializeCommand { get; private set; }
-        public PrismCommands.DelegateCommand ViewDetailsCommand { get; private set; }
+        public AsyncCommand ViewDetailsCOmmand { get; private set; }
+        public AsyncCommand UndoTransactionCommand { get; private set; }
+        public AsyncCommand ReturnItemCommand { get; private set; }
 
         public TransactionTableViewModel(ITransactionEditUseCase transactionEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._regionManager = regionManager;
             this._transactionEdit = transactionEdit;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
-            this.ViewDetailsCommand = new PrismCommands.DelegateCommand(this.ViewTransactionDetailsHandler);
+
         }
 
         public override bool KeepAlive => false;
@@ -69,6 +71,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public bool IsBubbler {
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
+        }
+
+        private async Task ReturnItemHandler() {
+
+        }
+
+        private async Task ViewDetailsHandler() {
+
+        }
+
+        private async Task UndoTransactionHandler() {
+
         }
 
         private void ViewTransactionDetailsHandler() {
