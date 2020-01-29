@@ -97,7 +97,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
                 this.TotalCost = this.UnitCost * this.Quantity;
             } else {
                 this.UnitCost = this.Price.UnitCost;
-                this.TotalCost = this.UnitCost * this.BubblerParameter.NetWeight;
+                this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight)*this.Quantity;
             }
         }
 

@@ -174,7 +174,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .HasOne(e => e.Organization)
                 .WithMany(e => e.Parts)
                 .IsRequired(false)
-                .HasForeignKey(e => e.OgranizationId)
+                .HasForeignKey(e => e.OrganizationId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Part>()

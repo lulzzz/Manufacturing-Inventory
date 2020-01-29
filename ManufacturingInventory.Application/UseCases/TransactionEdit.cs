@@ -33,5 +33,9 @@ namespace ManufacturingInventory.Application.UseCases {
                     return null;
             }
         }
+
+        public async Task Load() {
+            await this._repository.LoadAsync();
+        }
     }
 }

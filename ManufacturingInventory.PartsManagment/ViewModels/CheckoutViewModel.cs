@@ -27,11 +27,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("CheckoutDispatcherService"); }
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("ExportOutgoingService"); }
 
-        //private ManufacturingContext _context;
-        //private IPartManagerService _partManagerService;
         private IEventAggregator _eventAggregator;
         private IUserService _userService;
-        private ICheckOutBubblerUseCase _checkOut;
+        private ICheckOutUseCase _checkOut;
 
         private string _quantityLabel;
 
@@ -62,7 +60,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand CancelCommand { get; private set; }
 
 
-        public CheckoutViewModel(ICheckOutBubblerUseCase checkOut,IEventAggregator eventAggregator) {
+        public CheckoutViewModel(ICheckOutUseCase checkOut,IEventAggregator eventAggregator) {
             this._checkOut = checkOut;
             this._eventAggregator = eventAggregator;
             this.TimeStamp = DateTime.Now;
@@ -144,8 +142,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public int Quantity { 
             get => this._quantity;
             set {
-                if (!this.IsBubbler) {
-                    this.TotalCost = this.SelectedPartInstance.UnitCost * value;
+                if (this.SelectedPartInstance != null) {
+                    if (!this.IsBubbler) {
+                        this.TotalCost = this.SelectedPartInstance.UnitCost * value;
+                    }
                 }
                 SetProperty(ref this._quantity, value);
             }
@@ -196,8 +196,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
                     TransactionDTO newTransaction = new TransactionDTO(this.TimeStamp,
                         InventoryAction.OUTGOING, this.Quantity, false, this.UnitCost,
-                        this.TotalCost,this.SelectedPartInstance.Id,this.SelectedPartInstance.Name, this.SelectedConsumer.Name,
-                        this.SelectedConsumer.Id, this.MeasuredWeight, this.Weight,conditionId:conditionId);
+                        this.TotalCost,this.SelectedPartInstance.Id,this.SelectedPartInstance.Name,
+                        this.SelectedConsumer.Name,this.SelectedConsumer.Id, this.IsBubbler,
+                        this.MeasuredWeight, this.Weight,conditionId:conditionId);
 
                     DispatcherService.BeginInvoke(() => {
                         this.Transactions.Add(newTransaction);
@@ -233,11 +234,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task CheckOutHandler() {
             if (this._transactions.Any()) {
-                CheckOutBubblerInput input = new CheckOutBubblerInput();
+                CheckOutInput input = new CheckOutInput();
                 await Task.Run(() => {
                     foreach (var transaction in this.Transactions) {
-                        input.Items.Add(new CheckOutBubblerInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId, transaction.Quantity,
-                            transaction.UnitCost, transaction.TotalCost, transaction.Measured, transaction.Weight,conditionId:transaction.ConditionId));
+                        input.Items.Add(new CheckOutInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId, transaction.Quantity,
+                            transaction.UnitCost, transaction.TotalCost,isBubbler:this.IsBubbler,conditionId:transaction.ConditionId));
                     }
                 });
 

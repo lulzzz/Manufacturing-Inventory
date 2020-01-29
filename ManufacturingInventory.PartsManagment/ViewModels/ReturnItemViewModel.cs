@@ -44,13 +44,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isInitialized = false;
 
         public AsyncCommand InitializeCommand { get; private set; }
+        public AsyncCommand ReturnItemCommand { get; private set; }
+        public AsyncCommand CancelCommand { get; private set; }
 
         public ReturnItemViewModel(IReturnItemUseCase returnItem,IEventAggregator eventAggregator) {
             this._returnItem = returnItem;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.LoadHandler);
-        } 
-
+            this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler);
+            this.CancelCommand = new AsyncCommand(this.CancelHandler);
+        }
 
         public override bool KeepAlive => false;
 
@@ -114,6 +117,32 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._transactionPartInstance, value);
         }
 
+        private async Task ReturnItemHandler() {
+            int conditionId = (this.SelectedCondition != null) ? this.SelectedCondition.Id : 0;
+
+            ReturnItemInput input = new ReturnItemInput(this.TimeStamp, this.SelectedTransaction.Quantity, this.IsBubbler, 
+                this.SelectedTransaction.PartInstanceId, this.SelectedWarehouse.Id, this.SelectedTransaction.Id, 
+                this.Weight, this.MeasuredWeight, conditionId);
+
+            var response = await this._returnItem.Execute(input);
+
+            if (response.Success) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                });
+                this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish();
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("Error Processing Return, Please Check Input and Try Again", "Error", MessageButton.OK, MessageIcon.Error);
+                });
+            }
+        }
+
+        private Task CancelHandler() {
+            this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish();
+            return Task.CompletedTask;
+        }
+        
         private async Task LoadHandler() {
             if (!this._isInitialized) {
                 var warehouses = await this._returnItem.GetWarehouses();
@@ -124,7 +153,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
                     this.Conditions = new ObservableCollection<Condition>(conditions);
                     this.Quantity = this.SelectedTransaction.Quantity;
-                    //this.TransactionPartInstance = partInstance;
+                    this.IsBubbler = this.SelectedTransaction.PartInstance.IsBubbler;
+                    this.TimeStamp = DateTime.Now;
                     this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == wareHouseId);
                     this._isInitialized = true;
                 });

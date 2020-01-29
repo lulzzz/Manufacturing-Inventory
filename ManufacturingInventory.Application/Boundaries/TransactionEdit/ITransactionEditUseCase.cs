@@ -13,5 +13,6 @@ namespace ManufacturingInventory.Application.Boundaries.TransactionEdit {
 
     public interface ITransactionEditUseCase:IUseCase<TransactionEditInput,TransactionEditOutput> {
         Task<IEnumerable<Transaction>> GetTransactions(GetBy by,int id);
+        Task Load();
     }
 }

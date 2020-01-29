@@ -14,7 +14,7 @@
     xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"  
-    mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+    mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="1600">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -103,14 +103,14 @@
                         <dxg:GridColumn FieldName="PartType.Name"
                                         Header="Type"
                                         AllowGrouping="True" />
+                        <dxg:GridColumn FieldName="SerialNumber" />
+                        <dxg:GridColumn FieldName="BatchNumber" />
                         <dxg:GridColumn FieldName="Condition.Name"
                                         Header="Condition"
                                         AllowGrouping="True" />
-                        <dxg:GridColumn FieldName="IsResuable"
-                                        Header="Reusable?" />
                         <dxg:GridColumn FieldName="Quantity"
                                         Header="Quantity"
-                                        Visible="{Binding IsBubbler}" />
+                                        Visible="{Binding IsBubbler}"/>
                         <dxg:GridColumn FieldName="UnitCost"
                                         Header="Unit Cost">
                             <dxg:GridColumn.EditSettings>
@@ -128,37 +128,36 @@
                                                       Mask="c" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                    </dxg:GridControlBand>
-                    <dxg:GridControlBand Header="Stock"
-                                         VisibleIndex="1"
-                                         Visible="{Binding IsBubbler,Converter={dxmvvm:BooleanNegationConverter}}">
-                        <dxg:GridColumn FieldName="Quantity"
-                                        Header="Quantity" />
-                        <dxg:GridColumn FieldName="MinQuantity" />
-                        <dxg:GridColumn FieldName="SafeQuantity" />
-                    </dxg:GridControlBand>
-                    <dxg:GridControlBand Header="Weight"
-                                         HorizontalHeaderContentAlignment="Center"
-                                         VisibleIndex="1"
-                                         Visible="{Binding IsBubbler,Mode=TwoWay}">
-                        <dxg:GridColumn FieldName="BubblerParameter.NetWeight"
-                                        Header="Net" />
-                        <dxg:GridColumn FieldName="BubblerParameter.Tare"
-                                        Header="Tare" />
-                        <dxg:GridColumn FieldName="BubblerParameter.GrossWeight"
-                                        Header="Gross" />
-                        <dxg:GridColumn FieldName="BubblerParameter.Measured"
-                                        Header="Measured" />
-                        <dxg:GridColumn FieldName="BubblerParameter.Weight"
-                                        Header="Weight" />
-                    </dxg:GridControlBand>
-                    <dxg:GridControlBand  OverlayHeaderByChildren="True"
-                                          VisibleIndex="2">
                         <dxg:GridColumn FieldName="CurrentLocation.Name"
                                         Header="Current Location" />
-                        <dxg:GridColumn FieldName="SkuNumber" />
-                        <dxg:GridColumn FieldName="SerialNumber" />
-                        <dxg:GridColumn FieldName="BatchNumber" />
+                        
+                    </dxg:GridControlBand>
+                    <dxg:GridControlBand Header="Stock"
+                                         VisibleIndex="1">
+                        <dxg:GridColumn FieldName="Quantity"
+                                        Header="Quantity" />
+                        <dxg:GridColumn FieldName="MinQuantity"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
+                        <dxg:GridColumn FieldName="SafeQuantity"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
+                        <dxg:GridColumn FieldName="BubblerParameter.NetWeight"
+                                        Header="Net"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay}" />
+                        <dxg:GridColumn FieldName="BubblerParameter.GrossWeight"
+                                        Header="Gross"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay}" />
+                        <dxg:GridColumn FieldName="BubblerParameter.Measured"
+                                        Header="Measured"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay}" />
+                        <dxg:GridColumn FieldName="BubblerParameter.Weight"
+                                        Header="Weight"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay}" />
+                        <dxg:GridColumn FieldName="BubblerParameter.DateInstalled"
+                                        Header="Date Installed"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay}" />
+                        <dxg:GridColumn FieldName="BubblerParameter.DateRemoved"
+                                        Header="Date Removed"
+                                        Visible="{Binding IsBubbler,Mode=TwoWay}" />
                     </dxg:GridControlBand>
                 </dxg:GridControl.Bands>
             </dxg:GridControl>

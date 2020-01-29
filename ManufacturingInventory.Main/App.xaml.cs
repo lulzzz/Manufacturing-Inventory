@@ -51,27 +51,27 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IUnitOfWork,UnitOfWork>(setup:Setup.With(allowDisposableTransient: true));
                 container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
 
-                container.Register<ICheckOutBubblerUseCase, CheckOutBubbler>();
+                container.Register<ICheckOutUseCase, CheckOut>();
                 container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
                 container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
                 container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
                 container.Register<IAttachmentPartEditUseCase, AttachmentPartEdit>();
                 container.Register<ITransactionEditUseCase, TransactionEdit>();
-                container.Register<IReturnItemUseCase, ReturnItemUseCase>();
+                container.Register<IReturnItemUseCase, ReturnItem>();
 
-                //container.Register<IRepository<Category>, CategoryRepository>();
-                //container.Register<IRepository<Location>, LocationRepository>();
-                //container.Register<IRepository<PartInstance>, PartInstanceRepository>();
-                //container.Register<IRepository<Part>, PartRepository>();
-                //container.Register<IRepository<Attachment>, AttachmentRepository>();
-                //container.Register<IRepository<Transaction>, TransactionRepository>();
-                //container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
+                container.Register<IRepository<Category>, CategoryRepository>();
+                container.Register<IRepository<Location>, LocationRepository>();
+                container.Register<IRepository<PartInstance>, PartInstanceRepository>();
+                container.Register<IRepository<Part>, PartRepository>();
+                container.Register<IRepository<Attachment>, AttachmentRepository>();
+                container.Register<IRepository<Transaction>, TransactionRepository>();
+                container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
 
-                //container.Register<IEntityProvider<Category>, CategoryProvider>();
-                //container.Register<IEntityProvider<Location>, LocationProvider>();
-                //container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
-                //container.Register<IEntityProvider<Part>, PartProvider>();
-                //container.Register<IEntityProvider<Transaction>, TransactionProvider>();
+                container.Register<IEntityProvider<Category>, CategoryProvider>();
+                container.Register<IEntityProvider<Location>, LocationProvider>();
+                container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
+                container.Register<IEntityProvider<Part>, PartProvider>();
+                container.Register<IEntityProvider<Transaction>, TransactionProvider>();
 
                 container.Register<ILogInService, LogInService>();
                 container.Register<IFileService, FileService>();

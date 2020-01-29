@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
 
-    public class CheckOutBubbler : ICheckOutBubblerUseCase {
+    public class CheckOut : ICheckOutUseCase {
         private ManufacturingContext _context;
         private IRepository<Transaction> _transactionRepository;
         private IEntityProvider<Location> _locationProvider;
@@ -23,7 +23,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private IUnitOfWork _unitOfWork;
 
 
-        public CheckOutBubbler(ManufacturingContext context,IUserService userService) {
+        public CheckOut(ManufacturingContext context,IUserService userService) {
             this._bubblerRepository = new BubblerParameterRepository(context);
             this._transactionRepository = new TransactionRepository(context);
             this._locationProvider = new LocationProvider(context);
@@ -38,42 +38,19 @@ namespace ManufacturingInventory.Application.UseCases {
             return (await this._locationProvider.GetEntityListAsync()).OfType<Consumer>();
         }
 
-        public async Task<CheckOutOutput> Execute(CheckOutBubblerInput input) {
+        public async Task<CheckOutOutput> Execute(CheckOutInput input) {
             CheckOutOutput output = new CheckOutOutput();
             foreach(var item in input.Items) {
                 var partInstance = await this._partInstanceRepository.GetEntityAsync(e=>e.Id==item.PartInstanceId);
                 var location = await this._locationProvider.GetEntityAsync(e => e.Id == item.LocationId);
                 //var bubblerParam
                 if (partInstance != null && location != null) {
-                    partInstance.UpdateWeight(item.MeasuredWeight);
-                    partInstance.BubblerParameter.DateInstalled = item.TimeStamp;
-                    partInstance.UpdateQuantity(-1);
-                    partInstance.CostReported = false;
-                    partInstance.LocationId = location.Id;
-                    if (item.ConditionId != 0) {
-                        var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
-                        if (condition != null) {
-                            partInstance.ConditionId = condition.Id;
-                        }
-                    }
-
-                    Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
-                        partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight,location,item.TimeStamp);
-
-                    transaction.SessionId = this._userService.CurrentSession.Id;
-
-                    var bubbler=await this._bubblerRepository.UpdateAsync(partInstance.BubblerParameter);
-                    var instance=await this._partInstanceRepository.UpdateAsync(partInstance);
-                    var trans=await this._transactionRepository.AddAsync(transaction);
-                    StringBuilder builder = new StringBuilder();
-                    if (bubbler!=null && instance!=null && trans != null) {
-                        var val = await this._unitOfWork.Save();
-                        builder.AppendFormat("Instance: {0} Weight: {1} LinesUpdated: {2}", instance.Name, bubbler.Weight,val).AppendLine();
-                        output.OutputList.Add(new CheckOutOutputData(trans, true, builder.ToString()));
+                    if (item.IsBubbler) {
+                        var data=await this.ExecuteBubbler(partInstance, location, item);
+                        output.OutputList.Add(data);
                     } else {
-                        await this._unitOfWork.Undo();
-                        builder.AppendFormat("Instance: {0}", partInstance.Name).AppendLine();
-                        output.OutputList.Add(new CheckOutOutputData(transaction, false,builder.ToString()));
+                        var data=await this.ExecuteStandard(partInstance, location, item);
+                        output.OutputList.Add(data);
                     }
                 } else {
                     output.OutputList.Add(new CheckOutOutputData(null, false, "PartInstance or Location Not Found"));
@@ -82,103 +59,76 @@ namespace ManufacturingInventory.Application.UseCases {
             return output;
         }
 
+        private async Task<CheckOutOutputData> ExecuteBubbler(PartInstance partInstance,Location location,CheckOutInputData item) {
+            partInstance.UpdateWeight(item.MeasuredWeight);
+            partInstance.BubblerParameter.DateInstalled = item.TimeStamp;
+            partInstance.UpdateQuantity(-1);
+            partInstance.CostReported = false;
+
+            partInstance.LocationId = location.Id;
+            if (item.ConditionId != 0) {
+                var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
+                if (condition != null) {
+                    partInstance.ConditionId = condition.Id;
+                }
+            }
+
+            Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
+                partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight, location, item.TimeStamp);
+
+            transaction.SessionId = this._userService.CurrentSession.Id;
+
+            var bubbler = await this._bubblerRepository.UpdateAsync(partInstance.BubblerParameter);
+            var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
+            var trans = await this._transactionRepository.AddAsync(transaction);
+            StringBuilder builder = new StringBuilder();
+            if (bubbler != null && instance != null && trans != null) {
+                var val = await this._unitOfWork.Save();
+                builder.AppendFormat("Instance: {0} Weight: {1} LinesUpdated: {2}", instance.Name, bubbler.Weight, val).AppendLine();
+                return new CheckOutOutputData(trans, true, builder.ToString());
+            } else {
+                await this._unitOfWork.Undo();
+                builder.AppendFormat("Instance: {0}", partInstance.Name).AppendLine();
+                return new CheckOutOutputData(transaction, false, builder.ToString());
+            }
+        }
+
+        private async Task<CheckOutOutputData> ExecuteStandard(PartInstance partInstance, Location location, CheckOutInputData item) {
+            partInstance.UpdateQuantity(0-item.Quantity);
+
+            partInstance.LocationId = location.Id;
+            if (item.ConditionId != 0) {
+                var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
+                if (condition != null) {
+                    partInstance.ConditionId = condition.Id;
+                }
+            }
+
+            Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
+                0, 0, location, item.TimeStamp);
+            transaction.Quantity = item.Quantity;
+            transaction.UnitCost = item.UnitCost;
+            transaction.TotalCost = item.Quantity * item.UnitCost;
+
+            transaction.SessionId = this._userService.CurrentSession.Id;
+
+            var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
+            var trans = await this._transactionRepository.AddAsync(transaction);
+            StringBuilder builder = new StringBuilder();
+            if (instance != null && trans != null) {
+                var val = await this._unitOfWork.Save();
+                builder.AppendFormat("Instance: {0} Quantity:{1} LinesUpdated: {2}", instance.Name,transaction.Quantity, val).AppendLine();
+                return new CheckOutOutputData(trans, true, builder.ToString());
+            } else {
+                await this._unitOfWork.Undo();
+                builder.AppendFormat("Instance: {0}", partInstance.Name).AppendLine();
+                return new CheckOutOutputData(transaction, false, builder.ToString());
+            }
+        }
+
+
         public async Task<IEnumerable<Condition>> GetConditions() {
             return (await this._categoryProvider.GetEntityListAsync()).OfType<Condition>();
         }
     }
-
-    public class CheckOutStandard : IUseCase<CheckOutStandardInput, CheckOutOutput> {
-        private IRepository<Transaction> _transactionRepository;
-        private IRepository<Location> _locationRepository;
-        private IRepository<Category> _categoryRepository;
-        private IRepository<PartInstance> _partInstanceRepository;
-        private IUserService _userService;
-        private IUnitOfWork _unitOfWork;
-
-        public CheckOutStandard(
-            IUserService userService,
-            IRepository<Transaction> transactionRepository,
-            IRepository<Location> locationRepository,
-            IRepository<Category> categoryRepository,
-            IRepository<PartInstance> partInstanceRepository,
-            IUnitOfWork unitOfWork) {
-            this._userService = userService;
-            this._transactionRepository = transactionRepository;
-            this._locationRepository = locationRepository;
-            this._categoryRepository = categoryRepository;
-            this._unitOfWork = unitOfWork;
-            this._partInstanceRepository = partInstanceRepository;
-        }
-
-        public async Task<CheckOutOutput> Execute(CheckOutStandardInput items) {
-            return null;
-        }
-    }
-
-
-    //public class CheckOutMany : IUseCase<CheckOutManyInput> {
-    //    private IRepository<Transaction> _transactionRepository;
-    //    private IRepository<Location> _locationRepository;
-    //    private IRepository<Category> _categoryRepository;
-    //    private IRepository<PartInstance> _partInstanceRepository;
-    //    private IUnitOfWork _unitOfWork;
-
-    //    public CheckOutMany(
-    //        IRepository<Transaction> transactionRepository,
-    //        IRepository<Location> locationRepository,
-    //        IRepository<Category> categoryRepository,
-    //        IRepository<PartInstance> partInstanceRepository,
-    //        IUnitOfWork unitOfWork) {
-    //        this._transactionRepository = transactionRepository;
-    //        this._locationRepository = locationRepository;
-    //        this._categoryRepository = categoryRepository;
-    //        this._unitOfWork = unitOfWork;
-    //        this._partInstanceRepository = partInstanceRepository;
-    //    }
-
-    //    public async Task Execute(CheckOutManyInput item) {
-    //        foreach(var input in item.InputList) {
-    //            var instance = this._partInstanceRepository.GetEntity(e => e.Id == input.PartInstanceId);
-    //            var location = this._locationRepository.GetEntity(e => e.Id == input.LocationId);
-    //        }
-    //    }
-
-    //    private void BuildOperation() {
-
-    //    }
-
-    //    private void BuildOutput() {
-
-    //    }
-    //}
-
-    //public class CheckOut {
-    //    private IRepository<Transaction> _transactionRepository;
-    //    private IRepository<Location> _locationRepository;
-    //    private IRepository<Category> _categoryRepository;
-    //    private IRepository<PartInstance> _partInstanceRepository;
-    //    private IUnitOfWork _unitOfWork;
-
-    //    public CheckOut(
-    //        IRepository<Transaction> transactionRepository,
-    //        IRepository<Location> locationRepository,
-    //        IRepository<Category> categoryRepository,
-    //        IRepository<PartInstance> partInstanceRepository,
-    //        IUnitOfWork unitOfWork) {
-    //        this._transactionRepository = transactionRepository;
-    //        this._locationRepository = locationRepository;
-    //        this._categoryRepository = categoryRepository;
-    //        this._unitOfWork = unitOfWork;
-    //        this._partInstanceRepository = partInstanceRepository;
-    //    }
-
-    //    public async Task Execute() {
-
-    //    }
-
-    //    private void BuildOperation(IList<Transaction> transactions) {
-
-    //    }
-
-    //}
 }

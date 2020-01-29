@@ -122,7 +122,7 @@ namespace ManufacturingInventory.Application.UseCases {
             }
 
             if (input.OrganizationId != 0) {
-                part.OgranizationId = input.OrganizationId;
+                part.OrganizationId = input.OrganizationId;
             }
 
             //part.Warehouse = (Warehouse)warehouse;
@@ -159,7 +159,7 @@ namespace ManufacturingInventory.Application.UseCases {
             }
 
             if(input.OrganizationId != 0) {
-                instance.OgranizationId = input.OrganizationId;
+                instance.OrganizationId = input.OrganizationId;
             }
 
             var updated = await this._partRepository.UpdateAsync(instance);

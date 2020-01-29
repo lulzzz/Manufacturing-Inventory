@@ -50,7 +50,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
-        //public PrismCommands.DelegateCommand SaveCommand { get; private set; }
+
 
         public PartSummaryViewModel(IPartSummaryEditUseCase partSummaryEdit, IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._partSummaryEdit = partSummaryEdit;
@@ -58,7 +58,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
             this.SaveCommand = new AsyncCommand(this.SaveHandler);
-            //this.SaveCommand = new PrismCommands.DelegateCommand(this.SaveSyncHandler);
             this.CancelCommand = new AsyncCommand(this.CancelHandler);
         }
 
@@ -234,7 +233,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 }
 
                 if (this._selectedPart.Organization != null) {
-                    this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.Id);
+                    this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.OrganizationId);
                 }
             });       
         }

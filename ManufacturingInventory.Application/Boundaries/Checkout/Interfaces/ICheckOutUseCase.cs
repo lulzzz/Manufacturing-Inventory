@@ -6,9 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.Boundaries.Checkout {
-    public interface ICheckOutBubblerUseCase:IUseCase<CheckOutBubblerInput, CheckOutOutput> {
+    public interface ICheckOutUseCase:IUseCase<CheckOutInput, CheckOutOutput> {
         Task<IEnumerable<Consumer>> GetConsumers();
         Task<IEnumerable<Condition>> GetConditions();
-
     }
 }

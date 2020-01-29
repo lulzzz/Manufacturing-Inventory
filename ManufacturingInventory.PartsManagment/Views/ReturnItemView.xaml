@@ -45,7 +45,7 @@
                 <dxlc:LayoutItem Label="Part Instance"
                                  LabelPosition="Top"
                                  LabelHorizontalAlignment="Center">
-                    <dxe:TextEdit EditValue="{Binding SelectedPartInstance.Name,Mode=TwoWay}"
+                    <dxe:TextEdit EditValue="{Binding SelectedTransaction.PartInstance.Name,Mode=TwoWay}"
                                   HorizontalContentAlignment="Center"
                                   IsReadOnly="True" />
                 </dxlc:LayoutItem>
@@ -60,14 +60,14 @@
                 <dxlc:LayoutItem Label="Serial Number"
                                  LabelPosition="Top"
                                  LabelHorizontalAlignment="Center">
-                    <dxe:TextEdit EditValue="{Binding SelectedPartInstance.SerialNumber,Mode=TwoWay}"
+                    <dxe:TextEdit EditValue="{Binding SelectedTransaction.PartInstance.SerialNumber,Mode=TwoWay}"
                                   HorizontalContentAlignment="Center"
                                   IsReadOnly="True" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Label="Batch Number"
                                  LabelPosition="Top"
                                  LabelHorizontalAlignment="Center">
-                    <dxe:TextEdit EditValue="{Binding SelectedPartInstance.BatchNumber,Mode=TwoWay}"
+                    <dxe:TextEdit EditValue="{Binding SelectedTransaction.PartInstance.BatchNumber,Mode=TwoWay}"
                                   HorizontalContentAlignment="Center"
                                   IsReadOnly="True" />
                 </dxlc:LayoutItem>
@@ -76,11 +76,10 @@
                 <dxlc:LayoutItem Label="Quantity"
                                  LabelPosition="Top"
                                  LabelHorizontalAlignment="Center">
-                    <dxe:SpinEdit TextWrapping="Wrap"
-                                  Text="{Binding Quantity}"
-                                  Increment="1"
-                                  MinValue="0"
+                    <dxe:TextEdit TextWrapping="Wrap"
+                                  Text="{Binding SelectedTransaction.Quantity}"
                                   MaskType="Numeric"
+                                  Mask="d"
                                   dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutGroup Visibility="{Binding IsBubbler,Converter={dxmvvm:BooleanToVisibilityConverter}}">
@@ -138,6 +137,20 @@
                         </dxe:ComboBoxEdit.ItemTemplate>
                     </dxe:ComboBoxEdit>
                 </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup Orientation="Horizontal" VerticalAlignment="Bottom">
+                <dx:SimpleButton Content="Return Item"
+                                 Command="{Binding ReturnItemCommand}"
+                                 Glyph="{dx:DXImage Image=Inbox_32x32.png}"
+                                 ToolTip="Return Item To Inventory"
+                                 Height="50"
+                                 Background="Aqua" />
+                <dx:SimpleButton Content="Cancel"
+                                 Command="{Binding CancelCommand}"
+                                 Glyph="{dx:DXImage Image=Cancel_32x32.png}"
+                                 ToolTip="Cancel"
+                                 Height="50"
+                                 Background="Aqua" />
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>
     </dxlc:GroupBox>

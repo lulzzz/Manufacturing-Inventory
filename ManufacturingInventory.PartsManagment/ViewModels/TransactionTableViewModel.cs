@@ -32,6 +32,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private int _selectedPartId;
         private bool _showTableLoading;
         private bool _isBubbler;
+        private bool _returnInProgress = false;
+        private bool _isInitialized = false;
 
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand ViewDetailsCOmmand { get; private set; }
@@ -43,7 +45,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._transactionEdit = transactionEdit;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
-
+            this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
+            this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async () => { await this.ReturnDoneHandler();});
         }
 
         public override bool KeepAlive => false;
@@ -73,8 +76,24 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
-        private async Task ReturnItemHandler() {
+        private Task ReturnItemHandler() {
+            if (this.SelectedTransaction != null) {
+                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
+                //this.Dispatcher.BeginInvoke(() => this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters));
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters);
+                this._returnInProgress = true;
+            }
+            return Task.CompletedTask;
+        }
 
+        private async Task ReturnDoneHandler() {
+            this._returnInProgress = false;
+            this._isInitialized = false;
+            this.Dispatcher.BeginInvoke(() => this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll());
+            await this._transactionEdit.Load();
+            await this.InitializeHandler();
         }
 
         private async Task ViewDetailsHandler() {
@@ -96,13 +115,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task InitializeHandler() {
-            this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
-            var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
-
-            this.Dispatcher.BeginInvoke(() => {
-                this.Transactions = new ObservableCollection<Transaction>(transactions);
-                this.ShowTableLoading = false;
-            });
+            if (!this._isInitialized) {
+                this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
+                var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
+                this.Dispatcher.BeginInvoke(() => {
+                    this.Transactions = new ObservableCollection<Transaction>(transactions);
+                    this.ShowTableLoading = false;
+                });
+                this._isInitialized = true;
+            }
         }
     }
 }

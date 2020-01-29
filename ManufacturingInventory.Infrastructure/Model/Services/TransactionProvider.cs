@@ -22,7 +22,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                     .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
-                .AsNoTracking()
+                    .ThenInclude(e => e.Location)
                 .FirstOrDefault(expression);
         }
 
@@ -37,7 +37,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                     .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
-                .AsNoTracking()
+                    .ThenInclude(e => e.Location)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -50,16 +50,17 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                     .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return orderBy(query).AsNoTracking().ToList();
+                return orderBy(query).ToList();
             } else {
-                return query.AsNoTracking().ToList();
+                return query.ToList();
             }
         }
 
@@ -72,23 +73,23 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                     .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .AsNoTracking();
 
             if (expression != null) {
-                query = query.Where(expression).AsNoTracking();
+                query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return await orderBy(query).AsNoTracking().ToListAsync();
+                return await orderBy(query).ToListAsync();
             } else {
-                return await query.AsNoTracking().ToListAsync();
+                return await query.ToListAsync();
             }
         }
 
 
         public void Load() {
             this._context.Transactions
-                .AsNoTracking()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
                     .ThenInclude(e => e.Part)
@@ -96,7 +97,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                     .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
-                .AsNoTracking()
+                    .ThenInclude(e => e.Location)
                 .Load();
         }
 
@@ -109,7 +110,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                     .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
-                .AsNoTracking()
+                    .ThenInclude(e=>e.Location)
                 .LoadAsync();
         }
     }

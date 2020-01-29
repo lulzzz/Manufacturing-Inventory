@@ -11,6 +11,8 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public int PartInstanceId { get; set; }
     }
 
+    public class RenameHeaderEvent : PubSubEvent<string> { }
+
     public class ReloadEvent:PubSubEvent<ReloadEventTraveler> { }
 
     public class PartEditDoneEvent:PubSubEvent<int> { }
@@ -21,4 +23,6 @@ namespace ManufacturingInventory.PartsManagment.Internal {
 
     public class OutgoingDoneEvent : PubSubEvent { }
     public class AddToOutgoingEvent : PubSubEvent<PartInstance> { }
+
+    public class ReturnDoneEvent : PubSubEvent { }
 }

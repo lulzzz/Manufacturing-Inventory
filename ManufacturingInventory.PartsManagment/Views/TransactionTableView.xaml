@@ -64,7 +64,7 @@
         <dxg:GridControl x:Name="_transactions"
                          ItemsSource="{Binding Transactions,IsAsync=True,Mode=TwoWay}"
                          SelectedItem="{Binding SelectedTransaction,Mode=TwoWay,IsAsync=True}"
-                         ShowLoadingPanel="{Binding IsLoading,Mode=TwoWay}">
+                         ShowLoadingPanel="{Binding ShowTableLoading,Mode=TwoWay}">
             <dxmvvm:Interaction.Behaviors>
                 <common:GridExportService x:Name="TransactionTableExportService" />
             </dxmvvm:Interaction.Behaviors>
@@ -99,29 +99,41 @@
                                     AllowGrouping="True"
                                     GroupIndex="0" />
                     <dxg:GridColumn FieldName="Location.Name"
-                                    Header="Location" />
+                                    Header="Location"
+                                    AllowGrouping="True" />
                     <dxg:GridColumn FieldName="Session.UserName"
-                                    Header="Username" />
+                                    Header="Username" 
+                                    Visible="False"
+                                    AllowGrouping="True"/>
                     <dxg:GridColumn FieldName="PartInstance.Name"
-                                    Header="Item" />
+                                    Header="Item"
+                                    AllowGrouping="True" />
                     <dxg:GridColumn FieldName="PartInstance.SerialNumber"
-                                    Header="Serial Number" />
+                                    Header="Serial Number"
+                                    AllowGrouping="True" />
                     <dxg:GridColumn FieldName="PartInstance.BatchNumber"
-                                    Header="Lot Number" />
+                                    Header="Lot Number"
+                                    AllowGrouping="True" />
+                    <dxg:GridColumn FieldName="ReferenceTransaction.Location.Name"
+                                    Header="Returning From"
+                                    AllowGrouping="True"/>
                 </dxg:GridControlBand>
                 <dxg:GridControlBand Header="Transaction Info"
                                      VisibleIndex="1">
                     <dxg:GridColumn FieldName="Quantity"
                                     Header="Quantity" />
-                    <dxg:GridColumn FieldName="Weight" 
-                                    Visible="{Binding IsBubbler}"/>
+                    <dxg:GridColumn FieldName="Weight"
+                                    Visible="{Binding IsBubbler}" />
+                    <dxg:GridColumn FieldName="MeasuredWeight"
+                                    Visible="{Binding IsBubbler}" />
+                    <dxg:GridColumn FieldName="Consumed"
+                                    Visible="{Binding IsBubbler}" />
                     <dxg:GridColumn FieldName="PartInstance.UnitCost"
                                     Header="Unit Cost">
                         <dxg:GridColumn.EditSettings>
                             <dxe:TextEditSettings MaskType="Numeric"
                                                   MaskUseAsDisplayFormat="True"
-                                                  Mask="c3"
-                                                  AllowNullInput="True" />
+                                                  Mask="c3" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                     <dxg:GridColumn FieldName="TotalCost"
@@ -132,16 +144,6 @@
                                                   Mask="c3" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
-                </dxg:GridControlBand>
-                <dxg:GridControlBand Header="Bubbler Info"
-                                     HorizontalHeaderContentAlignment="Center"
-                                     VisibleIndex="1"
-                                     Visible="{Binding IsBubbler}">
-                    <dxg:GridColumn FieldName="ParameterValue"
-                                    Header="Weight" />
-                    <dxg:GridColumn FieldName="Consumed" />
-                    <dxg:GridColumn FieldName="ReferenceTransaction.Location.Name"
-                                    Header="Returning From" />
                 </dxg:GridControlBand>
             </dxg:GridControl.Bands>
         </dxg:GridControl>

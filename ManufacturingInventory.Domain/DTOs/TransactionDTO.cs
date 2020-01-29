@@ -8,7 +8,8 @@ namespace ManufacturingInventory.Domain.DTOs {
         public TransactionDTO(DateTime timeStamp, InventoryAction inventoryAction, 
             int quantity, bool isReturning, double unitCost, double totalCost,
             int partInstanceId, string partInstanceName, string locationName, 
-            int locationId,double measured=0,double weight=0, int referenceTransactionId=0,int conditionId=0) {
+            int locationId,bool isBubbler=false,double measured=0,double weight=0, 
+            int referenceTransactionId=0,int conditionId=0) {
 
             this.TimeStamp = timeStamp;
             this.InventoryAction = inventoryAction;
@@ -22,6 +23,8 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.PartInstanceName = partInstanceName;
             this.LocationName = locationName;
             this.LocationId = locationId;
+            this.IsBubbler = isBubbler;
+
             if(referenceTransactionId!=0)
                 this.ReferenceTransactionId = referenceTransactionId;
 
@@ -38,6 +41,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         public double Measured { get; set; }
         public double Weight { get; set; }
         public bool IsReturning { get; set; }
+        public bool IsBubbler { get; set; }
         public double UnitCost { get; set; }
         public double TotalCost { get; set; }
         public int PartInstanceId { get; set; }

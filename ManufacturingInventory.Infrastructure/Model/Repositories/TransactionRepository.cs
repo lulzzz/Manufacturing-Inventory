@@ -66,22 +66,32 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             }
             return (await Task.Run(() => this._context.Transactions.Remove(transaction))).Entity;
         }
+
         public Transaction GetEntity(Expression<Func<Transaction, bool>> expression) {
             return this._context.Transactions
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .FirstOrDefault(expression);
         }
 
 
         public async Task<Transaction> GetEntityAsync(Expression<Func<Transaction, bool>> expression) {
+
             return await this._context.Transactions
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -89,8 +99,12 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<Transaction> query = this._context.Set<Transaction>()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -108,8 +122,12 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<Transaction> query = this._context.Set<Transaction>()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -126,11 +144,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
 
         public void Load() {
             this._context.Transactions
-                .AsNoTracking()
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .Load();
         }
 
@@ -138,8 +159,12 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             await this._context.Transactions
                 .Include(e => e.Session)
                 .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.Part)
+                .Include(e => e.PartInstance)
+                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Location)
                 .Include(e => e.ReferenceTransaction)
+                    .ThenInclude(e => e.Location)
                 .LoadAsync();
         }
 

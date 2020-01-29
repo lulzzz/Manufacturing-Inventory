@@ -12,7 +12,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public bool HoldsBubblers { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public int? OgranizationId { get; set; }
+        public int? OrganizationId { get; set; }
         public Organization Organization { get; set; }
 
         public int? WarehouseId { get; set; }
@@ -46,7 +46,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.HoldsBubblers = part.HoldsBubblers;
             this.WarehouseId = part.WarehouseId;
             this.UsageId = part.UsageId;
-            this.OgranizationId = part.OgranizationId;
+            this.OrganizationId = part.OrganizationId;
         }
 
         public void Set(Part part) {
@@ -55,7 +55,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.HoldsBubblers = part.HoldsBubblers;
             this.WarehouseId = part.WarehouseId;
             this.UsageId = part.UsageId;
-            this.OgranizationId = part.OgranizationId;
+            this.OrganizationId = part.OrganizationId;
         }
     }
 }
