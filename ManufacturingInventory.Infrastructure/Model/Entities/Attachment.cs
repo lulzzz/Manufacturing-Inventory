@@ -43,5 +43,23 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Name = name;
             this.SourceReference = source;
         }
+
+        public void Set(Attachment entity) {
+            this.Created = entity.Created;
+            this.ValidThough = entity.ValidThough;
+            this.Name = entity.Name;
+            this.DisplayName = entity.DisplayName;
+            this.Description = entity.Description;
+            this.SourceReference = entity.SourceReference;
+            this.FileReference = entity.FileReference;
+            this.Extension = entity.FileReference;
+            this.Expires = entity.Expires;
+
+            this.PartId = entity.PartId;
+            this.ManufacturerId = entity.ManufacturerId;
+            this.PartInstanceId = entity.PartInstanceId;
+            this.PriceId = entity.PriceId;
+            this.DistributorId = entity.DistributorId;
+        }
     }
 }

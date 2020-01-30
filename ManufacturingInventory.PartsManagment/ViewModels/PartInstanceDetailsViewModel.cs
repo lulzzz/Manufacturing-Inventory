@@ -16,6 +16,7 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Common.Application;
 using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
+using ManufacturingInventory.Domain.Enums;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
 
@@ -55,6 +56,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Location _selectedLocation;
         private Condition _selectedCondition;
         private PartType _selectedPartType;
+        private AttachmentDataTraveler _instanceAttachmentTraveler;
         private bool _tableLoading;
         private double _measuredWeight;
         private double _weight;
@@ -202,10 +204,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => this.SetProperty(ref this._attachments, value);
         }
 
+        public AttachmentDataTraveler InstanceAttachmentTraveler {
+            get => this._instanceAttachmentTraveler;
+            set => SetProperty(ref this._instanceAttachmentTraveler, value);
+        }
+
         public bool TableLoading { 
             get => this._tableLoading;
             set => SetProperty(ref this._tableLoading, value);
         }
+
 
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
@@ -332,6 +340,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 }
                 this.UnitCost = this.SelectedPartInstance.UnitCost;
                 this.TotalCost = this.SelectedPartInstance.TotalCost;
+                this.InstanceAttachmentTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, partInstance.Id);
+
             }
         }
     }

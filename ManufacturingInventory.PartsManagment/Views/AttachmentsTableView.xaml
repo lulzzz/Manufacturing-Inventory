@@ -54,19 +54,19 @@
                                    ToolTipService.ToolTip="Upload New Attachment" />
                 <dxb:BarButtonItem Content="Open File"
                                    Glyph="{dx:DXImage Image=Open_16x16.png}"
-                                   Command="{Binding Path=View.DataContext.OpenFileCommand}"
+                                   Command="{Binding OpenFileCommand}"
                                    BarItemDisplayMode="ContentAndGlyph"
                                    ShowScreenTip="True"
                                    ToolTipService.ToolTip="Open Attachment" />
                 <dxb:BarButtonItem Content="Download File"
                                    Glyph="{dx:DXImage Image=Down_16x16.png}"
-                                   Command="{Binding Path=View.DataContext.DownloadFileCommand}"
+                                   Command="{Binding DownloadFileCommand}"
                                    BarItemDisplayMode="ContentAndGlyph"
                                    ShowScreenTip="True"
                                    ToolTipService.ToolTip="Download Attachment" />
                 <dxb:BarButtonItem Content="Delete File"
                                    Glyph="{dx:DXImage Image=Close_16x16.png}"
-                                   Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}"
+                                   Command="{Binding DeleteAttachmentCommand}"
                                    BarItemDisplayMode="ContentAndGlyph"
                                    ShowScreenTip="True"
                                    ToolTipService.ToolTip="Delete Attachment" />
@@ -80,7 +80,7 @@
                 <dxg:TableView x:Name="_attachmentTblView" 
                                Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
                     <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding ElementName=__attachmentTblView, Path=TableViewCommands.BestFitColumns}" />
+                        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding ElementName=__attachmentTblView, Path=TableViewCommands.BestFitColumns}"/>
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:TableView.RowCellMenuCustomizations>
                         <dxb:BarButtonItem Content="Open File"

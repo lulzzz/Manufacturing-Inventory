@@ -17,6 +17,7 @@ namespace ManufacturingInventory.PartsManagment
             regionManager.RegisterViewWithRegion(LocalRegions.TransactionTableRegion, typeof(TransactionTableView));
             regionManager.RegisterViewWithRegion(LocalRegions.PartInstanceTableRegion, typeof(PartInstanceTableView));
             regionManager.RegisterViewWithRegion(LocalRegions.AttachmentTableRegion, typeof(AttachmentsTableView));
+            regionManager.RegisterViewWithRegion(LocalRegions.InstanceAttachmentRegion, typeof(AttachmentsTableView));
             regionManager.RegisterViewWithRegion(LocalRegions.PartSummaryRegion, typeof(PartSummaryView));
         }
 

@@ -1,61 +1,42 @@
-﻿using ManufacturingInventory.Application.Boundaries.AttachmentsEdit.Interfaces;
+﻿using ManufacturingInventory.Domain.Enums;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.AttachmentsEdit {
-
-    
-
-
-    public class AttachmentPartEditInput : IAttachmentInput<Part> {
-        public AttachmentPartEditInput(Part entity, bool isNew) {
-            this.Entity = entity;
-            this.IsNew = isNew;
-        }
-
-        public Part Entity { get; set; }
-        public bool IsNew { get; set; }
+    public enum AttachmentOperation {
+        OPEN,
+        DOWNLOAD,
+        RENAME,
+        DELETE,
+        NEW
     }
 
-    public class AttachmentPartInstanceEditInput : IAttachmentInput<PartInstance> {
-        public AttachmentPartInstanceEditInput(PartInstance entity, bool isNew) {
-            this.Entity = entity;
-            this.IsNew = isNew;
+    public class AttachmentEditInput {
+        
+        public AttachmentEditInput(string name, string displayName, string description, string sourceReference, 
+            AttachmentOperation operation,GetAttachmentBy by, int entityId) {
+            this.Name = name;
+            this.DisplayName = displayName;
+            this.Description = description;
+            this.SourceReference = sourceReference;
+
+            this.AttachmentOperation = operation;
+            this.AttachmentBy = by;
+            this.EntityId = entityId;
         }
 
-        public PartInstance Entity { get; set; }
-        public bool IsNew { get; set; }
-    }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
+        public string SourceReference { get; set; }
+        public string FileReference { get; set; }
+        public string Extension { get; set; }
+        public bool Expires { get; set; }
+        public AttachmentOperation AttachmentOperation { get; set; }
+        public GetAttachmentBy AttachmentBy { get; set; }
+        public int EntityId { get; set; }
 
-    public class AttachmentPriceEditInput : IAttachmentInput<Price> {
-        public AttachmentPriceEditInput(Price entity, bool isNew) {
-            this.Entity = entity;
-            this.IsNew = isNew;
-        }
-
-        public Price Entity { get; set; }
-        public bool IsNew { get; set; }
-    }
-
-    public class AttachmentDistributorEditInput : IAttachmentInput<Distributor> {
-        public AttachmentDistributorEditInput(Distributor entity, bool isNew) {
-            this.Entity = entity;
-            this.IsNew = isNew;
-        }
-
-        public Distributor Entity { get; set; }
-        public bool IsNew { get; set; }
-    }
-
-    public class AttachmentManufacturerEditInput : IAttachmentInput<Manufacturer> {
-        public AttachmentManufacturerEditInput(Manufacturer entity, bool isNew) {
-            this.Entity = entity;
-            this.IsNew = isNew;
-        }
-
-        public Manufacturer Entity { get; set; }
-        public bool IsNew { get; set; }
     }
 }

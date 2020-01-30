@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Domain.Enums;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartsDetailViewModel:InventoryViewModelNavigationBase {
@@ -33,6 +34,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private Part _selectedPart;
         private DataTraveler _partDataTraveler;
+        private AttachmentDataTraveler _attachmentDataTraveler;
 
 
         public PartsDetailViewModel(IEventAggregator eventAggregator, IRegionManager regionManager) {
@@ -51,6 +53,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public DataTraveler PartDataTraveler { 
             get => this._partDataTraveler;
             set => SetProperty(ref this._partDataTraveler, value);
+        }
+
+        public AttachmentDataTraveler AttachmentDataTraveler {
+            get => this._attachmentDataTraveler;
+            set => SetProperty(ref this._attachmentDataTraveler, value);
         }
 
         public Visibility Visibility {
@@ -79,6 +86,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.Visibility = (isEdit || isNew) ? Visibility.Visible : Visibility.Collapsed;
                 this.IsBubbler = this.SelectedPart.HoldsBubblers;
                 this.PartDataTraveler = new DataTraveler() { PartId = this.SelectedPart.Id, HoldsBubblers = this.SelectedPart.HoldsBubblers,IsNew=isNew,IsEdit=isEdit };
+                this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PART, this.SelectedPart.Id);
             }
         }
 

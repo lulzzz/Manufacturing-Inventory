@@ -7,7 +7,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
     public class Price {
         public int Id { get; set; }
         public DateTime TimeStamp { get; set; }
-        public DateTime? VaildFrom { get; set; }
+        public DateTime? ValidFrom { get; set; }
         public DateTime? ValidUntil { get; set; }
         public bool IsCurrent { get; set; }
         public double UnitCost { get; set; }
@@ -21,12 +21,21 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int PartInstanceId { get; set; }
         public PartInstance PartInstance { get; set; }
 
-
-
         public virtual ICollection<Attachment> Attachments { get; set; }
 
         public Price() {
             this.Attachments = new HashSet<Attachment>();
+        }
+
+        public void Set(Price entity) {
+            this.UnitCost = entity.UnitCost;
+            this.DistributorId = entity.DistributorId;
+            this.IsCurrent = entity.IsCurrent;
+            this.TimeStamp = entity.TimeStamp;
+            this.MinOrder = entity.MinOrder;
+            this.LeadTime = entity.LeadTime;
+            this.ValidUntil = entity.ValidUntil;
+            this.ValidFrom = entity.ValidFrom;
         }
     }
 }

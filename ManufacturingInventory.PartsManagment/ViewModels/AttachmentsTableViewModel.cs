@@ -18,18 +18,20 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using Prism.Events;
-using ManufacturingInventory.Application.Boundaries.AttachmentsEdit.Interfaces;
+using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
+using ManufacturingInventory.Domain.Enums;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class AttachmentsTableViewModel : InventoryViewModelBase {
         private ObservableCollection<Attachment> _attachments;
-        private int _partId;
+        private int _entityId;
+        private GetAttachmentBy _getBy;
         private Attachment _selectedAttachment;
         private FileNameViewModel _fileNameViewModel;
 
         private IRegionManager _regionManager;
         private IEventAggregator _eventAggregator;
-        private IAttachmentPartEditUseCase _attachmentEdit;
+        private IAttachmentEditUseCase _attachmentEdit;
 
         public string Filter { get; set; }
         public int FilterIndex { get; set; }
@@ -47,17 +49,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public IOpenFileDialogService OpenFileDialogService { get { return ServiceContainer.GetService<IOpenFileDialogService>("OpenFileDialog"); } }
         public ISaveFileDialogService SaveFileDialogService { get { return ServiceContainer.GetService<ISaveFileDialogService>("SaveFileDialog"); } }
 
-        public PrismCommands.DelegateCommand NewAttachmentCommand { get; private set; }
-        public PrismCommands.DelegateCommand OpenFileCommand { get; private set; }
-        public PrismCommands.DelegateCommand DownloadFileCommand { get; private set; }
-        public PrismCommands.DelegateCommand DeleteAttachmentCommand { get; private set; }
+        public AsyncCommand NewAttachmentCommand { get; private set; }
+        public AsyncCommand OpenFileCommand { get; private set; }
+        public AsyncCommand DownloadFileCommand { get; private set; }
+        public AsyncCommand DeleteAttachmentCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
 
-        public AttachmentsTableViewModel(IAttachmentPartEditUseCase attachmentEdit, IEventAggregator eventAggregator, IRegionManager regionManager) {
+        public AttachmentsTableViewModel(IAttachmentEditUseCase attachmentEdit, IEventAggregator eventAggregator, IRegionManager regionManager) {
             this._attachmentEdit = attachmentEdit;
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
+            this.NewAttachmentCommand = new AsyncCommand(this.NewAttachmentHandler);
         }
 
         public override bool KeepAlive => false;
@@ -67,9 +70,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._attachments,value);
         }
 
-        public int SelectedPartId {
-            get => this._partId;
-            set => SetProperty(ref this._partId, value);
+        public int SelectedEntityId {
+            get => this._entityId;
+            set => this._entityId=value;
         }
 
         public Attachment SelectedAttachment { 
@@ -77,49 +80,30 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedAttachment, value);
         }
 
-        private void NewAttachmentHandler() {
+        public GetAttachmentBy GetBy { 
+            get => this._getBy; 
+            set => this._getBy = value;
+        }
+
+        private async Task NewAttachmentHandler() {
             this.OpenFileDialogService.Filter = Constants.FileFilters;
             this.OpenFileDialogService.FilterIndex = this.FilterIndex;
             this.OpenFileDialogService.Title = "Select File To Uplaod";
-            var resp = this.OpenFileDialogService.ShowDialog();
-            if (resp) {
+            if (this.OpenFileDialogService.ShowDialog()) {
                 var file = this.OpenFileDialogService.File;
-                string ext = Path.GetExtension(file.GetFullName());
                 string tempFileName = file.Name.Substring(0, file.Name.IndexOf("."));
-                if (File.Exists(file.GetFullName())) {
-                    if (this.ShowAttachmentDialog(tempFileName)) {
-                        if (this._fileNameViewModel != null) {
-                            string dest = Path.Combine(Constants.DestinationDirectory, this._fileNameViewModel.FileName + ext);
-                            if (!File.Exists(dest)) {
-                                bool success = true;
-                                try {
-                                    File.Copy(file.GetFullName(), dest);
-                                } catch {
-                                    this.MessageBoxService.ShowMessage("Copy File Error");
-                                    success = false;
-                                }
-                                if (success) {
-                                    Attachment attachment = new Attachment(DateTime.Now, this._fileNameViewModel.FileName, "");
-                                    attachment.Description = this._fileNameViewModel.Description;
-                                    attachment.PartId = this.SelectedPartId;
-                                    attachment.FileReference = dest;
-                                    attachment.Extension = ext;
-                                    ///var temp = this._dataManager.UploadProductAttachment(attachment);
-                                    //if (temp.Success) {
-                                    //    this.MessageBoxService.ShowMessage(temp.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                                    //} else {
-                                    //    this.MessageBoxService.ShowMessage(temp.Message, "Failed", MessageButton.OK, MessageIcon.Error);
-                                    //}
-                                }
-                            } else {
-                                this.MessageBoxService.ShowMessage("File Name already exist, Please try again", "Failed", MessageButton.OK, MessageIcon.Error);
-                            }
-                        }
+                if (this.ShowAttachmentDialog(tempFileName)) {
+                    if (this._fileNameViewModel != null) {
+                        AttachmentEditInput input = new AttachmentEditInput(this._fileNameViewModel.FileName,
+                            this._fileNameViewModel.FileName,
+                            this._fileNameViewModel.Description,
+                            file.GetFullName(),
+                            AttachmentOperation.NEW,
+                            this.GetBy,
+                            this.SelectedEntityId);
+                        await this._attachmentEdit.Execute(input);
                     }
-                } else {
-                    this.MessageBoxService.ShowMessage("Internal Error: File Not Found", "File Not Found", MessageButton.OK, MessageIcon.Error);
                 }
-                //this.ReloadAsync();
             }
         }
 
@@ -208,7 +192,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
     
         private async Task InitializeHandler() {
-            var attachments =await this._attachmentEdit.GetAttachments(this.SelectedPartId);
+            var attachments =await this._attachmentEdit.GetAttachments(this.GetBy,this.SelectedEntityId);
             this.Attachments = new ObservableCollection<Attachment>(attachments);
         }
     }

@@ -11,6 +11,7 @@
              xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
              xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
              xmlns:prism="http://prismlibrary.com/"
@@ -251,7 +252,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tTableView"
-                                                   Style="{StaticResource TableViewStyleNoMasterNoSearch}">
+                                                   Style="{StaticResource TableViewStyleWithMasterGroup}">
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand EventName="Loaded"
                                                                    Command="{Binding ElementName=tTableView, Path=TableViewCommands.BestFitColumns}" />
@@ -330,72 +331,11 @@
                             </dxg:GridControl>
                         </dxb:BarManager>
                     </dx:DXTabItem>
-                    <dx:DXTabItem Header="Attachments" Glyph="{dx:DXImage Image=LoadFrom_16x16.png}">
-                        <dxb:BarManager>
-                            <dxb:BarManager.Bars>
-                                <dxb:Bar ShowDragWidget="False"
-                                         ShowSizeGrip="False"
-                                         AllowCollapse="False"
-                                         AllowCustomizationMenu="False"
-                                         AllowDrop="False"
-                                         AllowHide="False"
-                                         AllowQuickCustomization="False">
-                                    <dxb:BarButtonItem Content="Upload File"
-                                                       Command="{Binding NewAttachmentCommand}"
-                                                       Glyph="{dx:DXImage Image=Add_16x16.png}"
-                                                       BarItemDisplayMode="ContentAndGlyph"
-                                                       ShowScreenTip="True"
-                                                       ToolTipService.ToolTip="Upload New Attachment" />
-                                    <dxb:BarButtonItem Content="Open File"
-                                                       Glyph="{dx:DXImage Image=Open_16x16.png}"
-                                                       Command="{Binding Path=View.DataContext.OpenFileCommand}"
-                                                       BarItemDisplayMode="ContentAndGlyph"
-                                                       ShowScreenTip="True"
-                                                       ToolTipService.ToolTip="Open Attachment" />
-                                    <dxb:BarButtonItem Content="Download File"
-                                                       Glyph="{dx:DXImage Image=Down_16x16.png}"
-                                                       Command="{Binding Path=View.DataContext.DownloadFileCommand}"
-                                                       BarItemDisplayMode="ContentAndGlyph"
-                                                       ShowScreenTip="True"
-                                                       ToolTipService.ToolTip="Download Attachment" />
-                                    <dxb:BarButtonItem Content="Delete File"
-                                                       Glyph="{dx:DXImage Image=Close_16x16.png}"
-                                                       Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}"
-                                                       BarItemDisplayMode="ContentAndGlyph"
-                                                       ShowScreenTip="True"
-                                                       ToolTipService.ToolTip="Delete Attachment" />
-                                </dxb:Bar>
-                            </dxb:BarManager.Bars>
-                            <dxg:GridControl x:Name="_instanceTransactions"
-                                             ItemsSource="{Binding Attachments}"
-                                             SelectedItem="{Binding SelectedAttachment, Mode=TwoWay}"
-                                             ShowLoadingPanel="{Binding ShowAttachmentTableLoading,Mode=TwoWay}"
-                                             FontSize="10">
-                                <dxg:GridControl.View>
-                                    <dxg:TableView ShowGroupPanel="False">
-                                        <dxg:TableView.RowCellMenuCustomizations>
-                                            <dxb:BarButtonItem Content="Open File"
-                                                               Glyph="{dx:DXImage Image=Open_16x16.png}"
-                                                               Command="{Binding Path=View.DataContext.OpenFileCommand}" />
-                                            <dxb:BarButtonItem Content="Download File"
-                                                               Glyph="{dx:DXImage Image=Down_16x16.png}"
-                                                               Command="{Binding Path=View.DataContext.DownloadFileCommand}" />
-                                            <dxb:BarButtonItem Content="Delete File"
-                                                               Glyph="{dx:DXImage Image=Close_16x16.png}"
-                                                               Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}" />
-                                        </dxg:TableView.RowCellMenuCustomizations>
-                                    </dxg:TableView>
-                                </dxg:GridControl.View>
-                                <dxg:GridColumn FieldName="Id"
-                                                Visible="False" />
-                                <dxg:GridColumn FieldName="Created"
-                                                Visible="False" />
-                                <dxg:GridColumn FieldName="Name" />
-                                <dxg:GridColumn FieldName="Description" />
-                                <dxg:GridColumn FieldName="Extension" />
-                            </dxg:GridControl>
-                        </dxb:BarManager>
-                    </dx:DXTabItem>
+                    <dx:DXTabItem Header="Attachments"
+                                  Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
+                                  TabIndex="2"
+                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstanceAttachmentRegion}"
+                                  prism:RegionManager.RegionContext="{Binding InstanceAttachmentTraveler,Mode=TwoWay}" />
                 </dx:DXTabControl>
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"

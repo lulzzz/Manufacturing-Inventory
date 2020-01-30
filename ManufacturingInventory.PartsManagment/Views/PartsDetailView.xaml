@@ -42,7 +42,7 @@
                               Glyph="{dx:DXImage Image=ErrorBarsStandardDeviation_16x16.png}"
                               TabIndex="0"
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.PartSummaryRegion}"
-                              prism:RegionManager.RegionContext="{Binding PartDataTraveler}"></dx:DXTabItem>
+                              prism:RegionManager.RegionContext="{Binding PartDataTraveler}" />
                 <dx:DXTabItem Header="Part Instances"
                               Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
                               TabIndex="1"
@@ -53,7 +53,7 @@
                               Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
                               TabIndex="2"
                               prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.AttachmentTableRegion}"
-                              prism:RegionManager.RegionContext="{Binding PartDataTraveler,Mode=TwoWay}" />
+                              prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler,Mode=TwoWay}" />
                 <dx:DXTabItem Header="Transactions"
                               Glyph="{dx:DXImage Image=AgendaView_16x16.png}"
                               TabIndex="3"

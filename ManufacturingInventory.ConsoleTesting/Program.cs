@@ -19,7 +19,12 @@ using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
+            using var context = new ManufacturingContext();
+            AttachmentRepository repo = new AttachmentRepository(context);
+            var list = repo.GetEntityList(e => e.PartInstanceId == 1);
 
+            Console.WriteLine("Didnt Throw Exception");
+            Console.ReadKey();
             //UseCaseTesting();
             //CreateLocations();
             //CreateDistibutors();

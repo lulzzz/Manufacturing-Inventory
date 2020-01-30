@@ -1,83 +1,78 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
-using ManufacturingInventory.Domain.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace ManufacturingInventory.Domain.Buisness.Concrete {
-    public class FileService : IFileService {
+namespace ManufacturingInventory.Domain.IO {
 
-        public void DeleteFile(string name, string fileReference)
-        {
-            if (File.Exists(fileReference)) {
-                try {
-                    File.Delete(fileReference);
-                } catch {
-                    throw new Exception("Error deleting file");
-                }
-            } else {
-                throw new FileNotFoundException("File: "+fileReference);
-            }
-        }
+    public static class FileService {
 
-        public void RenameFile(string name, string newName, string fileReference)
-        {
-            if (File.Exists(fileReference)) {
-                string newPath = Path.GetDirectoryName(fileReference);
-                newPath += Path.Combine(newName + Path.GetExtension(fileReference));
-                if (!File.Exists(newPath)) {
-                    File.Move(fileReference, newPath);
-                } else {
-                    throw new Exception("Dublicate Filename,File: "+newPath);
-                }
-            } else {
-                throw new FileNotFoundException("File: " + fileReference);
-            }
-        }
+        public static async Task<string> UploadFileAsync(string sourceFile,string newName) {
 
-        //public async void SaveFile(string name, string source)
-        //{
-        //    string destinationFile;
-        //    if(Directory.Exists(Constants.DestinationDirectory))
-        //    {
-        //        if (File.Exists(source))
-        //        {
-        //            destinationFile = Path.Combine(Constants.DestinationDirectory, name + Path.GetExtension(source));
-        //            if (!File.Exists(destinationFile))
-        //            {
-        //                using (FileStream sourceStream = File.Open(source, FileMode.Open)) {
-        //                    using(FileStream destStream = File.Create(destinationFile)) {
-        //                        await sourceStream.CopyToAsync(destStream);
-        //                    }
-        //                }
-        //            }else{
-        //                throw new Exception("File already Exist, File: " + destinationFile);
-        //            }
-        //        } else {
-        //            throw new FileNotFoundException("File: "+source);
-        //        }
-        //    } else {
-        //        throw new DirectoryNotFoundException("Directory: " + Constants.DestinationDirectory);
-        //    }
-        //}
-
-        public string SaveFile(string name, string source)
-        {
-            string destinationFile;
-            if (Directory.Exists(FileConstants.DestinationDirectory)) {
-                if (File.Exists(source)) {
-                    destinationFile = Path.Combine(FileConstants.DestinationDirectory, name + Path.GetExtension(source));
-                    if (!File.Exists(destinationFile)) {
-                        File.Copy(source, destinationFile);
-                        return destinationFile;
+            if (File.Exists(sourceFile)) {
+                var dest = Path.Combine(FileConstants.DestinationDirectory, newName + Path.GetExtension(sourceFile));
+                if (!File.Exists(dest)) {
+                    if(await CopyFileAsync(sourceFile, dest)) {
+                        return dest;
                     } else {
-                        throw new Exception("File already Exist, File: " + destinationFile);
+                        return string.Empty;
                     }
                 } else {
-                    throw new FileNotFoundException("File: " + source);
+                    return string.Empty;
                 }
-            } else {
-                throw new DirectoryNotFoundException("Directory: " + FileConstants.DestinationDirectory);
             }
+            return string.Empty;
+        }
+
+        public static async Task<bool> CopyFileAsync(string sourceFile, string destinationFile) {
+            
+            var fileOptions = FileOptions.Asynchronous | FileOptions.SequentialScan;
+            var bufferSize = 4096;
+            try {
+                using var sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, fileOptions);
+                using var destinationStream = new FileStream(destinationFile, FileMode.CreateNew, FileAccess.Write, FileShare.None, bufferSize, fileOptions);
+                await sourceStream.CopyToAsync(destinationStream, bufferSize).ConfigureAwait(continueOnCapturedContext: false);
+                return true;
+            } catch {
+                return false;
+            }
+
+        }
+
+        public static async Task<bool> RenameFileAsync(string sourceFile, string newName) {
+            if (File.Exists(sourceFile)) {
+                var dest = Path.Combine(FileConstants.DestinationDirectory, newName + Path.GetExtension(sourceFile));
+                if (!File.Exists(dest)) {
+                    if (await CopyFileAsync(sourceFile, dest)) {
+                        try {
+                            File.Delete(sourceFile);
+                            return true;
+                        } catch {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        public static async Task<bool> DeleteFileAsync(string sourceFile) {
+            try {
+                using (FileStream stream = new FileStream(sourceFile, FileMode.Truncate, FileAccess.Write, FileShare.Delete, 4096, true)) {
+                    await stream.FlushAsync();
+                    File.Delete(sourceFile);
+                }
+                return true;
+            } catch {
+                return false;
+            }
+
         }
     }
 }

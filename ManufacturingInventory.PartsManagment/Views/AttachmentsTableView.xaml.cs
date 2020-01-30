@@ -28,8 +28,9 @@ namespace ManufacturingInventory.PartsManagment.Views {
 
         private void AttachmentsTableView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var context = (ObservableObject<object>)sender;
-            var attachmentContext = (DataTraveler)context.Value;
-            (DataContext as AttachmentsTableViewModel).SelectedPartId = attachmentContext.PartId;
+            var attachmentContext = (AttachmentDataTraveler)context.Value;
+            (DataContext as AttachmentsTableViewModel).SelectedEntityId = attachmentContext.EntityId;
+            (DataContext as AttachmentsTableViewModel).GetBy = attachmentContext.GetBy;
         }
     }
 }

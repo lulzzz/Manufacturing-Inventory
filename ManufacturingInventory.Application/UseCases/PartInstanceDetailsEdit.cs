@@ -60,25 +60,33 @@ namespace ManufacturingInventory.Application.UseCases {
                 }
             } else {
                 if (input.PartInstance.IsBubbler) {
-                    var bubbler = await this._bubblerRepository.UpdateAsync(input.PartInstance.BubblerParameter);
-                    var entity = await this._instanceRepository.UpdateAsync(input.PartInstance);
-                    if (entity != null && bubbler!=null) {
-                        var count=await this._unitOfWork.Save();
-                        return new PartInstanceDetailsEditOutput(entity, true, entity.Name + " Updated Count:"+count);
-                    } else {
-                        return new PartInstanceDetailsEditOutput(null, false, "Failed");
-                    }
+                    return await this.ExecuteBubbler(input);
                 } else {//not bubbler
-                    var entity = await this._instanceRepository.UpdateAsync(input.PartInstance);
-                    if (entity != null) {
-                        var count = await this._unitOfWork.Save();
-                        return new PartInstanceDetailsEditOutput(entity, true, entity.Name + " Updated Count:" + count);
-                    } else {
-                        return new PartInstanceDetailsEditOutput(null, false, "Failed");
-                    }
+                    return await this.ExecuteStandard(input);
                 }
             }
 
+        }
+
+        private async Task<PartInstanceDetailsEditOutput> ExecuteBubbler(PartInstanceDetailsEditInput input) {
+            var bubbler = await this._bubblerRepository.UpdateAsync(input.PartInstance.BubblerParameter);
+            var entity = await this._instanceRepository.UpdateAsync(input.PartInstance);
+            if (entity != null && bubbler != null) {
+                var count = await this._unitOfWork.Save();
+                return new PartInstanceDetailsEditOutput(entity, true, entity.Name + " Updated Count:" + count);
+            } else {
+                return new PartInstanceDetailsEditOutput(null, false, "Failed");
+            }
+        }
+
+        private async Task<PartInstanceDetailsEditOutput> ExecuteStandard(PartInstanceDetailsEditInput input) {
+            var entity = await this._instanceRepository.UpdateAsync(input.PartInstance);
+            if (entity != null) {
+                var count = await this._unitOfWork.Save();
+                return new PartInstanceDetailsEditOutput(entity, true, entity.Name + " Updated Count:" + count);
+            } else {
+                return new PartInstanceDetailsEditOutput(null, false, "Failed");
+            }
         }
     }
 }

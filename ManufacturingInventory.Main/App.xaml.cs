@@ -23,7 +23,7 @@ using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 using ManufacturingInventory.Application.Boundaries.PartDetails;
-using ManufacturingInventory.Application.Boundaries.AttachmentsEdit.Interfaces;
+using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.TransactionEdit;
 using ManufacturingInventory.Infrastructure.Model.Services;
@@ -55,7 +55,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
                 container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
                 container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
-                container.Register<IAttachmentPartEditUseCase, AttachmentPartEdit>();
+                container.Register<IAttachmentEditUseCase, AttachmentEdit>();
                 container.Register<ITransactionEditUseCase, TransactionEdit>();
                 container.Register<IReturnItemUseCase, ReturnItem>();
 
@@ -74,7 +74,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IEntityProvider<Transaction>, TransactionProvider>();
 
                 container.Register<ILogInService, LogInService>();
-                container.Register<IFileService, FileService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
 

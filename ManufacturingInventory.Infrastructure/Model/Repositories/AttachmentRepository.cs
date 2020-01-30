@@ -15,12 +15,48 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             this._context = context;
         }
 
-        public Attachment Add(Attachment entity) => throw new NotImplementedException();
-        public Task<Attachment> AddAsync(Attachment entity) => throw new NotImplementedException();
-        public Attachment Update(Attachment entity) => throw new NotImplementedException();
-        public Task<Attachment> UpdateAsync(Attachment entity) => throw new NotImplementedException();
-        public Attachment Delete(Attachment entity) => throw new NotImplementedException();
-        public Task<Attachment> DeleteAsync(Attachment entity) => throw new NotImplementedException();
+        public Attachment Add(Attachment entity) {
+            var attachment = this._context.Attachments.FirstOrDefault(e => e.Id == entity.Id);
+            if (attachment != null) {
+                return null;
+            }
+            return this._context.Add(entity).Entity;
+        }
+
+        public async Task<Attachment> AddAsync(Attachment entity) {
+            var attachment = await this._context.Attachments.FirstOrDefaultAsync(e => e.Id == entity.Id);
+            if (attachment != null) {
+                return null;
+            }
+            return (await this._context.AddAsync(entity)).Entity;
+        }
+
+        public Attachment Update(Attachment entity) {
+            var attachment = this._context.Attachments.FirstOrDefault(e => e.Id == entity.Id);
+            if (attachment == null) {
+                return null;
+            }
+            attachment.Set(entity);
+            return this._context.Update(attachment).Entity;
+        }
+
+        public async Task<Attachment> UpdateAsync(Attachment entity) {
+            var attachment = await this._context.Attachments.FirstOrDefaultAsync(e => e.Id == entity.Id);
+            if (attachment == null) {
+                return null;
+            }
+            attachment.Set(entity);
+            return this._context.Update(attachment).Entity;
+        }
+
+        public Attachment Delete(Attachment entity) {
+            return this._context.Attachments.Remove(entity).Entity;
+        }
+
+        public async Task<Attachment> DeleteAsync(Attachment entity) {
+            var attachment= await Task.Run(() => this._context.Attachments.Remove(entity).Entity);
+            return attachment;
+        }
 
         public Attachment GetEntity(Expression<Func<Attachment, bool>> expression) {
             return this._context.Attachments.FirstOrDefault(expression);
@@ -34,16 +70,21 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             Func<IQueryable<Attachment>, IOrderedQueryable<Attachment>> orderBy = null) {
             
             IQueryable<Attachment> query = this._context.Set<Attachment>()
-                .Include(e => e.PartInstance).Include(e => e.Price)
-                .Include(e => e.Distributor).Include(e => e.Part).AsNoTracking();
+                .Include(e => e.PartInstance)
+                .Include(e => e.Price)
+                .Include(e => e.Distributor)
+                .Include(e => e.Part)
+                .Include(e => e.Manufacturer)
+                .AsNoTracking();
+
             if (expression != null) {
                 query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return query.ToList();
+                return orderBy(query).ToList(); 
             } else {
-                return orderBy(query).ToList();
+                return query.ToList();
             }
         }
 
@@ -54,15 +95,17 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Price)
                 .Include(e => e.Distributor)
                 .Include(e => e.Part)
+                .Include(e => e.Manufacturer)
                 .AsNoTracking();
+
             if (expression != null) {
                 query = query.Where(expression);
             }
 
             if (orderBy != null) {
-                return await query.ToListAsync();
-            } else {
                 return await orderBy(query).ToListAsync();
+            } else {
+                return await query.ToListAsync();
             }
         }
 
@@ -72,6 +115,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Price)
                 .Include(e => e.Distributor)
                 .Include(e => e.Part)
+                .Include(e=>e.Manufacturer)
                 .Load();
         }
 
@@ -81,6 +125,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Price)
                 .Include(e => e.Distributor)
                 .Include(e => e.Part)
+                .Include(e => e.Manufacturer)
                 .LoadAsync();
         }
 
