@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -10,7 +11,6 @@ namespace ManufacturingInventory.Domain.IO {
     public static class FileService {
 
         public static async Task<string> UploadFileAsync(string sourceFile,string newName) {
-
             if (File.Exists(sourceFile)) {
                 var dest = Path.Combine(FileConstants.DestinationDirectory, newName + Path.GetExtension(sourceFile));
                 if (!File.Exists(dest)) {
@@ -26,8 +26,7 @@ namespace ManufacturingInventory.Domain.IO {
             return string.Empty;
         }
 
-        public static async Task<bool> CopyFileAsync(string sourceFile, string destinationFile) {
-            
+        public static async Task<bool> CopyFileAsync(string sourceFile, string destinationFile) {            
             var fileOptions = FileOptions.Asynchronous | FileOptions.SequentialScan;
             var bufferSize = 4096;
             try {
@@ -41,25 +40,25 @@ namespace ManufacturingInventory.Domain.IO {
 
         }
 
-        public static async Task<bool> RenameFileAsync(string sourceFile, string newName) {
+        public static async Task<string> RenameFileAsync(string sourceFile, string newName) {
             if (File.Exists(sourceFile)) {
                 var dest = Path.Combine(FileConstants.DestinationDirectory, newName + Path.GetExtension(sourceFile));
                 if (!File.Exists(dest)) {
                     if (await CopyFileAsync(sourceFile, dest)) {
                         try {
                             File.Delete(sourceFile);
-                            return true;
+                            return dest;
                         } catch {
-                            return false;
+                            return string.Empty;
                         }
                     } else {
-                        return false;
+                        return string.Empty;
                     }
                 } else {
-                    return false;
+                    return string.Empty;
                 }
             }
-            return false;
+            return string.Empty;
         }
 
         public static async Task<bool> DeleteFileAsync(string sourceFile) {
@@ -72,7 +71,17 @@ namespace ManufacturingInventory.Domain.IO {
             } catch {
                 return false;
             }
+        }
 
+        public static Task OpenFileAsync(string source) {
+            if (File.Exists(source)) {
+                ProcessStartInfo psi = new ProcessStartInfo {
+                    FileName = source,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            return Task.CompletedTask;
         }
     }
 }

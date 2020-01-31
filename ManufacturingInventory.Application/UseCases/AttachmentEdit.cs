@@ -25,14 +25,8 @@ namespace ManufacturingInventory.Application.UseCases {
 
         public async Task<AttachmentEditOutput> Execute(AttachmentEditInput input) {
             switch (input.AttachmentOperation) {
-                case AttachmentOperation.OPEN:
-                    return await this.ExecuteNewAttachment(input);
-                case AttachmentOperation.DOWNLOAD:
-                    return null;
-                case AttachmentOperation.RENAME:
-                    return null;
                 case AttachmentOperation.DELETE:
-                    return null;
+                    return await this.ExecuteDeleteAttachment(input);
                 case AttachmentOperation.NEW:
                     return await this.ExecuteNewAttachment(input);
                 default:
@@ -48,16 +42,16 @@ namespace ManufacturingInventory.Application.UseCases {
                     attachment.PartId = input.EntityId;
                     break;        
                 case GetAttachmentBy.PARTINSTANCE:
-                    attachment.PartId = input.EntityId;
+                    attachment.PartInstanceId = input.EntityId;
                     break;
                 case GetAttachmentBy.PRICE:
-                    attachment.PartId = input.EntityId;
+                    attachment.PriceId = input.EntityId;
                     break;
                 case GetAttachmentBy.DISTRIBUTOR:
-                    attachment.PartId = input.EntityId;
+                    attachment.DistributorId = input.EntityId;
                     break;
                 case GetAttachmentBy.MANUFACTURER:
-                    attachment.PartId = input.EntityId;
+                    attachment.ManufacturerId = input.EntityId;
                     break;
                 default:
                     return new AttachmentEditOutput(null, false, "Invalid Entity Type");
@@ -75,7 +69,29 @@ namespace ManufacturingInventory.Application.UseCases {
                     return new AttachmentEditOutput(null, false, "Save Failed");
                 }
             } else {
-                return new AttachmentEditOutput(null, false, "Invalid Entity Type");
+                return new AttachmentEditOutput(null, false, "Error Uploading File");
+            }
+        }
+
+        private async Task<AttachmentEditOutput> ExecuteDeleteAttachment(AttachmentEditInput input) {
+            var attachment = await this._attachmentRepositry.GetEntityAsync(e => e.Id == input.AttachmentId);
+            if (attachment != null) {
+                var response = await FileService.DeleteFileAsync(attachment.FileReference);
+                if (response) {
+                    var entity = await this._attachmentRepositry.DeleteAsync(attachment);
+                    var count = await this._unitOfWork.Save();
+                    if (count > 0) {
+                        return new AttachmentEditOutput(entity, true, "Success");
+                    } else {
+                        await FileService.DeleteFileAsync(input.SourceReference);
+                        await this._unitOfWork.Undo();
+                        return new AttachmentEditOutput(null, false, "Save Failed");
+                    }
+                } else {
+                    return new AttachmentEditOutput(null, false, "Invalid Entity Type");
+                }
+            } else {
+                return new AttachmentEditOutput(null, false, "Attachment Not Found");
             }
         }
 
@@ -100,9 +116,12 @@ namespace ManufacturingInventory.Application.UseCases {
             await this._attachmentRepositry.LoadAsync();
         }
 
-        public Task Download(int attachmentId) => throw new NotImplementedException();
+        public async Task<bool> Download(string fileSource,string dest) {
+            return await FileService.CopyFileAsync(fileSource, dest);
+        }
 
-        public Task Open(int attachmentId) => throw new NotImplementedException();
-
+        public async Task Open(string fileSource) {
+            await FileService.OpenFileAsync(fileSource);
+        }
     }
 }

@@ -33,8 +33,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        //private IPartManagerService _partManager;
-        //private IRepository<PartInstance> _repository;
         private IPartInstanceDetailsEditUseCase _editInstance;
 
         private bool _isEdit = false;
@@ -48,10 +46,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ObservableCollection<Transaction> _transactions;
         private ObservableCollection<Attachment> _attachments;
 
-        private Visibility _costVisibility;
-        private Visibility _stockVisibility;
-        private Visibility _weightVisibility;
-        private Visibility _saveCancelVisibility;
         private PartInstance _selectedPartInstance;
         private Location _selectedLocation;
         private Condition _selectedCondition;
@@ -95,6 +89,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public ObservableCollection<PartType> PartTypes {
             get => this._partTypes;
             set => SetProperty(ref this._partTypes, value);
+        }
+
+        public AttachmentDataTraveler AttachmentDataTraveler {
+            get => this._instanceAttachmentTraveler;
+            set => SetProperty(ref this._instanceAttachmentTraveler, value);
         }
 
         public PartInstance SelectedPartInstance { 
@@ -217,23 +216,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
-                //this.DispatcherService.BeginInvoke(()=>t)
 
                 var categories = await this._editInstance.GetCategories();
                 var locations = await this._editInstance.GetLocations();
                 var transactions = await this._editInstance.GetTransactions(this.SelectedPartInstance.Id);
- //               var attachments = await this._editInstance.GetAttachments();
-
+                
                 this.DispatcherService.BeginInvoke(() => {
-
                     this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
                     this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
                     this.Locations = new ObservableCollection<Location>(locations);
                     this.Transactions = new ObservableCollection<Transaction>(transactions);
- //                   this.Attachments = new ObservableCollection<Attachment>(attachments);
 
                     if (this.SelectedPartInstance != null) {
-
+                        this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
                         if (this.SelectedPartInstance.Condition != null) {
                             this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
                         }
@@ -340,7 +335,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 }
                 this.UnitCost = this.SelectedPartInstance.UnitCost;
                 this.TotalCost = this.SelectedPartInstance.TotalCost;
-                this.InstanceAttachmentTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, partInstance.Id);
 
             }
         }

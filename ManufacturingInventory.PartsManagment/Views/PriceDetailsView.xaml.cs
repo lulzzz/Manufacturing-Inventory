@@ -1,4 +1,8 @@
-﻿using System;
+﻿using ManufacturingInventory.PartsManagment.Internal;
+using ManufacturingInventory.PartsManagment.ViewModels;
+using Prism.Common;
+using Prism.Regions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -18,6 +22,14 @@ namespace ManufacturingInventory.PartsManagment.Views {
     public partial class PriceDetailsView : UserControl {
         public PriceDetailsView() {
             InitializeComponent();
+            RegionContext.GetObservableContext(this).PropertyChanged += this.PriceDetailsView_PropertyChanged;
+        }
+
+        private void PriceDetailsView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            var context = (ObservableObject<object>)sender;
+            var instanceContext = (PriceDataTraveler)context.Value;
+            (DataContext as PriceDetailsViewModel).PriceId = instanceContext.PriceId;
+            (DataContext as PriceDetailsViewModel).IsEdit = instanceContext.IsEdit;
         }
     }
 }

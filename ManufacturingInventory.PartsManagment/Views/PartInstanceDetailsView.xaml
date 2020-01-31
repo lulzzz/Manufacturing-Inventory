@@ -335,7 +335,7 @@
                                   Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
                                   TabIndex="2"
                                   prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstanceAttachmentRegion}"
-                                  prism:RegionManager.RegionContext="{Binding InstanceAttachmentTraveler,Mode=TwoWay}" />
+                                  prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler,Mode=TwoWay}" />
                 </dx:DXTabControl>
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"

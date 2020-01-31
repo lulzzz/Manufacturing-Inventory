@@ -15,22 +15,69 @@ using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
+using ManufacturingInventory.Application.Boundaries.PriceEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
-    //public class PriceDetailsViewModel:InventoryViewModelBase {
+    public class PriceDetailsViewModel : InventoryViewModelBase {
 
-    //    protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PartInstanceDetailsMessageService"); }
-    //    protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PartInstanceDetailDispatcher"); }
+        protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PriceDetailsMessageService"); }
+        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PriceDetailDispatcher"); } 
 
 
+        private IEventAggregator _eventAggregator;
+        private IRegionManager _regionManager;
+        private IPriceEditUseCase _priceEdit;
+        private ObservableCollection<Distributor> _distributors;
+        private Distributor _selectedDistributor;
+        private Price _price;
+        private int _priceId;
+        private bool _isEdit;
+        private bool _isInitialized = false;
 
-    //    private IEventAggregator _eventAggregator;
-    //    private IRegionManager _regionManager;
-    //    //private IPartInstanceDetailsEditUseCase _editInstance;
+        public PriceDetailsViewModel(IPriceEditUseCase priceEditUseCase,IEventAggregator eventAggregator,IRegionManager regionManager) {
+            this._priceEdit = priceEditUseCase;
+            this._eventAggregator = eventAggregator;
+            this._regionManager = regionManager;
+        }
 
-    //    private ObservableCollection<Attachment> _attachments;
-    //    private ObservableCollection<Distributor> _distributors;
+        public override bool KeepAlive => false;
 
-    //    public override bool KeepAlive => false;
-    //}
+        public Price Price { 
+            get => this._price;
+            set => SetProperty(ref this._price, value);
+        }
+
+        public int PriceId { 
+            get => this._priceId;
+            set => this._priceId=value;
+        }
+
+        public bool IsEdit { 
+            get => this._isEdit;
+            set => SetProperty(ref this._isEdit, value);
+        }
+
+        public ObservableCollection<Distributor> Distributors { 
+            get => this._distributors;
+            set => SetProperty(ref this._distributors, value);
+        }
+
+        public Distributor SelectedDistributor { 
+            get => this._selectedDistributor;
+            set => SetProperty(ref this._selectedDistributor, value);
+        }
+
+        private async Task InitializeHandler() {
+            if (!this._isInitialized) {
+                var distributors =await this._priceEdit.GetDistributors();
+                var price= await this._priceEdit.GetPrice(this.PriceId);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.Price = price;
+                    this.Distributors = new ObservableCollection<Distributor>(distributors);
+                    this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
+                });
+                this._isInitialized = true;
+            }
+        }
+    }
 }

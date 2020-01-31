@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWpf>True</UseWpf>
-    <FileVersion>1.2.191.0130</FileVersion>
+    <FileVersion>1.2.197.0131</FileVersion>
     <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
 

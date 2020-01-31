@@ -11,13 +11,115 @@
              xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
-             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
+             xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              mc:Ignorable="d"
              d:DesignHeight="450"
-             d:DesignWidth="800">
-    
+             d:DesignWidth="500">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="PriceDetailDispatcher" />
+        <dx:DXMessageBoxService x:Name="PriceDetailsMessageService" />
+        <dxmvvm:EventToCommand EventName="Loaded"
+                               Command="{Binding InitializeCommand}" />
+    </dxmvvm:Interaction.Behaviors>
+    <Grid Margin="5,5,5,5">
+        <dxlc:LayoutGroup Orientation="Vertical">
+            <dxlc:LayoutGroup>
+                
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup>
+                <dxlc:LayoutItem Label="Unit Cost"
+                                 Style="{StaticResource LayoutItemStyle}">
+                    <dxe:SpinEdit Text="{Binding UnitCost,Mode=TwoWay}"
+                                  Increment="1"
+                                  MaskType="Numeric"
+                                  Mask="c3"
+                                  MinValue="0"
+                                  IsReadOnly="{Binding IsEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Label="Distributor"
+                                 Style="{StaticResource LayoutItemStyle}">
+                    <dxe:ComboBoxEdit ItemsSource="{Binding Distributors}"
+                                      SelectedItem="{Binding SelectedDistributor}"
+                                      ApplyItemTemplateToSelectedItem="True"
+                                      IsTextEditable="False"
+                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
+                        <dxe:ComboBoxEdit.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           HorizontalAlignment="Stretch" />
+                            </DataTemplate>
+                        </dxe:ComboBoxEdit.ItemTemplate>
+                    </dxe:ComboBoxEdit>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup>
+                <dxlc:LayoutItem Label="Min Order"
+                                 LabelHorizontalAlignment="Center"
+                                 LabelPosition="Top">
+                    <dxe:SpinEdit Text="{Binding MinOrder}"
+                                  Increment="1"
+                                  MaskType="Numeric"
+                                  Mask="d"
+                                  MinValue="0"
+                                  IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Label="LeadTime(days)"
+                                 LabelHorizontalAlignment="Center"
+                                 LabelPosition="Top">
+                    <dxe:SpinEdit Text="{Binding LeadTime}"
+                                  Increment="1"
+                                  MaskType="Numeric"
+                                  Mask="d"
+                                  MinValue="0"
+                                  IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup>
+                <dxlc:LayoutItem Label="TimeStamp"
+                                 LabelPosition="Top"
+                                 LabelHorizontalAlignment="Center">
+                    <dxe:DateEdit EditValue="{Binding TimeStamp,Mode=TwoWay}"
+                                  HorizontalContentAlignment="Center" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Label="Valid From(optional)"
+                                 LabelPosition="Top"
+                                 LabelHorizontalAlignment="Center">
+                    <dxe:DateEdit EditValue="{Binding ValidFrom,Mode=TwoWay}"
+                                  HorizontalContentAlignment="Center" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Label="Valid Until(optional)"
+                                 LabelPosition="Top"
+                                 LabelHorizontalAlignment="Center">
+                    <dxe:DateEdit EditValue="{Binding ValidUntil,Mode=TwoWay}"
+                                  HorizontalContentAlignment="Center" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstanceAttachmentRegion}"
+                            prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler,Mode=TwoWay}" />
+            <dxlc:LayoutItem Label="Save or Cancel Changes"
+                             Style="{StaticResource LayoutItemStyle}"
+                             VerticalAlignment="Bottom"
+                             Visibility="{Binding IsEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                <dxlc:LayoutGroup Orientation="Horizontal">
+                    <dx:SimpleButton Content="Save Changes"
+                                     Height="50"
+                                     Command="{Binding SaveCommand}" />
+                    <dx:SimpleButton Content="Discard Changes"
+                                     Height="50"
+                                     Command="{Binding CancelCommand}" />
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+    </Grid>
 </UserControl>

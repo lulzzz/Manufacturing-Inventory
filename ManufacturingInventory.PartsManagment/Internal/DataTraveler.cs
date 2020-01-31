@@ -22,4 +22,15 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public int EntityId { get; set; }
         public GetAttachmentBy GetBy {get;set;}
     }
+
+    public class PriceDataTraveler {
+
+        public PriceDataTraveler(int priceId, bool isEdit) {
+            this.PriceId = priceId;
+            this.IsEdit = isEdit;
+        }
+
+        public int PriceId { get; set; }
+        public bool IsEdit { get; set; }
+    }
 }

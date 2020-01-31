@@ -25,6 +25,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class AttachmentsTableViewModel : InventoryViewModelBase {
         private ObservableCollection<Attachment> _attachments;
         private int _entityId;
+        private bool _isInitialized = false;
+        private bool _showTableLoading;
+        private bool _showLoading;
         private GetAttachmentBy _getBy;
         private Attachment _selectedAttachment;
         private FileNameViewModel _fileNameViewModel;
@@ -61,6 +64,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.NewAttachmentCommand = new AsyncCommand(this.NewAttachmentHandler);
+            this.DeleteAttachmentCommand = new AsyncCommand(this.DeleteAttachmentHandler);
+            this.DownloadFileCommand = new AsyncCommand(this.DownloadFileHandler);
+            this.OpenFileCommand = new AsyncCommand(this.OpenFileHandler);
         }
 
         public override bool KeepAlive => false;
@@ -85,6 +91,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => this._getBy = value;
         }
 
+        public bool ShowTableLoading { 
+            get => this._showTableLoading;
+            set => SetProperty(ref this._showTableLoading, value);
+        }
+
+        public bool ShowLoading {
+            get => this._showLoading;
+            set => SetProperty(ref this._showLoading, value);
+        }
+
         private async Task NewAttachmentHandler() {
             this.OpenFileDialogService.Filter = Constants.FileFilters;
             this.OpenFileDialogService.FilterIndex = this.FilterIndex;
@@ -101,50 +117,52 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             AttachmentOperation.NEW,
                             this.GetBy,
                             this.SelectedEntityId);
-                        await this._attachmentEdit.Execute(input);
+                        this.DispatcherService.BeginInvoke(() => this.ShowLoading = true);
+                        var response=await this._attachmentEdit.Execute(input);
+                        this.DispatcherService.BeginInvoke(() => this.ShowLoading = false);
+                        if (response.Success) {
+                            this.DispatcherService.BeginInvoke(() => {
+                                this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                            }); 
+                            await this.Reload();
+                        } else {
+                            this.DispatcherService.BeginInvoke(() => {
+                                this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                            });
+
+                            await this.Reload();
+                        }
                     }
                 }
             }
         }
 
-        private void DeleteAttachmentHandler() {
+        private async Task DeleteAttachmentHandler() {
             if (this.SelectedAttachment != null) {
                 string message = "You are about to delete attachment:" + this.SelectedAttachment.Name +
                     Environment.NewLine + "Continue?";
                 var result = this.MessageBoxService.ShowMessage(message, "Delete", MessageButton.YesNo, MessageIcon.Asterisk);
                 if (result == MessageResult.Yes) {
-
-                    if (File.Exists(this.SelectedAttachment.FileReference)) {
-                        var success = true;
-                        try {
-                            File.Delete(this.SelectedAttachment.FileReference);
-                        } catch {
-                            this.MessageBoxService.ShowMessage("Failed to Delete Attachment", "Error", MessageButton.OK, MessageIcon.Error);
-                            success = false;
-                        }
-                        if (success) {
-                            //var responce = this._dataManager.DeleteProductAttachment(this.SelectedAttachment);
-                            //if (responce.Success) {
-                            //    this.MessageBoxService.ShowMessage(responce.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                            //} else {
-                            //    this.MessageBoxService.ShowMessage("", "Error", MessageButton.OK, MessageIcon.Error);
-                            //}
-                        }
+                    AttachmentEditInput input = new AttachmentEditInput(this.SelectedAttachment.Id, AttachmentOperation.DELETE);
+                    var response=await this._attachmentEdit.Execute(input);
+                    if (response.Success) {
+                        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                        await this.Reload();
+                    } else {
+                        this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                        await this.Reload();
                     }
-                    //this.ReloadAsync();
                 }
             }
         }
 
-        private void OpenFileHandler() {
+        private async Task OpenFileHandler() {
             if (this.SelectedAttachment != null) {
-                if (File.Exists(this.SelectedAttachment.FileReference)) {
-                    Process.Start(this.SelectedAttachment.FileReference);
-                }
+                await this._attachmentEdit.Open(this.SelectedAttachment.FileReference);
             }
         }
 
-        private void DownloadFileHandler() {
+        private async Task DownloadFileHandler() {
             if (this.SelectedAttachment != null) {
                 if (File.Exists(this.SelectedAttachment.FileReference)) {
                     string file = this.SelectedAttachment.FileReference;
@@ -155,13 +173,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.SaveFileDialogService.FilterIndex = this.FilterIndex;
                     this.DialogResult = SaveFileDialogService.ShowDialog();
                     if (this.DialogResult) {
-                        File.Copy(file, this.SaveFileDialogService.File.GetFullName());
+                        await this._attachmentEdit.Download(file, this.SaveFileDialogService.File.GetFullName());
                     }
                 } else {
                     this.MessageBoxService.ShowMessage("File doesn't exist??");
                 }
-            } else {
-                this.MessageBoxService.ShowMessage("Selection is null??");
             }
         }
 
@@ -190,10 +206,27 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             viewModel: this._fileNameViewModel);
             return result == saveCommand;
         }
-    
+
+        private async Task Reload() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            await this._attachmentEdit.Load();
+            var attachments = await this._attachmentEdit.GetAttachments(this.GetBy, this.SelectedEntityId);
+            this.DispatcherService.BeginInvoke(() => {
+                this.Attachments = new ObservableCollection<Attachment>(attachments);
+                this.ShowTableLoading = false;
+            });
+        }
+
         private async Task InitializeHandler() {
-            var attachments =await this._attachmentEdit.GetAttachments(this.GetBy,this.SelectedEntityId);
-            this.Attachments = new ObservableCollection<Attachment>(attachments);
+            if (!this._isInitialized) {
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+                var attachments = await this._attachmentEdit.GetAttachments(this.GetBy, this.SelectedEntityId);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.Attachments = new ObservableCollection<Attachment>(attachments);
+                    this.ShowTableLoading = false;
+                });
+                this._isInitialized = true;
+            }
         }
     }
 }

@@ -42,66 +42,72 @@
         </dx:DialogService>
         <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog" Title="{Binding Title}" />
         <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog" Title="{Binding Title}" />
+        <dxmvvm:DispatcherService x:Name="AttachmentDispatcher" />
+        <dx:DXMessageBoxService x:Name="AttachmentNotifications" />
     </dxmvvm:Interaction.Behaviors>
-    <dxb:BarManager>
-        <dxb:BarManager.Bars>
-            <dxb:Bar Style="{StaticResource BarStyle}">
-                <dxb:BarButtonItem Content="Upload File"
-                                   Command="{Binding NewAttachmentCommand}"
-                                   Glyph="{dx:DXImage Image=Add_16x16.png}"
-                                   BarItemDisplayMode="ContentAndGlyph"
-                                   ShowScreenTip="True"
-                                   ToolTipService.ToolTip="Upload New Attachment" />
-                <dxb:BarButtonItem Content="Open File"
-                                   Glyph="{dx:DXImage Image=Open_16x16.png}"
-                                   Command="{Binding OpenFileCommand}"
-                                   BarItemDisplayMode="ContentAndGlyph"
-                                   ShowScreenTip="True"
-                                   ToolTipService.ToolTip="Open Attachment" />
-                <dxb:BarButtonItem Content="Download File"
-                                   Glyph="{dx:DXImage Image=Down_16x16.png}"
-                                   Command="{Binding DownloadFileCommand}"
-                                   BarItemDisplayMode="ContentAndGlyph"
-                                   ShowScreenTip="True"
-                                   ToolTipService.ToolTip="Download Attachment" />
-                <dxb:BarButtonItem Content="Delete File"
-                                   Glyph="{dx:DXImage Image=Close_16x16.png}"
-                                   Command="{Binding DeleteAttachmentCommand}"
-                                   BarItemDisplayMode="ContentAndGlyph"
-                                   ShowScreenTip="True"
-                                   ToolTipService.ToolTip="Delete Attachment" />
-            </dxb:Bar>
-        </dxb:BarManager.Bars>
-        <dxg:GridControl x:Name="_productAttachments"
-                         ItemsSource="{Binding Attachments}"
-                         SelectedItem="{Binding SelectedAttachment, Mode=TwoWay}"
-                         Style="{StaticResource GridControlStyle}">
-            <dxg:GridControl.View>
-                <dxg:TableView x:Name="_attachmentTblView" 
-                               Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding ElementName=__attachmentTblView, Path=TableViewCommands.BestFitColumns}"/>
-                    </dxmvvm:Interaction.Behaviors>
-                    <dxg:TableView.RowCellMenuCustomizations>
-                        <dxb:BarButtonItem Content="Open File"
-                                           Glyph="{dx:DXImage Image=Open_16x16.png}"
-                                           Command="{Binding Path=View.DataContext.OpenFileCommand}" />
-                        <dxb:BarButtonItem Content="Download File"
-                                           Glyph="{dx:DXImage Image=Down_16x16.png}"
-                                           Command="{Binding Path=View.DataContext.DownloadFileCommand}" />
-                        <dxb:BarButtonItem Content="Delete File"
-                                           Glyph="{dx:DXImage Image=Close_16x16.png}"
-                                           Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}" />
-                    </dxg:TableView.RowCellMenuCustomizations>
-                </dxg:TableView>
-            </dxg:GridControl.View>
-            <dxg:GridColumn FieldName="Id"
-                            Visible="False" />
-            <dxg:GridColumn FieldName="Created"
-                            Visible="False" />
-            <dxg:GridColumn FieldName="Name" />
-            <dxg:GridColumn FieldName="Description" />
-            <dxg:GridColumn FieldName="Extension" />
-        </dxg:GridControl>
+    <dx:LoadingDecorator IsSplashScreenShown="{Binding ShowLoading}">
+        <dxb:BarManager>
+            <dxb:BarManager.Bars>
+                <dxb:Bar Style="{StaticResource BarStyle}">
+                    <dxb:BarButtonItem Content="Upload File"
+                                       Command="{Binding NewAttachmentCommand}"
+                                       Glyph="{dx:DXImage Image=Add_16x16.png}"
+                                       BarItemDisplayMode="ContentAndGlyph"
+                                       ShowScreenTip="True"
+                                       ToolTipService.ToolTip="Upload New Attachment" />
+                    <dxb:BarButtonItem Content="Open File"
+                                       Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                       Command="{Binding OpenFileCommand}"
+                                       BarItemDisplayMode="ContentAndGlyph"
+                                       ShowScreenTip="True"
+                                       ToolTipService.ToolTip="Open Attachment" />
+                    <dxb:BarButtonItem Content="Download File"
+                                       Glyph="{dx:DXImage Image=Down_16x16.png}"
+                                       Command="{Binding DownloadFileCommand}"
+                                       BarItemDisplayMode="ContentAndGlyph"
+                                       ShowScreenTip="True"
+                                       ToolTipService.ToolTip="Download Attachment" />
+                    <dxb:BarButtonItem Content="Delete File"
+                                       Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                       Command="{Binding DeleteAttachmentCommand}"
+                                       BarItemDisplayMode="ContentAndGlyph"
+                                       ShowScreenTip="True"
+                                       ToolTipService.ToolTip="Delete Attachment" />
+                </dxb:Bar>
+            </dxb:BarManager.Bars>
+            <dxg:GridControl x:Name="_productAttachments"
+                             ItemsSource="{Binding Attachments}"
+                             SelectedItem="{Binding SelectedAttachment, Mode=TwoWay}"
+                             Style="{StaticResource GridControlStyle}"
+                             ShowLoadingPanel="{Binding ShowTableLoading}">
+                <dxg:GridControl.View>
+                    <dxg:TableView x:Name="_attachmentTblView"
+                                   Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand EventName="Loaded"
+                                                   Command="{Binding ElementName=__attachmentTblView, Path=TableViewCommands.BestFitColumns}" />
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:TableView.RowCellMenuCustomizations>
+                            <dxb:BarButtonItem Content="Open File"
+                                               Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                               Command="{Binding Path=View.DataContext.OpenFileCommand}" />
+                            <dxb:BarButtonItem Content="Download File"
+                                               Glyph="{dx:DXImage Image=Down_16x16.png}"
+                                               Command="{Binding Path=View.DataContext.DownloadFileCommand}" />
+                            <dxb:BarButtonItem Content="Delete File"
+                                               Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                               Command="{Binding Path=View.DataContext.DeleteAttachmentCommand}" />
+                        </dxg:TableView.RowCellMenuCustomizations>
+                    </dxg:TableView>
+                </dxg:GridControl.View>
+                <dxg:GridColumn FieldName="Id"
+                                Visible="False" />
+                <dxg:GridColumn FieldName="Created"
+                                Visible="False" />
+                <dxg:GridColumn FieldName="Name" />
+                <dxg:GridColumn FieldName="Description" />
+                <dxg:GridColumn FieldName="Extension" />
+            </dxg:GridControl>
         </dxb:BarManager>
+    </dx:LoadingDecorator>
 </UserControl>

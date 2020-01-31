@@ -8,7 +8,7 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 namespace ManufacturingInventory.Application.Boundaries.PriceEdit {
     public interface IPriceEditUseCase:IUseCase<PriceEditInput,PriceEditOutput> {
         Task<IEnumerable<Distributor>> GetDistributors();
-        Task<IEnumerable<Attachment>> GetAttachments();
+        Task<Price> GetPrice(int priceId);
         Task Load();
 
     }

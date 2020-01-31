@@ -1,4 +1,5 @@
 ﻿using ManufacturingInventory.Infrastructure.Model.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,54 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Infrastructure.Model.Services {
     public class DistributorProvider : IEntityProvider<Distributor> {
-        public Distributor GetEntity(Expression<Func<Distributor, bool>> expression) => throw new NotImplementedException();
-        public Task<Distributor> GetEntityAsync(Expression<Func<Distributor, bool>> expression) => throw new NotImplementedException();
-        public IEnumerable<Distributor> GetEntityList(Expression<Func<Distributor, bool>> expression = null, Func<IQueryable<Distributor>, IOrderedQueryable<Distributor>> orderBy = null) => throw new NotImplementedException();
-        public Task<IEnumerable<Distributor>> GetEntityListAsync(Expression<Func<Distributor, bool>> expression = null, Func<IQueryable<Distributor>, IOrderedQueryable<Distributor>> orderBy = null) => throw new NotImplementedException();
-        public void Load() => throw new NotImplementedException();
-        public Task LoadAsync() => throw new NotImplementedException();
+        private ManufacturingContext _context;
+
+        public DistributorProvider(ManufacturingContext context) {
+            this._context = context;
+        }
+
+        public Distributor GetEntity(Expression<Func<Distributor, bool>> expression) {
+            return this._context.Distributors.FirstOrDefault(expression);
+        }
+
+        public async Task<Distributor> GetEntityAsync(Expression<Func<Distributor, bool>> expression) {
+            return await this._context.Distributors.FirstOrDefaultAsync(expression);
+        }
+
+        public IEnumerable<Distributor> GetEntityList(Expression<Func<Distributor, bool>> expression = null, Func<IQueryable<Distributor>, IOrderedQueryable<Distributor>> orderBy = null) {
+            IQueryable<Distributor> query = this._context.Set<Distributor>().AsNoTracking();
+
+            if (expression != null) {
+                query = query.Where(expression);
+            }
+
+            if (orderBy != null) {
+                return orderBy(query).ToList();
+            } else {
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<Distributor>> GetEntityListAsync(Expression<Func<Distributor, bool>> expression = null, Func<IQueryable<Distributor>, IOrderedQueryable<Distributor>> orderBy = null) {
+            IQueryable<Distributor> query = this._context.Set<Distributor>().AsNoTracking();
+
+            if (expression != null) {
+                query = query.Where(expression);
+            }
+
+            if (orderBy != null) {
+                return await orderBy(query).ToListAsync();
+            } else {
+                return await query.ToListAsync();
+            }
+        }
+
+        public void Load() {
+            this._context.Distributors.Load();
+        }
+
+        public async Task LoadAsync() {
+            await this._context.Distributors.LoadAsync();
+        }
     }
 }
