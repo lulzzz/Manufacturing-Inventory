@@ -56,14 +56,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public Price GetEntity(Expression<Func<Price, bool>> expression) {
             return this._context.Prices
                 .Include(e => e.Distributor)
-                .Include(e => e.Attachments)
+                .Include(e => e.Attachment)
+                .Include(e => e.PartInstances)
+                .Include(e => e.PartPrices)
                 .FirstOrDefault(expression);
         }
 
         public async Task<Price> GetEntityAsync(Expression<Func<Price, bool>> expression) {
             return await this._context.Prices
                 .Include(e => e.Distributor)
-                .Include(e=>e.Attachments)
+                .Include(e => e.Attachment)
+                .Include(e => e.PartInstances)
+                .Include(e => e.PartPrices)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -71,7 +75,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public IEnumerable<Price> GetEntityList(Expression<Func<Price, bool>> expression = null, Func<IQueryable<Price>, IOrderedQueryable<Price>> orderBy = null) {
             IQueryable<Price> query = this._context.Set<Price>()
                 .Include(e => e.Distributor)
-                .Include(e => e.Attachments)
+                .Include(e => e.Attachment)
+                .Include(e => e.PartInstances)
+                .Include(e => e.PartPrices)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -89,7 +95,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public async Task<IEnumerable<Price>> GetEntityListAsync(Expression<Func<Price, bool>> expression = null, Func<IQueryable<Price>, IOrderedQueryable<Price>> orderBy = null) {
             IQueryable<Price> query = this._context.Set<Price>()
                 .Include(e => e.Distributor)
-                .Include(e => e.Attachments)
+                .Include(e => e.Attachment)
+                .Include(e => e.PartInstances)
+                .Include(e => e.PartPrices)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -106,14 +114,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public void Load() {
             this._context.Prices
                 .Include(e => e.Distributor)
-                .Include(e => e.Attachments)
+                .Include(e => e.Attachment)
+                .Include(e => e.PartInstances)
+                .Include(e => e.PartPrices)
                 .Load();
         }
 
         public async Task LoadAsync() {
             await this._context.Prices
                 .Include(e => e.Distributor)
-                .Include(e => e.Attachments)
+                .Include(e => e.Attachment)
+                .Include(e => e.PartInstances)
+                .Include(e => e.PartPrices)
                 .LoadAsync();
         }
     }

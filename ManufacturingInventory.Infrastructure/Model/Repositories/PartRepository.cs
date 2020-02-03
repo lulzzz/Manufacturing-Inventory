@@ -111,8 +111,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
-                .Include(e => e.PartInstances)
                 .Load();
         }
 
@@ -121,8 +119,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
-                .Include(e=>e.PartInstances)
                 .LoadAsync();
         }
     }

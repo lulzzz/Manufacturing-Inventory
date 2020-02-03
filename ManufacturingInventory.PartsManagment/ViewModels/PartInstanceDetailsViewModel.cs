@@ -335,7 +335,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 }
                 this.UnitCost = this.SelectedPartInstance.UnitCost;
                 this.TotalCost = this.SelectedPartInstance.TotalCost;
-
             }
         }
     }

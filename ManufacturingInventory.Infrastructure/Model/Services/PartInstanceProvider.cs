@@ -21,7 +21,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
                 .Include(e => e.Part)
-                .AsNoTracking()
                 .FirstOrDefault(expression);
         }
 
@@ -33,7 +32,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
                 .Include(e => e.Part)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -87,7 +85,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                  .Include(e => e.BubblerParameter)
                  .Include(e => e.Condition)
                  .Include(e => e.Part)
-                 .AsNoTracking()
                  .Load();
         }
 
@@ -99,7 +96,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
                 .Include(e => e.Part)
-                .AsNoTracking()
                 .LoadAsync();
         }
     }

@@ -9,7 +9,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public DateTime TimeStamp { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidUntil { get; set; }
-        public bool IsCurrent { get; set; }
         public double UnitCost { get; set; }
         public int MinOrder { get; set; }
         public double LeadTime { get; set; }
@@ -18,19 +17,26 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int DistributorId { get; set; }
         public Distributor Distributor { get; set; }
 
-        public int PartInstanceId { get; set; }
-        public PartInstance PartInstance { get; set; }
+       //public int? AttachmentId { get; set; }
+        public Attachment Attachment { get; set; }
 
-        public virtual ICollection<Attachment> Attachments { get; set; }
+        //public int? PartInstanceId { get; set; }
+        //public PartInstance PartInstance { get; set; }
+
+        //public ICollection<Attachment> Attachments { get; set; }
+        public ICollection<PartInstance> PartInstances { get; set; }
+        public ICollection<PartPrice> PartPrices { get; set; }
+        public ICollection<PriceLog> PriceLogs { get; set; }
 
         public Price() {
-            this.Attachments = new HashSet<Attachment>();
+            this.PartPrices = new HashSet<PartPrice>();
+            this.PartInstances = new HashSet<PartInstance>();
+            this.PriceLogs = new HashSet<PriceLog>();
         }
 
         public void Set(Price entity) {
             this.UnitCost = entity.UnitCost;
             this.DistributorId = entity.DistributorId;
-            this.IsCurrent = entity.IsCurrent;
             this.TimeStamp = entity.TimeStamp;
             this.MinOrder = entity.MinOrder;
             this.LeadTime = entity.LeadTime;

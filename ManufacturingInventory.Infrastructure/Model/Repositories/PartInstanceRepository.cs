@@ -60,12 +60,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.UnitCost = entity.UnitCost;
                 instance.BatchNumber = entity.BatchNumber;
                 instance.CostReported = entity.CostReported;
-                instance.IsResuable = entity.IsResuable;
                 instance.SkuNumber = entity.SkuNumber;
-
                 instance.ConditionId = entity.ConditionId;
                 instance.LocationId = entity.LocationId;
                 instance.PartTypeId = entity.PartTypeId;
+                instance.PriceId = entity.PriceId;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -85,13 +84,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.UnitCost = entity.UnitCost;
                 instance.BatchNumber = entity.BatchNumber;
                 instance.CostReported = entity.CostReported;
-                instance.IsResuable = entity.IsResuable;
                 instance.SkuNumber = entity.SkuNumber;
-
                 instance.ConditionId = entity.ConditionId;
                 instance.LocationId = entity.LocationId;
                 instance.PartTypeId = entity.PartTypeId;
-
+                instance.PriceId = entity.PriceId;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -114,6 +111,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                .Include(e=>e.PriceLogs)
                 .FirstOrDefault(expression);
         }
 
@@ -125,6 +123,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                .Include(e => e.PriceLogs)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -136,6 +135,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                .Include(e => e.PriceLogs)
                 .AsNoTracking();
 
 
@@ -158,6 +158,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                .Include(e => e.PriceLogs)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -190,6 +191,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                .Include(e => e.PriceLogs)
                 .LoadAsync();
         }
     }

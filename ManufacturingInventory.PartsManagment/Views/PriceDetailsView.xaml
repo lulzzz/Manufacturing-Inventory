@@ -29,8 +29,7 @@
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="PriceDetailDispatcher" />
         <dx:DXMessageBoxService x:Name="PriceDetailsMessageService" />
-        <dxmvvm:EventToCommand EventName="Loaded"
-                               Command="{Binding InitializeCommand}" />
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <Grid Margin="5,5,5,5">
         <dxlc:LayoutGroup Orientation="Vertical">
@@ -111,12 +110,12 @@
                              Style="{StaticResource LayoutItemStyle}"
                              VerticalAlignment="Bottom"
                              Visibility="{Binding IsEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
-                <dxlc:LayoutGroup Orientation="Horizontal">
+                <dxlc:LayoutGroup Orientation="Horizontal" Height="30">
                     <dx:SimpleButton Content="Save Changes"
-                                     Height="50"
+                                     Glyph="{dx:DXImage Image=Save_16x16.png}"
                                      Command="{Binding SaveCommand}" />
                     <dx:SimpleButton Content="Discard Changes"
-                                     Height="50"
+                                     Glyph="{dx:DXImage Image=Cancel_16x16.png}"
                                      Command="{Binding CancelCommand}" />
                 </dxlc:LayoutGroup>
             </dxlc:LayoutItem>

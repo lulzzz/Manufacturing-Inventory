@@ -18,7 +18,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
                 .FirstOrDefault(expression);
         }
 
@@ -27,7 +26,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -36,7 +34,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -55,7 +52,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -74,7 +70,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
                 .Load();
         }
 
@@ -83,7 +78,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Services {
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
                 .Include(e => e.Usage)
-                .Include(e => e.Attachments)
                 .LoadAsync();
         }
     }

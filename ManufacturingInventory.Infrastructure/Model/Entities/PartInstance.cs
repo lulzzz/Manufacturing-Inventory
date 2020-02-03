@@ -20,7 +20,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public string SerialNumber { get; set; }
         public string BatchNumber { get; set; }
         public bool CostReported { get; set; }
-        public bool IsResuable { get; set; }
         public bool IsBubbler { get; set; }
         public byte[] RowVersion { get; set; }
 
@@ -39,14 +38,17 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int? BubblerParameterId { get; set; }
         public BubblerParameter BubblerParameter { get; set; }
 
+        public int? PriceId { get; set; }
         public Price Price { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
+        public ICollection<PriceLog> PriceLogs { get; set; }
 
         public PartInstance() {
             this.Transactions = new HashSet<Transaction>();
             this.Attachments = new HashSet<Attachment>();
+            this.PriceLogs = new HashSet<PriceLog>();
         }
 
         public PartInstance(Part part, string name, string serialNumber, string batchNumber, string skuNumber,bool isBubbler) : this() {
@@ -93,26 +95,26 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
         public void UpdatePrice() {
             if (!this.IsBubbler) {
-                this.UnitCost = this.Price.UnitCost;
-                this.TotalCost = this.UnitCost * this.Quantity;
+                if (this.PriceId.HasValue) {
+                    this.UnitCost = this.Price.UnitCost;
+                    this.TotalCost = this.UnitCost * this.Quantity;
+                }
             } else {
-                this.UnitCost = this.Price.UnitCost;
-                this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight)*this.Quantity;
+                if (this.PriceId.HasValue) {
+                    this.UnitCost = this.Price.UnitCost;
+                    this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight) * this.Quantity;
+                }
             }
         }
 
         public void UpdatePrice(Price price) {
             if (!this.IsBubbler) {
-                this.Price = price;
-                this.Price.PartInstanceId = this.Id;
-                this.Price.PartInstance = this;
-                this.UnitCost = this.Price.UnitCost;
+                this.PriceId = price.Id;
+                this.UnitCost = price.UnitCost;
                 this.TotalCost = this.UnitCost * this.Quantity;
             } else {
-                this.Price = price;
-                this.Price.PartInstanceId = this.Id;
-                this.Price.PartInstance = this;
-                this.UnitCost = this.Price.UnitCost;
+                this.PriceId = price.Id;
+                this.UnitCost = price.UnitCost;
                 this.TotalCost = this.UnitCost * this.BubblerParameter.NetWeight;
             }
         }

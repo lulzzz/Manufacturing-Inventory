@@ -28,6 +28,7 @@ using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.TransactionEdit;
 using ManufacturingInventory.Infrastructure.Model.Services;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
+using ManufacturingInventory.Application.Boundaries.PriceEdit;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -58,6 +59,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IAttachmentEditUseCase, AttachmentEdit>();
                 container.Register<ITransactionEditUseCase, TransactionEdit>();
                 container.Register<IReturnItemUseCase, ReturnItem>();
+                container.Register<IPriceEditUseCase, PriceEdit>();
 
                 container.Register<IRepository<Category>, CategoryRepository>();
                 container.Register<IRepository<Location>, LocationRepository>();
@@ -66,6 +68,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IRepository<Attachment>, AttachmentRepository>();
                 container.Register<IRepository<Transaction>, TransactionRepository>();
                 container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
+
 
                 container.Register<IEntityProvider<Category>, CategoryProvider>();
                 container.Register<IEntityProvider<Location>, LocationProvider>();

@@ -26,7 +26,6 @@ namespace ManufacturingInventory.Infrastructure.Model {
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Unit> Units { get; set; }
-        public DbSet<InstanceParameter> InstanceParameters { get; set; }
         public DbSet<Price> Prices { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -35,6 +34,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
         public DbSet<UserAlert> UserAlerts { get; set; }
         public DbSet<PartManufacturer> PartManufacturers { get; set; }
         public DbSet<BubblerParameter> BubblerParameters { get; set; }
+        public DbSet<PartPrice> PartPrices { get; set; }
+        public DbSet<PriceLog> PriceLogs { get; set; }
 
         public ManufacturingContext(DbContextOptions<ManufacturingContext> options) : base(options) {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -166,6 +167,16 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .IsConcurrencyToken()
                 .ValueGeneratedOnAddOrUpdate();
 
+            builder.Entity<PartPrice>()
+                .Property(e => e.RowVersion)
+                .IsConcurrencyToken()
+                .ValueGeneratedOnAddOrUpdate();
+
+            builder.Entity<PriceLog>()
+                .Property(e => e.RowVersion)
+                .IsConcurrencyToken()
+                .ValueGeneratedOnAddOrUpdate();
+
             #endregion
 
             #region Parts
@@ -218,8 +229,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
                 builder.Entity<Attachment>()
                     .HasOne(e => e.Price)
-                    .WithMany(e => e.Attachments)
-                    .HasForeignKey(e => e.PriceId)
+                    .WithOne(e=>e.Attachment)
+                    .HasForeignKey<Attachment>(e => e.PriceId)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
 
@@ -285,12 +296,61 @@ namespace ManufacturingInventory.Infrastructure.Model {
             //    .HasForeignKey(e => e.DistributorId)
             //    .OnDelete(DeleteBehavior.NoAction);
 
+            //builder.Entity<PartInstance>()
+            //    .HasOne(e => e.Price)
+            //    .with(e => e.PartInstances)
+            //    .HasForeignKey(e => e.PriceId)
+            //    .IsRequired(false)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            //builder.Entity<PartInstance>()
+            //    .HasOne(e => e.Price)
+            //    .(e => e.PartInstances)
+            //    .IsRequired(false)
+            //    .HasForeignKey<Price>(e => e.PartInstanceId)
+            //    .OnDelete(DeleteBehavior.NoAction);
 
             //ParInstance-Price/Distributor
+
+            builder.Entity<PartPrice>()
+                .HasKey(pm => new { pm.PartId, pm.PriceId });
+
+            builder.Entity<PriceLog>()
+                .HasKey(pm => new { pm.PriceId, pm.PartInstanceId });
+
+            builder.Entity<Part>()
+                .HasMany(e => e.PartPrices)
+                .WithOne(e => e.Part)
+                .HasForeignKey(e => e.PartId)
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Price>()
+                .HasMany(e => e.PartPrices)
+                .WithOne(e => e.Price)
+                .IsRequired(true)
+                .HasForeignKey(e => e.PriceId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<PartInstance>()
-                .HasOne(e => e.Price)
+                .HasOne(e=>e.Price)
+                .WithMany(e=>e.PartInstances)
+                .HasForeignKey(e=>e.PriceId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<PartInstance>()
+                .HasMany(e => e.PriceLogs)
                 .WithOne(e => e.PartInstance)
-                .HasForeignKey<Price>(e => e.PartInstanceId)
+                .HasForeignKey(e => e.PartInstanceId)
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Price>()
+                .HasMany(e => e.PriceLogs)
+                .WithOne(e => e.Price)
+                .HasForeignKey(e => e.PriceId)
+                .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Distributor>()
@@ -311,23 +371,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             #region Parameters
 
-            builder.Entity<InstanceParameter>()
-                .HasKey(ip => new { ip.PartInstanceId, ip.ParameterId });
 
-
-            builder.Entity<InstanceParameter>()
-                .HasOne(e => e.Parameter)
-                .WithMany(e => e.InstanceParameters)
-                .HasForeignKey(e => e.ParameterId)
-                .IsRequired(true)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Entity<InstanceParameter>()
-            //    .HasOne(e => e.PartInstance)
-            //    .WithOne(e => e.InstanceParameter)
-            //    .HasForeignKey<InstanceParameter>(e => e.PartInstanceId)
-            //    .IsRequired(false)
-            //    .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Parameter>()
                 .HasOne(e => e.Unit)

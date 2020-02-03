@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
-    <FileVersion>1.0.479.0131</FileVersion>
+    <FileVersion>1.0.494.0203</FileVersion>
     <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
   <ItemGroup>

@@ -32,5 +32,6 @@ namespace ManufacturingInventory.PartsManagment.Internal {
 
         public int PriceId { get; set; }
         public bool IsEdit { get; set; }
+        public bool IsNew { get; set; }
     }
 }

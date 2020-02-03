@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
-    public partial class Remake : Migration
+    public partial class PriceRework : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -122,6 +122,31 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Prices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TimeStamp = table.Column<DateTime>(nullable: false),
+                    ValidFrom = table.Column<DateTime>(nullable: true),
+                    ValidUntil = table.Column<DateTime>(nullable: true),
+                    UnitCost = table.Column<double>(nullable: false),
+                    MinOrder = table.Column<int>(nullable: false),
+                    LeadTime = table.Column<double>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    DistributorId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Prices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Prices_Distributors_DistributorId",
+                        column: x => x.DistributorId,
+                        principalTable: "Distributors",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Parts",
                 columns: table => new
                 {
@@ -131,7 +156,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     Description = table.Column<string>(nullable: true),
                     HoldsBubblers = table.Column<bool>(nullable: false),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    OgranizationId = table.Column<int>(nullable: true),
+                    OrganizationId = table.Column<int>(nullable: true),
                     WarehouseId = table.Column<int>(nullable: true),
                     UsageId = table.Column<int>(nullable: true)
                 },
@@ -139,8 +164,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Parts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Parts_Categories_OgranizationId",
-                        column: x => x.OgranizationId,
+                        name: "FK_Parts_Categories_OrganizationId",
+                        column: x => x.OrganizationId,
                         principalTable: "Categories",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -264,7 +289,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     PartTypeId = table.Column<int>(nullable: true),
                     ConditionId = table.Column<int>(nullable: true),
                     LocationId = table.Column<int>(nullable: false),
-                    BubblerParameterId = table.Column<int>(nullable: true)
+                    BubblerParameterId = table.Column<int>(nullable: true),
+                    PriceId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -295,6 +321,11 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         column: x => x.PartTypeId,
                         principalTable: "Categories",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PartInstances_Prices_PriceId",
+                        column: x => x.PriceId,
+                        principalTable: "Prices",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -318,6 +349,30 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         name: "FK_PartManufacturers_Parts_PartId",
                         column: x => x.PartId,
                         principalTable: "Parts",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PartPrices",
+                columns: table => new
+                {
+                    PartId = table.Column<int>(nullable: false),
+                    PriceId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PartPrices", x => new { x.PartId, x.PriceId });
+                    table.ForeignKey(
+                        name: "FK_PartPrices_Parts_PartId",
+                        column: x => x.PartId,
+                        principalTable: "Parts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PartPrices_Prices_PriceId",
+                        column: x => x.PriceId,
+                        principalTable: "Prices",
                         principalColumn: "Id");
                 });
 
@@ -365,28 +420,82 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InstanceParameters",
+                name: "Attachments",
                 columns: table => new
                 {
-                    ParameterId = table.Column<int>(nullable: false),
-                    PartInstanceId = table.Column<int>(nullable: false),
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Created = table.Column<DateTime>(nullable: false),
+                    ValidThough = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    DisplayName = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    SourceReference = table.Column<string>(nullable: true),
+                    FileReference = table.Column<string>(nullable: true),
+                    Extension = table.Column<string>(nullable: true),
+                    Expires = table.Column<bool>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    PartId = table.Column<int>(nullable: true),
+                    DistributorId = table.Column<int>(nullable: true),
+                    ManufacturerId = table.Column<int>(nullable: true),
+                    PriceId = table.Column<int>(nullable: true),
+                    PartInstanceId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attachments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Attachments_Distributors_DistributorId",
+                        column: x => x.DistributorId,
+                        principalTable: "Distributors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Attachments_Manufacturers_ManufacturerId",
+                        column: x => x.ManufacturerId,
+                        principalTable: "Manufacturers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Attachments_Parts_PartId",
+                        column: x => x.PartId,
+                        principalTable: "Parts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Attachments_PartInstances_PartInstanceId",
+                        column: x => x.PartInstanceId,
+                        principalTable: "PartInstances",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Attachments_Prices_PriceId",
+                        column: x => x.PriceId,
+                        principalTable: "Prices",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InstanceParameter",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Value = table.Column<double>(nullable: false),
                     MinValue = table.Column<double>(nullable: false),
                     SafeValue = table.Column<double>(nullable: false),
                     Tracked = table.Column<bool>(nullable: false),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true)
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    ParameterId = table.Column<int>(nullable: false),
+                    PartInstanceId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InstanceParameters", x => new { x.PartInstanceId, x.ParameterId });
+                    table.PrimaryKey("PK_InstanceParameter", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InstanceParameters_Parameters_ParameterId",
+                        name: "FK_InstanceParameter_Parameters_ParameterId",
                         column: x => x.ParameterId,
                         principalTable: "Parameters",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_InstanceParameters_PartInstances_PartInstanceId",
+                        name: "FK_InstanceParameter_PartInstances_PartInstanceId",
                         column: x => x.PartInstanceId,
                         principalTable: "PartInstances",
                         principalColumn: "Id",
@@ -394,34 +503,28 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Prices",
+                name: "PriceLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PartInstanceId = table.Column<int>(nullable: false),
+                    PriceId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false),
-                    VaildFrom = table.Column<DateTime>(nullable: true),
-                    ValidUntil = table.Column<DateTime>(nullable: true),
                     IsCurrent = table.Column<bool>(nullable: false),
-                    UnitCost = table.Column<double>(nullable: false),
-                    MinOrder = table.Column<int>(nullable: false),
-                    LeadTime = table.Column<double>(nullable: false),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    DistributorId = table.Column<int>(nullable: false),
-                    PartInstanceId = table.Column<int>(nullable: false)
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Prices", x => x.Id);
+                    table.PrimaryKey("PK_PriceLogs", x => new { x.PriceId, x.PartInstanceId });
                     table.ForeignKey(
-                        name: "FK_Prices_Distributors_DistributorId",
-                        column: x => x.DistributorId,
-                        principalTable: "Distributors",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Prices_PartInstances_PartInstanceId",
+                        name: "FK_PriceLogs_PartInstances_PartInstanceId",
                         column: x => x.PartInstanceId,
                         principalTable: "PartInstances",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PriceLogs_Prices_PriceId",
+                        column: x => x.PriceId,
+                        principalTable: "Prices",
                         principalColumn: "Id");
                 });
 
@@ -494,57 +597,21 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Attachments",
-                columns: table => new
+            migrationBuilder.InsertData(
+                table: "Permissions",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ValidThough = table.Column<DateTime>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    DisplayName = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    SourceReference = table.Column<string>(nullable: true),
-                    FileReference = table.Column<string>(nullable: true),
-                    Extension = table.Column<string>(nullable: true),
-                    Expires = table.Column<bool>(nullable: false),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    PartId = table.Column<int>(nullable: true),
-                    DistributorId = table.Column<int>(nullable: true),
-                    ManufacturerId = table.Column<int>(nullable: true),
-                    PriceId = table.Column<int>(nullable: true),
-                    PartInstanceId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Attachments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Attachments_Distributors_DistributorId",
-                        column: x => x.DistributorId,
-                        principalTable: "Distributors",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Attachments_Manufacturers_ManufacturerId",
-                        column: x => x.ManufacturerId,
-                        principalTable: "Manufacturers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Attachments_Parts_PartId",
-                        column: x => x.PartId,
-                        principalTable: "Parts",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Attachments_PartInstances_PartInstanceId",
-                        column: x => x.PartInstanceId,
-                        principalTable: "PartInstances",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Attachments_Prices_PriceId",
-                        column: x => x.PriceId,
-                        principalTable: "Prices",
-                        principalColumn: "Id");
+                    { 1, "Full Inventory Privileges and User Control", "InventoryAdminAccount" },
+                    { 2, "Inventory View Only", "InventoryUserAccount" },
+                    { 3, "Full Inventory Privileges", "InventoryUserFullAccount" },
+                    { 4, "Inventory Check In/Check Out/Create", "InventoryUserLimitedAccount" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "EncryptedPassword", "Extension", "FirstName", "IV", "Key", "LastName", "PermissionId", "StorePassword", "UserName" },
+                values: new object[] { 1, null, null, null, "Andrew", null, null, "Elmendorf", 1, false, "AElmendo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alerts_PartInstanceId",
@@ -574,7 +641,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Attachments_PriceId",
                 table: "Attachments",
-                column: "PriceId");
+                column: "PriceId",
+                unique: true,
+                filter: "[PriceId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Contacts_DistributorId",
@@ -587,9 +656,14 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 column: "ManufacturerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InstanceParameters_ParameterId",
-                table: "InstanceParameters",
+                name: "IX_InstanceParameter_ParameterId",
+                table: "InstanceParameter",
                 column: "ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InstanceParameter_PartInstanceId",
+                table: "InstanceParameter",
+                column: "PartInstanceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Parameters_UnitId",
@@ -624,14 +698,24 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 column: "PartTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PartInstances_PriceId",
+                table: "PartInstances",
+                column: "PriceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PartManufacturers_ManufacturerId",
                 table: "PartManufacturers",
                 column: "ManufacturerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Parts_OgranizationId",
+                name: "IX_PartPrices_PriceId",
+                table: "PartPrices",
+                column: "PriceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Parts_OrganizationId",
                 table: "Parts",
-                column: "OgranizationId");
+                column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Parts_UsageId",
@@ -644,15 +728,14 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 column: "WarehouseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PriceLogs_PartInstanceId",
+                table: "PriceLogs",
+                column: "PartInstanceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Prices_DistributorId",
                 table: "Prices",
                 column: "DistributorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Prices_PartInstanceId",
-                table: "Prices",
-                column: "PartInstanceId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sessions_UserId",
@@ -701,19 +784,22 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 name: "Contacts");
 
             migrationBuilder.DropTable(
-                name: "InstanceParameters");
+                name: "InstanceParameter");
 
             migrationBuilder.DropTable(
                 name: "PartManufacturers");
+
+            migrationBuilder.DropTable(
+                name: "PartPrices");
+
+            migrationBuilder.DropTable(
+                name: "PriceLogs");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "UserAlerts");
-
-            migrationBuilder.DropTable(
-                name: "Prices");
 
             migrationBuilder.DropTable(
                 name: "Parameters");
@@ -726,9 +812,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Alerts");
-
-            migrationBuilder.DropTable(
-                name: "Distributors");
 
             migrationBuilder.DropTable(
                 name: "Units");
@@ -749,10 +832,16 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 name: "Parts");
 
             migrationBuilder.DropTable(
+                name: "Prices");
+
+            migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Locations");
+
+            migrationBuilder.DropTable(
+                name: "Distributors");
         }
     }
 }

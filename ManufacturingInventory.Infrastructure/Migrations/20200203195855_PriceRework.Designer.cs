@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200130163304_Refractor2")]
-    partial class Refractor2
+    [Migration("20200203195855_PriceRework")]
+    partial class PriceRework
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,7 +113,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("PartInstanceId");
 
-                    b.HasIndex("PriceId");
+                    b.HasIndex("PriceId")
+                        .IsUnique()
+                        .HasFilter("[PriceId] IS NOT NULL");
 
                     b.ToTable("Attachments");
                 });
@@ -265,17 +267,19 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.InstanceParameter", b =>
                 {
-                    b.Property<int>("PartInstanceId")
-                        .HasColumnType("int");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("MinValue")
+                        .HasColumnType("float");
 
                     b.Property<int>("ParameterId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("PartInstanceId")
                         .HasColumnType("int");
-
-                    b.Property<double>("MinValue")
-                        .HasColumnType("float");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -291,11 +295,13 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<double>("Value")
                         .HasColumnType("float");
 
-                    b.HasKey("PartInstanceId", "ParameterId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("InstanceParameters");
+                    b.HasIndex("PartInstanceId");
+
+                    b.ToTable("InstanceParameter");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Location", b =>
@@ -462,6 +468,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<int?>("PartTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PriceId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -499,6 +508,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("PartTypeId");
 
+                    b.HasIndex("PriceId");
+
                     b.ToTable("PartInstances");
                 });
 
@@ -523,6 +534,29 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasIndex("ManufacturerId");
 
                     b.ToTable("PartManufacturers");
+                });
+
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartPrice", b =>
+                {
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PriceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("PartId", "PriceId");
+
+                    b.HasIndex("PriceId");
+
+                    b.ToTable("PartPrices");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Permission", b =>
@@ -584,16 +618,10 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<int>("DistributorId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("bit");
-
                     b.Property<double>("LeadTime")
                         .HasColumnType("float");
 
                     b.Property<int>("MinOrder")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PartInstanceId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
@@ -617,10 +645,36 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("DistributorId");
 
-                    b.HasIndex("PartInstanceId")
-                        .IsUnique();
-
                     b.ToTable("Prices");
+                });
+
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PriceLog", b =>
+                {
+                    b.Property<int>("PriceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartInstanceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PriceId", "PartInstanceId");
+
+                    b.HasIndex("PartInstanceId");
+
+                    b.ToTable("PriceLogs");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Session", b =>
@@ -898,8 +952,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Price", "Price")
-                        .WithMany("Attachments")
-                        .HasForeignKey("PriceId")
+                        .WithOne("Attachment")
+                        .HasForeignKey("ManufacturingInventory.Infrastructure.Model.Entities.Attachment", "PriceId")
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 
@@ -921,7 +975,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Parameter", "Parameter")
                         .WithMany("InstanceParameters")
                         .HasForeignKey("ParameterId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "PartInstance")
@@ -984,6 +1038,11 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .WithMany("PartInstances")
                         .HasForeignKey("PartTypeId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Price", "Price")
+                        .WithMany("PartInstances")
+                        .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartManufacturer", b =>
@@ -1001,6 +1060,21 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartPrice", b =>
+                {
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Part", "Part")
+                        .WithMany("PartPrices")
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Price", "Price")
+                        .WithMany("PartPrices")
+                        .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Price", b =>
                 {
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Distributor", "Distributor")
@@ -1008,10 +1082,19 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasForeignKey("DistributorId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
 
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PriceLog", b =>
+                {
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "PartInstance")
-                        .WithOne("Price")
-                        .HasForeignKey("ManufacturingInventory.Infrastructure.Model.Entities.Price", "PartInstanceId")
+                        .WithMany("PriceLogs")
+                        .HasForeignKey("PartInstanceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Price", "Price")
+                        .WithMany("PriceLogs")
+                        .HasForeignKey("PriceId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
