@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ManufacturingInventory.Infrastructure.Model.Services {
+namespace ManufacturingInventory.Infrastructure.Model.Providers {
     public interface IEntityProvider<T> {
         T GetEntity(Expression<Func<T, bool>> expression);
         Task<T> GetEntityAsync(Expression<Func<T, bool>> expression);

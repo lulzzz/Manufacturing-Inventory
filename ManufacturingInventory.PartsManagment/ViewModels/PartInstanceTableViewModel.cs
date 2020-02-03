@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTableViewModel : InventoryViewModelBase {

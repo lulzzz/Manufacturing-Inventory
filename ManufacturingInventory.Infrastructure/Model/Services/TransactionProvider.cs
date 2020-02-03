@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ManufacturingInventory.Infrastructure.Model.Services {
+namespace ManufacturingInventory.Infrastructure.Model.Providers {
     public class TransactionProvider : IEntityProvider<Transaction> {
         private ManufacturingContext _context;
 

@@ -26,7 +26,7 @@ using ManufacturingInventory.Application.Boundaries.PartDetails;
 using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.TransactionEdit;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
 

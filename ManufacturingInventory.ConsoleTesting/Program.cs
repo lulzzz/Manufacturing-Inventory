@@ -12,7 +12,7 @@ using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Domain.Buisness.Concrete;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.Checkout;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Collections.ObjectModel;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 

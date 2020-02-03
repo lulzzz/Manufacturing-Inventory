@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Prism;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Application.Boundaries.TransactionEdit;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {

@@ -3,7 +3,7 @@ using ManufacturingInventory.Domain.Buisness.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -7,7 +7,7 @@ using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 //using Prism.Ioc;
 //using Prism.DryIoc;
 //using DryIoc;

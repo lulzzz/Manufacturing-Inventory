@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ManufacturingInventory.Infrastructure.Model.Services {
+namespace ManufacturingInventory.Infrastructure.Model.Providers {
     public class ContactProvider : IEntityProvider<Contact> {
         public Contact GetEntity(Expression<Func<Contact, bool>> expression) => throw new NotImplementedException();
         public Task<Contact> GetEntityAsync(Expression<Func<Contact, bool>> expression) => throw new NotImplementedException();

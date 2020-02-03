@@ -13,7 +13,7 @@ using ManufacturingInventory.PartsManagment.Internal;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Services;
+using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 

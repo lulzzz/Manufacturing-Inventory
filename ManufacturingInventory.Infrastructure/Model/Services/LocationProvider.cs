@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ManufacturingInventory.Infrastructure.Model.Services {
+namespace ManufacturingInventory.Infrastructure.Model.Providers {
     public class LocationProvider : IEntityProvider<Location> {
         private ManufacturingContext _context;
 
