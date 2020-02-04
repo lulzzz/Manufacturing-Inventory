@@ -12,6 +12,7 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
@@ -29,13 +30,31 @@
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="PriceDetailDispatcher" />
         <dx:DXMessageBoxService x:Name="PriceDetailsMessageService" />
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
+        <dxmvvm:EventToCommand EventName="Loaded"
+                               Command="{Binding InitializeCommand}" />
+        <dx:DialogService x:Name="FileNameDialog"
+                          DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:FileNameView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="300" />
+                    <Setter Property="Height"
+                            Value="350" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog"
+                                      Title="{Binding Title}" />
+        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog"
+                                      Title="{Binding Title}" />
     </dxmvvm:Interaction.Behaviors>
     <Grid Margin="5,5,5,5">
         <dxlc:LayoutGroup Orientation="Vertical">
-            <dxlc:LayoutGroup>
-                
-            </dxlc:LayoutGroup>
             <dxlc:LayoutGroup>
                 <dxlc:LayoutItem Label="Unit Cost"
                                  Style="{StaticResource LayoutItemStyle}">
@@ -44,7 +63,7 @@
                                   MaskType="Numeric"
                                   Mask="c3"
                                   MinValue="0"
-                                  IsReadOnly="{Binding IsEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                  IsReadOnly="{Binding CanEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Label="Distributor"
                                  Style="{StaticResource LayoutItemStyle}">
@@ -52,7 +71,7 @@
                                       SelectedItem="{Binding SelectedDistributor}"
                                       ApplyItemTemplateToSelectedItem="True"
                                       IsTextEditable="False"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                         <dxe:ComboBoxEdit.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"
@@ -71,7 +90,7 @@
                                   MaskType="Numeric"
                                   Mask="d"
                                   MinValue="0"
-                                  IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Label="LeadTime(days)"
                                  LabelHorizontalAlignment="Center"
@@ -81,7 +100,7 @@
                                   MaskType="Numeric"
                                   Mask="d"
                                   MinValue="0"
-                                  IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup>
@@ -104,13 +123,58 @@
                                   HorizontalContentAlignment="Center" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstanceAttachmentRegion}"
-                            prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler,Mode=TwoWay}" />
+            <dxlc:LayoutItem Label="Attachment" Style="{StaticResource LayoutItemStyle}">
+                 <dxe:ButtonEdit AllowDefaultButton="False" Text="{Binding PriceAttachment.Name}" Height="30" FontSize="14">
+                        <dxe:ButtonEdit.Buttons>
+                            <dxe:ButtonInfo Command="{Binding NewAttachmentCommand}"
+                                            ToolTipService.ToolTip="Upload New Attachment"
+                                            ToolTipService.IsEnabled="True"
+                                            ToolTip="Upload New Attachment">
+                                <dxe:ButtonInfo.ContentTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{dx:DXImage Image=Add_16x16.png}" />
+                                    </DataTemplate>
+                                </dxe:ButtonInfo.ContentTemplate>
+                            </dxe:ButtonInfo>
+                            <dxe:ButtonInfo Command="{Binding DeleteAttachmentCommand}"
+                                            ToolTipService.ToolTip="Delete Attachment"
+                                            ToolTipService.IsEnabled="True"
+                                            ToolTip="Delete Attachment">
+                                <dxe:ButtonInfo.ContentTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{dx:DXImage Image=Close_16x16.png}" />
+                                    </DataTemplate>
+                                </dxe:ButtonInfo.ContentTemplate>
+                            </dxe:ButtonInfo>
+                            <dxe:ButtonInfo Command="{Binding OpenFileCommand}"
+                                            ToolTipService.ToolTip="Open Attachment"
+                                            ToolTipService.IsEnabled="True"
+                                            ToolTip="Open Attachment">
+                                <dxe:ButtonInfo.ContentTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{dx:DXImage Image=Open_16x16.png}" />
+                                    </DataTemplate>
+                                </dxe:ButtonInfo.ContentTemplate>
+                            </dxe:ButtonInfo>
+                            <dxe:ButtonInfo Command="{Binding DownloadFileCommand}"
+                                            ToolTipService.ToolTip="Download Attachment"
+                                            ToolTipService.IsEnabled="True"
+                                            ToolTip="Download Attachment">
+                                <dxe:ButtonInfo.ContentTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{dx:DXImage Image=Down_16x16.png}" />
+                                    </DataTemplate>
+                                </dxe:ButtonInfo.ContentTemplate>
+                            </dxe:ButtonInfo>
+                        </dxe:ButtonEdit.Buttons>  
+                 </dxe:ButtonEdit>
+            </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Save or Cancel Changes"
                              Style="{StaticResource LayoutItemStyle}"
                              VerticalAlignment="Bottom"
-                             Visibility="{Binding IsEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
-                <dxlc:LayoutGroup Orientation="Horizontal" Height="30">
+                             Visibility="{Binding CanEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                <dxlc:LayoutGroup Orientation="Horizontal"
+                                  Height="30">
                     <dx:SimpleButton Content="Save Changes"
                                      Glyph="{dx:DXImage Image=Save_16x16.png}"
                                      Command="{Binding SaveCommand}" />

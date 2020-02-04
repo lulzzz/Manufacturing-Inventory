@@ -16,21 +16,41 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
+using ManufacturingInventory.Common.Application.UI.ViewModels;
+using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
+using System.IO;
+using System.Collections.Generic;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
-    public class PriceDetailsViewModel : InventoryViewModelBase {
+    public class PriceDetailsViewModel : InventoryViewModelNavigationBase {
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PriceDetailsMessageService"); }
-        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PriceDetailDispatcher"); } 
+        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PriceDetailDispatcher"); }
+        public IDialogService FileNameDialog { get { return ServiceContainer.GetService<IDialogService>("FileNameDialog"); } }
+        public IOpenFileDialogService OpenFileDialogService { get { return ServiceContainer.GetService<IOpenFileDialogService>("OpenFileDialog"); } }
+        public ISaveFileDialogService SaveFileDialogService { get { return ServiceContainer.GetService<ISaveFileDialogService>("SaveFileDialog"); } }
+
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
         private IPriceEditUseCase _priceEdit;
+        private IAttachmentEditUseCase _attachmentEdit;
         private ObservableCollection<Distributor> _distributors;
+        private FileNameViewModel _fileNameViewModel;
+        private Attachment _priceAttachment;
+        
+
+        public string Filter { get; set; }
+        public int FilterIndex { get; set; }
+        public string Title { get; set; }
+        public bool DialogResult { get; protected set; }
+        public string ResultFileName { get; protected set; }
+        public string FileBody { get; set; }
+        public string DefaultExt { get; set; }
+        public string DefaultFileName { get; set; }
+        public bool OverwritePrompt { get; set; }
 
         private Distributor _selectedDistributor;
-        private AttachmentDataTraveler _attachmentTraveler;
         private Price _price;
-        private int _priceId;
         private double _unitCost;
         private DateTime _timeStamp;
         private DateTime? _validFrom;
@@ -38,17 +58,39 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private int _minOrder;
         private double _leadTime;
 
+
         private bool _isEdit;
+        private bool _isNew;
+        private bool _canEdit;
+        private bool _canSave;
+        private int _priceId;
+        private int _partId;
+        private int _instanceId;
         private bool _isInitialized = false;
 
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
 
-        public PriceDetailsViewModel(IPriceEditUseCase priceEditUseCase,IEventAggregator eventAggregator,IRegionManager regionManager) {
+        public AsyncCommand NewAttachmentCommand { get; private set; }
+        public AsyncCommand OpenFileCommand { get; private set; }
+        public AsyncCommand DownloadFileCommand { get; private set; }
+        public AsyncCommand DeleteAttachmentCommand { get; private set; }
+
+        public PriceDetailsViewModel(IPriceEditUseCase priceEditUseCase, IAttachmentEditUseCase attachmentEdit, 
+            IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._priceEdit = priceEditUseCase;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
+            this._attachmentEdit = attachmentEdit;
+            this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
+            this.SaveCommand = new AsyncCommand(this.SaveHandler);
+            this.CancelCommand = new AsyncCommand(this.CancelHandler);
+
+            this.NewAttachmentCommand = new AsyncCommand(this.NewAttachmentHandler);
+            this.DeleteAttachmentCommand = new AsyncCommand(this.DeleteAttachmentHandler);
+            this.DownloadFileCommand = new AsyncCommand(this.DownloadFileHandler);
+            this.OpenFileCommand = new AsyncCommand(this.OpenFileHandler);
         }
 
         public override bool KeepAlive => false;
@@ -58,10 +100,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._price, value);
         }
 
-        public int PriceId { 
-            get => this._priceId;
-            set => this._priceId=value;
-        }
+        //public int PriceId { 
+        //    get => this._priceId;
+        //    set => this._priceId=value;
+        //}
 
         public ObservableCollection<Distributor> Distributors { 
             get => this._distributors;
@@ -94,7 +136,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public int MinOrder { 
             get => this._minOrder;
-            set => SetProperty(ref this._leadTime, value);
+            set => SetProperty(ref this._minOrder, value);
         }
 
         public double LeadTime { 
@@ -102,44 +144,186 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._leadTime, value);
         }
 
-        public AttachmentDataTraveler AttachmentDataTraveler { 
-            get => this._attachmentTraveler;
-            set => SetProperty(ref this._attachmentTraveler, value);
-        }
-
         public bool IsEdit {
             get => this._isEdit;
             set => SetProperty(ref this._isEdit, value);
         }
-
-
-        private async Task SaveHandler() {
-            //PriceEditInput input=new PriceEditInput()
+        public bool IsNew { 
+            get => this._isNew;
+            set => SetProperty(ref this._isNew, value);
         }
 
-        private async Task CancelHandler() {
+        public bool CanEdit {
+            get => this._canEdit;
+            set => SetProperty(ref this._canEdit, value);
+        }
 
+        public Attachment PriceAttachment { 
+            get => this._priceAttachment;
+            set => SetProperty(ref this._priceAttachment, value);
+        }
+
+        private Task SaveHandler() {
+            this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish(this._priceId);
+            return Task.CompletedTask;
+        }
+
+        private Task CancelHandler() {
+            this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
+            return Task.CompletedTask;
         }
 
         private async Task InitializeHandler() {
             if (!this._isInitialized) {
                 var distributors =await this._priceEdit.GetDistributors();
-                var price= await this._priceEdit.GetPrice(this.PriceId);
-
-                this.AttachmentDataTraveler = new AttachmentDataTraveler(Domain.Enums.GetAttachmentBy.PRICE, this.PriceId);
-                this.UnitCost = price.UnitCost;
-                this.LeadTime = price.LeadTime;
-                this.ValidFrom = price.ValidFrom;
-                this.ValidUntil = price.ValidUntil;
-                this.TimeStamp = price.TimeStamp;
-                this.MinOrder = price.MinOrder;
+                var price= await this._priceEdit.GetPrice(this._priceId);
+                var attachment = await this._attachmentEdit.GetPriceAttachment(this._priceId);
                 this.DispatcherService.BeginInvoke(() => {
-                    this.Price = price;
                     this.Distributors = new ObservableCollection<Distributor>(distributors);
-                    this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
+                    this.PriceAttachment = attachment;
+                    if (price != null) {
+                        this.Price = price;
+                        this.UnitCost = price.UnitCost;
+                        this.LeadTime = price.LeadTime;
+                        this.ValidFrom = price.ValidFrom;
+                        this.ValidUntil = price.ValidUntil;
+                        this.TimeStamp = price.TimeStamp;
+                        this.MinOrder = price.MinOrder;
+                        this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
+                    } else {
+                        this.UnitCost = 0;
+                        this.LeadTime = 0;
+                        this.TimeStamp = DateTime.Now;
+                        this.MinOrder = 0;
+                    }
                 });
                 this._isInitialized = true;
             }
+        }
+
+        #region AttachmentRegion
+
+        private async Task NewAttachmentHandler() {
+            this.OpenFileDialogService.Filter = Constants.FileFilters;
+            this.OpenFileDialogService.FilterIndex = this.FilterIndex;
+            this.OpenFileDialogService.Title = "Select File To Uplaod";
+            if (this.OpenFileDialogService.ShowDialog()) {
+                var file = this.OpenFileDialogService.File;
+                string tempFileName = file.Name.Substring(0, file.Name.IndexOf("."));
+                if (this.ShowAttachmentDialog(tempFileName)) {
+                    if (this._fileNameViewModel != null) {
+                        AttachmentEditInput input = new AttachmentEditInput(this._fileNameViewModel.FileName,
+                            this._fileNameViewModel.FileName,
+                            this._fileNameViewModel.Description,
+                            file.GetFullName(),
+                            AttachmentOperation.NEW,
+                            Domain.Enums.GetAttachmentBy.PRICE,
+                            this._priceId);
+                        var response = await this._attachmentEdit.Execute(input);
+                        if (response.Success) {
+                            this.DispatcherService.BeginInvoke(() => {
+                                this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                            });
+                            //await this.Reload();
+                        } else {
+                            this.DispatcherService.BeginInvoke(() => {
+                                this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                            });
+
+                            //await this.Reload();
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task DeleteAttachmentHandler() {
+            if (this.PriceAttachment != null) {
+                string message = "You are about to delete attachment:" + this.PriceAttachment.Name +
+                    Environment.NewLine + "Continue?";
+                var result = this.MessageBoxService.ShowMessage(message, "Delete", MessageButton.YesNo, MessageIcon.Asterisk);
+                if (result == MessageResult.Yes) {
+                    AttachmentEditInput input = new AttachmentEditInput(this.PriceAttachment.Id, AttachmentOperation.DELETE);
+                    var response = await this._attachmentEdit.Execute(input);
+                    if (response.Success) {
+                        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                        //await this.Reload();
+                    } else {
+                        this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                        //await this.Reload();
+                    }
+                }
+            }
+        }
+
+        private async Task OpenFileHandler() {
+            if (this.PriceAttachment != null) {
+                await this._attachmentEdit.Open(this.PriceAttachment.FileReference);
+            }
+        }
+
+        private async Task DownloadFileHandler() {
+            if (this.PriceAttachment != null) {
+                if (File.Exists(this.PriceAttachment.FileReference)) {
+                    string file = this.PriceAttachment.FileReference;
+                    string ext = Path.GetExtension(file);
+                    this.SaveFileDialogService.DefaultExt = ext;
+                    this.SaveFileDialogService.DefaultFileName = Path.GetFileName(file);
+                    this.SaveFileDialogService.Filter = this.Filter;
+                    this.SaveFileDialogService.FilterIndex = this.FilterIndex;
+                    this.DialogResult = SaveFileDialogService.ShowDialog();
+                    if (this.DialogResult) {
+                        await this._attachmentEdit.Download(file, this.SaveFileDialogService.File.GetFullName());
+                    }
+                } else {
+                    this.MessageBoxService.ShowMessage("File doesn't exist??");
+                }
+            }
+        }
+
+        private bool ShowAttachmentDialog(string currentFile) {
+            if (this._fileNameViewModel == null) {
+                this._fileNameViewModel = new FileNameViewModel(currentFile);
+            }
+            this._fileNameViewModel.FileName = currentFile;
+            this._fileNameViewModel.Description = "";
+
+            UICommand saveCommand = new UICommand() {
+                Caption = "Save Attachment",
+                IsCancel = false,
+                IsDefault = true,
+            };
+
+            UICommand cancelCommand = new UICommand() {
+                Id = MessageBoxResult.Cancel,
+                Caption = "Cancel",
+                IsCancel = true,
+                IsDefault = false,
+            };
+            UICommand result = FileNameDialog.ShowDialog(
+            dialogCommands: new List<UICommand>() { saveCommand, cancelCommand },
+            title: "New Attachment Dialog",
+            viewModel: this._fileNameViewModel);
+            return result == saveCommand;
+        }
+
+        #endregion
+
+        public override void OnNavigatedTo(NavigationContext navigationContext) {
+            this._priceId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PriceId]);
+            this._instanceId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.InstanceId]);
+            this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
+            this.IsNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
+            this.IsEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
+            this.CanEdit = this.IsNew || this.IsEdit;
+        }
+
+        public override bool IsNavigationTarget(NavigationContext navigationContext) {
+            return true;
+        }
+
+        public override void OnNavigatedFrom(NavigationContext navigationContext) {
+
         }
     }
 }

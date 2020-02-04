@@ -22,14 +22,14 @@ namespace ManufacturingInventory.PartsManagment.Views {
     public partial class PriceDetailsView : UserControl {
         public PriceDetailsView() {
             InitializeComponent();
-            RegionContext.GetObservableContext(this).PropertyChanged += this.PriceDetailsView_PropertyChanged;
+            //RegionContext.GetObservableContext(this).PropertyChanged += this.PriceDetailsView_PropertyChanged;
         }
 
-        private void PriceDetailsView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            var context = (ObservableObject<object>)sender;
-            var instanceContext = (PriceDataTraveler)context.Value;
-            (DataContext as PriceDetailsViewModel).PriceId = instanceContext.PriceId;
-            (DataContext as PriceDetailsViewModel).IsEdit = instanceContext.IsEdit;
-        }
+        //private void PriceDetailsView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+        //    var context = (ObservableObject<object>)sender;
+        //    var instanceContext = (PriceDataTraveler)context.Value;
+        //    (DataContext as PriceDetailsViewModel).PriceId = instanceContext.PriceId;
+        //    (DataContext as PriceDetailsViewModel).IsEdit = instanceContext.IsEdit;
+        //}
     }
 }

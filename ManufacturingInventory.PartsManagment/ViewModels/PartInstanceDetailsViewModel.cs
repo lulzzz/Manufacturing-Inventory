@@ -39,6 +39,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isNew = false;
         private bool _isBubbler = false;
         private bool _isInitialized = false;
+        private int _partId;
 
         private ObservableCollection<Condition> _conditions;
         private ObservableCollection<Location> _locations;
@@ -51,6 +52,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Condition _selectedCondition;
         private PartType _selectedPartType;
         private AttachmentDataTraveler _instanceAttachmentTraveler;
+        private PriceDataTraveler _priceDataTraveler;
         private bool _tableLoading;
         private double _measuredWeight;
         private double _weight;
@@ -213,6 +215,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._tableLoading, value);
         }
 
+        public PriceDataTraveler PriceDataTraveler { 
+            get => this._priceDataTraveler;
+            set => SetProperty(ref this._priceDataTraveler, value);
+        }
 
         public async Task InitializedHandler() {
             if (!this._isInitialized) {
@@ -228,18 +234,26 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.Transactions = new ObservableCollection<Transaction>(transactions);
 
                     if (this.SelectedPartInstance != null) {
-                        this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
-                        if (this.SelectedPartInstance.Condition != null) {
-                            this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                        if (this._isNew) {
+
+
+
+                        } else {
+                            this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
+                            if (this.SelectedPartInstance.Condition != null) {
+                                this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                            }
+
+                            if (this.SelectedPartInstance.CurrentLocation != null) {
+                                this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                            }
+
+                            if (this.SelectedPartInstance.PartType != null) {
+                                this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                            }
                         }
 
-                        if (this.SelectedPartInstance.CurrentLocation != null) {
-                            this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                        }
 
-                        if (this.SelectedPartInstance.PartType != null) {
-                            this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
-                        }
                     }
                     this._isInitialized = true;
                 });
@@ -321,20 +335,41 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
-            var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
-            if (partInstance is PartInstance) {
-                this._isInitialized = false;
-                this.SelectedPartInstance = partInstance;
-                this.IsEdit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
-                this._isNew = (bool)navigationContext.Parameters[ParameterKeys.IsNew];
-                this.IsBubbler = this.SelectedPartInstance.IsBubbler;
+            this._isInitialized = false;
+            this._isNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
+            this.IsBubbler= Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsBubbler]);
+            this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
+            if (this._isNew) {
                 if (this.IsBubbler) {
-                    this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
-                    this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
-                    this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
+                    this.GrossWeight = 0;
+                    this.Measured = 0;
+                    this.NetWeight = 0;
                 }
-                this.UnitCost = this.SelectedPartInstance.UnitCost;
-                this.TotalCost = this.SelectedPartInstance.TotalCost;
+                this.PriceDataTraveler = new PriceDataTraveler(this._partId, true);
+            } else {
+                var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
+                this.IsEdit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
+                if (partInstance is PartInstance) {
+                    this.SelectedPartInstance = partInstance;
+                    if (this.IsBubbler) {
+                        this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
+                        this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
+                        this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
+                    }
+
+                    if (this.SelectedPartInstance.Price != null) {
+                        this.UnitCost = this.SelectedPartInstance.UnitCost;
+                        this.TotalCost = this.SelectedPartInstance.TotalCost;
+                        this.PriceDataTraveler = new PriceDataTraveler(this._partId, false,
+                            priceId:this.SelectedPartInstance.PriceId,
+                            instanceId:this.SelectedPartInstance.Id);
+                    } else {
+                        this.PriceDataTraveler = new PriceDataTraveler(this._partId, false,
+                            instanceId: this.SelectedPartInstance.Id);
+                        this.UnitCost = 0;
+                        this.TotalCost = 0;
+                    }
+                }
             }
         }
     }

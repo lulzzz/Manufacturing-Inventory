@@ -12,6 +12,11 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public static string TransactionTableRegion { get => "TransactionTableRegion"; }
         public static string AttachmentTableRegion { get => "AttachmentTableRegion"; }
         public static string InstanceAttachmentRegion { get => "InstanceAttachmentRegion"; }
+
+        public static string InstancePriceRegion { get => "InstancePriceRegion"; }
+        public static string InstancePriceLogRegion { get => "InstancePriceLogRegion"; }
+        public static string InstancePriceEditDetailsRegion { get => "InstancePriceEditDetailsRegion"; }
+
         public static string DetailsRegion { get => "DetailsRegion"; }
     }
 }

@@ -12,6 +12,7 @@ namespace ManufacturingInventory.Application.Boundaries.AttachmentsEdit {
 
     public interface IAttachmentEditUseCase:IUseCase<AttachmentEditInput,AttachmentEditOutput> {
         Task<IEnumerable<Attachment>> GetAttachments(GetAttachmentBy by, int id);
+        Task<Attachment> GetPriceAttachment(int priceId);
         Task<bool> Download(string fileSource, string dest);
         Task Open(string fileSource);
         Task Load();

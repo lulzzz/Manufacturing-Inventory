@@ -336,6 +336,15 @@
                                   TabIndex="2"
                                   prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstanceAttachmentRegion}"
                                   prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler,Mode=TwoWay}" />
+                    <dx:DXTabItem Header="Price"
+                                  Glyph="{dx:DXImage Image=BO_Price.png}"
+                                  TabIndex="3"
+                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstancePriceRegion}"
+                                  prism:RegionManager.RegionContext="{Binding PriceDataTraveler,Mode=TwoWay}"/>
+                    <dx:DXTabItem Header="Price Log"
+                                  Glyph="{dx:DXImage Image=InsertTable_16x16.png}"
+                                  
+                                  TabIndex="4"/>
                 </dx:DXTabControl>
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"

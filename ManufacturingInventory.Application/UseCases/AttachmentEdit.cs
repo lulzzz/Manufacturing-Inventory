@@ -123,5 +123,9 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task Open(string fileSource) {
             await FileService.OpenFileAsync(fileSource);
         }
+
+        public async Task<Attachment> GetPriceAttachment(int priceId) {
+            return await this._attachmentRepositry.GetEntityAsync(e => e.PriceId == priceId);
+        }
     }
 }

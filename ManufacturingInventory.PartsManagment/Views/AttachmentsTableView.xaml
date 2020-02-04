@@ -72,7 +72,7 @@
                                        Command="{Binding DeleteAttachmentCommand}"
                                        BarItemDisplayMode="ContentAndGlyph"
                                        ShowScreenTip="True"
-                                       ToolTipService.ToolTip="Delete Attachment" />
+                                       ToolTipService.ToolTip="Delete Attachment"/>
                 </dxb:Bar>
             </dxb:BarManager.Bars>
             <dxg:GridControl x:Name="_productAttachments"

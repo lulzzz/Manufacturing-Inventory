@@ -186,6 +186,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
             this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
             this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceRegion);
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion);
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceLogRegion);
         }
     }
 }

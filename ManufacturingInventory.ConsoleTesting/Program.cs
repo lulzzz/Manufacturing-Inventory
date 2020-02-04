@@ -19,6 +19,7 @@ using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static void Main(string[] args) {
+            Test();
 
             //UseCaseTesting();
             //CreateLocations();
@@ -28,10 +29,17 @@ namespace ManufacturingInventory.ConsoleTesting {
             //TransactionTesting();
             //ReturnTransactionTest();
             //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
-            AddAnotherPrice();
+            //AddAnotherPrice();
         }
 
         //#region DatabaseTesting
+
+        public static void Test(int? test = null) {
+            int? test1 = test;
+            Console.WriteLine("Has Value: {0}", test1.HasValue);
+            Console.ReadKey();
+
+        }
 
         public static void InitialCreate() {
             using var context = new ManufacturingContext();

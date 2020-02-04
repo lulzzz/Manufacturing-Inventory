@@ -100,9 +100,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             var partInstances = await this._provider.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
-            //var part = await this._partManagerService.PartService.GetEntityAsync(e => e.Id == this.SelectedPartId,false);
-            //var partInstances = await this._partManagerService.PartInstanceService.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
-
             this.DispatcherService.BeginInvoke(() => {
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.ShowTableLoading = false;
@@ -111,12 +108,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private void ViewInstanceDetailsHandler() {
             if (this.SelectedPartInstance != null) {
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
-                parameters.Add(ParameterKeys.IsEdit, false);
-                parameters.Add(ParameterKeys.IsNew, false);
-                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CleanupRegions();
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
+                    parameters.Add(ParameterKeys.IsEdit, false);
+                    parameters.Add(ParameterKeys.IsNew, false);
+                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                });
+
             }
         }
 
@@ -128,6 +130,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             this.DispatcherService.BeginInvoke(() => this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll());
                             this._outgoingInProgress = true;
                             this.DispatcherService.BeginInvoke(() => {
+                                this.CleanupRegions();
                                 NavigationParameters parameters = new NavigationParameters();
                                 parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
                                 this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckoutView, parameters);
@@ -150,7 +153,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task OutGoingDoneHandler() {
             this._outgoingInProgress = false;
             this.DispatcherService.BeginInvoke(() => {
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                this.CleanupRegions();
             });
             await this.ReloadHandler(new ReloadEventTraveler() { PartId=this.SelectedPartId,PartInstanceId=0});
         }
@@ -170,15 +173,48 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
+        private Task NewPartInstanceHandler() {
+            this.DispatcherService.BeginInvoke(() => {
+                this.CleanupRegions();
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.IsNew, true);
+                parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+            });
+
+            return Task.CompletedTask;
+        }
+        
         private void EditInstanceHandler() {
             if (this.SelectedPartInstance != null) {
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
-                parameters.Add(ParameterKeys.IsEdit, true);
-                parameters.Add(ParameterKeys.IsNew, false);
-                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CleanupRegions();
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.SelectedPartInstance, this.SelectedPartInstance);
+                    parameters.Add(ParameterKeys.IsEdit, true);
+                    parameters.Add(ParameterKeys.IsNew, false);
+                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                });
+
             }
+        }
+
+        public void CleanupRegions() {
+            this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+            //this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+            this._regionManager.Regions.Remove(LocalRegions.InstancePriceRegion);
+            //if (this._regionManager.Regions.ContainsRegionWithName(LocalRegions.InstancePriceEditDetailsRegion)) {
+            //    this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+            //}
+            //var region=this._regionManager.Regions.FirstOrDefault(e => e.Name == LocalRegions.InstancePriceEditDetailsRegion);
+            //if (region != null) {
+            //    this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+            //}
+
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion);
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceLogRegion);
         }
     }
 }

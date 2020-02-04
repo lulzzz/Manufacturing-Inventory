@@ -111,6 +111,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
                 .Include(e=>e.PriceLogs)
                 .FirstOrDefault(expression);
         }
@@ -123,6 +124,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
                 .FirstOrDefaultAsync(expression);
         }
@@ -135,6 +137,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
                 .AsNoTracking();
 
@@ -158,6 +161,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
                 .AsNoTracking();
 
@@ -191,6 +195,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e=>e.PartPrices)
                 .Include(e => e.PriceLogs)
                 .LoadAsync();
         }
