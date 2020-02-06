@@ -108,14 +108,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Task LoadHandler() {
             if (this.PriceId.HasValue) {
                 this.HasPrice = true;
-                this.CleanupRegions();
-                NavigationParameters param = new NavigationParameters();
-                param.Add(ParameterKeys.PriceId, this.PriceId);
-                param.Add(ParameterKeys.InstanceId, this.InstanceId);
-                param.Add(ParameterKeys.PartId, this.PartId);
-                param.Add(ParameterKeys.IsEdit, false);
-                param.Add(ParameterKeys.IsNew, false);
-                this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.PriceDetailsView, param);
+                this.DispatcherService.BeginInvoke(() => {
+                    //this.CleanupRegions();
+                    NavigationParameters param = new NavigationParameters();
+                    param.Add(ParameterKeys.PriceId, this.PriceId);
+                    param.Add(ParameterKeys.InstanceId, this.InstanceId);
+                    param.Add(ParameterKeys.PartId, this.PartId);
+                    param.Add(ParameterKeys.IsEdit, false);
+                    param.Add(ParameterKeys.IsNew, false);
+                    this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.PriceDetailsView, param);
+                });
             } else {
                 this.HasPrice = false;
             }
@@ -123,7 +125,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public void CleanupRegions() {
-            this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion);
+            //this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion);
         }
     }
 }

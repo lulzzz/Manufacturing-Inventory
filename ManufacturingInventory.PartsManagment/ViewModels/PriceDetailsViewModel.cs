@@ -63,7 +63,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isNew;
         private bool _canEdit;
         private bool _canSave;
-        private int _priceId;
+        private int? _priceId;
         private int _partId;
         private int _instanceId;
         private bool _isInitialized = false;
@@ -176,8 +176,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             if (!this._isInitialized) {
                 var distributors =await this._priceEdit.GetDistributors();
-                var price= await this._priceEdit.GetPrice(this._priceId);
-                var attachment = await this._attachmentEdit.GetPriceAttachment(this._priceId);
+                var id = (this._priceId.HasValue) ? this._priceId.Value : 0;
+                var price= await this._priceEdit.GetPrice(id);
+                var attachment = await this._attachmentEdit.GetPriceAttachment(id);
                 this.DispatcherService.BeginInvoke(() => {
                     this.Distributors = new ObservableCollection<Distributor>(distributors);
                     this.PriceAttachment = attachment;
@@ -212,13 +213,14 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 string tempFileName = file.Name.Substring(0, file.Name.IndexOf("."));
                 if (this.ShowAttachmentDialog(tempFileName)) {
                     if (this._fileNameViewModel != null) {
+                        var id = (this._priceId.HasValue) ? this._priceId.Value : 0;
                         AttachmentEditInput input = new AttachmentEditInput(this._fileNameViewModel.FileName,
                             this._fileNameViewModel.FileName,
                             this._fileNameViewModel.Description,
                             file.GetFullName(),
                             AttachmentOperation.NEW,
                             Domain.Enums.GetAttachmentBy.PRICE,
-                            this._priceId);
+                            id);
                         var response = await this._attachmentEdit.Execute(input);
                         if (response.Success) {
                             this.DispatcherService.BeginInvoke(() => {
@@ -310,7 +312,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         #endregion
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
-            this._priceId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PriceId]);
+            this._priceId = navigationContext.Parameters[ParameterKeys.PriceId] as int?;
             this._instanceId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.InstanceId]);
             this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
             this.IsNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);

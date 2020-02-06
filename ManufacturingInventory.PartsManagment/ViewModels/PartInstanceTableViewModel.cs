@@ -197,24 +197,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
                     this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
                 });
-
             }
         }
 
         public void CleanupRegions() {
             this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-            //this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
-            this._regionManager.Regions.Remove(LocalRegions.InstancePriceRegion);
-            //if (this._regionManager.Regions.ContainsRegionWithName(LocalRegions.InstancePriceEditDetailsRegion)) {
-            //    this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
-            //}
-            //var region=this._regionManager.Regions.FirstOrDefault(e => e.Name == LocalRegions.InstancePriceEditDetailsRegion);
-            //if (region != null) {
-            //    this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
-            //}
-
-            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion);
-            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceLogRegion);
+            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceRegion);
         }
     }
 }

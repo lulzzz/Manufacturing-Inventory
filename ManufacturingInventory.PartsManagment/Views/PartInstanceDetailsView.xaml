@@ -217,9 +217,10 @@
                                       IsReadOnly="True"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
-                <dx:DXTabControl>
+                <dx:DXTabControl SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
                     <dx:DXTabItem Header="Transactions"
-                                  Glyph="{dx:DXImage Image=AgendaView_16x16.png}">
+                                  Glyph="{dx:DXImage Image=AgendaView_16x16.png}"
+                                  TabIndex="0">
                         <dxb:BarManager>
                             <dxb:BarManager.Bars>
                                 <dxb:Bar Style="{StaticResource BarStyle}">
@@ -333,18 +334,42 @@
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Attachments"
                                   Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
-                                  TabIndex="2"
+                                  TabIndex="1"
                                   prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstanceAttachmentRegion}"
                                   prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler,Mode=TwoWay}" />
                     <dx:DXTabItem Header="Price"
                                   Glyph="{dx:DXImage Image=BO_Price.png}"
-                                  TabIndex="3"
-                                  prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstancePriceRegion}"
-                                  prism:RegionManager.RegionContext="{Binding PriceDataTraveler,Mode=TwoWay}"/>
+                                  TabIndex="2" IsSelected="True">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Event="Loaded"
+                                                   Command="" />
+                        </dxmvvm:Interaction.Behaviors>
+                        <Grid Margin="5,5,5,5">
+                            <dxlc:LayoutGroup Orientation="Vertical">
+                                <dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup Orientation="Horizontal"
+                                                      Height="30">
+                                        <dx:SimpleButton Content="Edit Price"
+                                                         Glyph="{dx:DXImage Image=EditDataSource_16x16.png}"
+                                                         Command="{Binding EditPriceCommand}"
+                                                         Visibility="{Binding HasPrice,Converter={dx:BooleanToVisibilityConverter}}" />
+                                        <dx:SimpleButton Content="Add Price"
+                                                         Glyph="{dx:DXImage Image=Add_32x32.png}"
+                                                         Command="{Binding CreateNewPriceCommand}"
+                                                         IsEnabled="{Binding IsNew,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        <dx:SimpleButton Content="Select Existing price"
+                                                         Glyph="{dx:DXImage Image=SwitchRowColumn_32x32.png}"
+                                                         Command="{Binding SelectExistingPriceCommand}"
+                                                         IsEnabled="{Binding IsNew,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutGroup>
+                                <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstancePriceEditDetailsRegion}" />
+                            </dxlc:LayoutGroup>
+                        </Grid>
+                    </dx:DXTabItem>
                     <dx:DXTabItem Header="Price Log"
-                                  Glyph="{dx:DXImage Image=InsertTable_16x16.png}"
-                                  
-                                  TabIndex="4"/>
+                                  Glyph="{dx:DXImage Image=InsertTable_16x16.png}"                 
+                                  TabIndex="3"/>
                 </dx:DXTabControl>
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"

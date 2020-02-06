@@ -19,7 +19,7 @@ namespace ManufacturingInventory.PartsManagment
             regionManager.RegisterViewWithRegion(LocalRegions.AttachmentTableRegion, typeof(AttachmentsTableView));
             regionManager.RegisterViewWithRegion(LocalRegions.InstanceAttachmentRegion, typeof(AttachmentsTableView));
             regionManager.RegisterViewWithRegion(LocalRegions.PartSummaryRegion, typeof(PartSummaryView));
-            regionManager.RegisterViewWithRegion(LocalRegions.InstancePriceRegion, typeof(InstancePriceView));
+            //regionManager.RegisterViewWithRegion(LocalRegions.InstancePriceRegion, typeof(InstancePriceView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry){
