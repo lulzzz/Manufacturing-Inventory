@@ -32,7 +32,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _outgoingInProgress;
         private bool _showTableLoading;
         private bool _isBubbler;
-        private bool _isNotBubbler;
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
@@ -43,6 +42,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand AddToOutgoingCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewInstanceDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
+        public AsyncCommand CheckInCommand { get; private set; }
 
         public PartInstanceTableViewModel(IEntityProvider<PartInstance> provider, IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._provider = provider;
@@ -53,9 +53,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ViewInstanceDetailsCommand = new PrismCommands.DelegateCommand(this.ViewInstanceDetailsHandler);
             this.EditInstanceCommand = new PrismCommands.DelegateCommand(this.EditInstanceHandler);
             this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler);
+            this.CheckInCommand = new AsyncCommand(this.NewPartInstanceHandler);
 
             this._eventAggregator.GetEvent<ReloadEvent>().Subscribe(async (traveler) => await this.ReloadHandler(traveler));
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async () => await this.OutGoingDoneHandler());
+            this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.ReloadNoTraveler());
+
         }
 
         public override bool KeepAlive => false;
@@ -158,6 +161,23 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             await this.ReloadHandler(new ReloadEventTraveler() { PartId=this.SelectedPartId,PartInstanceId=0});
         }
 
+        private async Task ReloadNoTraveler() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+
+            await this._provider.LoadAsync();
+            var partInstances = await this._provider.GetEntityListAsync(e => e.PartId == this.SelectedPartId);
+            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.IsBubbler = bubbler;
+                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+                if (this.SelectedPartInstance != null) {
+                    this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);
+                }
+                this.ShowTableLoading = false;
+            });
+        }
+
         private async Task ReloadHandler(ReloadEventTraveler traveler) {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
 
@@ -170,6 +190,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
                 this.ShowTableLoading = false;
+                this.ViewInstanceDetailsHandler();
             });
         }
 
@@ -180,6 +201,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 parameters.Add(ParameterKeys.IsNew, true);
                 parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
                 parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
             });
 
             return Task.CompletedTask;
@@ -202,7 +224,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public void CleanupRegions() {
             this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-            //this._regionManager.Regions.Remove(LocalRegions.InstancePriceRegion);
         }
     }
 }

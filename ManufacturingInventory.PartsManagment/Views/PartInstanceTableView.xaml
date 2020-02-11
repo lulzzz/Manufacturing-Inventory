@@ -57,7 +57,11 @@
             </dxb:Bar>
         </dxb:BarManager.Bars>
         <DockPanel>
-            <dx:SimpleButton DockPanel.Dock="Top" Content="Check In" Height="50" ></dx:SimpleButton>
+            <dx:SimpleButton DockPanel.Dock="Top"
+                             Content="Check In"
+                             Height="50"
+                             Glyph="{dx:DXImage Image=NewTask_32x32.png}"
+                             Command="{Binding CheckInCommand}"/>
             <dxg:GridControl x:Name="_listOfPartInstances"
                              Style="{StaticResource GridControlStyle}"
                              ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"

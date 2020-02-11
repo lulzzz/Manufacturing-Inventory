@@ -50,14 +50,31 @@ namespace ManufacturingInventory.Application.UseCases {
             return await this._transactionProvider.GetEntityListAsync(e=>e.PartInstanceId==instanceId);
         }
 
+        public async Task<PartInstance> GetPartInstance(int id) {
+            return await this._instanceRepository.GetEntityAsync(e => e.Id == id);
+        }
+
         public async Task<PartInstanceDetailsEditOutput> Execute(PartInstanceDetailsEditInput input) {
             if (input.IsNew) {
-                var entity = await this._instanceRepository.AddAsync(input.PartInstance);
-                if (entity != null) {
-                    return new PartInstanceDetailsEditOutput(entity, true,entity.Name+" Added");
+                if (input.PartInstance.IsBubbler) {
+                    var entity = await this._instanceRepository.AddAsync(input.PartInstance);
+                    //var bubbler = await this._bubblerRepository.AddAsync(input.PartInstance.BubblerParameter);
+                    if (entity != null) {
+                        var count = await this._unitOfWork.Save();
+                        return new PartInstanceDetailsEditOutput(entity, true, entity.Name + " Updated Count:" + count);
+                    } else {
+                        return new PartInstanceDetailsEditOutput(null, false, "Failed");
+                    }
                 } else {
-                    return new PartInstanceDetailsEditOutput(null, false, "Failed");
+                    var entity = await this._instanceRepository.AddAsync(input.PartInstance);
+                    if (entity != null) {
+                        var count = await this._unitOfWork.Save();
+                        return new PartInstanceDetailsEditOutput(entity, true, entity.Name + " Updated Count:" + count);
+                    } else {
+                        return new PartInstanceDetailsEditOutput(null, false, "Failed");
+                    }
                 }
+
             } else {
                 if (input.PartInstance.IsBubbler) {
                     return await this.ExecuteBubbler(input);
@@ -88,5 +105,11 @@ namespace ManufacturingInventory.Application.UseCases {
                 return new PartInstanceDetailsEditOutput(null, false, "Failed");
             }
         }
+
+        public async Task LoadAsync() {
+            await this._instanceRepository.LoadAsync();
+        }
+
+
     }
 }

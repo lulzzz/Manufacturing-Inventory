@@ -62,7 +62,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isEdit;
         private bool _isNew;
         private bool _canEdit;
-        private bool _canSave;
         private int? _priceId;
         private int _partId;
         private int _instanceId;
@@ -99,11 +98,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._price;
             set => SetProperty(ref this._price, value);
         }
-
-        //public int PriceId { 
-        //    get => this._priceId;
-        //    set => this._priceId=value;
-        //}
 
         public ObservableCollection<Distributor> Distributors { 
             get => this._distributors;
@@ -148,6 +142,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._isEdit;
             set => SetProperty(ref this._isEdit, value);
         }
+
         public bool IsNew { 
             get => this._isNew;
             set => SetProperty(ref this._isNew, value);
@@ -163,14 +158,54 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._priceAttachment, value);
         }
 
-        private Task SaveHandler() {
-            this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish(this._priceId);
-            return Task.CompletedTask;
+        private async Task SaveHandler() {
+            if (this.IsNew) {
+                PriceEditInput input = new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true, 
+                    this.UnitCost, this.MinOrder, this.LeadTime, this.SelectedDistributor.Id,this._partId,
+                    PriceEditAction.NEW,partInstanceId:this._instanceId);
+
+                var response = await this._priceEdit.Execute(input);
+                if (response.Success) {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                        this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+                        this.IsEdit = false;
+                        this.IsNew = false;
+                        this.CanEdit = this.IsNew || this.IsEdit;
+                    });
+                } else {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                    });
+                }
+            } else {
+                PriceEditInput input = new PriceEditInput(this.TimeStamp,this.ValidFrom,this.ValidUntil,true,this.UnitCost,this.MinOrder,this.LeadTime,
+                    this.SelectedDistributor.Id,this._partId,PriceEditAction.Edit,partInstanceId:this._instanceId,priceId:this._priceId);
+                var response=await this._priceEdit.Execute(input);
+                if (response.Success) {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                        this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+                        this.IsEdit = false;
+                        this.IsNew = false;
+                        this.CanEdit = this.IsNew || this.IsEdit;
+                    });
+                } else {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                    });
+
+                }
+            }
         }
 
         private Task CancelHandler() {
             this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
             return Task.CompletedTask;
+        }
+
+        private bool CanExecute() {
+            return this._selectedDistributor != null;
         }
 
         private async Task InitializeHandler() {
@@ -307,6 +342,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             title: "New Attachment Dialog",
             viewModel: this._fileNameViewModel);
             return result == saveCommand;
+
         }
 
         #endregion
@@ -321,7 +357,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
-            return true;
+            return false;
         }
 
         public override void OnNavigatedFrom(NavigationContext navigationContext) {

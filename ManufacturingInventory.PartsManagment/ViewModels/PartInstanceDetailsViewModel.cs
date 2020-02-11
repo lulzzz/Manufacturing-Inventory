@@ -39,8 +39,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isNew = false;
         private bool _isBubbler = false;
         private bool _isInitialized = false;
-        private bool _hasPrice;
-        private bool _editInProgress = false;
+        private bool _canEdit = false;
+
+        private bool _priceEditInProgress = false;
         private int _partId;
 
         private ObservableCollection<Condition> _conditions;
@@ -55,6 +56,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private PartType _selectedPartType;
         private AttachmentDataTraveler _instanceAttachmentTraveler;
         private PriceDataTraveler _priceDataTraveler;
+        private bool _hasPrice;
+        private string _addPriceButtonText;
         private int _selectedTabIndex;
         private bool _tableLoading;
         private double _measuredWeight;
@@ -79,8 +82,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializedHandler);
+            this.EditPriceCommand = new AsyncCommand(this.EditPriceHandler, this.CanModifyPrice);
+            this.NewPriceCommand = new AsyncCommand(this.NewPriceHandler,this.CanModifyPrice);
+            this.SelectPriceCommand = new AsyncCommand(this.SelectPriceHandler, this.CanModifyPrice);
             this.SaveCommand = new AsyncCommand(this.SaveHandler,this.CanSave);
             this.CancelCommand = new AsyncCommand(this.DiscardHandler);
+            this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.EditPriceDone());
         }
 
         public override bool KeepAlive => false;
@@ -135,6 +142,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isEdit, value);
         }
 
+        public bool CanEdit {
+            get => this._canEdit;
+            set => SetProperty(ref this._canEdit, value);
+        }
+
         public double Weight {
             get => this._weight;
             set => this.SetProperty(ref this._weight, value);
@@ -143,7 +155,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public double Measured {
             get => this._measuredWeight;
             set {
-                if (this.SelectedPartInstance != null) {
+                if (this.IsBubbler && this.SelectedPartInstance != null) {
                     this.SelectedPartInstance.UpdateWeight(value);
                     this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
                 }
@@ -154,11 +166,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public double GrossWeight {
             get => this._grossWeight;
             set {
-                if (this.IsBubbler) {
+                if (this.IsBubbler && this.SelectedPartInstance!=null) {
                     this.SelectedPartInstance.BubblerParameter.GrossWeight = value;
                     this.SelectedPartInstance.UpdateWeight();
-                    this.Weight = this.SelectedPartInstance.BubblerParameter.Measured;
-                    this.SelectedPartInstance.UpdatePrice();
+                    this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
                 }
                 SetProperty(ref this._grossWeight, value);
             }
@@ -167,7 +178,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public double NetWeight {
             get => this._netWeight;
             set {
-                if (this.IsBubbler) {
+                if (this.IsBubbler && this.SelectedPartInstance!=null) {
                     this.SelectedPartInstance.BubblerParameter.NetWeight = value;
                     this.SelectedPartInstance.UpdateWeight();
                     this.Weight = this.SelectedPartInstance.BubblerParameter.Weight;
@@ -179,12 +190,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public double UnitCost {
             get => this._unitCost;
-            set {
-                this.SelectedPartInstance.Price.UnitCost = value;
-                this.SelectedPartInstance.UpdatePrice();
-                this.TotalCost = this.SelectedPartInstance.TotalCost;
-                SetProperty(ref this._unitCost, value);
-            }
+            set => SetProperty(ref this._unitCost, value);
         }
 
         public double TotalCost {
@@ -195,8 +201,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public int Quantity {
             get => this._quantity;
             set {
-                if (!this.IsBubbler) {
-                    this.TotalCost = this.SelectedPartInstance.UnitCost * value;
+                if (!this.IsBubbler  && this.SelectedPartInstance!=null) {
+                    if (this.SelectedPartInstance.Price != null) {
+                        this.SelectedPartInstance.Quantity = value;
+                        this.TotalCost = this.SelectedPartInstance.Price.UnitCost * value;
+                    }
                 }
                 SetProperty(ref this._quantity, value);
             }
@@ -231,49 +240,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedTabIndex; 
             set => SetProperty(ref this._selectedTabIndex,value); 
         }
+       
+        public string AddPriceButtonText { 
+            get => this._addPriceButtonText;
+            set => SetProperty(ref this._addPriceButtonText, value);
+        }
 
-        public async Task InitializedHandler() {
-            if (!this._isInitialized) {
-
-                var categories = await this._editInstance.GetCategories();
-                var locations = await this._editInstance.GetLocations();
-                var transactions = await this._editInstance.GetTransactions(this.SelectedPartInstance.Id);
-                
-                this.DispatcherService.BeginInvoke(() => {
-                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                    this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
-                    this.Locations = new ObservableCollection<Location>(locations);
-                    this.Transactions = new ObservableCollection<Transaction>(transactions);
-
-                    if (this.SelectedPartInstance != null) {
-                        if (this._isNew) {
-
-
-
-                        } else {
-                            this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
-                            if (this.SelectedPartInstance.Condition != null) {
-                                this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
-                            }
-
-                            if (this.SelectedPartInstance.CurrentLocation != null) {
-                                this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                            }
-
-                            if (this.SelectedPartInstance.PartType != null) {
-                                this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
-                            }
-                        }
-
-
-                    }
-                    this._isInitialized = true;
-                });
-            }
+        public bool HasPrice { 
+            get => this._hasPrice;
+            set => SetProperty(ref this._hasPrice, value);
         }
 
         public async Task SaveHandler() {
-
             if (this.SelectedPartType != null) {
                 this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
             }
@@ -284,80 +262,82 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
 
-            PartInstanceDetailsEditInput input = new PartInstanceDetailsEditInput(this.SelectedPartInstance, false);
+            PartInstanceDetailsEditInput input = new PartInstanceDetailsEditInput(this.SelectedPartInstance, this._isNew);
             var output = await this._editInstance.Execute(input);
             if (output.Success) {
                 this.DispatcherService.BeginInvoke(() => {
-                    this.MessageBoxService.ShowMessage(output.Message+Environment.NewLine+"Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
+                    this.MessageBoxService.ShowMessage(output.Message + Environment.NewLine + "Reloading", "Saved", MessageButton.OK, MessageIcon.Information);
                 });
                 ReloadEventTraveler traveler = new ReloadEventTraveler() {
                     PartId = this.SelectedPartInstance.PartId,
                     PartInstanceId = this.SelectedPartInstance.Id
                 };
                 this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
-                this.IsEdit = false;
+                this.CanEdit = false;
             } else {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
                 });
             }
+
         }
 
-        public async Task DiscardHandler() {
-            await Task.Run(() => {
+        public Task DiscardHandler() {
+            return Task.Factory.StartNew(() => {
                 ReloadEventTraveler traveler = new ReloadEventTraveler() {
                     PartId = this.SelectedPartInstance.PartId,
                     PartInstanceId = this.SelectedPartInstance.Id
                 };
                 this.DispatcherService.BeginInvoke(() => {
-                    this.MessageBoxService.ShowMessage("","",MessageButton.OK,MessageIcon.Error); 
+                    this.MessageBoxService.ShowMessage("", "", MessageButton.OK, MessageIcon.Error);
                     this._eventAggregator.GetEvent<ReloadEvent>().Publish(traveler);
                     this.IsEdit = false;
                 });
-
             });
-
         }
 
         private Task NewPriceHandler() {
-            this._editInProgress = true;
-            //this.CleanupRegions();
-            NavigationParameters param = new NavigationParameters();
-            param.Add(ParameterKeys.PriceId, this.SelectedPartInstance.PriceId);
-            param.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-            param.Add(ParameterKeys.PartId, this.SelectedPartInstance.PartId);
-            param.Add(ParameterKeys.IsEdit, false);
-            param.Add(ParameterKeys.IsNew, true);
-            this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.PriceDetailsView, param);
-            return Task.CompletedTask;
+            return Task.Factory.StartNew(() => {
+                this._priceEditInProgress = true;
+                this.DispatcherService.BeginInvoke(() => {
+                    this.NavigatePriceEdit(true, false);
+                });
+            });
         }
 
         private Task SelectPriceHandler() {
-            this._editInProgress = true;
-            //this.CleanupRegions();
-            NavigationParameters param = new NavigationParameters();
-            param.Add(ParameterKeys.PriceId, this.SelectedPartInstance.PriceId);
-            param.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-            param.Add(ParameterKeys.PartId, this.SelectedPartInstance.PartId);
-            this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.SelectPriceView, param);
-            return Task.CompletedTask;
+            return Task.Factory.StartNew(() => {
+                this._priceEditInProgress = true;
+                this.DispatcherService.BeginInvoke(() => {
+                    this.NavigatePriceSelect();
+                });
+            });
         }
 
         private Task EditPriceHandler() {
-            this._editInProgress = true;
-            //this.CleanupRegions();
-            NavigationParameters param = new NavigationParameters();
-            param.Add(ParameterKeys.PriceId, this.SelectedPartInstance.PriceId);
-            param.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-            param.Add(ParameterKeys.PartId, this.SelectedPartInstance.PartId);
-            param.Add(ParameterKeys.IsEdit, true);
-            param.Add(ParameterKeys.IsNew, false);
-            this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.PriceDetailsView, param);
-            return Task.CompletedTask;
+            return Task.Factory.StartNew(() => {
+                this._priceEditInProgress = true;
+                this.DispatcherService.BeginInvoke(() => {
+                    this.NavigatePriceEdit(false, true);
+                });
+            });
+        }
+
+        private async Task EditPriceDone() {
+            await this._editInstance.LoadAsync();
+            this.SelectedPartInstance = await this._editInstance.GetPartInstance(this.SelectedPartInstance.Id);
+            this._isInitialized = false;
+            this._priceEditInProgress = false;
+            await this.InitializedHandler();
+
         }
 
         public bool CanSave() {
-            return this.SelectedLocation != null;
+            return this.SelectedLocation != null && !this._priceEditInProgress;
+        }
+
+        public bool CanModifyPrice() {
+            return !this._priceEditInProgress && !this.CanEdit;
         }
 
         public MessageResult ShowMessage(MessageType messageType,string message) {
@@ -375,26 +355,99 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        public void NavigatePrice(bool hasPrice) {
-            if (hasPrice) {
-                NavigationParameters param = new NavigationParameters();
-                param.Add(ParameterKeys.PriceId, this.SelectedPartInstance.PriceId);
-                param.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-                param.Add(ParameterKeys.PartId, this.SelectedPartInstance.PartId);
-                param.Add(ParameterKeys.IsEdit, false);
-                param.Add(ParameterKeys.IsNew, false);
-                this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.PriceDetailsView, param);
+        public void NavigatePriceEdit(bool isNewPrice,bool isPriceEdit) {
+            NavigationParameters param = new NavigationParameters();
+            param.Add(ParameterKeys.PriceId, this.SelectedPartInstance.PriceId);
+            param.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+            param.Add(ParameterKeys.PartId, this.SelectedPartInstance.PartId);
+            param.Add(ParameterKeys.IsEdit, isPriceEdit);
+            param.Add(ParameterKeys.IsNew, isNewPrice);
+            this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.PriceDetailsView, param);
+        }
+
+        public void NavigatePriceSelect() {
+            NavigationParameters param = new NavigationParameters();
+            param.Add(ParameterKeys.PriceId, this.SelectedPartInstance.PriceId);
+            param.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+            param.Add(ParameterKeys.PartId, this.SelectedPartInstance.PartId);
+            this._regionManager.RequestNavigate(LocalRegions.InstancePriceEditDetailsRegion, ModuleViews.SelectPriceView, param);
+        }
+
+        public void CleanupRegions() {
+           this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+        }
+
+        public async Task InitializedHandler() {
+            if (!this._isInitialized) {
+                var categories = await this._editInstance.GetCategories();
+                var locations = await this._editInstance.GetLocations();
+                if (!this._isNew) {
+                    var transactions = await this._editInstance.GetTransactions(this.SelectedPartInstance.Id);
+                    this.Transactions = new ObservableCollection<Transaction>(transactions);
+                }
+
+                this.DispatcherService.BeginInvoke(() => {
+                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                    this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
+                    this.Locations = new ObservableCollection<Location>(locations);
+                    if (this.SelectedPartInstance != null) {
+                        this.Quantity = this.SelectedPartInstance.Quantity;
+                        if (this.IsBubbler) {
+                            this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
+                            this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
+                            this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
+                        }
+
+                        if (this.SelectedPartInstance.Price != null) {
+                            this.UnitCost = this.SelectedPartInstance.UnitCost;
+                            this.TotalCost = this.SelectedPartInstance.TotalCost;
+                            this.HasPrice = true;
+                            this.AddPriceButtonText = "Add and Replace Price";
+                            this.NavigatePriceEdit(false, false);
+
+                        } else {
+                            this.UnitCost = 0;
+                            this.TotalCost = 0;
+                            this.HasPrice = false;
+                            this.AddPriceButtonText = "Add Price";
+                        }
+
+                        this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
+                        if (this.SelectedPartInstance.Condition != null) {
+                            this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                        }
+
+                        if (this.SelectedPartInstance.CurrentLocation != null) {
+                            this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                        }
+
+                        if (this.SelectedPartInstance.PartType != null) {
+                            this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                        }
+
+                    } else {
+                        if (this._isNew) {
+                            this.UnitCost = 0;
+                            this.TotalCost = 0;
+                            this.HasPrice = false;
+                            this.AddPriceButtonText = "Add Price";
+                            if (this.IsBubbler) {
+                                this.GrossWeight = 0;
+                                this.Measured = 0;
+                                this.NetWeight = 0;
+                                this.Quantity = 1;
+                            } else {
+                                this.Quantity = 0;
+                            }
+                        }
+                    }
+                    this._isInitialized = true;
+                });
             }
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
             return true;
-            //var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
-            //if (partInstance is PartInstance) {
-            //    return this.SelectedPartInstance != null && this.SelectedPartInstance.Id != partInstance.Id;
-            //} else {
-            //    return true;
-            //}
         }
 
         public override void OnNavigatedFrom(NavigationContext navigationContext) {
@@ -405,34 +458,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._isNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
             this.IsBubbler= Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsBubbler]);
             this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
-            if (this._isNew) {
-                if (this.IsBubbler) {
-                    this.GrossWeight = 0;
-                    this.Measured = 0;
-                    this.NetWeight = 0;
-                }
+            if (!this._isNew){
+                this.SelectedPartInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
+                this.IsEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
             } else {
-                var partInstance = navigationContext.Parameters[ParameterKeys.SelectedPartInstance] as PartInstance;
-                this.IsEdit = (bool)navigationContext.Parameters[ParameterKeys.IsEdit];
-                if (partInstance is PartInstance) {
-                    this.SelectedPartInstance = partInstance;
-                    if (this.IsBubbler) {
-                        this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
-                        this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
-                        this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
-                    }
-                    if (this.SelectedPartInstance.Price != null) {
-                        this.UnitCost = this.SelectedPartInstance.UnitCost;
-                        this.TotalCost = this.SelectedPartInstance.TotalCost;
-                        this.NavigatePrice(true);
-
-                    } else {
-                        this.UnitCost = 0;
-                        this.TotalCost = 0;
-                        this.NavigatePrice(false);
-                    }
-                }
+                this.SelectedPartInstance = new PartInstance();
+                this.SelectedPartInstance.PartId = this._partId;
+                this.SelectedPartInstance.BubblerParameter = new BubblerParameter(0, 0, 0);
+                this.SelectedPartInstance.IsBubbler = IsBubbler;
+                this.SelectedPartInstance.Quantity = 1;
             }
+            this.CanEdit = this.IsEdit || this._isNew;
         }
     }
 }

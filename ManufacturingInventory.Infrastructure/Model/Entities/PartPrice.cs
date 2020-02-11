@@ -28,5 +28,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int PriceId { get; set; }
         public Price Price { get; set; }
 
+        public void Set(PartPrice partPrice) {
+            this.PartId = partPrice.PartId;
+            this.PriceId = partPrice.PriceId;
+        }
+
     }
 }

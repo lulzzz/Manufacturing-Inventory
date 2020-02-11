@@ -62,17 +62,17 @@
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:TextEdit EditValue="{Binding SelectedPartInstance.Name}"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Serial Number"
                                      LabelHorizontalAlignment="Center"
                                      LabelPosition="Top">
                         <dxe:TextEdit EditValue="{Binding SelectedPartInstance.SerialNumber}"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Batch Number" Style="{StaticResource LayoutItemStyle}">
                         <dxe:TextEdit EditValue="{Binding SelectedPartInstance.BatchNumber}"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup>
@@ -81,7 +81,7 @@
                                           SelectedItem="{Binding SelectedLocation}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
-                                          IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
+                                          IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}"
@@ -95,7 +95,7 @@
                                           SelectedItem="{Binding SelectedPartType}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
-                                          IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
+                                          IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}"
@@ -110,7 +110,7 @@
                                           SelectedItem="{Binding SelectedCondition}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
-                                          IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}">
+                                          IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}">
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}"
@@ -128,7 +128,7 @@
                                       MaskType="Numeric"
                                       Mask="c3"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}"  />
+                                      IsReadOnly="{Binding CanEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}"  />
                     </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Total Cost"
                                          Style="{StaticResource LayoutItemStyle}">
@@ -147,7 +147,7 @@
                                       MaskType="Numeric"
                                       Mask="d"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Min Quantity"
                                      LabelHorizontalAlignment="Center"
@@ -157,7 +157,7 @@
                                       MaskType="Numeric"
                                       Mask="d"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Safe Quantity"
                                      LabelHorizontalAlignment="Center"
@@ -167,7 +167,7 @@
                                       MaskType="Numeric"
                                       Mask="d"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}"/>
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}"/>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Visibility="{Binding IsBubbler,Converter={dxmvvm:BooleanToVisibilityConverter}}">
@@ -178,7 +178,7 @@
                                       MaskType="Numeric"
                                       Mask="f"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Tare"
                                      Style="{StaticResource LayoutItemStyle}">
@@ -187,7 +187,7 @@
                                       MaskType="Numeric"
                                       Mask="f"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Gross"
                                      Style="{StaticResource LayoutItemStyle}">
@@ -196,7 +196,7 @@
                                       MaskType="Numeric"
                                       Mask="f"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Measured"
                                      Style="{StaticResource LayoutItemStyle}">
@@ -205,7 +205,7 @@
                                       MaskType="Numeric"
                                       Mask="f"
                                       MinValue="0"
-                                      IsReadOnly="{Binding IsEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Weight"
                                      Style="{StaticResource LayoutItemStyle}">
@@ -353,13 +353,13 @@
                                                          Glyph="{dx:DXImage Image=EditDataSource_16x16.png}"
                                                          Command="{Binding EditPriceCommand}"
                                                          Visibility="{Binding HasPrice,Converter={dx:BooleanToVisibilityConverter}}" />
-                                        <dx:SimpleButton Content="Add Price"
+                                        <dx:SimpleButton Content="{Binding AddPriceButtonText}"
                                                          Glyph="{dx:DXImage Image=Add_32x32.png}"
-                                                         Command="{Binding CreateNewPriceCommand}"
+                                                         Command="{Binding NewPriceCommand}"
                                                          IsEnabled="{Binding IsNew,Converter={dxmvvm:BooleanNegationConverter}}" />
                                         <dx:SimpleButton Content="Select Existing price"
                                                          Glyph="{dx:DXImage Image=SwitchRowColumn_32x32.png}"
-                                                         Command="{Binding SelectExistingPriceCommand}"
+                                                         Command="{Binding SelectPriceCommand}"
                                                          IsEnabled="{Binding IsNew,Converter={dxmvvm:BooleanNegationConverter}}" />
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
@@ -374,7 +374,7 @@
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"
                                  VerticalAlignment="Bottom"
-                                 Visibility="{Binding IsEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                 Visibility="{Binding CanEdit,Converter={dxmvvm:BooleanToVisibilityConverter}}">
                     <dxlc:LayoutGroup Orientation="Horizontal">
                         <dx:SimpleButton Content="Save Changes"
                                          Height="50"

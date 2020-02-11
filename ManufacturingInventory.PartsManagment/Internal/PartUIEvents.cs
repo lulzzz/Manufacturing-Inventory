@@ -18,7 +18,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     public class PartEditDoneEvent:PubSubEvent<int> { }
     public class PartEditCancelEvent : PubSubEvent { }
 
-    public class PriceEditDoneEvent : PubSubEvent<int?> { }
+    public class PriceEditDoneEvent : PubSubEvent { }
     public class PriceEditCancelEvent : PubSubEvent { }
     public class InstanceCreatedEvent : PubSubEvent<int> { };
 

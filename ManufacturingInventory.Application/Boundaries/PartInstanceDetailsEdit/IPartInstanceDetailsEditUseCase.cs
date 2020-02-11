@@ -11,5 +11,8 @@ namespace ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit 
         Task<IEnumerable<Attachment>> GetAttachments(int instanceId);
         Task<IEnumerable<Category>> GetCategories();
         Task<IEnumerable<Transaction>> GetTransactions(int instanceId);
+        Task<PartInstance> GetPartInstance(int id);
+        Task LoadAsync();
+
     }
 }

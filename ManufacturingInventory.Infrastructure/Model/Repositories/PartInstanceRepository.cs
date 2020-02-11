@@ -23,6 +23,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             return this._context.Add(entity).Entity;
         }
 
+        public async Task<PartInstance> AddAsync(PartInstance entity) {
+            var instance = await this.GetEntityAsync(e => e.Id == entity.Id);
+            if (instance != null) {
+                return null;
+            }
+            return (await this._context.AddAsync(entity)).Entity;
+        }
+
         public PartInstance Delete(PartInstance entity) {
             var toRemove = this._context.PartInstances.FirstOrDefault(e => e.Id == entity.Id);
             if (toRemove != null) {
@@ -95,13 +103,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             }
         }
 
-        public async Task<PartInstance> AddAsync(PartInstance entity) {
-            var instance = await this.GetEntityAsync(e => e.Id == entity.Id);
-            if (instance != null) {
-                return null;
-            }
-            return (await this._context.AddAsync(entity)).Entity;
-        }
+
 
         public PartInstance GetEntity(Expression<Func<PartInstance, bool>> expression) {
             return this._context.PartInstances
