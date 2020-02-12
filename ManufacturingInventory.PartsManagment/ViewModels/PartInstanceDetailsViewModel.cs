@@ -66,6 +66,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _netWeight;
         private double _unitCost;
         private double _totalCost;
+        private string _comments;
+        private string _description;
         private int _quantity;
 
 
@@ -250,6 +252,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._hasPrice;
             set => SetProperty(ref this._hasPrice, value);
         }
+        
+        public string Comments { 
+            get => this._comments;
+            set => SetProperty(ref this._comments, value);
+        }
+        
+        public string Description { 
+            get => this._description;
+            set => SetProperty(ref this._description, value);
+        }
 
         public async Task SaveHandler() {
             if (this.SelectedPartType != null) {
@@ -261,6 +273,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
 
             this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
+            this.SelectedPartInstance.Description = this.Description;
+            this.SelectedPartInstance.Comments = this.Comments;
 
             PartInstanceDetailsEditInput input = new PartInstanceDetailsEditInput(this.SelectedPartInstance, this._isNew);
             var output = await this._editInstance.Execute(input);
@@ -391,6 +405,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
                     this.Locations = new ObservableCollection<Location>(locations);
                     if (this.SelectedPartInstance != null) {
+                        this.Comments = this.SelectedPartInstance.Comments;
+                        this.Description = this.SelectedPartInstance.Description;
                         this.Quantity = this.SelectedPartInstance.Quantity;
                         if (this.IsBubbler) {
                             this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;

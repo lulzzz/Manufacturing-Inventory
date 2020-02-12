@@ -11,6 +11,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public string Comments { get; set; }
         public string SkuNumber { get; set; }
         public int Quantity { get; set; }
         public int MinQuantity { get; set; }

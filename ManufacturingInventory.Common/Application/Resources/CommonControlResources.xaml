@@ -161,6 +161,13 @@
         <Setter Property="PrintAutoWidth" Value="True" />
         <Setter Property="AutoWidth" Value="True" />
     </Style>
+    
+    <Style x:Key="TextEditComments" TargetType="dxe:TextEdit">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="AcceptsReturn" Value="True"/>
+        <Setter Property="AcceptsTab" Value="True"/>
+        <Setter Property="Height" Value="85"/>
+    </Style>
 
     <Style x:Key="LayoutItemStyle" TargetType="{x:Type dxlc:LayoutItem}">
         <Setter Property="LabelPosition" Value="Top"/>

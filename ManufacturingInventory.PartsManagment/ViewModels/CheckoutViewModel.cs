@@ -145,6 +145,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 if (this.SelectedPartInstance != null) {
                     if (!this.IsBubbler) {
                         this.TotalCost = this.SelectedPartInstance.UnitCost * value;
+                    } else {
+                        if (this.SelectedPartInstance.CostReported) {
+                            this.TotalCost = this.SelectedPartInstance.TotalCost;
+                        }
                     }
                 }
                 SetProperty(ref this._quantity, value);
@@ -301,13 +305,24 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => {
                     this.Consumers = new ObservableCollection<Consumer>(consumers);
                     this.Conditions = new ObservableCollection<Condition>(conditions);
-                    if (this.SelectedPartInstance.CostReported) {
-                        this.UnitCost = this.SelectedPartInstance.UnitCost;
-                        this.TotalCost = this.SelectedPartInstance.TotalCost;
-                    } else {
-                        this.UnitCost = 0;
-                        this.TotalCost = 0;
+                    if (this.SelectedPartInstance != null) {
+                        this.IsBubbler = this.SelectedPartInstance.IsBubbler;
+                        this.QuantityLabel = (this.SelectedPartInstance.IsBubbler) ? "Quantity" : "Enter Quantity";
+                        if (this.SelectedPartInstance.IsBubbler) {
+                            this.Quantity = this.SelectedPartInstance.Quantity;
+                        } else {
+                            this.Quantity = 0;
+                        }
+
+                        if (this.SelectedPartInstance.CostReported) {
+                            this.UnitCost = this.SelectedPartInstance.UnitCost;
+                            this.TotalCost = this.SelectedPartInstance.TotalCost;
+                        } else {
+                            this.UnitCost = 0;
+                            this.TotalCost = 0;
+                        }
                     }
+
                     this._isInitialized = true;
                 });
             }
@@ -335,13 +350,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             if (partInstance is PartInstance) {
                 this._isInitialized = false;
                 this.SelectedPartInstance = partInstance;
-                this.IsBubbler = partInstance.IsBubbler;
-                this.QuantityLabel = (partInstance.IsBubbler) ? "Quantity" : "Enter Quantity";
-                if (partInstance.IsBubbler) {
-                    this.Quantity = partInstance.Quantity;
-                } else {
-                    this.Quantity = 0;
-                }
+
             }
         }
 
