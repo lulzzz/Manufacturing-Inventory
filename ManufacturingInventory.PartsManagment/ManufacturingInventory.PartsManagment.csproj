@@ -3,11 +3,14 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
-    <FileVersion>1.0.610.0212</FileVersion>
+    <FileVersion>1.0.611.0213</FileVersion>
     <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.Seven" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.VS2010" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.VS2017Blue" Version="19.1.8" />
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
   </ItemGroup>
   <ItemGroup>

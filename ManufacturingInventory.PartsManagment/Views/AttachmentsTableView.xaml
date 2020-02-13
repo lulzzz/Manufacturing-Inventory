@@ -10,6 +10,7 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             dx:ThemeManager.Theme="VS2017Blue"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
              prism:ViewModelLocator.AutoWireViewModel="True"

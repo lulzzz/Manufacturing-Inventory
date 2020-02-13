@@ -12,6 +12,7 @@
             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" 
             xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
+            dx:ThemeManager.Theme="VS2017Blue"
             xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment" 
             xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.Behaviors;assembly=ManufacturingInventory.Common"
             xmlns:prism="http://prismlibrary.com/"

@@ -13,6 +13,7 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
              xmlns:prism="http://prismlibrary.com/"
+             dx:ThemeManager.Theme="VS2017Blue"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              mc:Ignorable="d"

@@ -10,6 +10,7 @@
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             dx:ThemeManager.Theme="VS2017Blue"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
              xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
@@ -226,11 +227,14 @@
                         <dxlc:LayoutItem Label="Description"
                                          Style="{StaticResource LayoutItemStyle}">
                             <dxe:TextEdit Text="{Binding Description}"
-                                          Style="{StaticResource TextEditComments}" />
+                                          Style="{StaticResource TextEditComments}" 
+                                          Height="85"/>
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Comments"
                                          Style="{StaticResource LayoutItemStyle}">
-                            <dxe:TextEdit Text="{Binding Comments}" Style="{StaticResource TextEditComments}" />
+                            <dxe:TextEdit Text="{Binding Comments}"
+                                          Style="{StaticResource TextEditComments}"
+                                          Height="85" />
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
@@ -385,8 +389,37 @@
                         </Grid>
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="Price Log"
-                                  Glyph="{dx:DXImage Image=InsertTable_16x16.png}"                 
-                                  TabIndex="3"/>
+                                  Glyph="{dx:DXImage Image=InsertTable_16x16.png}"
+                                  TabIndex="3">
+                        <dxb:BarManager>
+                            <dxb:BarManager.Bars>
+                                <dxb:Bar Style="{StaticResource BarStyle}">
+                                    <dxb:BarButtonItem Command="{Binding ExportPriceHistoryCommand}"
+                                                       CommandParameter="Xlsx"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       Content="Export Excel"
+                                                       Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                    <dxb:BarButtonItem Command="{Binding ExportPriceHistoryCommand}"
+                                                       CommandParameter="Pdf"
+                                                       Content="Export PDF"
+                                                       Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}"
+                                                       BarItemDisplayMode="ContentAndGlyph" />
+                                    <dxb:BarButtonItem Command="{Binding ExportPriceHistoryCommand}"
+                                                       CommandParameter="Csv"
+                                                       BarItemDisplayMode="ContentAndGlyph"
+                                                       Content="Export CSV"
+                                                       Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}" />
+                                </dxb:Bar>
+                            </dxb:BarManager.Bars>
+                            <dxg:GridControl>
+                                <dxmvvm:Interaction.Behaviors>
+                                    <common:GridExportService x:Name="PriceHistoryExportService" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxg:GridControl>
+                        </dxb:BarManager>
+                    </dx:DXTabItem>
+
+
                 </dx:DXTabControl>
                 <dxlc:LayoutItem Label="Save or Cancel Changes"
                                  Style="{StaticResource LayoutItemStyle}"

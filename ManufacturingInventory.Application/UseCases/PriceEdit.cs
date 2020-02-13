@@ -15,6 +15,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private IRepository<Price> _priceRepository;
         private IRepository<PartInstance> _partInstanceRepository;
         private IRepository<PartPrice> _partPriceRepository;
+        private IRepository<PriceLog> _priceLogRepository;
         private IEntityProvider<Distributor> _distributorProvider;
         private IRepository<Part> _partRepository;
         private IUnitOfWork _unitOfWork;

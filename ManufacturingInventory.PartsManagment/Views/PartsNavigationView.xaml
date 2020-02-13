@@ -12,6 +12,7 @@
             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
             xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar"
             xmlns:prism="http://prismlibrary.com/"
+             dx:ThemeManager.Theme="VS2017Blue"
             prism:ViewModelLocator.AutoWireViewModel="True"   
             xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
             mc:Ignorable="d" d:DesignHeight="405" d:DesignWidth="470">

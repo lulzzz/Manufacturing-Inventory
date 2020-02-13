@@ -87,8 +87,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
 
         protected override void OnStartup(StartupEventArgs e) {
             DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
-            ApplicationThemeHelper.UpdateApplicationThemeName();
-            ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
+            ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
+            //ApplicationThemeHelper.UpdateApplicationThemeName();
+            //ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             GridControl.AllowInfiniteGridSize = true;
             //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
 
@@ -163,6 +164,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             regionAdapterMappings.RegisterMapping(typeof(LayoutPanel), AdapterFactory.Make<RegionAdapterBase<LayoutPanel>>(factory));
             regionAdapterMappings.RegisterMapping(typeof(LayoutGroup), AdapterFactory.Make<RegionAdapterBase<LayoutGroup>>(factory));
             regionAdapterMappings.RegisterMapping(typeof(TabbedGroup), AdapterFactory.Make<RegionAdapterBase<TabbedGroup>>(factory));
+            regionAdapterMappings.RegisterMapping(typeof(DXTabControl), AdapterFactory.Make<RegionAdapterBase<DXTabControl>>(factory));
         }
 
         private void ThemeManager_ApplicationThemeChanged(DependencyObject sender, ThemeChangedRoutedEventArgs e) {

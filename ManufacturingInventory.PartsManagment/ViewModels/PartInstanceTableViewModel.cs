@@ -21,7 +21,7 @@ using ManufacturingInventory.Infrastructure.Model.Providers;
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTableViewModel : InventoryViewModelBase {
 
-        protected IExportService PartInstanceTableExportService { get => ServiceContainer.GetService<IExportService>("PartInstanceTableExportService"); }
+        protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("PartInstanceTableExportService"); }
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PartInstanceTableDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PartInstanceTableMessageBoxService"); }
 
@@ -38,7 +38,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private IEntityProvider<PartInstance> _provider;
 
         public AsyncCommand InitializeCommand { get; private set;  }
-        public AsyncCommand<string> ExportTransactionsCommand { get; private set; }
+        public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
         public AsyncCommand AddToOutgoingCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewInstanceDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
@@ -54,6 +54,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.EditInstanceCommand = new PrismCommands.DelegateCommand(this.EditInstanceHandler);
             this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler);
             this.CheckInCommand = new AsyncCommand(this.NewPartInstanceHandler);
+            this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
 
             this._eventAggregator.GetEvent<ReloadEvent>().Subscribe(async (traveler) => await this.ReloadHandler(traveler));
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async () => await this.OutGoingDoneHandler());
@@ -88,14 +89,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
-        private async Task ExportPartInstancesHandler(ExportFormat format) {
+        private async Task ExportTableHandler(ExportFormat format) {
             await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
                     var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
                     using (FileStream file = File.Create(path)) {
-                        this.PartInstanceTableExportService.Export(file, format);
+                        this.ExportService.Export(file, format);
                     }
-                    Process.Start(path);
+                    using (var process = new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
                 });
             });
         }

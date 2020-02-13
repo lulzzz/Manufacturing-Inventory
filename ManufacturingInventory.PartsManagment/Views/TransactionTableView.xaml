@@ -12,6 +12,7 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
+             dx:ThemeManager.Theme="VS2017Blue"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
              xmlns:prism="http://prismlibrary.com/"
@@ -42,23 +43,23 @@
                      AllowHide="False"
                      AllowQuickCustomization="False">
                 <dxb:BarButtonItem x:Name="_transactionExportExcel"
-                                   Command="{Binding ExportTransactionsCommand}"
+                                   Command="{Binding ExportTableCommand}"
                                    CommandParameter="Xlsx"
                                    BarItemDisplayMode="ContentAndGlyph"
                                    Content="Export Excel"
                                    Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                 <dxb:BarButtonItem x:Name="_transactionExportPDF"
-                                   Command="{Binding ExportTransactionsCommand}"
+                                   Command="{Binding ExportTableCommand}"
                                    CommandParameter="Pdf"
                                    Content="Export PDF"
                                    Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}"
                                    BarItemDisplayMode="ContentAndGlyph" />
                 <dxb:BarButtonItem x:Name="_transactionExportCSV"
-                                   Command="{Binding ExportTransactionsCommand}"
+                                   Command="{Binding ExportTableCommand}"
                                    CommandParameter="Csv"
                                    BarItemDisplayMode="ContentAndGlyph"
                                    Content="Export CSV"
-                                   Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}" />
+                                   Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}"/>
             </dxb:Bar>
         </dxb:BarManager.Bars>
         <dxg:GridControl x:Name="_transactions"

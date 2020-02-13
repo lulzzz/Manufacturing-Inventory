@@ -14,6 +14,7 @@
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             dx:ThemeManager.Theme="VS2017Blue"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="500">
     <UserControl.Resources>

@@ -13,6 +13,5 @@ namespace ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit 
         Task<IEnumerable<Transaction>> GetTransactions(int instanceId);
         Task<PartInstance> GetPartInstance(int id);
         Task LoadAsync();
-
     }
 }

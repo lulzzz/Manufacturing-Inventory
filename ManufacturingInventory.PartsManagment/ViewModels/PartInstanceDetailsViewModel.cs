@@ -1,22 +1,19 @@
-﻿using Prism.Commands;
-using Prism.Mvvm;
-using Prism.Regions;
-using DevExpress.Mvvm;
-using PrismCommands = Prism.Commands;
-using Prism.Events;
-using System.Windows;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using ManufacturingInventory.PartsManagment.Internal;
-using System;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Common.Application;
-using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
+﻿using DevExpress.Mvvm;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
+using ManufacturingInventory.Common.Application;
+using ManufacturingInventory.Common.Application.UI.Services;
 using ManufacturingInventory.Domain.Enums;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.PartsManagment.Internal;
+using Prism.Events;
+using Prism.Regions;
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
 
@@ -30,6 +27,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PartInstanceDetailsMessageService"); }
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PartInstanceDetailDispatcher"); }
+        protected IExportService TransactionExportService { get => ServiceContainer.GetService<IExportService>("TransactionTableExportService"); }
+        protected IExportService PriceHistoryExportService { get => ServiceContainer.GetService<IExportService>("PriceHistoryExportService"); }
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
@@ -79,6 +78,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand SelectPriceCommand { get; private set; }
         public AsyncCommand EditPriceCommand { get; private set; }
 
+        public AsyncCommand<ExportFormat> ExportPriceHistoryCommand { get; private set; }
+        public AsyncCommand<ExportFormat> ExportTransactionsCommand { get; private set; }
+
         public PartInstanceDetailsViewModel(IPartInstanceDetailsEditUseCase editInstance, IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._editInstance = editInstance;
             this._regionManager = regionManager;
@@ -89,6 +91,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.SelectPriceCommand = new AsyncCommand(this.SelectPriceHandler, this.CanModifyPrice);
             this.SaveCommand = new AsyncCommand(this.SaveHandler,this.CanSave);
             this.CancelCommand = new AsyncCommand(this.DiscardHandler);
+            this.ExportTransactionsCommand = new AsyncCommand<ExportFormat>(this.ExportTransactionsHandler);
+            this.ExportPriceHistoryCommand = new AsyncCommand<ExportFormat>(this.ExportPriceHistoryHandler);
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.EditPriceDone());
         }
 
@@ -389,6 +393,40 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public void CleanupRegions() {
            this._regionManager.Regions[LocalRegions.InstancePriceEditDetailsRegion].RemoveAll();
+        }
+
+        private async Task ExportPriceHistoryHandler(ExportFormat format) {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
+                    using (FileStream file = File.Create(path)) {
+                        this.PriceHistoryExportService.Export(file, format);
+                    }
+                    using (var process = new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
+                });
+            });
+        }
+
+        private async Task ExportTransactionsHandler(ExportFormat format) {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
+                    using (FileStream file = File.Create(path)) {
+                        this.TransactionExportService.Export(file, format);
+                    }
+                    using (var process = new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
+                });
+            });
         }
 
         public async Task InitializedHandler() {

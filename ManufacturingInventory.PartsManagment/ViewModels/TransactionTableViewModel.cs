@@ -1,22 +1,15 @@
-﻿using Prism.Commands;
-using Prism.Mvvm;
-using DevExpress.Xpf.Core;
-using ManufacturingInventory.Common.Application;
-using Prism.Regions;
-using DevExpress.Mvvm;
-using PrismCommands = Prism.Commands;
-using Prism.Events;
-using System.Windows;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using ManufacturingInventory.PartsManagment.Internal;
-using System;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using Prism;
-using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Providers;
+﻿using DevExpress.Mvvm;
 using ManufacturingInventory.Application.Boundaries.TransactionEdit;
+using ManufacturingInventory.Common.Application;
+using ManufacturingInventory.Common.Application.UI.Services;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.PartsManagment.Internal;
+using Prism.Events;
+using Prism.Regions;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class TransactionTableViewModel : InventoryViewModelBase {
@@ -26,6 +19,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private IEventAggregator _eventAggregator;
 
         protected IDispatcherService Dispatcher { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
+        protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("TransactionTableExportService"); }
 
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
         private Transaction _selectedTransaction;
@@ -39,6 +33,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand ViewDetailsCOmmand { get; private set; }
         public AsyncCommand UndoTransactionCommand { get; private set; }
         public AsyncCommand ReturnItemCommand { get; private set; }
+        public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
 
         public TransactionTableViewModel(ITransactionEditUseCase transactionEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._regionManager = regionManager;
@@ -46,6 +41,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
+            this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async () => { await this.ReturnDoneHandler();});
         }
 
@@ -112,6 +108,23 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 parameters.Add(ParameterKeys.IsEdit, false);
                 this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, ModuleViews.TransactionDetailsView, parameters);
             }
+        }
+
+        private async Task ExportTableHandler(ExportFormat format) {
+            await Task.Run(() => {
+                this.Dispatcher.BeginInvoke(() => {
+                    var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
+                    using (FileStream file = File.Create(path)) {
+                        this.ExportService.Export(file, format);
+                    }
+                    using (var process = new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
+                });
+            });
         }
 
         private async Task InitializeHandler() {

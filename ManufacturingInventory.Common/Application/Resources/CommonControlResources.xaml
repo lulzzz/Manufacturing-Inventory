@@ -166,7 +166,8 @@
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="AcceptsReturn" Value="True"/>
         <Setter Property="AcceptsTab" Value="True"/>
-        <Setter Property="Height" Value="85"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style x:Key="LayoutItemStyle" TargetType="{x:Type dxlc:LayoutItem}">
@@ -203,6 +204,15 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="MaskUseAsDisplayFormat" Value="True" />
         <Setter Property="dxe:NumericMaskOptions.AlwaysShowDecimalSeparator" Value="False" />
+    </Style>
+    
+    <Style x:Name="BarStd" TargetType="dxb:Bar">
+        <Setter Property="ShowDragWidget" Value="False"/>
+        <Setter Property="ShowSizeGrip" Value="False" />
+        <Setter Property="AllowCollapse" Value="False" />
+        <Setter Property="AllowCustomizationMenu" Value="False" />
+        <Setter Property="AllowDrop" Value="False" />
+        <Setter Property="AllowHide" Value="False" />
     </Style>
 
     <Style TargetType="{x:Type dxg:GridColumn}">
