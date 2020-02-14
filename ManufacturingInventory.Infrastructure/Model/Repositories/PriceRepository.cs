@@ -16,18 +16,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
        
         public Price Add(Price entity) {
-            var price = this.GetEntity(e => e.Id == entity.Id);
-            if (price != null) {
-                return null;
-            }
             return this._context.Add(entity).Entity;
         }
            
         public async Task<Price> AddAsync(Price entity) {
-            var price = await this.GetEntityAsync(e => e.Id == entity.Id);
-            if (price != null) {
-                return null;
-            }
             return (await this._context.AddAsync(entity)).Entity;
         }
         
@@ -92,8 +84,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             } else {
                 return orderBy(query).ToList();
             }
-        }
-        
+        }        
         
         public async Task<IEnumerable<Price>> GetEntityListAsync(Expression<Func<Price, bool>> expression = null, Func<IQueryable<Price>, IOrderedQueryable<Price>> orderBy = null) {
             IQueryable<Price> query = this._context.Set<Price>()

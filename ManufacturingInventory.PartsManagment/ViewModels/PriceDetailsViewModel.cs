@@ -62,6 +62,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isEdit;
         private bool _isNew;
         private bool _canEdit;
+        private bool _replaceNew;
         private int? _priceId;
         private int _partId;
         private int _instanceId;
@@ -160,9 +161,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task SaveHandler() {
             if (this.IsNew) {
-                PriceEditInput input = new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true, 
-                    this.UnitCost, this.MinOrder, this.LeadTime, this.SelectedDistributor.Id,this._partId,
-                    PriceEditAction.NEW,partInstanceId:this._instanceId);
+                PriceEditInput input;
+                if (this._replaceNew) {
+                    input=new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true,
+                        this.UnitCost, this.MinOrder, this.LeadTime, this.SelectedDistributor.Id, this._partId,
+                        PriceEditAction.ReplaceWithNew, partInstanceId: this._instanceId,priceId:this._priceId);
+                } else {
+                    input = new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true,
+                        this.UnitCost, this.MinOrder, this.LeadTime, this.SelectedDistributor.Id, this._partId,
+                        PriceEditAction.NEW, partInstanceId: this._instanceId);
+                }
+
 
                 var response = await this._priceEdit.Execute(input);
                 if (response.Success) {
@@ -210,29 +219,39 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task InitializeHandler() {
             if (!this._isInitialized) {
-                var distributors =await this._priceEdit.GetDistributors();
-                var id = (this._priceId.HasValue) ? this._priceId.Value : 0;
-                var price= await this._priceEdit.GetPrice(id);
-                var attachment = await this._attachmentEdit.GetPriceAttachment(id);
-                this.DispatcherService.BeginInvoke(() => {
-                    this.Distributors = new ObservableCollection<Distributor>(distributors);
-                    this.PriceAttachment = attachment;
-                    if (price != null) {
-                        this.Price = price;
-                        this.UnitCost = price.UnitCost;
-                        this.LeadTime = price.LeadTime;
-                        this.ValidFrom = price.ValidFrom;
-                        this.ValidUntil = price.ValidUntil;
-                        this.TimeStamp = price.TimeStamp;
-                        this.MinOrder = price.MinOrder;
-                        this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
-                    } else {
+                var distributors = await this._priceEdit.GetDistributors();
+                if (!this._replaceNew) {
+                    var id = (this._priceId.HasValue) ? this._priceId.Value : 0;
+                    var price = await this._priceEdit.GetPrice(id);
+                    var attachment = await this._attachmentEdit.GetPriceAttachment(id);
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.Distributors = new ObservableCollection<Distributor>(distributors);
+                        this.PriceAttachment = attachment;
+                        if (price != null) {
+                            this.Price = price;
+                            this.UnitCost = price.UnitCost;
+                            this.LeadTime = price.LeadTime;
+                            this.ValidFrom = price.ValidFrom;
+                            this.ValidUntil = price.ValidUntil;
+                            this.TimeStamp = price.TimeStamp;
+                            this.MinOrder = price.MinOrder;
+                            this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
+                        } else {
+                            this.UnitCost = 0;
+                            this.LeadTime = 0;
+                            this.TimeStamp = DateTime.Now;
+                            this.MinOrder = 0;
+                        }
+                    });
+                } else {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.Distributors = new ObservableCollection<Distributor>(distributors);
                         this.UnitCost = 0;
                         this.LeadTime = 0;
                         this.TimeStamp = DateTime.Now;
                         this.MinOrder = 0;
-                    }
-                });
+                    });
+                }
                 this._isInitialized = true;
             }
         }
@@ -353,6 +372,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
             this.IsNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
             this.IsEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
+            this._replaceNew = this.IsNew && this.IsEdit;
             this.CanEdit = this.IsNew || this.IsEdit;
         }
 

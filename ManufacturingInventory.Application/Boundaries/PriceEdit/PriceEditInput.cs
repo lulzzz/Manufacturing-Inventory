@@ -7,8 +7,7 @@ namespace ManufacturingInventory.Application.Boundaries.PriceEdit {
         NEW,
         ReplaceWithNew,
         ReplaceWithExisiting,
-        Edit,
-        Delete
+        Edit
     }
 
     public class PriceEditInput {

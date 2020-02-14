@@ -25,7 +25,6 @@ namespace ManufacturingInventory.Application.UseCases {
         private IEntityProvider<Location> _locationProvider;
         private IEntityProvider<Category> _categoryProvider;
         private IEntityProvider<Distributor> _distributorProvider;
-        private IEntityProvider<PartType> _partTypeProvider;
 
         private IUserService _userService;
         private IUnitOfWork _unitOfWork;
@@ -40,14 +39,63 @@ namespace ManufacturingInventory.Application.UseCases {
             this._categoryProvider = new CategoryProvider(context);
             this._locationProvider = new LocationProvider(context);
             this._distributorProvider = new DistributorProvider(context);
-            this._partTypeProvider = new PartTypeProvider(context);
             this._transactionRepository = new TransactionRepository(context);
             this._userService = userService;
             this._unitOfWork = new UnitOfWork(context);
             this._context = context;
         }
 
-        public Task<CheckInOutput> Execute(CheckInInput input) => throw new NotImplementedException();
+        public async Task<CheckInOutput> Execute(CheckInInput input) {
+            if (input.PartInstance.IsBubbler) {
+                return await this.ExecuteBubbler(input);
+            } else {
+                return await this.ExecuteStandard(input);
+            }
+        }
+
+        public async Task<CheckInOutput> ExecuteBubbler(CheckInInput input) {
+            var entity = await this._partInstanceRepository.AddAsync(input.PartInstance);
+            if (entity != null) {
+                if (entity.Price != null) {
+                    var part = await this._partRepository.GetEntityAsync(e => e.Id == entity.PartId);
+                    if (part != null) {
+                        PartPrice partPrice = new PartPrice(part, entity.Price);
+                        PriceLog priceLog = new PriceLog(entity, entity.Price);
+                        await this._partPriceRepository.AddAsync(partPrice);
+                        await this._priceLogRepository.AddAsync(priceLog);
+                        if (input.CreateTransaction) {
+                            Transaction transaction = new Transaction(entity, InventoryAction.INCOMING,
+                                entity.BubblerParameter.Measured, entity.BubblerParameter.Weight, 
+                                entity.CurrentLocation, input.TimeStamp);
+                            transaction.SessionId = this._userService.CurrentSession.Id;
+                            var tranEntity = await this._transactionRepository.AddAsync(transaction);
+                            if (tranEntity != null) {
+                                await this._unitOfWork.Save();
+                                return new CheckInOutput(entity, true, "Success: Check in completed"); 
+                            } else {
+                                await this._unitOfWork.Undo();
+                                return new CheckInOutput(null, false, "Error: Check in Failed");
+                            }
+                        } else {
+
+                        }
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return new CheckInOutput(null, false, "Error: Part Not Found,Cannot Create Pricing");
+                    }
+                } else {
+
+                }
+
+            } else {
+                return new CheckInOutput(null, false, "Error Creating PartInstance");
+            }
+            return null;
+        }
+
+        public async Task<CheckInOutput> ExecuteStandard(CheckInInput input) {
+            return null;
+        }
 
 
 

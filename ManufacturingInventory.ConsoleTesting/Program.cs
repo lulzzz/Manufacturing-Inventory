@@ -11,14 +11,69 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Domain.Buisness.Concrete;
 using ManufacturingInventory.Application.UseCases;
+
 using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Collections.ObjectModel;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
+using ManufacturingInventory.Application.Boundaries.CheckIn;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
-        public static void Main(string[] args) {
+        public static async Task<int> Main(string[] args) {
+            using var context= new ManufacturingContext();
+            IUserService userService = new UserService();
+
+            var user = context.Users
+                .Include(e => e.Sessions)
+                .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+
+            if (user != null) {
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+                context.SaveChanges();
+                userService.CurrentUser = user;
+                userService.CurrentSession = session;
+
+                var warehouse = await context.Locations.FirstOrDefaultAsync(e => e.Id == 2);
+                var condition = await context.Categories.OfType<Condition>().FirstOrDefaultAsync(e => e.Id == 1);
+                var distributor = await context.Distributors.FirstOrDefaultAsync(e => e.Id == 1);
+                var part = await context.Parts.FirstOrDefaultAsync(e => e.Id == 3);
+
+                ICheckInUseCase checkIn = new CheckIn(context, userService);
+
+                Price price = new Price();
+                price.TimeStamp = DateTime.Now;
+                price.UnitCost = 52.64;
+                price.MinOrder = 8;
+                price.LeadTime = 65;
+                price.DistributorId = distributor.Id;
+
+                PartInstance instance = new PartInstance("ConsoleTest", "", "", "", true, new BubblerParameter() { GrossWeight = 5, NetWeight = 5, Weight = 5 });
+                instance.PartId = part.Id;
+                instance.LocationId = warehouse.Id;
+                instance.ConditionId = condition.Id;
+                instance.Price = price;
+
+                CheckInInput input = new CheckInInput(instance, DateTime.Now, true);
+                var response = await checkIn.Execute(input);
+                if (response.Success) {
+                    Console.WriteLine("It Worked!!");
+                } else {
+                    Console.WriteLine("It Didnt Work!!!????");
+                }
+            } else {
+                Console.WriteLine("Could not LogIn");
+            }
+            Console.ReadKey();
+            return 1;
+        }
+
+        //#region DatabaseTesting
+
+        public static void Default() {
             Test();
 
             //UseCaseTesting();
@@ -31,8 +86,6 @@ namespace ManufacturingInventory.ConsoleTesting {
             //Process.Start(@"D:\Software Development\Manufacturing Inventory\ManufacturingInventory\ManufacturingInventory.Installer\bin\Release\netcoreapp3.1\publish\InventoryInstaller.exe");
             //AddAnotherPrice();
         }
-
-        //#region DatabaseTesting
 
         public static void Test(int? test = null) {
             int? test1 = test;

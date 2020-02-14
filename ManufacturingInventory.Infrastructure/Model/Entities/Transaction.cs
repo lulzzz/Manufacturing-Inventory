@@ -65,6 +65,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         }
 
 
+
         public void Set(Transaction transaction) {
             this.TimeStamp = transaction.TimeStamp;
             this.InventoryAction = transaction.InventoryAction;

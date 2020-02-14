@@ -54,7 +54,7 @@
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup>
-                        <dxlc:LayoutItem Label="Current Location"
+                        <dxlc:LayoutItem Label="Select Warehouse"
                                          Style="{StaticResource LayoutItemStyle}">
                             <dxe:ComboBoxEdit ItemsSource="{Binding Locations}"
                                               SelectedItem="{Binding SelectedLocation}"
@@ -69,7 +69,7 @@
                                 </dxe:ComboBoxEdit.ItemTemplate>
                             </dxe:ComboBoxEdit>
                         </dxlc:LayoutItem>
-                        <dxlc:LayoutItem Label="Type"
+                        <dxlc:LayoutItem Label="Select Type(Optional)"
                                          Style="{StaticResource LayoutItemStyle}">
                             <dxe:ComboBoxEdit ItemsSource="{Binding PartTypes}"
                                               SelectedItem="{Binding SelectedPartType}"
@@ -84,7 +84,7 @@
                                 </dxe:ComboBoxEdit.ItemTemplate>
                             </dxe:ComboBoxEdit>
                         </dxlc:LayoutItem>
-                        <dxlc:LayoutItem Label="Condition"
+                        <dxlc:LayoutItem Label="Select Condition(Optional)"
                                          Style="{StaticResource LayoutItemStyle}">
                             <dxe:ComboBoxEdit ItemsSource="{Binding Conditions}"
                                               SelectedItem="{Binding SelectedCondition}"
@@ -226,7 +226,7 @@
                                                           MaskType="Numeric"
                                                           Mask="f"
                                                           MinValue="0"
-                                                          IsReadOnly="True" />
+                                                          IsReadOnly="True"/>
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
@@ -265,7 +265,7 @@
                                               MinValue="0"
                                               IsReadOnly="{Binding CanEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
                             </dxlc:LayoutItem>
-                            <dxlc:LayoutItem Label="Distributor"
+                            <dxlc:LayoutItem Label="Select Distributor"
                                              Style="{StaticResource LayoutItemStyle}">
                                 <dxe:ComboBoxEdit ItemsSource="{Binding Distributors}"
                                                   SelectedItem="{Binding SelectedDistributor}"

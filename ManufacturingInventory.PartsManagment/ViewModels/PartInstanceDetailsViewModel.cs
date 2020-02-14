@@ -318,7 +318,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             return Task.Factory.StartNew(() => {
                 this._priceEditInProgress = true;
                 this.DispatcherService.BeginInvoke(() => {
-                    this.NavigatePriceEdit(true, false);
+                    
+                    this.NavigatePriceEdit(true, this._hasPrice);
                 });
             });
         }

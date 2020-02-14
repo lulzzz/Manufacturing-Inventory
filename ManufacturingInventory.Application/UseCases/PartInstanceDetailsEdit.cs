@@ -109,7 +109,5 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task LoadAsync() {
             await this._instanceRepository.LoadAsync();
         }
-
-
     }
 }

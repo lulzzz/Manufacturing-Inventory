@@ -76,6 +76,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<IEnumerable<PartPrice>> GetEntityListAsync(Expression<Func<PartPrice, bool>> expression = null, Func<IQueryable<PartPrice>, IOrderedQueryable<PartPrice>> orderBy = null) {
+
             IQueryable<PartPrice> query = this._context.Set<PartPrice>()
                 .Include(e => e.Part)
                 .Include(e => e.Price)
