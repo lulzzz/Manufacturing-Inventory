@@ -51,20 +51,31 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.TimeStamp = DateTime.Now;
         }
 
-
         public Transaction(PartInstance instance, InventoryAction inventoryAction,double measured, double weight, Location location,DateTime timeStamp) {
             this.TimeStamp = timeStamp;
             this.Weight = weight;
             this.MeasuredWeight = measured;
             this.UnitCost = instance.UnitCost;
-            this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost) : (this.Quantity * this.UnitCost);
+            this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost*instance.BubblerParameter.NetWeight) : (this.Quantity * this.UnitCost);
             this.InventoryAction = inventoryAction;
             this.Quantity = 1;
             this.LocationId = location.Id;
             this.PartInstanceId = instance.Id;
         }
 
-
+        public void SetupCheckinBubbler(PartInstance instance, InventoryAction inventoryAction, Location location, DateTime timeStamp) {
+            this.TimeStamp = timeStamp;
+            this.PartInstance = instance;
+            this.Weight = instance.BubblerParameter.Weight;
+            this.MeasuredWeight = instance.BubblerParameter.Measured;
+            if (instance.CostReported) {
+                this.UnitCost = instance.UnitCost;
+                this.TotalCost = instance.TotalCost;
+            }
+            this.InventoryAction = inventoryAction;
+            this.Quantity = 1;
+            this.LocationId = location.Id;
+        }
 
         public void Set(Transaction transaction) {
             this.TimeStamp = transaction.TimeStamp;

@@ -97,14 +97,16 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
         public void UpdatePrice() {
             if (!this.IsBubbler) {
-                if (this.PriceId.HasValue) {
+                if (this.Price!=null) {
                     this.UnitCost = this.Price.UnitCost;
                     this.TotalCost = this.UnitCost * this.Quantity;
                 }
             } else {
-                if (this.PriceId.HasValue) {
+                if (this.Price != null) {
                     this.UnitCost = this.Price.UnitCost;
-                    this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight) * this.Quantity;
+                    if (this.BubblerParameter != null) {
+                        this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight) * this.Quantity;
+                    }
                 }
             }
         }

@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.Boundaries.CheckIn {
     public interface ICheckInUseCase:IUseCase<CheckInInput, CheckInOutput> {
-        Task<IEnumerable<Location>> GetLocations();
+        Task<IEnumerable<Warehouse>> GetWarehouses();
         Task<IEnumerable<Category>> GetCategories();
         Task<IEnumerable<Distributor>> GetDistributors();
+        Task<IEnumerable<Price>> GetAvailablePrices(int partId);
+        Task<Price> GetPrice(int priceId); 
     }
 }

@@ -204,10 +204,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DispatcherService.BeginInvoke(() => {
                 this.CleanupRegions();
                 NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.IsNew, true);
                 parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
                 parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
             });
 
             return Task.CompletedTask;

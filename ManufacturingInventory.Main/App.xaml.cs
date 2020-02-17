@@ -29,6 +29,7 @@ using ManufacturingInventory.Application.Boundaries.TransactionEdit;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
+using ManufacturingInventory.Application.Boundaries.CheckIn;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -53,6 +54,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
 
                 container.Register<ICheckOutUseCase, CheckOut>();
+                container.Register<ICheckInUseCase, CheckIn>();
                 container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
                 container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
                 container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();

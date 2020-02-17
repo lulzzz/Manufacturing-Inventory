@@ -11,12 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ManufacturingInventory.PartsManagment.Views {
+namespace ManufacturingInventory.Common.Application.UI.Views {
     /// <summary>
-    /// Interaction logic for CheckinView.xaml
+    /// Interaction logic for SelectPricePopupView.xaml
     /// </summary>
-    public partial class CheckInView : UserControl {
-        public CheckInView() {
+    public partial class SelectPricePopupView : UserControl {
+        public SelectPricePopupView() {
             InitializeComponent();
         }
     }

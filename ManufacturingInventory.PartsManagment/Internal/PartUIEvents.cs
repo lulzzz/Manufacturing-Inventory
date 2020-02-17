@@ -28,5 +28,8 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     public class OutgoingDoneEvent : PubSubEvent { }
     public class AddToOutgoingEvent : PubSubEvent<PartInstance> { }
 
+    public class CheckInDoneEvent : PubSubEvent { }
+    public class CheckInCancelEvent : PubSubEvent { }
+
     public class ReturnDoneEvent : PubSubEvent { }
 }

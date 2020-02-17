@@ -10,7 +10,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public static string PartsNavigationView { get => "PartsNavigationView"; }
         public static string TransactionDetailsView { get => "TransactionDetailsView"; }
         public static string CheckoutView { get => "CheckoutView"; }
-        public static string CheckinView { get => "CheckinView"; }
+        public static string CheckInView { get => "CheckInView"; }
         public static string ReturnItemView { get => "ReturnItemView"; }
 
         public static string PriceDetailsView { get => "PriceDetailsView"; }

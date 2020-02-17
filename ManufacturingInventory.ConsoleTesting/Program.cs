@@ -56,6 +56,9 @@ namespace ManufacturingInventory.ConsoleTesting {
                 instance.LocationId = warehouse.Id;
                 instance.ConditionId = condition.Id;
                 instance.Price = price;
+                instance.CostReported = true;
+                instance.Quantity = 1;
+                instance.UpdatePrice();
 
                 CheckInInput input = new CheckInInput(instance, DateTime.Now, true);
                 var response = await checkIn.Execute(input);

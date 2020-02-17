@@ -6,6 +6,7 @@ using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -56,7 +57,7 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<CheckInOutput> ExecuteBubbler(CheckInInput input) {
             var entity = await this._partInstanceRepository.AddAsync(input.PartInstance);
             if (entity != null) {
-                if (entity.Price != null) {
+                if (entity.Price != null) { 
                     var part = await this._partRepository.GetEntityAsync(e => e.Id == entity.PartId);
                     if (part != null) {
                         PartPrice partPrice = new PartPrice(part, entity.Price);
@@ -64,9 +65,8 @@ namespace ManufacturingInventory.Application.UseCases {
                         await this._partPriceRepository.AddAsync(partPrice);
                         await this._priceLogRepository.AddAsync(priceLog);
                         if (input.CreateTransaction) {
-                            Transaction transaction = new Transaction(entity, InventoryAction.INCOMING,
-                                entity.BubblerParameter.Measured, entity.BubblerParameter.Weight, 
-                                entity.CurrentLocation, input.TimeStamp);
+                            Transaction transaction = new Transaction();
+                            transaction.SetupCheckinBubbler(entity, InventoryAction.INCOMING,entity.CurrentLocation, input.TimeStamp);
                             transaction.SessionId = this._userService.CurrentSession.Id;
                             var tranEntity = await this._transactionRepository.AddAsync(transaction);
                             if (tranEntity != null) {
@@ -97,7 +97,9 @@ namespace ManufacturingInventory.Application.UseCases {
             return null;
         }
 
-
+        public async Task<IEnumerable<Price>> GetAvailablePrices(int partId) {
+            return (await this._partPriceRepository.GetEntityListAsync(e => e.PartId == partId)).Select(e => e.Price);
+        }
 
         public async Task<IEnumerable<Category>> GetCategories() {
             return await this._categoryProvider.GetEntityListAsync();
@@ -107,8 +109,12 @@ namespace ManufacturingInventory.Application.UseCases {
             return await this._distributorProvider.GetEntityListAsync();
         }
 
-        public async Task<IEnumerable<Location>> GetLocations() {
-            return await this._locationProvider.GetEntityListAsync();
+        public async Task<Price> GetPrice(int priceId) {
+            return await this._priceRepository.GetEntityAsync(e => e.Id == priceId);
+        }
+
+        public async Task<IEnumerable<Warehouse>> GetWarehouses() {
+            return (await this._locationProvider.GetEntityListAsync()).OfType<Warehouse>();
         }
     }
 }

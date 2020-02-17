@@ -30,6 +30,7 @@ namespace ManufacturingInventory.PartsManagment
             containerRegistry.RegisterForNavigation<ReturnItemView>(ModuleViews.ReturnItemView);
             containerRegistry.RegisterForNavigation<PriceDetailsView>(ModuleViews.PriceDetailsView);
             containerRegistry.RegisterForNavigation<SelectPriceView>(ModuleViews.SelectPriceView);
+            containerRegistry.RegisterForNavigation<CheckInView>(ModuleViews.CheckInView);
         }
     }
 }
