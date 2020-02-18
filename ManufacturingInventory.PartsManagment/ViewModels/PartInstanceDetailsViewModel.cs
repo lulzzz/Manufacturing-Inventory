@@ -348,7 +348,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._isInitialized = false;
             this._priceEditInProgress = false;
             await this.InitializedHandler();
-
         }
 
         public bool CanSave() {
@@ -524,6 +523,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.SelectedPartInstance.Quantity = 1;
             }
             this.CanEdit = this.IsEdit || this._isNew;
+            this._eventAggregator.GetEvent<RenameHeaderEvent>().Publish("Details");
         }
     }
 }

@@ -61,7 +61,7 @@
                                   Style="{StaticResource PanelStyle}">
                     <dxdo:LayoutPanel.CaptionTemplate>
                         <DataTemplate>
-                            <TextBlock Text="Details"
+                            <TextBlock Text="{Binding DetailHeaderText}"
                                        FontSize="16"
                                        HorizontalAlignment="Center" />
                         </DataTemplate>

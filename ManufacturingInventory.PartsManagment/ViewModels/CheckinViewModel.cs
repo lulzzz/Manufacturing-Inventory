@@ -17,6 +17,7 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Common.Application.UI.ViewModels;
 using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class CheckInViewModel : InventoryViewModelNavigationBase {
@@ -34,7 +35,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private SelectPricePopupViewModel _selectPricePopupViewModel;
         private int _partId;
         private bool _isBubbler;
-        private bool _newPriceGroupCollapsed;
         private bool _createTransaction;
         private bool _createPrice;
         private PartInstance _selectedPartInstance=new PartInstance();
@@ -54,18 +54,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _grossWeight;
         private double _measuredWeight;
         private double _weight;
+        private DateTime? _transactionTimeStamp;
 
         public AsyncCommand CheckInCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
-        
+        public AsyncCommand CreatePriceCommand { get; private set; }
         public AsyncCommand SelectExistingPriceCommand { get; private set; }
-
-        public AsyncCommand NewPriceCollapsedCommand { get; private set;}
-        public AsyncCommand NewPriceExpandedCommand { get; private set; }
-
-        public AsyncCommand PriceSelectorCollapsedCommand { get; private set; }
-        public AsyncCommand PriceSelectorExpandedCommand { get; private set; }
 
         public CheckInViewModel(ICheckInUseCase checkIn,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._checkIn = checkIn;
@@ -73,6 +68,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.Load);
             this.SelectExistingPriceCommand = new AsyncCommand(this.SelectExistingPriceHandler);
+            this.CheckInCommand = new AsyncCommand(this.CheckInHandler);
+            this.CancelCommand = new AsyncCommand(this.CancelHandler);
+            this.CreatePriceCommand = new AsyncCommand(this.CreatePriceHandler);
         }
 
         #region VariableBindings
@@ -173,59 +171,112 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._distributors, value);
         }
 
-        public bool NewPriceGroupCollapsed { 
-            get => this._newPriceGroupCollapsed;
-            set => SetProperty(ref this._newPriceGroupCollapsed, value);
-        }
-
         public bool CreateTransaction { 
             get => this._createTransaction;
             set => SetProperty(ref this._createTransaction, value);
         }
 
-        public bool CreatePrice {
+        public bool CreateNewPrice {
             get => this._createPrice;
             set => SetProperty(ref this._createPrice, value);
         }
 
+        public DateTime? TransactionTimeStamp {
+            get => this._transactionTimeStamp;
+            set => SetProperty(ref this._transactionTimeStamp, value);
+        }
+
         #endregion
 
-        private Task CheckInHandler() {
-            //CheckInInput input=new CheckInInput(this.SelectedPartInstance,)
-            return Task.CompletedTask;
+        private async Task CreatePriceHandler() {
+            await Task.Factory.StartNew(() => {
+                if (this.CreateNewPrice) {
+                    var price = new Price();
+                    if (this.Price != null) {
+                        price.Set(this.Price);
+                    }
+                    this.Price = price;
+                } else {
+                    if (this.Price != null) {
+                        this.DispatcherService.BeginInvoke(() => {
+                            StringBuilder builder = new StringBuilder();
+                            builder.AppendLine("Warning");
+                            builder.AppendLine("This will clear pricing info");
+                            builder.AppendLine("Continue?");
+                            var response = this.MessageBoxService.ShowMessage(builder.ToString(),"Warning", MessageButton.YesNo, MessageIcon.Warning);
+                            if (response == MessageResult.Yes) {
+                                this.Price = null;
+
+                            } else {
+                                this.CreateNewPrice = true;
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        private async Task CheckInHandler() {
+            if (this.SelectedPartType != null) {
+                this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
+            }
+
+            if (this.SelectedCondition != null) {
+                this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
+            }
+
+            this.SelectedPartInstance.LocationId = this.SelectedWarehouse.Id;
+
+            CheckInInput input = new CheckInInput(this.SelectedPartInstance, this.CreateTransaction, this.CreateTransaction, 
+                (this.CreateTransaction) ? this.TransactionTimeStamp : null);
+
+            var response =await this._checkIn.Execute(input);
+            if (response.Success) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                    this._eventAggregator.GetEvent<CheckInDoneEvent>().Publish();
+                });
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                });
+            }
         }
 
         private Task CancelHandler() {
             return Task.Factory.StartNew(() => this._eventAggregator.GetEvent<CheckInCancelEvent>().Publish());
         }
 
-        private Task SelectExistingPriceHandler() {
-            return Task.Factory.StartNew(() => {
+        private async Task SelectExistingPriceHandler() {
+            await Task.Factory.StartNew(() => {
                 this.DispatcherService.BeginInvoke(() => {
-                    if (this.ShowSelectPriceDialog()) {
-                        this.Price = this._selectPricePopupViewModel.SelectedPrice;
-                        this.NewPriceGroupCollapsed = false;
+                    if (this.Price != null) {
+                        StringBuilder builder = new StringBuilder();
+                        builder.AppendLine("Warning");
+                        builder.AppendLine("This Will Replace Pricing Info With Selected");
+                        builder.AppendLine("Continue?");
+                        var response = this.MessageBoxService.ShowMessage(builder.ToString(), "Warning", MessageButton.YesNo, MessageIcon.Warning);
+                        if (response == MessageResult.Yes) {
+                            if (this.ShowSelectPriceDialog()) {
+                                this.Price = this._selectPricePopupViewModel.SelectedPrice;
+                                this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
+                                this.SelectedPartInstance.Price = this.Price;
+                                this.CreateNewPrice = false;
+                            }
+                        } else {
+                            this.CreateNewPrice = true;
+                        }
+                    } else {
+                        if (this.ShowSelectPriceDialog()) {
+                            this.Price = this._selectPricePopupViewModel.SelectedPrice;
+                            this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
+                            this.SelectedPartInstance.Price = this.Price;
+                            this.CreateNewPrice = false;
+                        }
                     }
                 });
             });
         }
-
-        private Task NewPriceCollapsedHandler() {
-            return Task.CompletedTask;
-        }
-
-        private Task NewPriceExpandedHandler() {
-            return Task.CompletedTask;
-        }
-
-        private Task PriceSelectorCollapsedHandler() {
-            return Task.CompletedTask;
-        }
-
-        private Task PriceSelectorExpandedHandler() {
-            return Task.CompletedTask;
-        }
-
 
         private bool ShowSelectPriceDialog() {
             if (this._selectPricePopupViewModel == null) {
@@ -265,12 +316,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
                     this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-                    this.SelectedPartInstance = new PartInstance();
-                    this.Price = new Price();
-                    this._bubblerParameter = new BubblerParameter();
-                    this.NewPriceGroupCollapsed = true;
+                    var partInstance = new PartInstance();
+                    if (this.IsBubbler) {
+                        partInstance.BubblerParameter = new BubblerParameter();
+                        partInstance.Quantity = 1;
+                        partInstance.MinQuantity = 1;
+                        partInstance.SafeQuantity = 1;
+                    }
+                    partInstance.CostReported = false;
+                    this.CreateNewPrice = false;
+                    this.CreateTransaction = false;
+                    this.SelectedPartInstance = partInstance;
                 });
-                this._isInitialized = false;
+                this._isInitialized = true;
             }
         }
 
@@ -278,7 +336,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._partId =Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
             this.IsBubbler = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsBubbler]);
             this._isInitialized = false;
-            
+            this._eventAggregator.GetEvent<RenameHeaderEvent>().Publish("Check In Product");
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
@@ -288,6 +346,5 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override void OnNavigatedFrom(NavigationContext navigationContext) {
 
         }
-
     }
 }

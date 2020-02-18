@@ -180,7 +180,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
                         this.IsEdit = false;
                         this.IsNew = false;
-                        this.CanEdit = this.IsNew || this.IsEdit;
+                        this.CanEdit = false;
                     });
                 } else {
                     this.DispatcherService.BeginInvoke(() => {
@@ -197,7 +197,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
                         this.IsEdit = false;
                         this.IsNew = false;
-                        this.CanEdit = this.IsNew || this.IsEdit;
+                        this.CanEdit = false;
                     });
                 } else {
                     this.DispatcherService.BeginInvoke(() => {
@@ -209,8 +209,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private Task CancelHandler() {
-            this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
-            return Task.CompletedTask;
+            return Task.Factory.StartNew(() => {
+                this.CanEdit = false;
+                this.IsEdit = false;
+                this.IsNew = false;
+                this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+            });
         }
 
         private bool CanExecute() {

@@ -87,10 +87,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private Task CancelHandler() {
             return Task.Factory.StartNew(() => {
-                var response=this.MessageBoxService.ShowMessage("Are you sure you want to cancel?", "Cancel?", MessageButton.YesNo, MessageIcon.Question);
-                if (response == MessageResult.Yes) {
-                    this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
-                }
+                this.DispatcherService.BeginInvoke(() => {
+                    var response = this.MessageBoxService.ShowMessage("Are you sure you want to cancel?", "Cancel?", MessageButton.YesNo, MessageIcon.Question);
+                    if (response == MessageResult.Yes) {
+                        this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+                    }
+                });
             }); 
         }
 

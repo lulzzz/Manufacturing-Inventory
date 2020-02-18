@@ -55,6 +55,9 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<CheckInOutput> ExecuteBubbler(CheckInInput input) {
+            if (input.CreateNewPrice) {
+
+            }
             var entity = await this._partInstanceRepository.AddAsync(input.PartInstance);
             if (entity != null) {
                 if (entity.Price != null) { 
@@ -66,7 +69,9 @@ namespace ManufacturingInventory.Application.UseCases {
                         await this._priceLogRepository.AddAsync(priceLog);
                         if (input.CreateTransaction) {
                             Transaction transaction = new Transaction();
-                            transaction.SetupCheckinBubbler(entity, InventoryAction.INCOMING,entity.CurrentLocation, input.TimeStamp);
+                            DateTime transactionTimeStamp=(input.TimeStamp.HasValue) ? input.TimeStamp.Value:DateTime.Now;
+
+                            transaction.SetupCheckinBubbler(entity, InventoryAction.INCOMING,entity.CurrentLocation,transactionTimeStamp);
                             transaction.SessionId = this._userService.CurrentSession.Id;
                             var tranEntity = await this._transactionRepository.AddAsync(transaction);
                             if (tranEntity != null) {

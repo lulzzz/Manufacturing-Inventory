@@ -28,8 +28,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ObservableCollection<PartInstance> _partInstances;       
         private PartInstance _selectedInstance;
         private int _selectedPartId;
-        private bool _isEdit;
         private bool _outgoingInProgress;
+        private bool _checkInInProgress;
         private bool _showTableLoading;
         private bool _isBubbler;
 
@@ -48,12 +48,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._provider = provider;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
-            this._isEdit = false;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ViewInstanceDetailsCommand = new PrismCommands.DelegateCommand(this.ViewInstanceDetailsHandler);
             this.EditInstanceCommand = new PrismCommands.DelegateCommand(this.EditInstanceHandler);
             this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler);
-            this.CheckInCommand = new AsyncCommand(this.NewPartInstanceHandler);
+            this.CheckInCommand = new AsyncCommand(this.CheckInHandler);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
 
             this._eventAggregator.GetEvent<ReloadEvent>().Subscribe(async (traveler) => await this.ReloadHandler(traveler));
@@ -61,6 +60,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.ReloadNoTraveler());
 
         }
+
+        #region BindingVariables
 
         public override bool KeepAlive => false;
 
@@ -88,6 +89,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
         }
+
+        #endregion
 
         private async Task ExportTableHandler(ExportFormat format) {
             await Task.Run(() => {
@@ -200,17 +203,27 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
-        private Task NewPartInstanceHandler() {
-            this.DispatcherService.BeginInvoke(() => {
-                this.CleanupRegions();
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
-                parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
+        private Task CheckInHandler() {
+            return Task.Factory.StartNew(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CleanupRegions();
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
+                });
             });
+        }
 
+        private Task CheckInDoneHandler() {
             return Task.CompletedTask;
         }
+
+        private Task CheckInCanceledHandler() {
+            return Task.CompletedTask;
+        }
+
+
         
         private void EditInstanceHandler() {
             if (this.SelectedPartInstance != null) {
