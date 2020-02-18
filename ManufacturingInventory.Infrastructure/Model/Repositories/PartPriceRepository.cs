@@ -61,7 +61,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<PartPrice> query = this._context.Set<PartPrice>()
                 .Include(e => e.Part)
                 .Include(e => e.Price)
-                    .ThenInclude(e => e.Distributor)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -80,7 +79,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<PartPrice> query = this._context.Set<PartPrice>()
                 .Include(e => e.Part)
                 .Include(e => e.Price)
-                    .ThenInclude(e => e.Distributor)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -98,7 +96,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             this._context.PartPrices
                 .Include(e => e.Part)
                 .Include(e => e.Price)
-                    .ThenInclude(e => e.Distributor)
                 .Load();
         }
 
@@ -106,7 +103,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             await this._context.PartPrices
                 .Include(e => e.Part)
                 .Include(e => e.Price)
-                    .ThenInclude(e => e.Distributor)
                 .LoadAsync();
         }
 

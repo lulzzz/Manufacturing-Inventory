@@ -55,51 +55,76 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<CheckInOutput> ExecuteBubbler(CheckInInput input) {
-            if (input.CreateNewPrice) {
-
+            if (input.Price != null && !input.CreateNewPrice) {
+                input.PartInstance.PriceId = input.Price.Id;
             }
             var entity = await this._partInstanceRepository.AddAsync(input.PartInstance);
             if (entity != null) {
-                if (entity.Price != null) { 
+                if (input.CreateNewPrice) {
                     var part = await this._partRepository.GetEntityAsync(e => e.Id == entity.PartId);
                     if (part != null) {
-                        PartPrice partPrice = new PartPrice(part, entity.Price);
-                        PriceLog priceLog = new PriceLog(entity, entity.Price);
-                        await this._partPriceRepository.AddAsync(partPrice);
-                        await this._priceLogRepository.AddAsync(priceLog);
-                        if (input.CreateTransaction) {
-                            Transaction transaction = new Transaction();
-                            DateTime transactionTimeStamp=(input.TimeStamp.HasValue) ? input.TimeStamp.Value:DateTime.Now;
-
-                            transaction.SetupCheckinBubbler(entity, InventoryAction.INCOMING,entity.CurrentLocation,transactionTimeStamp);
-                            transaction.SessionId = this._userService.CurrentSession.Id;
-                            var tranEntity = await this._transactionRepository.AddAsync(transaction);
-                            if (tranEntity != null) {
-                                await this._unitOfWork.Save();
-                                return new CheckInOutput(entity, true, "Success: Check in completed"); 
-                            } else {
-                                await this._unitOfWork.Undo();
-                                return new CheckInOutput(null, false, "Error: Check in Failed");
-                            }
+                        if (input.Price != null) {
+                            PartPrice partPrice = new PartPrice(part, entity.Price);
+                            PriceLog priceLog = new PriceLog(entity, entity.Price);
+                            entity.UnitCost = input.Price.UnitCost;
+                            entity.TotalCost = (entity.BubblerParameter.NetWeight * entity.UnitCost) * entity.Quantity;
+                            await this._partPriceRepository.AddAsync(partPrice);
+                            await this._priceLogRepository.AddAsync(priceLog);
                         } else {
-
+                            await this._unitOfWork.Undo();
+                            return new CheckInOutput(null, false, "Error:  No Price given when marked as CreateNewPrice");
+                        }
+                        Transaction transaction = new Transaction();
+                        transaction.SetupCheckinBubbler(entity, InventoryAction.INCOMING, entity.CurrentLocation, input.TimeStamp);
+                        transaction.SessionId = this._userService.CurrentSession.Id;
+                        var tranEntity = await this._transactionRepository.AddAsync(transaction);
+                        if (tranEntity != null) {
+                            await this._unitOfWork.Save();
+                            return new CheckInOutput(entity, true, "Success: Check in completed");
+                        } else {
+                            await this._unitOfWork.Undo();
+                            return new CheckInOutput(null, false, "Error: Check in Failed");
                         }
                     } else {
                         await this._unitOfWork.Undo();
                         return new CheckInOutput(null, false, "Error: Part Not Found,Cannot Create Pricing");
                     }
                 } else {
-
+                    if (input.Price!=null) {
+                        var priceEntity = await this._priceRepository.GetEntityAsync(e => e.Id == input.Price.Id);
+                        if (priceEntity != null) {
+                            entity.UnitCost = priceEntity.UnitCost;
+                            entity.TotalCost = (entity.BubblerParameter.NetWeight * entity.UnitCost) * entity.Quantity;
+                            PriceLog priceLog = new PriceLog();
+                            priceLog.TimeStamp = input.TimeStamp;
+                            priceLog.IsCurrent = true;
+                            priceLog.PartInstance = entity;
+                            priceLog.Price = priceEntity;
+                            await this._priceLogRepository.AddAsync(priceLog);
+                        } else {
+                            await this._unitOfWork.Undo();
+                            return new CheckInOutput(null, false, "Error: Existing Price Not Found");
+                        }
+                    }
+                    Transaction transaction = new Transaction();
+                    transaction.SetupCheckinBubbler(entity, InventoryAction.INCOMING, entity.LocationId, input.TimeStamp);
+                    transaction.SessionId = this._userService.CurrentSession.Id;
+                    var tranEntity = await this._transactionRepository.AddAsync(transaction);
+                    if (tranEntity != null) {                                
+                        await this._unitOfWork.Save();
+                        return new CheckInOutput(entity, true, "Success: Check in completed");
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return new CheckInOutput(null, false, "Error: Check in Failed");
+                    }
                 }
-
             } else {
                 return new CheckInOutput(null, false, "Error Creating PartInstance");
             }
-            return null;
         }
 
         public async Task<CheckInOutput> ExecuteStandard(CheckInInput input) {
-            return null;
+            return new CheckInOutput(null, false, "Error: Not Implemented Yet");
         }
 
         public async Task<IEnumerable<Price>> GetAvailablePrices(int partId) {

@@ -78,7 +78,7 @@
                     <dxlc:LayoutItem Label="Select Warehouse"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ItemsSource="{Binding Warehouses}"
-                                          SelectedItem="{Binding SelectedLocation}"
+                                          SelectedItem="{Binding SelectedWarehouse}"
                                           ApplyItemTemplateToSelectedItem="True"
                                           IsTextEditable="False"
                                           IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}">
@@ -146,19 +146,9 @@
                                           IsChecked="{Binding SelectedPartInstance.CostReported}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutGroup>
-                        <dxlc:LayoutItem Label="Create Transaction With Check In?"
-                                         Style="{StaticResource LayoutItemStyle}">
-                            <dxe:ToggleSwitch HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              CheckedStateContent="YES"
-                                              UncheckedStateContent="NO"
-                                              ContentPlacement="Both"
-                                              IsChecked="{Binding CreateTransaction}" />
-                        </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Transaction TimeStamp"
                                          LabelPosition="Top"
-                                         LabelHorizontalAlignment="Center"
-                                         Visibility="{Binding CreateTransaction,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True}}">
+                                         LabelHorizontalAlignment="Center">
                             <dxe:DateEdit EditValue="{Binding TransactionTimeStamp,Mode=TwoWay}"
                                           HorizontalContentAlignment="Center"/>
                         </dxlc:LayoutItem>

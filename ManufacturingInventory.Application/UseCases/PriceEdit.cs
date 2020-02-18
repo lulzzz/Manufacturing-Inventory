@@ -125,7 +125,7 @@ namespace ManufacturingInventory.Application.UseCases {
                         this._priceLogRepository.Update(log);
                     }
 
-                   price.PartInstances.Add(partInstance);
+                    price.PartInstances.Add(partInstance);
                     partInstance.UnitCost = price.UnitCost;
                     if (partInstance.IsBubbler) {
                         partInstance.TotalCost = (price.UnitCost * partInstance.BubblerParameter.NetWeight) * partInstance.Quantity;

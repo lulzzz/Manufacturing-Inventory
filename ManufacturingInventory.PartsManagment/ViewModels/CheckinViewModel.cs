@@ -54,7 +54,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _grossWeight;
         private double _measuredWeight;
         private double _weight;
-        private DateTime? _transactionTimeStamp;
+        private DateTime _transactionTimeStamp;
 
         public AsyncCommand CheckInCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
@@ -181,7 +181,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._createPrice, value);
         }
 
-        public DateTime? TransactionTimeStamp {
+        public DateTime TransactionTimeStamp {
             get => this._transactionTimeStamp;
             set => SetProperty(ref this._transactionTimeStamp, value);
         }
@@ -194,6 +194,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     var price = new Price();
                     if (this.Price != null) {
                         price.Set(this.Price);
+                    } else {
+                        this.SelectedDistributor = null;
                     }
                     this.Price = price;
                 } else {
@@ -206,7 +208,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             var response = this.MessageBoxService.ShowMessage(builder.ToString(),"Warning", MessageButton.YesNo, MessageIcon.Warning);
                             if (response == MessageResult.Yes) {
                                 this.Price = null;
-
                             } else {
                                 this.CreateNewPrice = true;
                             }
@@ -227,8 +228,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             this.SelectedPartInstance.LocationId = this.SelectedWarehouse.Id;
 
-            CheckInInput input = new CheckInInput(this.SelectedPartInstance, this.CreateTransaction, this.CreateTransaction, 
-                (this.CreateTransaction) ? this.TransactionTimeStamp : null);
+            CheckInInput input = new CheckInInput(this.SelectedPartInstance, this.CreateNewPrice, this.TransactionTimeStamp,this.Price);
 
             var response =await this._checkIn.Execute(input);
             if (response.Success) {
@@ -260,7 +260,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             if (this.ShowSelectPriceDialog()) {
                                 this.Price = this._selectPricePopupViewModel.SelectedPrice;
                                 this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
-                                this.SelectedPartInstance.Price = this.Price;
                                 this.CreateNewPrice = false;
                             }
                         } else {
@@ -270,7 +269,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         if (this.ShowSelectPriceDialog()) {
                             this.Price = this._selectPricePopupViewModel.SelectedPrice;
                             this.SelectedDistributor = this.Distributors.FirstOrDefault(e => e.Id == this.Price.DistributorId);
-                            this.SelectedPartInstance.Price = this.Price;
                             this.CreateNewPrice = false;
                         }
                     }
@@ -309,19 +307,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 var warehouses = await this._checkIn.GetWarehouses();
 
                 this.DispatcherService.BeginInvoke(() => {
-                    this.SelectedPartInstance = new PartInstance();
-                    this.SelectedPartInstance.BubblerParameter = new BubblerParameter();
-
                     this.Distributors = new ObservableCollection<Distributor>(distributors);
                     this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
                     this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
                     var partInstance = new PartInstance();
+                    partInstance.PartId = this._partId;
                     if (this.IsBubbler) {
                         partInstance.BubblerParameter = new BubblerParameter();
                         partInstance.Quantity = 1;
                         partInstance.MinQuantity = 1;
                         partInstance.SafeQuantity = 1;
+                        partInstance.IsBubbler = true;
                     }
                     partInstance.CostReported = false;
                     this.CreateNewPrice = false;
