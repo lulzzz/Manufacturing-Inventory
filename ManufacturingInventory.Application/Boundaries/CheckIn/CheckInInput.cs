@@ -1,30 +1,35 @@
 ﻿using ManufacturingInventory.Infrastructure.Model.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
+using DevExpress.Mvvm.DataAnnotations;
+
 
 namespace ManufacturingInventory.Application.Boundaries.CheckIn {
+    public enum PriceOption {
+        [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/NewSales_16x16.png"), Display(Name = "Create New Price", Description = "Creates New Price", Order = 1)]
+        CreateNew,
+        [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/CostAnalysis_16x16.png"), Display(Name = "Selected Existing Price", Description = "Use Existing Price", Order = 1)]
+        UseExisting,
+        [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/Close_16x16.png"), Display(Name = "No Price", Description = "Check In Without Price", Order = 3)]
+        NoPrice
+    }
     public class CheckInInput {
 
-        public CheckInInput(PartInstance partInstance,bool createNewPrice,DateTime transactionTimeStamp) {
-            this.PartInstance = partInstance;
-            this.TimeStamp = transactionTimeStamp;
-            this.CreateNewPrice = createNewPrice;
-        }
-
-        public CheckInInput(PartInstance partInstance, bool createNewPrice, DateTime timeStamp, Price price=null,BubblerParameter bubblerParameter = null) {
+        public CheckInInput(PartInstance partInstance, PriceOption priceOption, DateTime timeStamp,int partId,Price price=null) {
             this.PartInstance = partInstance;
             this.TimeStamp = timeStamp;
-            this.CreateNewPrice = createNewPrice;
+            this.PricingOption = priceOption;
             this.Price = price;
-            this.BubblerParameter = bubblerParameter;
+            this.PartId = partId;
         }
 
         public PartInstance PartInstance { get; set; }
+        public int PartId { get; set; }
         public Price Price { get; set; }
-        public  BubblerParameter BubblerParameter { get; set; }
         public DateTime TimeStamp { get; set; }
-        public bool CreateNewPrice { get; set; }
+        public PriceOption PricingOption { get; set; }
 
     }
 }

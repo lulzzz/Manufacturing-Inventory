@@ -21,69 +21,69 @@ using ManufacturingInventory.Application.Boundaries.CheckIn;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static async Task<int> Main(string[] args) {
-            using var context= new ManufacturingContext();
-            IUserService userService = new UserService();
+            //using var context= new ManufacturingContext();
+            //IUserService userService = new UserService();
 
-            var user = context.Users
-                .Include(e => e.Sessions)
-                .ThenInclude(e => e.Transactions)
-                .Include(e => e.Permission)
-                .FirstOrDefault(e => e.FirstName == "Andrew");
+            //var user = context.Users
+            //    .Include(e => e.Sessions)
+            //    .ThenInclude(e => e.Transactions)
+            //    .Include(e => e.Permission)
+            //    .FirstOrDefault(e => e.FirstName == "Andrew");
 
-            if (user != null) {
-                Session session = new Session(user);
-                context.Sessions.Add(session);
-                context.SaveChanges();
-                userService.CurrentUser = user;
-                userService.CurrentSession = session;
+            //if (user != null) {
+            //    Session session = new Session(user);
+            //    context.Sessions.Add(session);
+            //    context.SaveChanges();
+            //    userService.CurrentUser = user;
+            //    userService.CurrentSession = session;
 
-                //var warehouse = await context.Locations.FirstOrDefaultAsync(e => e.Id == 2);
-                //var condition = await context.Categories.OfType<Condition>().FirstOrDefaultAsync(e => e.Id == 1);
-                //var distributor = await context.Distributors.FirstOrDefaultAsync(e => e.Id == 1);
-                //var part = await context.Parts.FirstOrDefaultAsync(e => e.Id == 3);
+            //    //var warehouse = await context.Locations.FirstOrDefaultAsync(e => e.Id == 2);
+            //    //var condition = await context.Categories.OfType<Condition>().FirstOrDefaultAsync(e => e.Id == 1);
+            //    //var distributor = await context.Distributors.FirstOrDefaultAsync(e => e.Id == 1);
+            //    //var part = await context.Parts.FirstOrDefaultAsync(e => e.Id == 3);
 
-                ICheckInUseCase checkIn = new CheckIn(context, userService);
+            //    ICheckInUseCase checkIn = new CheckIn(context, userService);
 
-                var prices = await checkIn.GetAvailablePrices(3);
-                var distributors = await checkIn.GetDistributors();
-                var categories = await checkIn.GetCategories();
-                var warehouses = await checkIn.GetWarehouses();
+            //    var prices = await checkIn.GetAvailablePrices(3);
+            //    var distributors = await checkIn.GetDistributors();
+            //    var categories = await checkIn.GetCategories();
+            //    var warehouses = await checkIn.GetWarehouses();
 
-                var warehouse = warehouses.FirstOrDefault(e => e.Id == 2);
-                var condition = categories.OfType<Condition>().FirstOrDefault(e => e.Id == 1);
-                var price = prices.FirstOrDefault(e => e.Id == 33);
-
-
-                //Price price = new Price();
-                //price.TimeStamp = DateTime.Now;
-                //price.UnitCost = 52.64;
-                //price.MinOrder = 8;
-                //price.LeadTime = 65;
-                //price.DistributorId = distributor.Id;
+            //    var warehouse = warehouses.FirstOrDefault(e => e.Id == 2);
+            //    var condition = categories.OfType<Condition>().FirstOrDefault(e => e.Id == 1);
+            //    var price = prices.FirstOrDefault(e => e.Id == 33);
 
 
-                PartInstance instance = new PartInstance("CheckIntTestWithExistingPrices", "", "", "", true, new BubblerParameter() { GrossWeight = 5, NetWeight = 5, Weight = 5 });
-                //instance.PartId = 3;
-                instance.PartId = 3;
-                instance.LocationId = warehouse.Id;
-                instance.ConditionId = condition.Id;
-                instance.PriceId = price.Id;
-                instance.CostReported = false;
-                instance.Quantity = 1;
+            //    //Price price = new Price();
+            //    //price.TimeStamp = DateTime.Now;
+            //    //price.UnitCost = 52.64;
+            //    //price.MinOrder = 8;
+            //    //price.LeadTime = 65;
+            //    //price.DistributorId = distributor.Id;
 
-                //instance.UpdatePrice();
 
-                CheckInInput input = new CheckInInput(instance,false,DateTime.Now,price);
-                var response = await checkIn.Execute(input);
-                if (response.Success) {
-                    Console.WriteLine("It Worked!!");
-                } else {
-                    Console.WriteLine("It Didnt Work!!!????");
-                }
-            } else {
-                Console.WriteLine("Could not LogIn");
-            }
-            Console.ReadKey();
+            //    PartInstance instance = new PartInstance("CheckIntTestWithExistingPrices", "", "", "", true, new BubblerParameter() { GrossWeight = 5, NetWeight = 5, Weight = 5 });
+            //    //instance.PartId = 3;
+            //    instance.PartId = 3;
+            //    instance.LocationId = warehouse.Id;
+            //    instance.ConditionId = condition.Id;
+            //    instance.PriceId = price.Id;
+            //    instance.CostReported = false;
+            //    instance.Quantity = 1;
+
+            //    //instance.UpdatePrice();
+
+            //    CheckInInput input = new CheckInInput(instance,false,DateTime.Now,price);
+            //    var response = await checkIn.Execute(input);
+            //    if (response.Success) {
+            //        Console.WriteLine("It Worked!!");
+            //    } else {
+            //        Console.WriteLine("It Didnt Work!!!????");
+            //    }
+            //} else {
+            //    Console.WriteLine("Could not LogIn");
+            //}
+            //Console.ReadKey();
             return 1;
         }
 

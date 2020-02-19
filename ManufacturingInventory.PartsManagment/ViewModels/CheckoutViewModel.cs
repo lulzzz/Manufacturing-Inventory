@@ -48,6 +48,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _unitCost;
 
 
+
         private int _quantity;
         private bool _isBubbler = false;
         private bool _isInitialized = false;
@@ -58,6 +59,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand RemoveFromOutgoingCommand { get; private set; }
         public AsyncCommand CheckOutCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
+
 
 
         public CheckoutViewModel(ICheckOutUseCase checkOut,IEventAggregator eventAggregator) {
@@ -169,7 +171,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._timeStamp;
             set => SetProperty(ref this._timeStamp, value);
         }
-
 
         private void RecievePartInstance(PartInstance instance) {
             this.TimeStamp = DateTime.Now;

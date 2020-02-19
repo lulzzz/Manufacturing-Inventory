@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <FileVersion>1.0.226.0218</FileVersion>
+    <FileVersion>1.0.239.0219</FileVersion>
     <Configurations>Debug;Release;fr</Configurations>
     <Version>1.5.9</Version>
   </PropertyGroup>
@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Mvvm" Version="19.1.8" />
   </ItemGroup>
 
   <ItemGroup>

@@ -29,6 +29,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public ICollection<PriceLog> PriceLogs { get; set; }
 
         public Price() {
+            this.TimeStamp = DateTime.Now;
             this.PartPrices = new HashSet<PartPrice>();
             this.PartInstances = new HashSet<PartInstance>();
             this.PriceLogs = new HashSet<PriceLog>();

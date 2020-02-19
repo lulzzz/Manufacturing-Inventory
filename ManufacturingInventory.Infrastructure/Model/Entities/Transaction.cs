@@ -80,10 +80,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartInstance = instance;
             this.Weight = instance.BubblerParameter.Weight;
             this.MeasuredWeight = instance.BubblerParameter.Measured;
-            if (instance.CostReported) {
-                this.UnitCost = instance.UnitCost;
-                this.TotalCost = instance.TotalCost;
-            }
+            this.UnitCost = instance.UnitCost;
+            this.TotalCost = instance.TotalCost;
             this.InventoryAction = inventoryAction;
             this.Quantity = instance.Quantity;
             this.LocationId=locationId;

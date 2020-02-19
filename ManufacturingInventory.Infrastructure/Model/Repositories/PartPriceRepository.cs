@@ -54,7 +54,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<PartPrice> GetEntityAsync(Expression<Func<PartPrice, bool>> expression) {
-            return await this._context.PartPrices.Include(e => e.Part).Include(e => e.Price).FirstOrDefaultAsync(expression);
+            return await this._context.PartPrices
+                .Include(e => e.Part)
+                .Include(e => e.Price)
+                .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<PartPrice> GetEntityList(Expression<Func<PartPrice, bool>> expression = null, Func<IQueryable<PartPrice>, IOrderedQueryable<PartPrice>> orderBy = null) {
@@ -75,7 +78,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<IEnumerable<PartPrice>> GetEntityListAsync(Expression<Func<PartPrice, bool>> expression = null, Func<IQueryable<PartPrice>, IOrderedQueryable<PartPrice>> orderBy = null) {
-
             IQueryable<PartPrice> query = this._context.Set<PartPrice>()
                 .Include(e => e.Part)
                 .Include(e => e.Price)
