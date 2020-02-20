@@ -269,9 +269,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 okayBuilder.AppendLine();
                 okayBuilder.AppendLine(failBuilder.ToString());
 
+                var firstInstance = response.OutputList.Select(e => e.Transaction.PartInstanceId).First();
+
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(okayBuilder.ToString(), "Success", MessageButton.OK, MessageIcon.Information);
-                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish(firstInstance);
                 });
             }
         }
@@ -279,7 +281,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task CancelHandler() {
             await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
-                    this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish();
+                    this._eventAggregator.GetEvent<OutgoingCancelEvent>().Publish();
                 });
             });
         }

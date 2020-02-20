@@ -138,9 +138,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        private Task CancelHandler() {
-            this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish();
-            return Task.CompletedTask;
+        private async Task CancelHandler() {
+            await Task.Run(() => {
+                this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish();
+            });
         }
         
         private async Task LoadHandler() {

@@ -18,7 +18,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ITransactionEditUseCase _transactionEdit;
         private IEventAggregator _eventAggregator;
 
-        protected IDispatcherService Dispatcher { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
+        protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("TransactionTableExportService"); }
 
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
@@ -30,7 +30,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isInitialized = false;
 
         public AsyncCommand InitializeCommand { get; private set; }
-        public AsyncCommand ViewDetailsCOmmand { get; private set; }
         public AsyncCommand UndoTransactionCommand { get; private set; }
         public AsyncCommand ReturnItemCommand { get; private set; }
         public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
@@ -43,6 +42,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async () => { await this.ReturnDoneHandler();});
+            this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.InitializeHandler(); });
+            this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) =>{ await this.InitializeHandler(); });
         }
 
         public override bool KeepAlive => false;
@@ -72,47 +73,36 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
-        private Task ReturnItemHandler() {
+        private async Task ReturnItemHandler() {
+
             if (this.SelectedTransaction != null) {
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
-                //this.Dispatcher.BeginInvoke(() => this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters));
-                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters);
+                await Task.Run(() => {
+                    this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
+                    this.DispatcherService.BeginInvoke(() => this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters));
+                });
+
                 this._returnInProgress = true;
             }
-            return Task.CompletedTask;
+
         }
 
         private async Task ReturnDoneHandler() {
             this._returnInProgress = false;
             this._isInitialized = false;
-            this.Dispatcher.BeginInvoke(() => this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll());
+            this.DispatcherService.BeginInvoke(() => this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll());
             await this._transactionEdit.Load();
             await this.InitializeHandler();
         }
 
-        private async Task ViewDetailsHandler() {
-
-        }
-
-        private async Task UndoTransactionHandler() {
-
-        }
-
-        private void ViewTransactionDetailsHandler() {
-            if (this.SelectedTransaction!=null){
-                this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-                NavigationParameters parameters = new NavigationParameters();
-                parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
-                parameters.Add(ParameterKeys.IsEdit, false);
-                this._regionManager.RequestNavigate(Regions.PartInstanceDetailsRegion, ModuleViews.TransactionDetailsView, parameters);
-            }
+        private Task UndoTransactionHandler() {
+            return Task.CompletedTask;
         }
 
         private async Task ExportTableHandler(ExportFormat format) {
             await Task.Run(() => {
-                this.Dispatcher.BeginInvoke(() => {
+                this.DispatcherService.BeginInvoke(() => {
                     var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
                     using (FileStream file = File.Create(path)) {
                         this.ExportService.Export(file, format);
@@ -127,11 +117,21 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
+        private async Task ReloadHandler() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            await this._transactionEdit.Load();
+            var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
+            this.DispatcherService.BeginInvoke(() => {
+                this.Transactions = new ObservableCollection<Transaction>(transactions);
+                this.ShowTableLoading = false;
+            });
+        }
+
         private async Task InitializeHandler() {
             if (!this._isInitialized) {
-                this.Dispatcher.BeginInvoke(() => this.ShowTableLoading = true);
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
-                this.Dispatcher.BeginInvoke(() => {
+                this.DispatcherService.BeginInvoke(() => {
                     this.Transactions = new ObservableCollection<Transaction>(transactions);
                     this.ShowTableLoading = false;
                 });

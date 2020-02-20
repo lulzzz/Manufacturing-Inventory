@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ManufacturingInventory.PartsManagment.Internal {
     public static class ParameterKeys {
+
+
+
         public static string SelectedPart { get => "SelectedPart"; }
         public static string SelectedAttachment { get => "SelectedTransaction"; }
         public static string SelectedTransaction { get => "SelectedTransaction"; }
@@ -12,6 +15,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public static string InstanceId { get => "InstanceId"; }
         public static string PriceId { get=> "PriceId"; }
         public static string PartId { get => "PartId"; }
+        public static string PriceEditOption { get => "PriceEditOption"; }
 
         public static string IsEdit { get => "IsEdit"; }
         public static string IsNew { get => "IsNew"; }

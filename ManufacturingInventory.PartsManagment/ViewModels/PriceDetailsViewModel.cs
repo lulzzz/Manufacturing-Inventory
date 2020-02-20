@@ -18,6 +18,7 @@ using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
 using ManufacturingInventory.Common.Application.UI.ViewModels;
 using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
+using ManufacturingInventory.Common.Application.ValueConverters;
 using System.IO;
 using System.Collections.Generic;
 
@@ -58,11 +59,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private int _minOrder;
         private double _leadTime;
 
-
-        private bool _isEdit;
-        private bool _isNew;
+        private PriceEditOption _priceEditOption;
         private bool _canEdit;
-        private bool _replaceNew;
         private int? _priceId;
         private int _partId;
         private int _instanceId;
@@ -139,16 +137,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._leadTime, value);
         }
 
-        public bool IsEdit {
-            get => this._isEdit;
-            set => SetProperty(ref this._isEdit, value);
-        }
-
-        public bool IsNew { 
-            get => this._isNew;
-            set => SetProperty(ref this._isNew, value);
-        }
-
         public bool CanEdit {
             get => this._canEdit;
             set => SetProperty(ref this._canEdit, value);
@@ -160,60 +148,29 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task SaveHandler() {
-            if (this.IsNew) {
-                PriceEditInput input;
-                if (this._replaceNew) {
-                    input=new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true,
-                        this.UnitCost, this.MinOrder, this.LeadTime, this.SelectedDistributor.Id, this._partId,
-                        PriceEditAction.ReplaceWithNew, partInstanceId: this._instanceId,priceId:this._priceId);
-                } else {
-                    input = new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true,
-                        this.UnitCost, this.MinOrder, this.LeadTime, this.SelectedDistributor.Id, this._partId,
-                        PriceEditAction.NEW, partInstanceId: this._instanceId);
-                }
+            PriceEditInput input = new PriceEditInput(this.TimeStamp, this.ValidFrom, this.ValidUntil, true, this.UnitCost, this.MinOrder, this.LeadTime,
+                this.SelectedDistributor.Id, this._partId, this._priceEditOption, partInstanceId: this._instanceId, priceId: this._priceId);
 
-
-                var response = await this._priceEdit.Execute(input);
-                if (response.Success) {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                        this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
-                        this.IsEdit = false;
-                        this.IsNew = false;
-                        this.CanEdit = false;
-                    });
-                } else {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
-                    });
-                }
+            var response = await this._priceEdit.Execute(input);
+            if (response.Success) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                    this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+                    this.CanEdit = false;
+                });
             } else {
-                PriceEditInput input = new PriceEditInput(this.TimeStamp,this.ValidFrom,this.ValidUntil,true,this.UnitCost,this.MinOrder,this.LeadTime,
-                    this.SelectedDistributor.Id,this._partId,PriceEditAction.Edit,partInstanceId:this._instanceId,priceId:this._priceId);
-                var response=await this._priceEdit.Execute(input);
-                if (response.Success) {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                        this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
-                        this.IsEdit = false;
-                        this.IsNew = false;
-                        this.CanEdit = false;
-                    });
-                } else {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
-                    });
-
-                }
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                });
             }
         }
 
-        private Task CancelHandler() {
-            return Task.Factory.StartNew(() => {
+        private async Task CancelHandler() {
+            await Task.Run(() => {
                 this.CanEdit = false;
-                this.IsEdit = false;
-                this.IsNew = false;
-                this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+                //this.IsEdit = false;
+                //this.IsNew = false;
+                this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
             });
         }
 
@@ -224,7 +181,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             if (!this._isInitialized) {
                 var distributors = await this._priceEdit.GetDistributors();
-                if (!this._replaceNew) {
+                if (this._priceEditOption!=PriceEditOption.ReplaceWithNew) {
                     var id = (this._priceId.HasValue) ? this._priceId.Value : 0;
                     var price = await this._priceEdit.GetPrice(id);
                     var attachment = await this._attachmentEdit.GetPriceAttachment(id);
@@ -284,13 +241,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             this.DispatcherService.BeginInvoke(() => {
                                 this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
                             });
-                            //await this.Reload();
                         } else {
                             this.DispatcherService.BeginInvoke(() => {
                                 this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
                             });
-
-                            //await this.Reload();
                         }
                     }
                 }
@@ -374,10 +328,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._priceId = navigationContext.Parameters[ParameterKeys.PriceId] as int?;
             this._instanceId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.InstanceId]);
             this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
-            this.IsNew = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsNew]);
-            this.IsEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
-            this._replaceNew = this.IsNew && this.IsEdit;
-            this.CanEdit = this.IsNew || this.IsEdit;
+            var priceEditOption=navigationContext.Parameters[ParameterKeys.PriceEditOption] as object;
+            this._priceEditOption=EnumConvertBack.ConvertEnum<PriceEditOption>(priceEditOption);
+            this.CanEdit = (this._priceEditOption != PriceEditOption.View);
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {

@@ -33,16 +33,18 @@ namespace ManufacturingInventory.Application.UseCases {
 
         public async Task<PriceEditOutput> Execute(PriceEditInput input) {
             switch (input.EditAction) {
-                case PriceEditAction.NEW:
+                case PriceEditOption.NEW:
                     return await this.ExecuteNew(input);
-                case PriceEditAction.ReplaceWithNew:
+                case PriceEditOption.ReplaceWithNew:
                     return await this.ExecuteReplaceWithNew(input);
-                case PriceEditAction.ReplaceWithExisiting:
+                case PriceEditOption.ReplaceWithExisiting:
                     return await this.ExecuteReplaceWithExisiting(input);
-                case PriceEditAction.Edit:
+                case PriceEditOption.Edit:
                     return await this.ExecuteEdit(input);
+                case PriceEditOption.View:
+                    return new PriceEditOutput(null, false, "Error: PriceEditOption View Not Supported");
                 default:
-                    return new PriceEditOutput(null, false, "Invalid Price Edit Action");
+                    return new PriceEditOutput(null, false, "Error: Unknown PriceEditOption");
             }
         }
 

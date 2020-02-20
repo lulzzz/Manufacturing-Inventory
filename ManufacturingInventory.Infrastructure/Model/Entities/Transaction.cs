@@ -63,16 +63,18 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartInstanceId = instance.Id;
         }
 
-        public void SetupCheckinBubbler(PartInstance instance, InventoryAction inventoryAction, Location location, DateTime timeStamp) {
+        public void SetupCheckIn(PartInstance instance, InventoryAction inventoryAction, int locationId, DateTime timeStamp) {
             this.TimeStamp = timeStamp;
             this.PartInstance = instance;
-            this.Weight = instance.BubblerParameter.Weight;
-            this.MeasuredWeight = instance.BubblerParameter.Measured;
+            if (instance.IsBubbler) {
+                this.Weight = instance.BubblerParameter.Weight;
+                this.MeasuredWeight = instance.BubblerParameter.Measured;
+            }
             this.UnitCost = instance.UnitCost;
             this.TotalCost = instance.TotalCost;
             this.InventoryAction = inventoryAction;
-            this.Quantity = 1;
-            this.LocationId = location.Id;
+            this.Quantity = instance.Quantity;
+            this.LocationId = locationId;
         }
 
         public void SetupCheckinBubbler(PartInstance instance, InventoryAction inventoryAction,int locationId, DateTime timeStamp) {
@@ -85,6 +87,16 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.InventoryAction = inventoryAction;
             this.Quantity = instance.Quantity;
             this.LocationId=locationId;
+        }
+
+        public void SetupCheckInStandard(PartInstance instance, InventoryAction inventoryAction, int locationId, DateTime timeStamp) {
+            this.TimeStamp = timeStamp;
+            this.PartInstance = instance;
+            this.UnitCost = instance.UnitCost;
+            this.TotalCost = instance.TotalCost;
+            this.InventoryAction = inventoryAction;
+            this.Quantity = instance.Quantity;
+            this.LocationId = locationId;
         }
 
         public void Set(Transaction transaction) {

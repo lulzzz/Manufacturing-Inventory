@@ -15,35 +15,42 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
 
         public PartInstance GetEntity(Expression<Func<PartInstance, bool>> expression) {
             return this._context.PartInstances
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                 .FirstOrDefault(expression);
         }
 
         public async Task<PartInstance> GetEntityAsync(Expression<Func<PartInstance, bool>> expression) {
             return await this._context.PartInstances
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                 .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<PartInstance> GetEntityList(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
+                .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .Include(e => e.Condition)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                 .AsNoTracking();
+
 
             if (expression != null) {
                 query = query.Where(expression);
@@ -58,12 +65,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
 
         public async Task<IEnumerable<PartInstance>> GetEntityListAsync(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
+                .Include(e => e.Condition)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                .Include(e => e.Condition)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -79,23 +88,27 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
 
         public void Load() {
             this._context.PartInstances
-                 .Include(e => e.PartType)
-                 .Include(e => e.CurrentLocation)
-                 .Include(e => e.Price)
-                 .Include(e => e.BubblerParameter)
-                 .Include(e => e.Condition)
-                 .Include(e => e.Part)
+                .Include(e => e.Price)
+                .Include(e => e.PartType)
+                .Include(e => e.CurrentLocation)
+                .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
+                .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                  .Load();
         }
 
         public async Task LoadAsync() {
             await this._context.PartInstances
+                .Include(e => e.Price)
                 .Include(e => e.PartType)
                 .Include(e => e.CurrentLocation)
-                .Include(e => e.Price)
-                .Include(e => e.BubblerParameter)
                 .Include(e => e.Condition)
+                .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                 .LoadAsync();
         }
     }

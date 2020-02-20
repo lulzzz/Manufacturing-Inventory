@@ -9,28 +9,43 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     public class ReloadEventTraveler {
         public int PartId { get; set; }
         public int PartInstanceId { get; set; }
+
+        public ReloadEventTraveler() {
+
+        }
+
+        public ReloadEventTraveler(int partId,int partInstanceId) {
+            this.PartId = partId;
+            this.PartInstanceId = partInstanceId;
+        }
     }
+
 
     public class RenameHeaderEvent : PubSubEvent<string> { }
 
-    public class ReloadEvent:PubSubEvent<ReloadEventTraveler> { }
 
+
+    //PartSummary-Edit
     public class PartEditDoneEvent:PubSubEvent<int> { }
     public class PartEditCancelEvent : PubSubEvent { }
     
-    
+    //Price-Edit
     public class PriceEditDoneEvent : PubSubEvent { }
     public class PriceEditCancelEvent : PubSubEvent { }
-    public class InstanceCreatedEvent : PubSubEvent<int> { };
 
-    public class PartInstanceEditDoneEvent : PubSubEvent { }
-    public class LoadPartDetailsEvent : PubSubEvent { }
+    //PartInstance-Edit
+    public class PartInstanceEditDoneEvent : PubSubEvent<ReloadEventTraveler> { }
+    public class PartInstanceEditCancelEvent : PubSubEvent<ReloadEventTraveler> { }
 
-    public class OutgoingDoneEvent : PubSubEvent { }
+    //PartInstance-Outgoing
+    public class OutgoingDoneEvent : PubSubEvent<int> { }
     public class AddToOutgoingEvent : PubSubEvent<PartInstance> { }
+    public class OutgoingCancelEvent : PubSubEvent { }
 
-    public class CheckInDoneEvent : PubSubEvent { }
+    //PartInstance-CheckIn
+    public class CheckInDoneEvent : PubSubEvent<int> { }
     public class CheckInCancelEvent : PubSubEvent { }
 
+    //Transaction
     public class ReturnDoneEvent : PubSubEvent { }
 }

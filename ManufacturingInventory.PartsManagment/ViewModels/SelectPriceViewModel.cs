@@ -71,11 +71,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task SaveHandler() {
-            PriceEditInput input = new PriceEditInput(this.SelectedPrice.Id, this._instanceId, this._partId, PriceEditAction.ReplaceWithExisiting);
+            PriceEditInput input = new PriceEditInput(this.SelectedPrice.Id, this._instanceId, this._partId, PriceEditOption.ReplaceWithExisiting);
             var response = await this._priceEdit.Execute(input);
             if (response.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                    //ReloadEventTraveler traveler = new ReloadEventTraveler(this._partId, this._instanceId);
+                    //this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish(traveler);
                     this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
                 });
             } else {
@@ -85,12 +87,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        private Task CancelHandler() {
-            return Task.Factory.StartNew(() => {
+        private async Task CancelHandler() {
+            await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
                     var response = this.MessageBoxService.ShowMessage("Are you sure you want to cancel?", "Cancel?", MessageButton.YesNo, MessageIcon.Question);
                     if (response == MessageResult.Yes) {
-                        this._eventAggregator.GetEvent<PriceEditDoneEvent>().Publish();
+                        this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
                     }
                 });
             }); 
@@ -101,15 +103,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task LoadAsync() {
-            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-            var prices = await this._priceEdit.GetPartPrices(this._partId);
-            this.DispatcherService.BeginInvoke(() => {
-                this.Prices=new ObservableCollection<Price>(prices);
-                if (this._priceId.HasValue) {
-                    this.SelectedPrice = this.Prices.FirstOrDefault(e => e.Id == this._priceId.Value);
-                }
-                this.ShowTableLoading = false;
-            });
+            if (!this._isInitialized) {
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+                var prices = await this._priceEdit.GetPartPrices(this._partId);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.Prices = new ObservableCollection<Price>(prices);
+                    if (this._priceId.HasValue) {
+                        this.SelectedPrice = this.Prices.FirstOrDefault(e => e.Id == this._priceId.Value);
+                    }
+                    this.ShowTableLoading = false;
+                });
+                this._isInitialized = true;
+            }
+
         }
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
@@ -121,6 +127,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override bool IsNavigationTarget(NavigationContext navigationContext) {
             return true;
         }
+
         public override void OnNavigatedFrom(NavigationContext navigationContext) {
 
         }

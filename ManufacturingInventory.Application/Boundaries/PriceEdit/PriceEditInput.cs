@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.PriceEdit {
-    public enum PriceEditAction {
+    public enum PriceEditOption {
         NEW,
         ReplaceWithNew,
         ReplaceWithExisiting,
-        Edit
+        Edit,
+        View
     }
 
     public class PriceEditInput {
         
-        public PriceEditInput(int? priceId,int partInstanceId,int partId,PriceEditAction action) {
+        public PriceEditInput(int? priceId,int partInstanceId,int partId,PriceEditOption action) {
             this.PriceId = priceId;
             this.PartInstanceId = partInstanceId;
             this.PartId = partId;
@@ -22,7 +23,7 @@ namespace ManufacturingInventory.Application.Boundaries.PriceEdit {
         public PriceEditInput(DateTime timeStamp, DateTime? validFrom,
             DateTime? validUntil, bool isCurrent, double unitCost, 
             int minOrder, double leadTime, int distributorId, 
-            int partId,PriceEditAction action, int? partInstanceId=null, int? priceId=null) {
+            int partId,PriceEditOption action, int? partInstanceId=null, int? priceId=null) {
             this.TimeStamp = timeStamp;
             this.ValidFrom = validFrom;
             this.ValidUntil = validUntil;
@@ -37,7 +38,7 @@ namespace ManufacturingInventory.Application.Boundaries.PriceEdit {
             this.EditAction = action;
         }
 
-        public PriceEditAction EditAction { get; set; } 
+        public PriceEditOption EditAction { get; set; } 
         public int? PriceId { get; set; }
         public DateTime TimeStamp { get; set; }
         public DateTime? ValidFrom { get; set; }

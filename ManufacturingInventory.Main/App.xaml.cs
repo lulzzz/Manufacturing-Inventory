@@ -30,6 +30,7 @@ using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
 using ManufacturingInventory.Application.Boundaries.CheckIn;
+using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -62,6 +63,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<ITransactionEditUseCase, TransactionEdit>();
                 container.Register<IReturnItemUseCase, ReturnItem>();
                 container.Register<IPriceEditUseCase, PriceEdit>();
+                container.Register<IPartInstanceTableViewUseCase, PartInstanceTableViewUseCase>();
 
                 container.Register<IRepository<Category>, CategoryRepository>();
                 container.Register<IRepository<Location>, LocationRepository>();

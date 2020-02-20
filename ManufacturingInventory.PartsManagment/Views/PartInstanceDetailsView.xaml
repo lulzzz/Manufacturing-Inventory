@@ -25,10 +25,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:EventToCommand EventName="Loaded"
-                               Command="{Binding InitializeCommand}" />
-        <dx:DialogService x:Name="FileNameDialog"
-                          DialogWindowStartupLocation="CenterOwner">
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}" />
+        <dx:DialogService x:Name="FileNameDialog" DialogWindowStartupLocation="CenterOwner">
             <dx:DialogService.ViewTemplate>
                 <DataTemplate>
                     <commonViews:FileNameView />
@@ -43,12 +41,28 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
-        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog"
-                                      Title="{Binding Title}" />
-        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog"
-                                      Title="{Binding Title}" />
+        <dxmvvm:WindowService x:Name="PartInstanceDetailsLoadingService">
+            <dxmvvm:WindowService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:LoadingView />
+                </DataTemplate>
+            </dxmvvm:WindowService.ViewTemplate>
+            <dxmvvm:WindowService.WindowStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="250" />
+                    <Setter Property="Height"
+                            Value="120" />
+                    <Setter Property="Title"
+                            Value="Loading" />
+                </Style>
+            </dxmvvm:WindowService.WindowStyle>
+        </dxmvvm:WindowService>
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog" Title="{Binding Title}" />
+        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog" Title="{Binding Title}" />
         <dx:DXMessageBoxService x:Name="PartInstanceDetailsMessageService" />
         <dxmvvm:DispatcherService x:Name="PartInstanceDetailDispatcher" />
+        <dxmvvm:EventToCommand EventName="Unloaded" Command="{Binding ClosingCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
         <Grid Margin="5,5,5,5">
@@ -178,20 +192,10 @@
                                 <dxe:SpinEdit Text="{Binding NetWeight,Mode=TwoWay}"
                                               AllowSpinOnMouseWheel="False"
                                               MaskType="Numeric"
-                                              Mask="c3"
+                                              Mask="f"
                                               MaskUseAsDisplayFormat="True"
                                               dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
                                               IsReadOnly="{Binding CanEdit,Mode=TwoWay,Converter={dxmvvm:BooleanNegationConverter}}" />
-                            </dxlc:LayoutItem>
-                            <dxlc:LayoutItem Label="Tare"
-                                             Style="{StaticResource LayoutItemStyle}">
-                                <dxe:SpinEdit Text="{Binding Tare,Mode=TwoWay}"
-                                              AllowSpinOnMouseWheel="False"
-                                              MaskType="Numeric"
-                                              Mask="c3"
-                                              MaskUseAsDisplayFormat="True"
-                                              dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
-                                              IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Gross"
                                              Style="{StaticResource LayoutItemStyle}">
@@ -200,6 +204,7 @@
                                               MaskType="Numeric"
                                               Mask="f"
                                               MinValue="0"
+                                              dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
                                               IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Measured"
@@ -209,6 +214,7 @@
                                               MaskType="Numeric"
                                               Mask="f"
                                               MinValue="0"
+                                              dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
                                               IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Weight"
@@ -218,6 +224,7 @@
                                               MaskType="Numeric"
                                               Mask="f"
                                               MinValue="0"
+                                              dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
                                               IsReadOnly="True" />
                             </dxlc:LayoutItem>
                         </dxlc:LayoutGroup>
@@ -226,13 +233,13 @@
                                       Width="250">
                         <dxlc:LayoutItem Label="Description"
                                          Style="{StaticResource LayoutItemStyle}">
-                            <dxe:TextEdit Text="{Binding Description}"
+                            <dxe:TextEdit EditValue="{Binding Description}"
                                           Style="{StaticResource TextEditComments}" 
                                           Height="85"/>
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Comments"
                                          Style="{StaticResource LayoutItemStyle}">
-                            <dxe:TextEdit Text="{Binding Comments}"
+                            <dxe:TextEdit EditValue="{Binding Comments}"
                                           Style="{StaticResource TextEditComments}"
                                           Height="85" />
                         </dxlc:LayoutItem>

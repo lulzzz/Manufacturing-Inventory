@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit {
-    public class PartInstanceDetailsEditInput : IInput {
+    public class PartInstanceDetailsEditInput {
 
-        public PartInstanceDetailsEditInput(PartInstance partInstance, bool isNew) {
+        public PartInstanceDetailsEditInput(PartInstance partInstance) {
             this.PartInstance = partInstance;
-            this.IsNew = isNew;
         }
 
         public PartInstance PartInstance { get; set; }
-        public bool IsNew { get; set; }
     }
 }

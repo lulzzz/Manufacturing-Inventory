@@ -81,13 +81,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public void UpdateWeight(double measured) {
             this.BubblerParameter.UpdateWeight(measured);
             this.UpdatePrice();
-            //this.BubblerParameter.Measured = measured;
-            //this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
         }
 
         public void UpdateWeight() {
             this.BubblerParameter.UpdateWeight();
-            //this.BubblerParameter.Weight = this.BubblerParameter.NetWeight - (this.BubblerParameter.GrossWeight - this.BubblerParameter.Measured);
+
             this.UpdatePrice();
         }
 
@@ -127,13 +125,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
         public void UpdatePrice(Price price) {
             if (!this.IsBubbler) {
-                this.PriceId = price.Id;
+                this.Price = price;
                 this.UnitCost = price.UnitCost;
                 this.TotalCost = this.UnitCost * this.Quantity;
             } else {
-                this.PriceId = price.Id;
+                this.Price = price;
                 this.UnitCost = price.UnitCost;
-                this.TotalCost = this.UnitCost * this.BubblerParameter.NetWeight;
+                if (this.BubblerParameter != null) {
+                    this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight) * this.Quantity;
+                }
             }
         }
 

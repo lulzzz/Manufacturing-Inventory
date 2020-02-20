@@ -203,7 +203,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         #region ComboEditHandlers
         private async Task CreatePriceHandler(PriceOption previousOption) {
-            await Task.Factory.StartNew(() => {
+            await Task.Run(() => {
                     this.DispatcherService.BeginInvoke(() => {
                         switch (previousOption) {
                             case PriceOption.CreateNew: {
@@ -300,7 +300,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task SelectExistingPriceHandler(PriceOption previousOption) {
-            await Task.Factory.StartNew(() => {
+            await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
                     switch (previousOption) {
                         case PriceOption.CreateNew: {
@@ -413,7 +413,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             if (response.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                    this._eventAggregator.GetEvent<CheckInDoneEvent>().Publish();
+                    this._eventAggregator.GetEvent<CheckInDoneEvent>().Publish(response.PartInstance.Id);
                 });
             } else {
                 this.DispatcherService.BeginInvoke(() => {
@@ -422,8 +422,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        private Task CancelHandler() {
-            return Task.Factory.StartNew(() => this._eventAggregator.GetEvent<CheckInCancelEvent>().Publish());
+        private async Task CancelHandler() {
+            await Task.Run(() => this._eventAggregator.GetEvent<CheckInCancelEvent>().Publish());
         }
 
         private async Task Load() {
