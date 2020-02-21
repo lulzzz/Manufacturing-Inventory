@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ManufacturingInventory.Infrastructure.Model.Entities;
+﻿using ManufacturingInventory.Infrastructure.Model.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading;
 
 namespace ManufacturingInventory.Infrastructure.Model {
-    public class ManufacturingContext:DbContext {
+    public class ManufacturingContext : DbContext {
         [NotMapped]
         public static int count = 0;
 
@@ -54,7 +47,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.UseLazyLoadingProxies(false);
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
-            
+
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-NGE4P2E;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
@@ -220,26 +213,26 @@ namespace ManufacturingInventory.Infrastructure.Model {
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
 
-                builder.Entity<Attachment>()
-                    .HasOne(e => e.Distributor)
-                    .WithMany(e => e.Attachments)
-                    .HasForeignKey(e => e.DistributorId)
-                    .IsRequired(false)
-                    .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Attachment>()
+                .HasOne(e => e.Distributor)
+                .WithMany(e => e.Attachments)
+                .HasForeignKey(e => e.DistributorId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
 
-                builder.Entity<Attachment>()
-                    .HasOne(e => e.Price)
-                    .WithOne(e=>e.Attachment)
-                    .HasForeignKey<Attachment>(e => e.PriceId)
-                    .IsRequired(false)
-                    .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Attachment>()
+                .HasOne(e => e.Price)
+                .WithOne(e => e.Attachment)
+                .HasForeignKey<Attachment>(e => e.PriceId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
 
-                builder.Entity<Attachment>()
-                    .HasOne(e => e.PartInstance)
-                    .WithMany(e => e.Attachments)
-                    .HasForeignKey(e => e.PartInstanceId)
-                    .IsRequired(false)
-                    .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Attachment>()
+                .HasOne(e => e.PartInstance)
+                .WithMany(e => e.Attachments)
+                .HasForeignKey(e => e.PartInstanceId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
 
             #endregion
 
@@ -268,7 +261,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             builder.Entity<PartInstance>()
                 .HasOne(e => e.CurrentLocation)
-                .WithMany(e =>e.ItemsAtLocation)
+                .WithMany(e => e.ItemsAtLocation)
                 .HasForeignKey(e => e.LocationId)
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
@@ -333,9 +326,9 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<PartInstance>()
-                .HasOne(e=>e.Price)
-                .WithMany(e=>e.PartInstances)
-                .HasForeignKey(e=>e.PriceId)
+                .HasOne(e => e.Price)
+                .WithMany(e => e.PartInstances)
+                .HasForeignKey(e => e.PriceId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
@@ -489,9 +482,12 @@ namespace ManufacturingInventory.Infrastructure.Model {
         }
 
         private void Seed(ModelBuilder builder) {
+
+        }
+
+        private void SeedPermissions(ModelBuilder builder) {
             builder.Entity<Permission>()
-                .HasData(new Permission() 
-                {
+                .HasData(new Permission() {
                     Id = 1,
                     Name = "InventoryAdminAccount",
                     Description = "Full Inventory Privileges and User Control"
@@ -506,7 +502,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             builder.Entity<Permission>()
                 .HasData(new Permission() {
-                    Id=3,
+                    Id = 3,
                     Name = "InventoryUserFullAccount",
                     Description = "Full Inventory Privileges"
                 });
@@ -519,13 +515,115 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 });
 
             builder.Entity<User>()
-                .HasData(new User() { 
-                    Id=1,
-                    PermissionId=1,
-                    FirstName="Andrew",
-                    LastName="Elmendorf",
-                    UserName="AElmendo"
+                .HasData(new User() {
+                    Id = 1,
+                    PermissionId = 1,
+                    FirstName = "Andrew",
+                    LastName = "Elmendorf",
+                    UserName = "AElmendo"
                 });
+        }
+
+        private void SeedDistributors(ModelBuilder builder) {
+
+            builder.Entity<Distributor>().HasData(new Distributor { Name = "LSP Industrial Ceramics Inc.", Description = "Boron Nitride Parts" });
+            builder.Entity<Distributor>().HasData(new Distributor { Name = "Rayotek", Description = "Sapphire Parts" });
+            builder.Entity<Distributor>().HasData(new Distributor { Name = "Mersen", Description = "SiC & TaC Coated Graphite parts" });
+            builder.Entity<Distributor>().HasData(new Distributor { Name = "Aixtron", Description = "Original Aixtron Parts" });
+            builder.Entity<Distributor>().HasData(new Distributor { Name = "Quality Quartz Engineering ", Description = "All Quartz Parts" });
+            builder.Entity<Distributor>().HasData(new Distributor { Name = "Akzo Nobel", Description = "" });
+        }
+
+        private void SeeCategories(ModelBuilder builder) {
+            builder.Entity<Condition>().HasData(new Condition { Name = "New", Description = "A new Part" });
+            builder.Entity<Condition>().HasData(new Condition { Name = "Used", Description = "Part that has been used and returned to inventory" });
+            builder.Entity<Condition>().HasData(new Condition { Name = "Need Cleaning", Description = "A part returned to inventory and needs cleaning. i.e. Satellites" });
+            builder.Entity<Condition>().HasData(new Condition { Name = "Needs Repair", Description = "A part returned to inventory in need of repair/refurbish" });
+            builder.Entity<Condition>().HasData(new Condition { Name = "Refurbished", Description = "A part in inventory that was repaired/refurbished" });
+            builder.Entity<Condition>().HasData(new Condition { Name = "Depleted", Description = "A part's stock is depleted. No additional stock will be added or returned" });
+
+            builder.Entity<Organization>().HasData(new Organization { Name = "Raw Materials", Description = "" });
+            builder.Entity<Organization>().HasData(new Organization { Name = "Supplies", Description = "" });
+
+            builder.Entity<Usage>().HasData(new Usage { Name = "All Systems", Description = "Used on all Epi Systems" });
+            builder.Entity<Usage>().HasData(new Usage { Name = "A Systems", Description = "Used on A Systems" });
+            builder.Entity<Usage>().HasData(new Usage { Name = "B Systems", Description = "Used on B Systems" });
+            builder.Entity<Usage>().HasData(new Usage { Name = "C Systems", Description = "Used on C Systems" });
+
+            builder.Entity<PartType>().HasData(new PartType { Name = "1x2-short", Description = "" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "1x2-long", Description = "" });
+
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B01", Description = "Used only for System B01" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B02", Description = "Used only for System B02" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B03", Description = "Used only for System B03" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B04", Description = "Used only for System B04" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B05", Description = "Used only for System B05" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B06", Description = "Used only for System B06" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System B07", Description = "Used only for System B07" });
+
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A01", Description = "Used only for System A01" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A02", Description = "Used only for System A02" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A03", Description = "Used only for System A03" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A04", Description = "Used only for System A04" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A05", Description = "Used only for System A05" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A06", Description = "Used only for System A06" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System A07", Description = "Used only for System A07" });
+
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C01", Description = "Used only for System C01" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C02", Description = "Used only for System C02" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C03", Description = "Used only for System C03" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C04", Description = "Used only for System C04" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C05", Description = "Used only for System C05" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C06", Description = "Used only for System C06" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C07", Description = "Used only for System C07" });
+
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C08", Description = "Used only for System C08" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C09", Description = "Used only for System C09" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C10", Description = "Used only for System C10" });
+            builder.Entity<PartType>().HasData(new PartType { Name = "System C11", Description = "Used only for System C11" });
+        }
+
+        private void SeedLocations(ModelBuilder builder) {
+            builder.Entity<Warehouse>().HasData(new Warehouse { Name = "Epi System Parts", Description = "" });
+            builder.Entity<Warehouse>().HasData(new Warehouse { Name = "Gas Bay", Description = "" });
+            builder.Entity<Warehouse>().HasData(new Warehouse { Name = "Epi Chase", Description = "" });
+            builder.Entity<Warehouse>().HasData(new Warehouse { Name = "Process Lab", Description = "" });
+            builder.Entity<Warehouse>().HasData(new Warehouse { Name = "Back Warehouse", Description = "" });
+
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B01", Description = "Reactor B01" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B02", Description = "Reactor B02" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B03", Description = "Reactor B03" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B04", Description = "Reactor B04" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B05", Description = "Reactor B05" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B06", Description = "Reactor B06" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System B07", Description = "Reactor B07" });
+
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A01", Description = "Reactor A01" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A02", Description = "Reactor A02" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A03", Description = "Reactor A03" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A04", Description = "Reactor A04" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A05", Description = "Reactor A05" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A06", Description = "Reactor A06" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System A07", Description = "Reactor A07" });
+
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C01", Description = "Reactor C01" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C02", Description = "Reactor C02" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C03", Description = "Reactor C03" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C04", Description = "Reactor C04" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C05", Description = "Reactor C05" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C06", Description = "Reactor C06" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C07", Description = "Reactor C07" });
+
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C08", Description = "Reactor C08" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C09", Description = "Reactor C09" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C10", Description = "Reactor C10" });
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "System C11", Description = "Reactor C11" });
+
+            builder.Entity<Consumer>().HasData(new Consumer { Name = "Epi Process", Description = "Generic Consumer for cost reporting" });
+        }
+
+        private void SeedManufacturers(ModelBuilder builder) {
+            builder.Entity<Manufacturer>().HasData(new Manufacturer { Name = "Mersen", Description = "Mersen deals with all SiC coated & TaC coated graphite parts." });
         }
 
     }

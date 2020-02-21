@@ -60,6 +60,10 @@ namespace ManufacturingInventory.Application.UseCases {
             return (await this._locationProvider.GetEntityListAsync()).OfType<Warehouse>();
         }
 
+        public async Task<Tuple<double,double>> GetInstanceNetGross(int partInstanceId){
+            var instance = (await this._partInstanceRepository.GetEntityAsync(e => e.Id == partInstanceId));
+            return new Tuple<double, double>(instance.BubblerParameter.NetWeight,instance.BubblerParameter.GrossWeight);
+        }
 
         public async Task<ReturnItemOutput> Execute(ReturnItemInput input) {
 

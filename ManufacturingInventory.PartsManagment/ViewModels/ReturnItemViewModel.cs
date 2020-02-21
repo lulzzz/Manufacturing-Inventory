@@ -39,6 +39,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private DateTime _timeStamp;
         private double _measuredWeight;
         private double _weight;
+        private double _instanceNet;
+        private double _instanceGross;
         private int _quantity;
         private bool _isBubbler = false;
         private bool _isInitialized = false;
@@ -84,7 +86,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public double MeasuredWeight {
             get => this._measuredWeight;
-            set => SetProperty(ref this._measuredWeight, value);
+            set {
+                this.Weight = this._instanceNet - (this._instanceGross - value);
+                this.SetProperty(ref this._measuredWeight, value);
+            }
         }
 
         public double Weight { 
@@ -148,7 +153,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             if (!this._isInitialized) {
                 var warehouses = await this._returnItem.GetWarehouses();
                 var conditions = await this._returnItem.GetConditions();
-                //var partInstance = await this._returnItem.GetPartInstance(this.SelectedTransaction.PartInstanceId);
+                var bubblerValues =await  this._returnItem.GetInstanceNetGross(this.SelectedTransaction.PartInstanceId);
+                this._instanceNet = bubblerValues.Item1;
+                this._instanceGross = bubblerValues.Item2;
                 var wareHouseId = await this._returnItem.GetPartWarehouseId(this.SelectedTransaction.PartInstance.PartId);
                 this.DispatcherService.BeginInvoke(() => {
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);

@@ -17,6 +17,7 @@ namespace ManufacturingInventory.Application.Boundaries.Checkout {
             this.ConditionId = conditionId;
             this.Weight = weight;
             this.MeasuredWeight = measuredWeight;
+            this.IsBubbler = isBubbler;
         }
 
         public DateTime TimeStamp { get; set; }

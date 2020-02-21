@@ -207,7 +207,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
                     DispatcherService.BeginInvoke(() => {
                         this.Transactions.Add(newTransaction);
-                        this.MessageBoxService.ShowMessage("Item added to Output", "Success");
+                        this.MessageBoxService.ShowMessage("Item added to Output: "+newTransaction.Weight, "Success");
                         this.SelectedPartInstance = null;
                         this.SelectedConsumer = null;
                         this.Quantity = 0;
@@ -243,7 +243,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 await Task.Run(() => {
                     foreach (var transaction in this.Transactions) {
                         input.Items.Add(new CheckOutInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId, transaction.Quantity,
-                            transaction.UnitCost, transaction.TotalCost,isBubbler:this.IsBubbler,conditionId:transaction.ConditionId));
+                            transaction.UnitCost, transaction.TotalCost,isBubbler:this.IsBubbler,measuredWeight:transaction.Measured,weight:transaction.Measured,
+                            conditionId:transaction.ConditionId));
                     }
                 });
 

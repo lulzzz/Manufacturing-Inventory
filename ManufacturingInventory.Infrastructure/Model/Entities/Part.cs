@@ -10,6 +10,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public string Name { get; set; }
         public string Description { get; set; }
         public bool HoldsBubblers { get; set; }
+        public bool DefaultToCostReported { get; set; }
         public byte[] RowVersion { get; set; }
 
         public int? OrganizationId { get; set; }

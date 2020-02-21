@@ -42,8 +42,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async () => { await this.ReturnDoneHandler();});
-            this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.InitializeHandler(); });
-            this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) =>{ await this.InitializeHandler(); });
+            this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.ReloadHandler(); });
+            this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) =>{ await this.ReloadHandler(); });
         }
 
         public override bool KeepAlive => false;

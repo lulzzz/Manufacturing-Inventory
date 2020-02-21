@@ -11,5 +11,6 @@ namespace ManufacturingInventory.Application.Boundaries.ReturnItem {
         Task<IEnumerable<Condition>> GetConditions();
         Task<PartInstance> GetPartInstance(int instanceId);
         Task<int> GetPartWarehouseId(int partId);
+        Task<Tuple<double, double>> GetInstanceNetGross(int partInstanceId);
     }
 }
