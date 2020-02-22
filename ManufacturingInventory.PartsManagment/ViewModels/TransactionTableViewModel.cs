@@ -41,9 +41,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
-            this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async () => { await this.ReturnDoneHandler();});
+            this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async (instanceId) => { await this.ReturnDoneHandler(instanceId);});
+            this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => await this.ReloadHandler());
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.ReloadHandler(); });
             this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) =>{ await this.ReloadHandler(); });
+
         }
 
         public override bool KeepAlive => false;
@@ -74,26 +76,22 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task ReturnItemHandler() {
-
-            if (this.SelectedTransaction != null) {
-                await Task.Run(() => {
-                    this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-                    NavigationParameters parameters = new NavigationParameters();
-                    parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
-                    this.DispatcherService.BeginInvoke(() => this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters));
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    if (this.SelectedTransaction != null) {
+                        this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+                        NavigationParameters parameters = new NavigationParameters();
+                        parameters.Add(ParameterKeys.SelectedTransaction, this.SelectedTransaction);
+                        this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters);
+                    }
                 });
-
-                this._returnInProgress = true;
-            }
-
+            });
+            this._returnInProgress = true;
         }
 
-        private async Task ReturnDoneHandler() {
+        private async Task ReturnDoneHandler(int instanceId) {
             this._returnInProgress = false;
-            this._isInitialized = false;
-            this.DispatcherService.BeginInvoke(() => this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll());
-            await this._transactionEdit.Load();
-            await this.InitializeHandler();
+            await this.ReloadWithInstanceHandler(true,instanceId);
         }
 
         private Task UndoTransactionHandler() {
@@ -123,6 +121,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
             this.DispatcherService.BeginInvoke(() => {
                 this.Transactions = new ObservableCollection<Transaction>(transactions);
+                this.ShowTableLoading = false;
+            });
+        }
+
+        public async Task ReloadWithInstanceHandler(bool sendToInstanceTable,int instanceId) {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            await this._transactionEdit.Load();
+            var transactions = await this._transactionEdit.GetTransactions(GetBy.PART, this.SelectedPartId);
+            this.DispatcherService.BeginInvoke(() => {
+                this.Transactions = new ObservableCollection<Transaction>(transactions);
+                if (sendToInstanceTable) {
+                    this._eventAggregator.GetEvent<ViewModifiedInstanceEvent>().Publish(new ReloadEventTraveler(this.SelectedPartId, instanceId));
+                }
                 this.ShowTableLoading = false;
             });
         }

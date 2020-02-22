@@ -134,8 +134,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             if (response.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                    this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish(response.Transaction.PartInstanceId);
                 });
-                this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish();
+                
             } else {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage("Error Processing Return, Please Check Input and Try Again", "Error", MessageButton.OK, MessageIcon.Error);
@@ -145,7 +146,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task CancelHandler() {
             await Task.Run(() => {
-                this._eventAggregator.GetEvent<ReturnDoneEvent>().Publish();
+                this._eventAggregator.GetEvent<ReturnCancelEvent>().Publish();
             });
         }
         

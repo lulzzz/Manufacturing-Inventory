@@ -47,5 +47,11 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     public class CheckInCancelEvent : PubSubEvent { }
 
     //Transaction
-    public class ReturnDoneEvent : PubSubEvent { }
+    public class ReturnDoneEvent : PubSubEvent<int> { }
+    public class ReturnCancelEvent : PubSubEvent { }
+
+    //DoneAndView
+    public class ViewModifiedInstanceEvent : PubSubEvent<ReloadEventTraveler> {
+
+    }
 }
