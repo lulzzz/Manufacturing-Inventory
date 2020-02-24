@@ -45,7 +45,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => await this.ReloadHandler());
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.ReloadHandler(); });
             this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) =>{ await this.ReloadHandler(); });
-
         }
 
         public override bool KeepAlive => false;
