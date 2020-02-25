@@ -11,6 +11,8 @@ namespace ManufacturingInventory.Application.Boundaries.CheckIn {
         Task<IEnumerable<Category>> GetCategories();
         Task<IEnumerable<Distributor>> GetDistributors();
         Task<IEnumerable<Price>> GetAvailablePrices(int partId);
-        Task<Price> GetPrice(int priceId); 
+        Task<Price> GetPrice(int priceId);
+        Task<bool> DefaultCostReported(int partId);
+        Task<PartInstance> GetExisitingPartInstance(int instanceId);
     }
 }

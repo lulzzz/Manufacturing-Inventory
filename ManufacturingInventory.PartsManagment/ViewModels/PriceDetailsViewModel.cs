@@ -167,10 +167,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task CancelHandler() {
             await Task.Run(() => {
-                this.CanEdit = false;
-                //this.IsEdit = false;
-                //this.IsNew = false;
-                this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CanEdit = false;
+                    this._eventAggregator.GetEvent<PriceEditCancelEvent>().Publish();
+                });
             });
         }
 

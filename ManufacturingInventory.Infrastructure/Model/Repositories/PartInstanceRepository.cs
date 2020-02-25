@@ -4,12 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Infrastructure.Model.Repositories {
     public class PartInstanceRepository : IRepository<PartInstance> {
-        private ManufacturingContext _context;
+        private readonly ManufacturingContext _context;
 
         public PartInstanceRepository(ManufacturingContext context) {
             this._context = context;
@@ -71,8 +70,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.SkuNumber = entity.SkuNumber;
                 instance.ConditionId = entity.ConditionId;
                 instance.LocationId = entity.LocationId;
-                instance.PartTypeId = entity.PartTypeId;
+                instance.StockTypeId = entity.StockTypeId;
                 instance.PriceId = entity.PriceId;
+                instance.Usage = entity.Usage;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -95,8 +95,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.SkuNumber = entity.SkuNumber;
                 instance.ConditionId = entity.ConditionId;
                 instance.LocationId = entity.LocationId;
-                instance.PartTypeId = entity.PartTypeId;
+                instance.StockTypeId = entity.StockTypeId;
                 instance.PriceId = entity.PriceId;
+                instance.Usage = entity.Usage;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -108,22 +109,24 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public PartInstance GetEntity(Expression<Func<PartInstance, bool>> expression) {
             return this._context.PartInstances
                 .Include(e => e.Price)
-                .Include(e => e.PartType)
+                .Include(e => e.StockType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Condition)
+                .Include(e=>e.Usage)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
-                .Include(e=>e.PriceLogs)
+                .Include(e => e.PriceLogs)
                 .FirstOrDefault(expression);
         }
 
         public async Task<PartInstance> GetEntityAsync(Expression<Func<PartInstance, bool>> expression) {
             return await this._context.PartInstances
                 .Include(e => e.Price)
-                .Include(e => e.PartType)
+                .Include(e => e.StockType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Condition)
+                .Include(e => e.Usage)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
@@ -134,9 +137,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public IEnumerable<PartInstance> GetEntityList(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
                 .Include(e => e.Price)
-                .Include(e => e.PartType)
+                .Include(e => e.StockType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Condition)
+                .Include(e => e.Usage)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
@@ -158,9 +162,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public async Task<IEnumerable<PartInstance>> GetEntityListAsync(Expression<Func<PartInstance, bool>> expression = null, Func<IQueryable<PartInstance>, IOrderedQueryable<PartInstance>> orderBy = null) {
             IQueryable<PartInstance> query = this._context.Set<PartInstance>()
                 .Include(e => e.Price)
-                .Include(e => e.PartType)
+                .Include(e => e.StockType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Condition)
+                .Include(e => e.Usage)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
@@ -181,23 +186,27 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public void Load() {
             this._context.PartInstances
                 .Include(e => e.Price)
-                .Include(e => e.PartType)
+                .Include(e => e.StockType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Condition)
+                .Include(e => e.Usage)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
+                    .ThenInclude(e => e.PartPrices)
+                .Include(e => e.PriceLogs)
                 .Load();
         }
 
         public async Task LoadAsync() {
             await this._context.PartInstances
                 .Include(e => e.Price)
-                .Include(e => e.PartType)
+                .Include(e => e.StockType)
                 .Include(e => e.CurrentLocation)
                 .Include(e => e.Condition)
+                .Include(e => e.Usage)
                 .Include(e => e.BubblerParameter)
                 .Include(e => e.Part)
-                    .ThenInclude(e=>e.PartPrices)
+                    .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
                 .LoadAsync();
         }

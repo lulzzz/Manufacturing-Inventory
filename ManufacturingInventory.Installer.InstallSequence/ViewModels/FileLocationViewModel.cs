@@ -47,6 +47,7 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         }
 
         private void Cancel() {
+
             this._eventAggregator.GetEvent<CancelEvent>().Publish();
         }
 

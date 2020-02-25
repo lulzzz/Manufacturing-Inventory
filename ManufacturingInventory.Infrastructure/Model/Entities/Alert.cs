@@ -10,8 +10,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public DateTime AlertTime { get; set; }
         public byte[] RowVersion { get; set; }
 
-        public int PartInstanceId { get; set; }
-        public PartInstance PartInstance { get; set; }
+        public StockType Stock { get; set; }
+        public int PartId { get; set; }
 
         public ICollection<UserAlert> UserAlerts { get; set; }
 

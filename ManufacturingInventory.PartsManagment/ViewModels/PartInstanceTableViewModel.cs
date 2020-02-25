@@ -42,21 +42,22 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand InitializeCommand { get; private set;  }
         public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
         public AsyncCommand AddToOutgoingCommand { get; private set; }
-        public PrismCommands.DelegateCommand ViewInstanceDetailsCommand { get; private set; }
-        public PrismCommands.DelegateCommand EditInstanceCommand { get; private set; }
+        public AsyncCommand ViewInstanceDetailsCommand { get; private set; }
+        public AsyncCommand EditInstanceCommand { get; private set; }
         public AsyncCommand CheckInCommand { get; private set; }
-
+        public AsyncCommand CheckInExisitingCommand { get; private set; }
 
         public PartInstanceTableViewModel(IPartInstanceTableViewUseCase partInstanceView, IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._partInstanceView = partInstanceView;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
-            this.ViewInstanceDetailsCommand = new PrismCommands.DelegateCommand(this.ViewInstanceDetailsHandler);
-            this.EditInstanceCommand = new PrismCommands.DelegateCommand(this.EditInstanceHandler);
+            this.ViewInstanceDetailsCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync);
+            this.EditInstanceCommand = new AsyncCommand(this.EditInstanceHandler);
             this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler);
             this.CheckInCommand = new AsyncCommand(this.CheckInHandler);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
+            this.CheckInExisitingCommand = new AsyncCommand(this.CheckInExisitingHandler,this.CanExecuteAddToExisting);
 
             this._eventAggregator.GetEvent<PartInstanceEditDoneEvent>().Subscribe(async (traveler) => await this.PartInstanceEditDoneEvent(traveler));
             this._eventAggregator.GetEvent<PartInstanceEditCancelEvent>().Subscribe(async (traveler) => await this.PartInstanceEditCancelHandler(traveler));
@@ -64,7 +65,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator.GetEvent<OutgoingCancelEvent>().Subscribe(async () => await this.OutgoingCancelHandler());
             this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) => await this.CheckInDoneHandler(instanceId));
             this._eventAggregator.GetEvent<CheckInCancelEvent>().Subscribe(async () => await this.CheckInCanceledHandler());
-           
+            this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.PriceEditDoneHandler());
         }
 
         #region BindingVariables
@@ -124,32 +125,47 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
-        private void EditInstanceHandler() {
+        private async Task EditInstanceHandler() {
             if (this.SelectedPartInstance != null) {
-                this.DispatcherService.BeginInvoke(() => {
-                    this.CleanupRegions();
-                    NavigationParameters parameters = new NavigationParameters();
-                    parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-                    parameters.Add(ParameterKeys.IsEdit, true);
-                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
-                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                await Task.Run(() => {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.CleanupRegions();
+                        NavigationParameters parameters = new NavigationParameters();
+                        parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+                        parameters.Add(ParameterKeys.IsEdit, true);
+                        parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                        parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                        this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                    });
                 });
             }
         }
 
         private void ViewInstanceDetailsHandler() {
             if (this.SelectedPartInstance != null) {
-                this.DispatcherService.BeginInvoke(() => {
-                    this.CleanupRegions();
-                    NavigationParameters parameters = new NavigationParameters();
-                    parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-                    parameters.Add(ParameterKeys.IsEdit, false);
-                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
-                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
-                });
+                this.CleanupRegions();
+                NavigationParameters parameters = new NavigationParameters();
+                parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+                parameters.Add(ParameterKeys.IsEdit, false);
+                parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+            }
+        }
 
+        private async Task ViewInstanceDetailsHandlerAsync() {
+            if (this.SelectedPartInstance != null) {
+                await Task.Run(() => {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.CleanupRegions();
+                        NavigationParameters parameters = new NavigationParameters();
+                        parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+                        parameters.Add(ParameterKeys.IsEdit, false);
+                        parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                        parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                        this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                    });
+                });
             }
         }
 
@@ -209,7 +225,23 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 if (this.SelectedPartInstance != null) {
                     this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);
                     this.ViewInstanceDetailsHandler();
+                } else {
+                    this.CleanupRegions();
                 }
+                this.ShowTableLoading = false;
+            });
+        }
+
+        private async Task PriceEditDoneHandler() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            await this._partInstanceView.Load();
+            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
+            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.IsBubbler = bubbler;
+                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+                this.SelectedPartInstance = null;
                 this.ShowTableLoading = false;
             });
         }
@@ -247,6 +279,22 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     NavigationParameters parameters = new NavigationParameters();
                     parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
                     parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    parameters.Add(ParameterKeys.IsExisiting, false);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
+                });
+            });
+        }
+
+        private async Task CheckInExisitingHandler() {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CleanupRegions();
+                    this._checkInInProgress = true;
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    parameters.Add(ParameterKeys.IsExisiting,true);
+                    parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
                     this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
                 });
             });
@@ -279,6 +327,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
     
         public bool CanExecute() {
             return !(this._editInProgess && this._checkInInProgress && this._outgoingInProgress);
+        }
+
+        public bool CanExecuteAddToExisting() {
+            return !this.IsBubbler;
         }
 
         public bool CanExecuteOutgoing() {

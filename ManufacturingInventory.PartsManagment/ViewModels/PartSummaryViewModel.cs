@@ -46,6 +46,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private string _name;
         private string _description;
         private bool _holdsBubblers;
+        private bool _defaultToCostReported;
 
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
@@ -98,10 +99,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._organizations, value);
         }
 
-        public ObservableCollection<Usage> UsageList {
-            get => this._usageList;
-            set => SetProperty(ref this._usageList, value);
-        }
+        //public ObservableCollection<Usage> UsageList {
+        //    get => this._usageList;
+        //    set => SetProperty(ref this._usageList, value);
+        //}
 
         public Organization SelectedOrganization {
             get => this._selectedOrganization;
@@ -113,10 +114,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedWarehouse, value, "SelectedWarehouse");
         }
 
-        public Usage SelectedUsage {
-            get => this._selectedUsage;
-            set => SetProperty(ref this._selectedUsage, value, "SelectedUsage");
-        }
+        //public Usage SelectedUsage {
+        //    get => this._selectedUsage;
+        //    set => SetProperty(ref this._selectedUsage, value, "SelectedUsage");
+        //}
 
         public bool IsBubbler {
             get => this._isBubbler;
@@ -138,43 +139,20 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._holdsBubblers, value);
         }
 
-
-        private void SaveSyncHandler() {
-            int id = (this.IsNew) ? 0 : this.SelectedPart.Id;
-            int warehouseId = (this.SelectedWarehouse != null) ? this.SelectedWarehouse.Id : 0;
-            int orgId = (this.SelectedOrganization != null) ? this.SelectedOrganization.Id : 0;
-            int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
-
-            PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description, this.IsNew, this.HoldsBubblers, warehouseId, orgId, useageId);
-
-            var output = this._partSummaryEdit.Execute(input);
-            if (output.Success) {
-                this.MessageBoxService.ShowMessage(output.Message, "Success", MessageButton.OK, MessageIcon.Information);
-                this._eventAggregator.GetEvent<PartEditDoneEvent>().Publish(output.Part.Id);
-                this.CanSaveCancel = false;
-                this.IsEdit = false;
-                this.IsNew = false;
-            } else {
-                var responce = this.MessageBoxService.ShowMessage("Save failed" + Environment.NewLine + "Check Input and Try Again?", "Error", MessageButton.YesNo, MessageIcon.Error);
-                if (responce == MessageResult.No) {
-                    this._eventAggregator.GetEvent<PartEditCancelEvent>().Publish();
-                    this.CanSaveCancel = false;
-                    this.IsEdit = false;
-                    this.IsNew = false;
-                }
-            }
+        public bool DefaultToCostReported {
+            get => this._defaultToCostReported;
+            set => SetProperty(ref this._defaultToCostReported, value);
         }
 
         private async Task SaveHandler() {
             int id = (this.IsNew) ? 0 : this.SelectedPart.Id;
             int warehouseId = (this.SelectedWarehouse != null) ? this.SelectedWarehouse.Id : 0;
             int orgId = (this.SelectedOrganization != null) ? this.SelectedOrganization.Id : 0;
-            int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
+            //int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
+            PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description,this.IsNew ,this.HoldsBubblers,
+                this.DefaultToCostReported,warehouseId,orgId);
 
-
-            PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description,this.IsNew ,this.HoldsBubblers,warehouseId,orgId,useageId);
-
-            var output = await this._partSummaryEdit.ExecuteAsync(input);
+            var output = await this._partSummaryEdit.Execute(input);
             if (output.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(output.Message,"Success", MessageButton.OK, MessageIcon.Information);
@@ -219,18 +197,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.Name = this.SelectedPart.Name;
                 this.Description = this.SelectedPart.Description;
                 this.HoldsBubblers = this.SelectedPart.HoldsBubblers;
+                this.DefaultToCostReported = this.SelectedPart.DefaultToCostReported;
 
                 this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-                this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
+                //this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
                 this.Organizations = new ObservableCollection<Organization>(categories.OfType<Organization>());
 
                 if (this._selectedPart.Warehouse != null) {
                     this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
                 }
 
-                if (this._selectedPart.Usage != null) {
-                    this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-                }
+                //if (this._selectedPart.Usage != null) {
+                //    this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
+                //}
 
                 if (this._selectedPart.Organization != null) {
                     this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.OrganizationId);

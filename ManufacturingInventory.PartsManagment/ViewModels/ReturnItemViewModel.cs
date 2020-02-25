@@ -146,7 +146,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task CancelHandler() {
             await Task.Run(() => {
-                this._eventAggregator.GetEvent<ReturnCancelEvent>().Publish();
+                this.DispatcherService.BeginInvoke(() => {
+                    this._eventAggregator.GetEvent<ReturnCancelEvent>().Publish();
+                });
             });
         }
         

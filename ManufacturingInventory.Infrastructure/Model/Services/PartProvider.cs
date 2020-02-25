@@ -17,7 +17,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             return this._context.Parts
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage)
                 .FirstOrDefault(expression);
         }
 
@@ -25,7 +24,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             return await this._context.Parts
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -33,7 +31,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             IQueryable<Part> query = this._context.Set<Part>()
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -51,7 +48,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             IQueryable<Part> query = this._context.Set<Part>()
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -69,7 +65,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             this._context.Parts
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage)
                 .Load();
         }
 
@@ -77,7 +72,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             await this._context.Parts.AsNoTracking()
                 .Include(e => e.Organization)
                 .Include(e => e.Warehouse)
-                .Include(e => e.Usage)
                 .LoadAsync();
         }
     }

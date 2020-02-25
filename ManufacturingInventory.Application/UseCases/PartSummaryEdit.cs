@@ -25,79 +25,81 @@ namespace ManufacturingInventory.Application.UseCases {
             this._unitOfWork =new UnitOfWorkV2(context);
         }
 
-        public PartSummaryEditOutput Execute(PartSummaryEditInput input) {
+        //public PartSummaryEditOutput Execute(PartSummaryEditInput input) {
+        //    if (input.IsNew) {
+        //        return this.ExecuteNewPart(input);
+        //    } else {
+        //        return this.ExecuteEditPart(input);
+        //    }
+        //}
+
+        public async Task<PartSummaryEditOutput> Execute(PartSummaryEditInput input) {
             if (input.IsNew) {
-                return this.ExecuteNewPart(input);
+                return await this.ExecuteNewPart(input);
             } else {
-                return this.ExecuteEditPart(input);
+                return await this.ExecuteEditPart(input);
             }
         }
 
-        public async Task<PartSummaryEditOutput> ExecuteAsync(PartSummaryEditInput input) {
-            if (input.IsNew) {
-                return await this.ExecuteNewPartAsync(input);
-            } else {
-                return await this.ExecuteEditPartAsync(input);
-            }
-        }
+        //private PartSummaryEditOutput ExecuteNewPart(PartSummaryEditInput input) {
+        //    var instanceCheck = this._partRepository.GetEntity(e => e.Id == input.PartId);
+        //    if (instanceCheck != null) {
+        //        return new PartSummaryEditOutput(null, false, "Part Already Exist");
+        //    }
+        //    Part part = new Part();
+        //    part.Name = input.Name;
+        //    part.Description = input.Description;
+        //    part.HoldsBubblers = input.HoldsBubblers;
+        //    part.DefaultToCostReported = input.CostReportedDefault;
 
-        private PartSummaryEditOutput ExecuteNewPart(PartSummaryEditInput input) {
-            var instanceCheck = this._partRepository.GetEntity(e => e.Id == input.PartId);
-            if (instanceCheck != null) {
-                return new PartSummaryEditOutput(null, false, "Part Already Exist");
-            }
-            Part part = new Part();
-            part.Name = input.Name;
-            part.Description = input.Description;
-            part.HoldsBubblers = input.HoldsBubblers;
+        //    var warehouse = this._locationProvider.GetEntity(e => e.Id == input.WarehouseId);
+        //    var org = this._categoryProvider.GetEntity(e => e.Id == input.OrganizationId);
+        //    var usage = this._categoryProvider.GetEntity(e => e.Id == input.UsageId);
 
-            var warehouse = this._locationProvider.GetEntity(e => e.Id == input.WarehouseId);
-            var org = this._categoryProvider.GetEntity(e => e.Id == input.OrganizationId);
-            var usage = this._categoryProvider.GetEntity(e => e.Id == input.UsageId);
+        //    part.Warehouse =(Warehouse) warehouse;
+        //    part.Usage =(Usage) usage;
+        //    part.Organization = (Organization)org;
 
-            part.Warehouse =(Warehouse) warehouse;
-            part.Usage =(Usage) usage;
-            part.Organization = (Organization)org;
+        //    var newPart=this._partRepository.Add(part);
+        //    if (newPart != null) {
+        //        this._unitOfWork.Save();
+        //        return new PartSummaryEditOutput(newPart, true, "Part "+newPart.Name+" Created Successfully");
+        //    } else {
+        //        this._unitOfWork.Undo();
+        //        return new PartSummaryEditOutput(null, false, "Error Saving New Part, Please Contact Admin");
+        //    }
+        //}
 
-            var newPart=this._partRepository.Add(part);
-            if (newPart != null) {
-                this._unitOfWork.Save();
-                return new PartSummaryEditOutput(newPart, true, "Part "+newPart.Name+" Created Successfully");
-            } else {
-                this._unitOfWork.Undo();
-                return new PartSummaryEditOutput(null, false, "Error Saving New Part, Please Contact Admin");
-            }
-        }
+        //private PartSummaryEditOutput ExecuteEditPart(PartSummaryEditInput input) {
+        //    var instance = this._partRepository.GetEntity(e => e.Id == input.PartId);
+        //    if (instance == null) {
+        //        return new PartSummaryEditOutput(null, false, "Part Not Found");
+        //    }
 
-        private PartSummaryEditOutput ExecuteEditPart(PartSummaryEditInput input) {
-            var instance = this._partRepository.GetEntity(e => e.Id == input.PartId);
-            if (instance == null) {
-                return new PartSummaryEditOutput(null, false, "Part Not Found");
-            }
+        //    instance.Name = input.Name;
+        //    instance.Description = input.Description;
+        //    instance.HoldsBubblers = input.HoldsBubblers;
 
-            instance.Name = input.Name;
-            instance.Description = input.Description;
-            instance.HoldsBubblers = input.HoldsBubblers;
 
-            var warehouse = this._locationProvider.GetEntity(e => e.Id == input.WarehouseId);
-            var org = this._categoryProvider.GetEntity(e => e.Id == input.OrganizationId);
-            var usage = this._categoryProvider.GetEntity(e => e.Id == input.UsageId);
+        //    var warehouse = this._locationProvider.GetEntity(e => e.Id == input.WarehouseId);
+        //    var org = this._categoryProvider.GetEntity(e => e.Id == input.OrganizationId);
+        //    var usage = this._categoryProvider.GetEntity(e => e.Id == input.UsageId);
 
-            instance.Warehouse = (Warehouse)warehouse;
-            instance.Usage = (Usage)usage;
-            instance.Organization = (Organization)org;
+        //    instance.Warehouse = (Warehouse)warehouse;
+        //    instance.Usage = (Usage)usage;
+        //    instance.Organization = (Organization)org;
 
-            var updated = this._partRepository.Update(instance);
-            if (updated != null) {
-                this._unitOfWork.Save();
-                return new PartSummaryEditOutput(updated, true, "Part " + updated.Name + " Updated Successfully");
-            } else {
-                this._unitOfWork.Undo();
-                return new PartSummaryEditOutput(null, false, "Error Saving Part, Please Contact Admin");
-            }
-        }
+        //    var updated = this._partRepository.Update(instance);
+        //    if (updated != null) {
+        //        this._unitOfWork.Save();
+        //        return new PartSummaryEditOutput(updated, true, "Part " + updated.Name + " Updated Successfully");
+        //    } else {
+        //        this._unitOfWork.Undo();
+        //        return new PartSummaryEditOutput(null, false, "Error Saving Part, Please Contact Admin");
+        //    }
+        //}
 
-        private async Task<PartSummaryEditOutput> ExecuteNewPartAsync(PartSummaryEditInput input) {
+        private async Task<PartSummaryEditOutput> ExecuteNewPart(PartSummaryEditInput input) {
             var instanceCheck = await this._partRepository.GetEntityAsync(e => e.Id == input.PartId);
 
             if (instanceCheck != null) {
@@ -108,27 +110,19 @@ namespace ManufacturingInventory.Application.UseCases {
             part.Name = input.Name;
             part.Description = input.Description;
             part.HoldsBubblers = input.HoldsBubblers;
-
-            //var warehouse = await this._locationProvider.GetEntityAsync(e => e.Id == input.WarehouseId);
-            //var org = await this._categoryProvider.GetEntityAsync(e => e.Id == input.OrganizationId);
-            //var usage = await this._categoryProvider.GetEntityAsync(e => e.Id == input.UsageId);
+            part.DefaultToCostReported = input.CostReportedDefault;
 
             if (input.WarehouseId != 0) {
                 part.WarehouseId = input.WarehouseId;
             }
 
-            if (input.UsageId != 0) {
-                part.UsageId = input.UsageId;
-            }
+            //if (input.UsageId != 0) {
+            //    part.UsageId = input.UsageId;
+            //}
 
             if (input.OrganizationId != 0) {
                 part.OrganizationId = input.OrganizationId;
             }
-
-            //part.Warehouse = (Warehouse)warehouse;
-            //part.Usage = (Usage)usage;
-            //part.Organization = (Organization)org;
-
 
             var newPart = await this._partRepository.AddAsync(part);
             if (newPart != null) {
@@ -140,29 +134,30 @@ namespace ManufacturingInventory.Application.UseCases {
             }
         }
 
-        private async Task<PartSummaryEditOutput> ExecuteEditPartAsync(PartSummaryEditInput input) {
-            var instance = await this._partRepository.GetEntityAsync(e => e.Id == input.PartId);
-            if (instance == null) {
+        private async Task<PartSummaryEditOutput> ExecuteEditPart(PartSummaryEditInput input) {
+            var part = await this._partRepository.GetEntityAsync(e => e.Id == input.PartId);
+            if (part == null) {
                 return new PartSummaryEditOutput(null, false, "Part Not Found");
             }
 
-            instance.Name = input.Name;
-            instance.Description = input.Description;
-            instance.HoldsBubblers = input.HoldsBubblers;
+            part.Name = input.Name;
+            part.Description = input.Description;
+            part.HoldsBubblers = input.HoldsBubblers;
+            part.DefaultToCostReported = input.CostReportedDefault;
 
             if (input.WarehouseId != 0) {
-                instance.WarehouseId = input.WarehouseId;
+                part.WarehouseId = input.WarehouseId;
             }
 
-            if(input.UsageId != 0) {
-                instance.UsageId = input.UsageId;
-            }
+            //if(input.UsageId != 0) {
+            //    part.UsageId = input.UsageId;
+            //}
 
             if(input.OrganizationId != 0) {
-                instance.OrganizationId = input.OrganizationId;
+                part.OrganizationId = input.OrganizationId;
             }
 
-            var updated = await this._partRepository.UpdateAsync(instance);
+            var updated = await this._partRepository.UpdateAsync(part);
             if (updated != null) {
                 await this._unitOfWork.SaveAsync();
                 return new PartSummaryEditOutput(updated, true, "Part " + updated.Name + " Updated Successfully");

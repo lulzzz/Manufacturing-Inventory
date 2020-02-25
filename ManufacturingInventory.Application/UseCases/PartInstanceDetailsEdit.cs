@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
-using ManufacturingInventory.Application.UseCases;
+﻿using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Infrastructure.Model.Providers;
-//using Prism.Ioc;
-//using Prism.DryIoc;
-//using DryIoc;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
     public class PartInstanceDetailsEdit : IPartInstanceDetailsEditUseCase {
@@ -57,7 +51,7 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<PartInstanceDetailsEditOutput> Execute(PartInstanceDetailsEditInput input) {
             if (input.PartInstance.IsBubbler) {
                 return await this.ExecuteBubbler(input);
-            } else {//not bubbler
+            } else {
                 return await this.ExecuteStandard(input);
             }
         }

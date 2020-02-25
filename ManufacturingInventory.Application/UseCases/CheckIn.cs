@@ -41,22 +41,27 @@ namespace ManufacturingInventory.Application.UseCases {
             this._locationProvider = new LocationProvider(context);
             this._distributorProvider = new DistributorProvider(context);
             this._transactionRepository = new TransactionRepository(context);
-            this._userService = userService;
             this._unitOfWork = new UnitOfWork(context);
+            this._userService = userService;
             this._context = context;
         }
 
         public async Task<CheckInOutput> Execute(CheckInInput input) {
-            switch (input.PricingOption) {
-                case PriceOption.CreateNew:
-                    return await this.ExecuteNewPrice(input);
-                case PriceOption.UseExisting:
-                    return await this.ExecuteExistingPrice(input);
-                case PriceOption.NoPrice:
-                    return await this.ExecuteNoPrice(input);
-                default:
-                    return new CheckInOutput(null, false, "Internal Error: Not a Valid Price Option"+Environment.NewLine+"Please Contact Administrator");
+            if (input.IsExisiting) {
+                return await this.ExecuteAddToExisiting(input);
+            } else {
+                switch (input.PricingOption) {
+                    case PriceOption.CreateNew:
+                        return await this.ExecuteNewPrice(input);
+                    case PriceOption.UseExisting:
+                        return await this.ExecuteExistingPrice(input);
+                    case PriceOption.NoPrice:
+                        return await this.ExecuteNoPrice(input);
+                    default:
+                        return new CheckInOutput(null, false, "Internal Error: Not a Valid Price Option" + Environment.NewLine + "Please Contact Administrator");
+                }
             }
+
         }
 
         public async Task<CheckInOutput> ExecuteNewPrice(CheckInInput input) {
@@ -161,6 +166,32 @@ namespace ManufacturingInventory.Application.UseCases {
             return await Task.Run(() => new CheckInOutput(null, false, "Error: Not Implemented Yet"));
         }
 
+        private async Task<CheckInOutput> ExecuteAddToExisiting(CheckInInput input) {
+            var partInstance = await this._partInstanceRepository.GetEntityAsync(e => e.Id == input.PartInstance.Id);
+            if (partInstance != null) {
+                partInstance.UpdateQuantity(input.Quantity.Value);
+                Transaction transaction = new Transaction(partInstance, InventoryAction.INCOMING,0, 0, partInstance.CurrentLocation, input.TimeStamp);
+                transaction.Quantity = input.Quantity.Value;
+                transaction.UnitCost = partInstance.UnitCost;
+                transaction.TotalCost = transaction.UnitCost*transaction.Quantity;
+                transaction.SessionId = this._userService.CurrentSession.Id;
+                var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
+                var trans = await this._transactionRepository.AddAsync(transaction);
+                StringBuilder builder = new StringBuilder();
+                if (instance != null && trans != null) {
+                    var val = await this._unitOfWork.Save();
+                    builder.AppendFormat("Success: {0} added to {1}",instance.Name,trans.Quantity);
+                    return new CheckInOutput(instance, true, builder.ToString());
+                } else {
+                    await this._unitOfWork.Undo();
+                    builder.AppendFormat("Error: Check In Failed, Please Contact Admin").AppendLine();
+                    return new CheckInOutput(instance, false, builder.ToString());
+                }
+            } else {
+                return new CheckInOutput(null, false, "Error: Part Instance not found");
+            }
+        }
+
         public async Task<IEnumerable<Price>> GetAvailablePrices(int partId) {
             return (await this._partPriceRepository.GetEntityListAsync(e => e.PartId == partId)).Select(e => e.Price);
         }
@@ -179,6 +210,19 @@ namespace ManufacturingInventory.Application.UseCases {
 
         public async Task<IEnumerable<Warehouse>> GetWarehouses() {
             return (await this._locationProvider.GetEntityListAsync()).OfType<Warehouse>();
+        }
+
+        public async Task<bool> DefaultCostReported(int partId) {
+            var part = await this._partRepository.GetEntityAsync(e => e.Id == partId);
+            if (part != null) {
+                return part.DefaultToCostReported;
+            } else {
+                return false;
+            }
+        }
+
+        public async Task<PartInstance> GetExisitingPartInstance(int instanceId) {
+            return await this._partInstanceRepository.GetEntityAsync(e => e.Id == instanceId);
         }
     }
 }

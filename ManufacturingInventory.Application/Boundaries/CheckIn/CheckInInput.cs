@@ -17,19 +17,22 @@ namespace ManufacturingInventory.Application.Boundaries.CheckIn {
     }
     public class CheckInInput {
 
-        public CheckInInput(PartInstance partInstance, PriceOption priceOption, DateTime timeStamp,int partId,Price price=null) {
+        public CheckInInput(PartInstance partInstance, PriceOption priceOption, DateTime timeStamp,int partId,bool isExisiting,int? quantity=null,Price price=null) {
             this.PartInstance = partInstance;
             this.TimeStamp = timeStamp;
             this.PricingOption = priceOption;
             this.Price = price;
             this.PartId = partId;
+            this.Quantity = quantity;
+            this.IsExisiting = isExisiting;
         }
 
         public PartInstance PartInstance { get; set; }
         public int PartId { get; set; }
         public Price Price { get; set; }
         public DateTime TimeStamp { get; set; }
+        public bool IsExisiting { get; set; }
+        public int? Quantity { get; set; }
         public PriceOption PricingOption { get; set; }
-
     }
 }

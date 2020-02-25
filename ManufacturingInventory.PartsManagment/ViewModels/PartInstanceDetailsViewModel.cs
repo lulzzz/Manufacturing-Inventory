@@ -50,14 +50,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private ObservableCollection<Condition> _conditions;
         private ObservableCollection<Location> _locations;
-        private ObservableCollection<PartType> _partTypes;
+        private ObservableCollection<StockType> _stockTypes;
+        private ObservableCollection<Usage> _usageList;
         private ObservableCollection<Transaction> _transactions;
         private ObservableCollection<Attachment> _attachments;
 
         private PartInstance _selectedPartInstance;
         private Location _selectedLocation;
         private Condition _selectedCondition;
-        private PartType _selectedPartType;
+        private Usage _selectedUsage;
+        private StockType _selectedPartType;
         private AttachmentDataTraveler _instanceAttachmentTraveler;
         private PriceDataTraveler _priceDataTraveler;
         private bool _hasPrice;
@@ -101,10 +103,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ExportTransactionsCommand = new AsyncCommand<ExportFormat>(this.ExportTransactionsHandler);
             this.ExportPriceHistoryCommand = new AsyncCommand<ExportFormat>(this.ExportPriceHistoryHandler);
             this.ClosingCommand = new AsyncCommand(this.ClosingHandler);
-
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.PriceEditDoneHandler());
             this._eventAggregator.GetEvent<PriceEditCancelEvent>().Subscribe(async () => await this.PriceEditCancelHandler());
-
+            //this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(this.PriceEditDoneHandler);
+            //this._eventAggregator.GetEvent<PriceEditCancelEvent>().Subscribe(this.PriceEditCancelHandler);
         }
 
         #region BindingVariables
@@ -121,9 +123,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._locations, value);
         }
 
-        public ObservableCollection<PartType> PartTypes {
-            get => this._partTypes;
-            set => SetProperty(ref this._partTypes, value);
+        public ObservableCollection<StockType> StockTypes {
+            get => this._stockTypes;
+            set => SetProperty(ref this._stockTypes, value);
         }
 
         public AttachmentDataTraveler AttachmentDataTraveler {
@@ -141,7 +143,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedLocation, value);
         }
 
-        public PartType SelectedPartType {
+        public StockType SelectedStockType {
             get => this._selectedPartType;
             set => SetProperty(ref this._selectedPartType, value);
         }
@@ -221,10 +223,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._quantity;
             set {
                 if (!this.IsBubbler && this.SelectedPartInstance != null) {
-                    if (this.SelectedPartInstance.Price != null) {
-                        this.SelectedPartInstance.Quantity = value;
-                        this.TotalCost = this.SelectedPartInstance.Price.UnitCost * value;
-                    }
+                    this.SelectedPartInstance.EditQuantity(value);
+                    this.TotalCost = this.SelectedPartInstance.TotalCost;
                 }
                 SetProperty(ref this._quantity, value);
             }
@@ -280,6 +280,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._description, value);
         }
 
+        public ObservableCollection<Usage> UsageList { 
+            get => this._usageList;
+            set => SetProperty(ref this._usageList, value);
+        }
+
+        public Usage SelectedUsage { 
+            get => this._selectedUsage;
+            set => SetProperty(ref this._selectedUsage, value);
+        }
+
         #endregion
 
         #region ButtonHandlers
@@ -314,12 +324,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public async Task SaveHandler() {
-            if (this.SelectedPartType != null) {
-                this.SelectedPartInstance.PartTypeId = this.SelectedPartType.Id;
+            if (this.SelectedStockType != null) {
+                this.SelectedPartInstance.StockTypeId = this.SelectedStockType.Id;
             }
 
             if (this.SelectedCondition != null) {
                 this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
+            }
+
+            if (this.SelectedUsage != null) {
+                this.SelectedPartInstance.UsageId = this.SelectedUsage.Id;
             }
 
             this.SelectedPartInstance.LocationId = this.SelectedLocation.Id;
@@ -343,7 +357,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
                 });
             }
-
         }
 
         public void ShowLoading() {
@@ -440,7 +453,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DispatcherService.BeginInvoke(() => {
                 this.SelectedPartInstance = instance;
                 this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
+                this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
                 this.Locations = new ObservableCollection<Location>(locations);
                 if (this.SelectedPartInstance != null) {
                     this.Comments = this.SelectedPartInstance.Comments;
@@ -452,13 +466,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
                     }
 
-                    if (this.SelectedPartInstance.Price != null) {
-                        this.UnitCost = this.SelectedPartInstance.UnitCost;
+                    if (this.SelectedPartInstance.PriceId.HasValue) {
+                        this.UnitCost = this.SelectedPartInstance.Price.UnitCost;
                         this.TotalCost = this.SelectedPartInstance.TotalCost;
                         this.HasPrice = true;
                         this.AddPriceButtonText = "Add and Replace Price";
                         this.NavigatePriceEdit(false, false);
-
                     } else {
                         this.UnitCost = 0;
                         this.TotalCost = 0;
@@ -475,12 +488,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
                     }
 
-                    if (this.SelectedPartInstance.PartType != null) {
-                        this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                    if (this.SelectedPartInstance.StockType != null) {
+                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
+                    }
+
+                    if (this.SelectedPartInstance.StockType != null) {
+                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
                     }
 
                 }
-                this._isInitialized = true;
             });
         }
 
@@ -534,7 +550,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => {
                     this.SelectedPartInstance = instance;
                     this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                    this.PartTypes = new ObservableCollection<PartType>(categories.OfType<PartType>());
+                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                    this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
                     this.Locations = new ObservableCollection<Location>(locations);
                     if (this.SelectedPartInstance != null) {
                         this.Comments = this.SelectedPartInstance.Comments;
@@ -569,10 +586,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
                         }
 
-                        if (this.SelectedPartInstance.PartType != null) {
-                            this.SelectedPartType = this.PartTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.PartTypeId);
+                        if (this.SelectedPartInstance.StockType != null) {
+                            this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
                         }
 
+                        if (this.SelectedPartInstance.Usage != null) {
+                            this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);
+                        }
                     }
                     this._isInitialized = true;
                 });

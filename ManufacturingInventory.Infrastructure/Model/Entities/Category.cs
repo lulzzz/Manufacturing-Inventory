@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
     public abstract class Category {
@@ -60,34 +62,65 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
     }
 
     public partial class Usage : Category {
-        public virtual ICollection<Part> Parts { get; set; }
+        public virtual ICollection<PartInstance> PartInstances { get; set; }
 
         public Usage() {
-            this.Parts = new HashSet<Part>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
 
         public Usage(string name, string description) : base(name, description) {
-            this.Parts = new HashSet<Part>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
 
         public Usage(Usage usage):base(usage) {
-            this.Parts = new HashSet<Part>();
+            this.PartInstances = new HashSet<PartInstance>();
         }
     }
 
-    public partial class PartType : Category {
+    public partial class StockType : Category {
+        public int Quantity { get; set; }
+        public int MinQuantity { get; set; }
+        public int SafeQuantity { get; set; }
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 
-        public PartType() {
+        public StockType() {
             this.PartInstances = new HashSet<PartInstance>();
         }
 
-        public PartType(string name, string description) : base(name, description) {
+        public StockType(string name, string description) : base(name, description) {
             this.PartInstances = new HashSet<PartInstance>();
         }
 
-        public PartType(PartType type):base(type) {
+        public StockType(StockType type):base(type) {
             this.PartInstances = new HashSet<PartInstance>();
+            this.MinQuantity = type.MinQuantity;
+            this.SafeQuantity = type.SafeQuantity;
+            this.Quantity = type.Quantity;
+        }
+
+        public void UpdateQuantity() {
+            if (this.PartInstances != null) {
+                this.Quantity = this.PartInstances.ToList().Sum(instance => {
+                    if (instance.IsBubbler) {
+                        return instance.Quantity;
+                    } else {
+                        return Convert.ToInt32(instance.BubblerParameter.NetWeight);
+                    }
+                });
+            }
         }
     }
+
+    //public partial class Designation : Category {
+    //    public virtual ICollection<PartInstance> PartInstances { get; set; }
+
+    //    public Designation() {
+    //        this.PartInstances = new HashSet<PartInstance>();
+    //    }
+
+    //    public Designation(string name,string description) {
+    //        this.Name = name;
+    //        this.Description = description;
+    //    }
+    //}
 }

@@ -30,7 +30,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     public class PartEditCancelEvent : PubSubEvent { }
     
     //Price-Edit
-    public class PriceEditDoneEvent : PubSubEvent { }
+    public class PriceEditDoneEvent: PubSubEvent { }
     public class PriceEditCancelEvent : PubSubEvent { }
 
     //PartInstance-Edit

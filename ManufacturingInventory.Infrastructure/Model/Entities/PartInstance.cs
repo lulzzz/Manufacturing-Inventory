@@ -28,11 +28,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int PartId { get; set; }
         public Part Part { get; set; }
 
-        public int? PartTypeId { get; set; }
-        public PartType PartType { get; set; }
+        public int? StockTypeId { get; set; }
+        public StockType StockType { get; set; }
 
         public int? ConditionId { get; set; }
         public Condition Condition { get; set; }
+
+        public int? UsageId { get; set; }
+        public Usage Usage { get; set; }
 
         public int LocationId { get; set; }
         public Location CurrentLocation { get; set; }
@@ -131,6 +134,19 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             } else {
                 this.Price = price;
                 this.UnitCost = price.UnitCost;
+                if (this.BubblerParameter != null) {
+                    this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight) * this.Quantity;
+                }
+            }
+        }
+
+        public void EditQuantity(int quantity) {
+            if (!this.IsBubbler) {
+                this.Quantity = quantity;
+                this.TotalCost = this.UnitCost * this.Quantity;
+            } else {
+                this.Quantity = quantity;
+                this.UnitCost = this.Price.UnitCost;
                 if (this.BubblerParameter != null) {
                     this.TotalCost = (this.UnitCost * this.BubblerParameter.NetWeight) * this.Quantity;
                 }

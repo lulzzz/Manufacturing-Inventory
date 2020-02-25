@@ -19,8 +19,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int? WarehouseId { get; set; }
         public Warehouse Warehouse { get; set; }
 
-        public int? UsageId { get; set; }
-        public Usage Usage { get; set; }
+        //public int? UsageId { get; set; }
+        //public Usage Usage { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; }
         public ICollection<PartInstance> PartInstances { get; set; }
@@ -34,13 +34,22 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartPrices = new HashSet<PartPrice>();
         }
 
-        public Part(string name, string description, bool holdsBubblers, Organization organization, Warehouse warehouse, Usage usage) : this() {
+        //public Part(string name, string description, bool holdsBubblers, Organization organization, Warehouse warehouse, Usage usage) : this() {
+        //    this.Name = name;
+        //    this.Description = description;
+        //    this.HoldsBubblers = holdsBubblers;
+        //    this.Organization = organization;
+        //    this.Warehouse = warehouse;
+        //    //this.Usage = usage;
+        //}
+
+        public Part(string name, string description, bool holdsBubblers, Organization organization, Warehouse warehouse) : this() {
             this.Name = name;
             this.Description = description;
             this.HoldsBubblers = holdsBubblers;
             this.Organization = organization;
             this.Warehouse = warehouse;
-            this.Usage = usage;
+            //this.Usage = usage;
         }
 
         public Part(Part part) {
@@ -48,7 +57,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Description = part.Description;
             this.HoldsBubblers = part.HoldsBubblers;
             this.WarehouseId = part.WarehouseId;
-            this.UsageId = part.UsageId;
+            //this.UsageId = part.UsageId;
             this.OrganizationId = part.OrganizationId;
         }
 
@@ -57,7 +66,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Description = part.Description;
             this.HoldsBubblers = part.HoldsBubblers;
             this.WarehouseId = part.WarehouseId;
-            this.UsageId = part.UsageId;
+            //this.UsageId = part.UsageId;
             this.OrganizationId = part.OrganizationId;
         }
     }

@@ -116,17 +116,12 @@ namespace ManufacturingInventory.Application.UseCases {
             if (input.PartInstanceId.HasValue) {
                 var partInstance = await this._partInstanceRepository.GetEntityAsync(e => e.Id == input.PartInstanceId.Value);
                 if (partInstance != null) {
-                    //partInstance.Price = price;
                     var priceLog = new PriceLog(partInstance, price);
-
-
-                    var logs =await this._priceLogRepository.GetEntityListAsync(e => e.PartInstanceId == partInstance.Id);
-                    
+                    var logs =await this._priceLogRepository.GetEntityListAsync(e => e.PartInstanceId == partInstance.Id);              
                     foreach(var log in logs) {
                         log.IsCurrent = false;
                         this._priceLogRepository.Update(log);
                     }
-
                     price.PartInstances.Add(partInstance);
                     partInstance.UnitCost = price.UnitCost;
                     if (partInstance.IsBubbler) {
@@ -167,9 +162,13 @@ namespace ManufacturingInventory.Application.UseCases {
                 if (input.PartInstanceId.HasValue) {
                     var partInstance = await this._partInstanceRepository.GetEntityAsync(e => e.Id == input.PartInstanceId.Value);
                     if (partInstance != null) {
-                        partInstance.PriceId = input.PriceId;
+                        partInstance.UpdatePrice(price.Id,price.UnitCost);
                         await this._partInstanceRepository.UpdateAsync(partInstance);
+                    } else {
+                        return new PriceEditOutput(null, false, "Internal Error: PartInstance Not Found");
                     }
+                } else {
+                    return new PriceEditOutput(null, false, "Internal Error: Part Instance Not Found");
                 }
                 var updated = await this._priceRepository.UpdateAsync(price);
                 if (updated != null) {
@@ -196,14 +195,7 @@ namespace ManufacturingInventory.Application.UseCases {
                             currentPriceLog.IsCurrent = false;
                             await this._priceLogRepository.UpdateAsync(currentPriceLog);
                         }
-                        partInstance.PriceId = price.Id;
-                        //price.PartInstances.Add(partInstance);
-                        partInstance.UnitCost = price.UnitCost;
-                        if (partInstance.IsBubbler) {
-                            partInstance.TotalCost = (price.UnitCost * partInstance.BubblerParameter.NetWeight) * partInstance.Quantity;
-                        } else {
-                            partInstance.TotalCost = price.UnitCost * partInstance.Quantity;
-                        }
+                        partInstance.UpdatePrice(price.Id, price.UnitCost);
                         await this._priceLogRepository.AddAsync(priceLog);
                         await this._partInstanceRepository.UpdateAsync(partInstance);
                     } else {

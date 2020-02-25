@@ -53,6 +53,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._transaction;
             set => SetProperty(ref this._transaction, value);
         }
+
         
         public Transaction SelectedTransaction { 
             get => this._selectedTransaction;

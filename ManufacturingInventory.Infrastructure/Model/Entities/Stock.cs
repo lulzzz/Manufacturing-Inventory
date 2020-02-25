@@ -19,13 +19,12 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
     public class BubblerStock : Stock {
         public double Weight { get; set; }
-        public double Net { get; set; }
-        public double Gross { get; set; }
+        public double NetWeight { get; set; }
+        public double GrossWeight { get; set; }
     }
 
     public class PartStock {
         public int Id { get; set; }
-
         public ICollection<PartInstance> PartInstances { get; set; }
 
     }
