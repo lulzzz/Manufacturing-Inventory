@@ -9,6 +9,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsDefault { get; set; }
         public byte[] RowVersion { get; set; }
 
         public Category() {

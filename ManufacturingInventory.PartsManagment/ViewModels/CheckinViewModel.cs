@@ -34,15 +34,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private IEventAggregator _eventAggregator;
 
         private bool _isInitialized=false;
-        private bool _validationEnabled = false;
 
         private SelectPricePopupViewModel _selectPricePopupViewModel;
         private int _partId;
         private int? _instanceId;
         private bool _isBubbler;
         private bool _isExisting;
-        private bool _createTransaction;
         private bool _createPrice;
+        private bool _canChangeQuantity;
+        private bool _isReusable;
+        private bool _notNoPriceOption;
+        private bool _canEditStock;
 
         private PartInstance _selectedPartInstance=new PartInstance();
         private Price _price;
@@ -52,12 +54,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ObservableCollection<Usage> _usageList;
         private ObservableCollection<Distributor> _distributors;
         private IEnumerable<Price> _prices;
-
+        private bool _costReported;
         private Condition _selectedCondition;
         private StockType _selectedPartType;
         private Warehouse _selectedWarehouse;
         private Distributor _selectedDistributor;
         private Usage _selectedUsage;
+        private string _name;
         private double _netWeight;
         private double _grossWeight;
         private double _measuredWeight;
@@ -66,16 +69,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _totalCost;
         private double _unitCost;
         private DateTime _transactionTimeStamp;
-        private bool _notNoPriceOption;
-        private bool _canEditStock;
         private PriceOption _selectedPriceOption=PriceOption.NoPrice;
         private bool returningFromOption = false;
+
+
 
         public AsyncCommand CheckInCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand<PriceOption> PriceOptionSelectionChangedCommand { get; private set; }
         public AsyncCommand StockTypeSelectionChanged { get; private set; }
+        //public AsyncCommand ReusableCheckedCommand { get; private set; }
+        //public AsyncCommand ReusableUnCheckedCommand { get; private set; }
 
         public CheckInViewModel(ICheckInUseCase checkIn,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._checkIn = checkIn;
@@ -85,6 +90,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.CheckInCommand = new AsyncCommand(this.CheckInHandler,this.CanExecuteCheckIn);
             this.CancelCommand = new AsyncCommand(this.CancelHandler);
             this.PriceOptionSelectionChangedCommand = new AsyncCommand<PriceOption>(this.PriceOptionSelectionChangedHandler);
+            this.StockTypeSelectionChanged = new AsyncCommand(this.StockTypeSelectionChangedHandler);
+            //this.ReusableCheckedCommand = new AsyncCommand(this.ReusableUnCheckedHandler);
+            //this.ReusableUnCheckedCommand = new AsyncCommand(this.ReusableUnCheckedHandler);
+
         }
 
         #region VariableBindings
@@ -169,11 +178,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
         }
 
-        public bool IsBubbler {
-            get => this._isBubbler;
-            set => SetProperty(ref this._isBubbler, value);
-        }
-
         public ObservableCollection<Condition> Conditions {
             get => this._conditions;
             set => SetProperty(ref this._conditions, value);
@@ -194,11 +198,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._distributors, value);
         }
 
-        public bool CreateTransaction { 
-            get => this._createTransaction;
-            set => SetProperty(ref this._createTransaction, value);
-        }
-
         public bool CreateNewPrice {
             get => this._createPrice;
             set => SetProperty(ref this._createPrice, value);
@@ -214,11 +213,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedPriceOption, value);
         }
 
-        public bool NotNoPriceOption { 
-            get => this._notNoPriceOption;
-            set => SetProperty(ref this._notNoPriceOption, value);
-        }
-
         public ObservableCollection<Usage> UsageList {
             get => this._usageList;
             set => SetProperty(ref this._usageList, value);
@@ -228,17 +222,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedUsage;
             set => SetProperty(ref this._selectedUsage, value);
         }
-        
-        public bool CanEditStock { 
-            get => this._canEditStock;
-            set => SetProperty(ref this._canEditStock, value);
-        }
-
-        public bool IsExisting {
-            get => this._isExisting;
-            set => SetProperty(ref this._isExisting, value);
-        }
-
+       
         public double UnitCost {
             get => this._unitCost;
             set => SetProperty(ref this._unitCost, value);
@@ -249,50 +233,150 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._totalCost, value);
         }
 
+        public string Name { 
+            get => this._name;
+            set {
+                this.SelectedPartInstance.Name = value;
+                SetProperty(ref this._name, value);
+            } 
+        }
+
+        public bool CostReported { 
+            get => this._costReported;
+            set {
+                this.SelectedPartInstance.CostReported = value;
+                SetProperty(ref this._costReported, value);
+            }
+        }
+
+        public bool CanChangeQuantity { 
+            get => this._canChangeQuantity;
+            set=>SetProperty(ref this._canChangeQuantity, value);
+        }
+
+        public bool NotNoPriceOption {
+            get => this._notNoPriceOption;
+            set => SetProperty(ref this._notNoPriceOption, value);
+        }
+
+        public bool CanEditStock {
+            get => this._canEditStock;
+            set => SetProperty(ref this._canEditStock, value);
+        }
+
+        public bool IsExisting {
+            get => this._isExisting;
+            set => SetProperty(ref this._isExisting, value);
+        }
+
+        public bool IsReusable {
+            get => this._isReusable;
+            set {
+                this.CanChangeQuantity = !value;
+                this.Quantity = (value) ? 1 : 0;
+                SetProperty(ref this._isReusable, value);
+            }
+        }
+
+        public bool IsBubbler {
+            get => this._isBubbler;
+            set => SetProperty(ref this._isBubbler, value);
+        }
+
+        #endregion
+
+        #region ValidationRegion
+
         public string Error {
             get {
+                //if (!this._validationEnabled) return null;
                 IDataErrorInfo me = (IDataErrorInfo)this;
-                string error =
-                    me[BindableBase.GetPropertyName(() => this.SelectedPartInstance.Name)] +
-                    me[BindableBase.GetPropertyName(() => this.SelectedPartInstance.Quantity)];
+                string error = me[BindableBase.GetPropertyName(() => this.Name)] +
+                              me[BindableBase.GetPropertyName(() => this.Quantity)] +
+                              me[BindableBase.GetPropertyName(() => this.NetWeight)] +
+                              me[BindableBase.GetPropertyName(() => this.GrossWeight)] +
+                              me[BindableBase.GetPropertyName(() => this.Measured)] +
+                              me[BindableBase.GetPropertyName(() => this.SelectedPriceOption)];
                 if (!string.IsNullOrEmpty(error))
-                    return "Please check inputted data.";
+                    return "Please check inputted data";
                 return null;
             }
         }
 
         public string this[string columnName] {
             get {
-                string nameProp = BindableBase.GetPropertyName(() => this.SelectedPartInstance.Name);
-                string quantityProp= BindableBase.GetPropertyName(() => this.SelectedPartInstance.Quantity);
+                //if(!this._validationEnabled) return null;
+                string nameProp = BindableBase.GetPropertyName(() => this.Name);
+                string warehouseProp = BindableBase.GetPropertyName(() => this.SelectedWarehouse);
+                string quantityProp = BindableBase.GetPropertyName(() => this.Quantity);
+                string netProp = BindableBase.GetPropertyName(() => this.NetWeight);
+                string grossProp = BindableBase.GetPropertyName(() => this.GrossWeight);
+                string measuredProp = BindableBase.GetPropertyName(() => this.Measured);
                 if (columnName == nameProp) {
-                    return RequiredValidationRule.GetErrorMessage(nameProp, this.SelectedPartInstance.Name);
-                }else if (columnName == quantityProp) {
-                    return RequiredValidationRule.GetErrorMessage(nameProp,this.Quantity);
-                } else {
-                    return null;
+                    return RequiredValidationRule.GetErrorMessage(nameProp, this.Name);
+                } else if (columnName == warehouseProp) {
+                    if (this.SelectedWarehouse == null)
+                        return "Warehouse must be selected";
+                } else if (columnName == quantityProp) {
+                    if (this.Quantity == 0 && !this.IsBubbler)
+                        return "Quantity must be >0";
+                } else if (columnName == netProp) {
+                    if (this.IsBubbler && this.NetWeight == 0)
+                        return "Net must be >0";
+                } else if (columnName == grossProp) {
+                    if (this.IsBubbler && this.GrossWeight == 0)
+                        return "Gross must be >0";
+                } else if (columnName == measuredProp) {
+                    if (this.IsBubbler && this.Measured == 0)
+                        return "Measured must be >0";
                 }
+                return null;
             }
-        }
-
-        private void OnValidationSucceeded() {
-
         }
 
         private void OnValidationFailed(string error) {
             this.MessageBoxService.Show("Check In Failed. " + error, "Registration Form", MessageBoxButton.OK);
         }
 
+        private string EnableValidationAndGetError() {
+            //this._validationEnabled = true;
+            string error = ((IDataErrorInfo)this).Error;
+            if (!string.IsNullOrEmpty(error)) {
+                this.RaisePropertyChanged();
+                return error;
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region ToggleHandlers
+
+        //private async Task ReusableCheckedHandler() {
+        //    await Task.Run(() => {
+        //        this.CanChangeQuantity = false;
+        //        this.Quantity = 1;
+        //    });
+
+        //}
+
+        //private async Task ReusableUnCheckedHandler() {
+        //    await Task.Run(() => {
+        //        this.CanChangeQuantity = true;
+        //        this.Quantity = 0;
+        //    });
+
+        //}
+
         #endregion
 
         #region ComboEditHandlers
 
-        //private async 
-
         private async Task StockTypeSelectionChangedHandler() {
-            if (this.SelectedStockType != null) {
+            if (this.SelectedStockType != null && !this.SelectedStockType.IsDefault) {
                 await Task.Run(() =>{
                     this.DispatcherService.BeginInvoke(() => {
+
                         this.CanEditStock = false;
                         this.SelectedPartInstance.MinQuantity = this.SelectedStockType.MinQuantity;
                         this.SelectedPartInstance.SafeQuantity = this.SelectedStockType.SafeQuantity;
@@ -493,21 +577,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         #region ActionRegion
 
-        private string EnableValidationAndGetError() {
-            this._validationEnabled = true;
-            string error = ((IDataErrorInfo)this).Error;
-            if (!string.IsNullOrEmpty(error)) {
-                this.RaisePropertyChanged();
-                return error;
-            }
-            return null;
-        }
-
         private async Task CheckInHandler() {
             string error = this.EnableValidationAndGetError();
             if (error != null) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.OnValidationFailed(error);
+                });
+                return;
+            }else if(this.SelectedPriceOption == PriceOption.NoPrice && this.CostReported && !this._isExisting) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.OnValidationFailed("Cost Reported Set To True, You Must Selected A Price Option");
                 });
                 return;
             }
@@ -521,8 +600,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task CheckInExisiting() {
             CheckInInput input = new CheckInInput(this.SelectedPartInstance, this.SelectedPriceOption, this.TransactionTimeStamp, this._partId,true,quantity:this.Quantity);
             var response = await this._checkIn.Execute(input);
-
-
             if (response.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
@@ -549,16 +626,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             }
 
             this.SelectedPartInstance.LocationId = this.SelectedWarehouse.Id;
+            this.SelectedPartInstance.IsReusable = this.IsReusable;
 
             if (this.Price != null) {
                 this.Price.DistributorId = this.SelectedDistributor.Id;
             }
-
+            this.SelectedPartInstance.Quantity = this.Quantity;
             CheckInInput input = new CheckInInput(this.SelectedPartInstance, this.SelectedPriceOption, this.TransactionTimeStamp, this._partId, false,price:this.Price);
 
             var response = await this._checkIn.Execute(input);
-
-
             if (response.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
@@ -573,85 +649,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task CancelHandler() {
             await Task.Run(() => this._eventAggregator.GetEvent<CheckInCancelEvent>().Publish());
-        }
-
-        private async Task Load() {
-            if (this._isExisting) {
-                await this.LoadExisiting();
-            } else {
-                await this.LoadNew();
-            }
-        }
-
-        private async Task LoadExisiting() {
-            if (!this._isInitialized) {
-                this._prices = await this._checkIn.GetAvailablePrices(this._partId);
-                var distributors = await this._checkIn.GetDistributors();
-                var categories = await this._checkIn.GetCategories();
-                var warehouses = await this._checkIn.GetWarehouses();
-                var defautCostReported = await this._checkIn.DefaultCostReported(this._partId);
-                var partInstance = await this._checkIn.GetExisitingPartInstance(this._instanceId.Value);
-                this.DispatcherService.BeginInvoke(() => {
-                    this.SelectedPartInstance = partInstance;
-                    this.Distributors = new ObservableCollection<Distributor>(distributors);
-                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
-                    this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-                    this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
-                    this.TransactionTimeStamp = DateTime.Now;                
-                    partInstance.CostReported = partInstance.CostReported;
-                    this.CanEditStock = !this.SelectedPartInstance.StockTypeId.HasValue;
-
-                    if (this.SelectedPartInstance.StockTypeId.HasValue) {
-                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == partInstance.StockTypeId);
-                    }
-
-                    this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == partInstance.LocationId);
-
-                    if (this.SelectedPartInstance.ConditionId.HasValue) {
-                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == partInstance.ConditionId);
-                    }
-
-                    if (this.SelectedPartInstance.UsageId.HasValue) {
-                        this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == partInstance.UsageId);
-                    }
-                    this.Quantity = 0;
-                    this.UnitCost = this.SelectedPartInstance.UnitCost;
-
-                });
-                this._isInitialized = true;
-            }
-        }
-
-        private async Task LoadNew() {
-            if (!this._isInitialized) {
-                this._prices = await this._checkIn.GetAvailablePrices(this._partId);
-                var distributors = await this._checkIn.GetDistributors();
-                var categories = await this._checkIn.GetCategories();
-                var warehouses = await this._checkIn.GetWarehouses();
-                var defautCostReported = await this._checkIn.DefaultCostReported(this._partId);
-
-                this.DispatcherService.BeginInvoke(() => {
-                    this.Distributors = new ObservableCollection<Distributor>(distributors);
-                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
-                    this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-                    this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
-                    this.TransactionTimeStamp = DateTime.Now;
-                    var partInstance = new PartInstance();
-                    if (this.IsBubbler) {
-                        partInstance.BubblerParameter = new BubblerParameter();
-                        partInstance.Quantity = 1;
-                        partInstance.MinQuantity = 1;
-                        partInstance.SafeQuantity = 1;
-                        partInstance.IsBubbler = true;
-                    }
-                    partInstance.CostReported = defautCostReported;
-                    this.SelectedPartInstance = partInstance;
-                    this.CanEditStock = !this.IsBubbler && !this._isExisting;
-                });
-                this._isInitialized = true;
-            }
         }
 
         private bool CanExecuteCheckIn() {
@@ -674,7 +671,98 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             //    return false;
             //}
         }
-        
+
+        #endregion
+
+        #region LoadRegion
+
+        private async Task Load() {
+            if (this._isExisting) {
+                await this.LoadExisiting();
+            } else {
+                await this.LoadNew();
+            }
+        }
+
+        private async Task LoadExisiting() {
+            if (!this._isInitialized) {
+                this._prices = await this._checkIn.GetAvailablePrices(this._partId);
+                var distributors = await this._checkIn.GetDistributors();
+                var categories = await this._checkIn.GetCategories();
+                var warehouses = await this._checkIn.GetWarehouses();
+                var partInstance = await this._checkIn.GetExisitingPartInstance(this._instanceId.Value);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.SelectedPartInstance = partInstance;
+                    this.Distributors = new ObservableCollection<Distributor>(distributors);
+                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                    this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
+                    this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
+                    this.TransactionTimeStamp = DateTime.Now;
+                    partInstance.CostReported = partInstance.CostReported;
+                    this.CanEditStock = this.SelectedPartInstance.StockTypeId==Constants.DefaultStockId;
+                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == partInstance.StockTypeId);
+                    this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == partInstance.LocationId);
+
+                    if (this.SelectedPartInstance.ConditionId.HasValue) {
+                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == partInstance.ConditionId);
+                    }
+
+                    if (this.SelectedPartInstance.UsageId.HasValue) {
+                        this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == partInstance.UsageId);
+                    }
+
+                    this.Quantity = 0;
+                    this.Name = this.SelectedPartInstance.Name;
+                    this.UnitCost = this.SelectedPartInstance.UnitCost;
+                });
+                this._isInitialized = true;
+            }
+        }
+
+        private async Task LoadNew() {
+            if (!this._isInitialized) {
+                this._prices = await this._checkIn.GetAvailablePrices(this._partId);
+                var distributors = await this._checkIn.GetDistributors();
+                var categories = await this._checkIn.GetCategories();
+                var warehouses = await this._checkIn.GetWarehouses();
+                var part = await this._checkIn.GetPart(this._partId);
+
+                this.DispatcherService.BeginInvoke(() => {
+                    this.Distributors = new ObservableCollection<Distributor>(distributors);
+                    this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                    this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
+                    this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
+                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == Constants.DefaultStockId);
+                    this.TransactionTimeStamp = DateTime.Now;
+                    var partInstance = new PartInstance();
+                    if (part != null) {
+                        partInstance.CostReported = part.DefaultToCostReported;
+                        this.CostReported = part.DefaultToCostReported;
+                        if (part.WarehouseId.HasValue) {
+                            partInstance.LocationId = part.WarehouseId.Value;
+                            this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == part.WarehouseId);
+                        }
+                    }
+
+                    if (this.IsBubbler) {
+                        partInstance.BubblerParameter = new BubblerParameter();
+                        partInstance.IsBubbler = true;
+                        partInstance.MinQuantity = 1;
+                        partInstance.SafeQuantity = 1;
+                        this.IsReusable = true;
+                    }
+                    partInstance.StockTypeId= (this.SelectedStockType != null) ? this.SelectedStockType.Id : Constants.DefaultStockId;
+                    this.SelectedPartInstance = partInstance;
+                    this.Quantity = (this.IsBubbler) ? 1 : 0;
+                    this.CanEditStock = !this.IsBubbler && !this._isExisting;
+                    this.CanChangeQuantity = !this.IsBubbler;
+                });
+                this._isInitialized = true;
+            }
+        }
+
         #endregion
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {

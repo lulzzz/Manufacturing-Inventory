@@ -309,24 +309,24 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => {
                     this.Consumers = new ObservableCollection<Consumer>(consumers);
                     this.Conditions = new ObservableCollection<Condition>(conditions);
+                    this.SelectedConsumer = this.Consumers.FirstOrDefault(e => e.IsDefualt);
                     if (this.SelectedPartInstance != null) {
                         this.IsBubbler = this.SelectedPartInstance.IsBubbler;
-                        this.QuantityLabel = (this.SelectedPartInstance.IsBubbler) ? "Quantity" : "Enter Quantity";
+                        this.QuantityLabel = (this.SelectedPartInstance.IsBubbler || this.SelectedPartInstance.IsReusable) ? "Quantity" : "Enter Quantity";
                         if (this.SelectedPartInstance.IsBubbler) {
                             this.Quantity = this.SelectedPartInstance.Quantity;
                         } else {
                             this.Quantity = 0;
                         }
 
-                        if (this.SelectedPartInstance.CostReported) {
+                        //if (this.SelectedPartInstance.CostReported) {
                             this.UnitCost = this.SelectedPartInstance.UnitCost;
                             this.TotalCost = this.SelectedPartInstance.TotalCost;
-                        } else {
-                            this.UnitCost = 0;
-                            this.TotalCost = 0;
-                        }
+                        //} else {
+                        //    this.UnitCost = 0;
+                        //    this.TotalCost = 0;
+                        //}
                     }
-
                     this._isInitialized = true;
                 });
             }

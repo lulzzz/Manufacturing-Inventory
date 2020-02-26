@@ -12,7 +12,7 @@ namespace ManufacturingInventory.Application.Boundaries.CheckIn {
         Task<IEnumerable<Distributor>> GetDistributors();
         Task<IEnumerable<Price>> GetAvailablePrices(int partId);
         Task<Price> GetPrice(int priceId);
-        Task<bool> DefaultCostReported(int partId);
+        Task<Part> GetPart(int partId);
         Task<PartInstance> GetExisitingPartInstance(int instanceId);
     }
 }

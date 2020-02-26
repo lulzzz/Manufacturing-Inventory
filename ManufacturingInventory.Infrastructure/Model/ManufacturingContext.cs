@@ -247,7 +247,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .HasOne(e => e.StockType)
                 .WithMany(e => e.PartInstances)
                 .HasForeignKey(e => e.StockTypeId)
-                .IsRequired(false)
+                .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<PartInstance>()
@@ -540,24 +540,23 @@ namespace ManufacturingInventory.Infrastructure.Model {
         }
 
         private void SeedCategories(ModelBuilder builder) {
-            builder.Entity<Condition>().HasData(new Condition { Id = 1, Name = "New", Description = "A new Part" });
-            builder.Entity<Condition>().HasData(new Condition { Id = 2, Name = "Used", Description = "Part that has been used and returned to inventory" });
-            builder.Entity<Condition>().HasData(new Condition { Id = 3, Name = "Need Cleaning", Description = "A part returned to inventory and needs cleaning. i.e. Satellites" });
-            builder.Entity<Condition>().HasData(new Condition { Id = 4, Name = "Needs Repair", Description = "A part returned to inventory in need of repair/refurbish" });
-            builder.Entity<Condition>().HasData(new Condition { Id = 5, Name = "Refurbished", Description = "A part in inventory that was repaired/refurbished" });
-            builder.Entity<Condition>().HasData(new Condition { Id = 6, Name = "Depleted", Description = "A part's stock is depleted. No additional stock will be added or returned" });
+            builder.Entity<Condition>().HasData(new Condition { Id = 1, Name = "New", Description = "A new Part", IsDefault = true }); ;
+            builder.Entity<Condition>().HasData(new Condition { Id = 2, Name = "Used", Description = "Part that has been used and returned to inventory" , IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 3, Name = "Need Cleaning", Description = "A part returned to inventory and needs cleaning. i.e. Satellites", IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 4, Name = "Needs Repair", Description = "A part returned to inventory in need of repair/refurbish" , IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 5, Name = "Refurbished", Description = "A part in inventory that was repaired/refurbished", IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 6, Name = "Depleted", Description = "A part's stock is depleted. No additional stock will be added or returned",IsDefault = false });
 
-            builder.Entity<Organization>().HasData(new Organization { Id = 7, Name = "Raw Materials", Description = "" });
-            builder.Entity<Organization>().HasData(new Organization { Id = 8, Name = "Supplies", Description = "" });
+            builder.Entity<Organization>().HasData(new Organization { Id = 7, Name = "Raw Materials", Description = "", IsDefault = false });
+            builder.Entity<Organization>().HasData(new Organization { Id = 8, Name = "Supplies", Description = "", IsDefault = false });
 
-            builder.Entity<Usage>().HasData(new Usage { Id = 9, Name = "All Systems", Description = "Used on all Epi Systems" });
-            builder.Entity<Usage>().HasData(new Usage { Id = 10, Name = "Growth", Description = "General Growth Usage" });
-            builder.Entity<Usage>().HasData(new Usage { Id = 11, Name = "A Systems", Description = "Used on A Systems" });
-            builder.Entity<Usage>().HasData(new Usage { Id = 12, Name = "B Systems", Description = "Used on B Systems" });
-            builder.Entity<Usage>().HasData(new Usage { Id = 13, Name = "C Systems", Description = "Used on C Systems" });
+            builder.Entity<Usage>().HasData(new Usage { Id = 9, Name = "All Systems", Description = "Used on all Epi Systems", IsDefault = false });
+            builder.Entity<Usage>().HasData(new Usage { Id = 10, Name = "Growth", Description = "General Growth Usage", IsDefault = true });
+            builder.Entity<Usage>().HasData(new Usage { Id = 11, Name = "A Systems", Description = "Used on A Systems", IsDefault = false });
+            builder.Entity<Usage>().HasData(new Usage { Id = 12, Name = "B Systems", Description = "Used on B Systems", IsDefault = false });
+            builder.Entity<Usage>().HasData(new Usage { Id = 13, Name = "C Systems", Description = "Used on C Systems", IsDefault = false });
+            builder.Entity<StockType>().HasData(new StockType { Id = 14, Name = "Individual", Description = "Individual Stock", MinQuantity = 0, SafeQuantity = 0, IsDefault = true });
 
-            builder.Entity<StockType>().HasData(new StockType { Id = 14, Name = "1x2-short", Description = "" });
-            builder.Entity<StockType>().HasData(new StockType { Id = 15, Name = "1x2-long", Description = "" });
         }
 
         private void SeedLocations(ModelBuilder builder) {

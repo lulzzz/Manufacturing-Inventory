@@ -23,12 +23,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public string BatchNumber { get; set; }
         public bool CostReported { get; set; }
         public bool IsBubbler { get; set; }
+        public bool IsReusable { get; set; }
         public byte[] RowVersion { get; set; }
 
         public int PartId { get; set; }
         public Part Part { get; set; }
 
-        public int? StockTypeId { get; set; }
+        public int StockTypeId { get; set; }
         public StockType StockType { get; set; }
 
         public int? ConditionId { get; set; }

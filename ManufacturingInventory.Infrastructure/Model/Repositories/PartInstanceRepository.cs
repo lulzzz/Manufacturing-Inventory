@@ -73,6 +73,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.StockTypeId = entity.StockTypeId;
                 instance.PriceId = entity.PriceId;
                 instance.Usage = entity.Usage;
+                instance.IsReusable = entity.IsReusable;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -98,6 +99,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.StockTypeId = entity.StockTypeId;
                 instance.PriceId = entity.PriceId;
                 instance.Usage = entity.Usage;
+                instance.IsReusable = entity.IsReusable;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;

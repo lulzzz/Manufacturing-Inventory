@@ -22,6 +22,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public static string IsNew { get => "IsNew"; }
         public static string IsReload { get => "IsReload"; }
         public static string IsBubbler { get => "IsBubbler"; }
+        public static string IsReusable { get => "IsReusable"; }
 
     }
 }

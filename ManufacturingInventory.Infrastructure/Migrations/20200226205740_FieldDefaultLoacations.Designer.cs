@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200222181243_fixedSeed")]
-    partial class fixedSeed
+    [Migration("20200226205740_FieldDefaultLoacations")]
+    partial class FieldDefaultLoacations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,7 +34,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PartInstanceId")
+                    b.Property<int>("PartId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
@@ -42,9 +42,12 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int?>("StockId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("PartInstanceId");
+                    b.HasIndex("StockId");
 
                     b.ToTable("Alerts");
                 });
@@ -166,6 +169,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -356,6 +362,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDefualt")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -460,17 +469,12 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<int?>("UsageId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("WarehouseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrganizationId");
-
-                    b.HasIndex("UsageId");
 
                     b.HasIndex("WarehouseId");
 
@@ -505,6 +509,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<bool>("IsBubbler")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsReusable")
+                        .HasColumnType("bit");
+
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
@@ -515,9 +522,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PartTypeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("PriceId")
@@ -540,11 +544,17 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<string>("SkuNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StockTypeId")
+                        .HasColumnType("int");
+
                     b.Property<double>("TotalCost")
                         .HasColumnType("float");
 
                     b.Property<double>("UnitCost")
                         .HasColumnType("float");
+
+                    b.Property<int?>("UsageId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -558,9 +568,11 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("PartId");
 
-                    b.HasIndex("PartTypeId");
-
                     b.HasIndex("PriceId");
+
+                    b.HasIndex("StockTypeId");
+
+                    b.HasIndex("UsageId");
 
                     b.ToTable("PartInstances");
                 });
@@ -941,36 +953,42 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         {
                             Id = 1,
                             Description = "A new Part",
+                            IsDefault = true,
                             Name = "New"
                         },
                         new
                         {
                             Id = 2,
                             Description = "Part that has been used and returned to inventory",
+                            IsDefault = false,
                             Name = "Used"
                         },
                         new
                         {
                             Id = 3,
                             Description = "A part returned to inventory and needs cleaning. i.e. Satellites",
+                            IsDefault = false,
                             Name = "Need Cleaning"
                         },
                         new
                         {
                             Id = 4,
                             Description = "A part returned to inventory in need of repair/refurbish",
+                            IsDefault = false,
                             Name = "Needs Repair"
                         },
                         new
                         {
                             Id = 5,
                             Description = "A part in inventory that was repaired/refurbished",
+                            IsDefault = false,
                             Name = "Refurbished"
                         },
                         new
                         {
                             Id = 6,
                             Description = "A part's stock is depleted. No additional stock will be added or returned",
+                            IsDefault = false,
                             Name = "Depleted"
                         });
                 });
@@ -986,184 +1004,43 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         {
                             Id = 7,
                             Description = "",
+                            IsDefault = false,
                             Name = "Raw Materials"
                         },
                         new
                         {
                             Id = 8,
                             Description = "",
+                            IsDefault = false,
                             Name = "Supplies"
                         });
                 });
 
-            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartType", b =>
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.StockType", b =>
                 {
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
-                    b.HasDiscriminator().HasValue("PartType");
+                    b.Property<int>("MinQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SafeQuantity")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("StockType");
 
                     b.HasData(
                         new
                         {
-                            Id = 13,
-                            Description = "",
-                            Name = "1x2-short"
-                        },
-                        new
-                        {
                             Id = 14,
-                            Description = "",
-                            Name = "1x2-long"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Description = "Used only for System B01",
-                            Name = "System B01"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Description = "Used only for System B02",
-                            Name = "System B02"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Description = "Used only for System B03",
-                            Name = "System B03"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Description = "Used only for System B04",
-                            Name = "System B04"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Description = "Used only for System B05",
-                            Name = "System B05"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Description = "Used only for System B06",
-                            Name = "System B06"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Description = "Used only for System B07",
-                            Name = "System B07"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Description = "Used only for System A01",
-                            Name = "System A01"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Description = "Used only for System A02",
-                            Name = "System A02"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Description = "Used only for System A03",
-                            Name = "System A03"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Description = "Used only for System A04",
-                            Name = "System A04"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Description = "Used only for System A05",
-                            Name = "System A05"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Description = "Used only for System A06",
-                            Name = "System A06"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Description = "Used only for System A07",
-                            Name = "System A07"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Description = "Used only for System C01",
-                            Name = "System C01"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Description = "Used only for System C02",
-                            Name = "System C02"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            Description = "Used only for System C03",
-                            Name = "System C03"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            Description = "Used only for System C04",
-                            Name = "System C04"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Description = "Used only for System C05",
-                            Name = "System C05"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Description = "Used only for System C06",
-                            Name = "System C06"
-                        },
-                        new
-                        {
-                            Id = 35,
-                            Description = "Used only for System C07",
-                            Name = "System C07"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            Description = "Used only for System C08",
-                            Name = "System C08"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Description = "Used only for System C09",
-                            Name = "System C09"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Description = "Used only for System C10",
-                            Name = "System C10"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Description = "Used only for System C11",
-                            Name = "System C11"
+                            Description = "Individual Stock",
+                            IsDefault = true,
+                            Name = "Individual",
+                            MinQuantity = 0,
+                            Quantity = 0,
+                            SafeQuantity = 0
                         });
                 });
 
@@ -1178,24 +1055,35 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         {
                             Id = 9,
                             Description = "Used on all Epi Systems",
+                            IsDefault = false,
                             Name = "All Systems"
                         },
                         new
                         {
                             Id = 10,
-                            Description = "Used on A Systems",
-                            Name = "A Systems"
+                            Description = "General Growth Usage",
+                            IsDefault = true,
+                            Name = "Growth"
                         },
                         new
                         {
                             Id = 11,
-                            Description = "Used on B Systems",
-                            Name = "B Systems"
+                            Description = "Used on A Systems",
+                            IsDefault = false,
+                            Name = "A Systems"
                         },
                         new
                         {
                             Id = 12,
+                            Description = "Used on B Systems",
+                            IsDefault = false,
+                            Name = "B Systems"
+                        },
+                        new
+                        {
+                            Id = 13,
                             Description = "Used on C Systems",
+                            IsDefault = false,
                             Name = "C Systems"
                         });
                 });
@@ -1211,156 +1099,182 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         {
                             Id = 6,
                             Description = "Reactor B01",
+                            IsDefualt = false,
                             Name = "System B01"
                         },
                         new
                         {
                             Id = 7,
                             Description = "Reactor B02",
+                            IsDefualt = false,
                             Name = "System B02"
                         },
                         new
                         {
                             Id = 8,
                             Description = "Reactor B03",
+                            IsDefualt = false,
                             Name = "System B03"
                         },
                         new
                         {
                             Id = 9,
                             Description = "Reactor B04",
+                            IsDefualt = false,
                             Name = "System B04"
                         },
                         new
                         {
                             Id = 10,
                             Description = "Reactor B05",
+                            IsDefualt = false,
                             Name = "System B05"
                         },
                         new
                         {
                             Id = 11,
                             Description = "Reactor B06",
+                            IsDefualt = false,
                             Name = "System B06"
                         },
                         new
                         {
                             Id = 12,
                             Description = "Reactor B07",
+                            IsDefualt = false,
                             Name = "System B07"
                         },
                         new
                         {
                             Id = 13,
                             Description = "Reactor A01",
+                            IsDefualt = false,
                             Name = "System A01"
                         },
                         new
                         {
                             Id = 14,
                             Description = "Reactor A02",
+                            IsDefualt = false,
                             Name = "System A02"
                         },
                         new
                         {
                             Id = 15,
                             Description = "Reactor A03",
+                            IsDefualt = false,
                             Name = "System A03"
                         },
                         new
                         {
                             Id = 16,
                             Description = "Reactor A04",
+                            IsDefualt = false,
                             Name = "System A04"
                         },
                         new
                         {
                             Id = 17,
                             Description = "Reactor A05",
+                            IsDefualt = false,
                             Name = "System A05"
                         },
                         new
                         {
                             Id = 18,
                             Description = "Reactor A06",
+                            IsDefualt = false,
                             Name = "System A06"
                         },
                         new
                         {
                             Id = 19,
                             Description = "Reactor A07",
+                            IsDefualt = false,
                             Name = "System A07"
                         },
                         new
                         {
                             Id = 20,
                             Description = "Reactor C01",
+                            IsDefualt = false,
                             Name = "System C01"
                         },
                         new
                         {
                             Id = 21,
                             Description = "Reactor C02",
+                            IsDefualt = false,
                             Name = "System C02"
                         },
                         new
                         {
                             Id = 22,
                             Description = "Reactor C03",
+                            IsDefualt = false,
                             Name = "System C03"
                         },
                         new
                         {
                             Id = 23,
                             Description = "Reactor C04",
+                            IsDefualt = false,
                             Name = "System C04"
                         },
                         new
                         {
                             Id = 24,
                             Description = "Reactor C05",
+                            IsDefualt = false,
                             Name = "System C05"
                         },
                         new
                         {
                             Id = 25,
                             Description = "Reactor C06",
+                            IsDefualt = false,
                             Name = "System C06"
                         },
                         new
                         {
                             Id = 26,
                             Description = "Reactor C07",
+                            IsDefualt = false,
                             Name = "System C07"
                         },
                         new
                         {
                             Id = 27,
                             Description = "Reactor C08",
+                            IsDefualt = false,
                             Name = "System C08"
                         },
                         new
                         {
                             Id = 28,
                             Description = "Reactor C09",
+                            IsDefualt = false,
                             Name = "System C09"
                         },
                         new
                         {
                             Id = 29,
                             Description = "Reactor C10",
+                            IsDefualt = false,
                             Name = "System C10"
                         },
                         new
                         {
                             Id = 30,
                             Description = "Reactor C11",
+                            IsDefualt = false,
                             Name = "System C11"
                         },
                         new
                         {
                             Id = 31,
                             Description = "Generic Consumer for cost reporting",
+                            IsDefualt = false,
                             Name = "Epi Process"
                         });
                 });
@@ -1376,41 +1290,44 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         {
                             Id = 1,
                             Description = "",
+                            IsDefualt = false,
                             Name = "Epi System Parts"
                         },
                         new
                         {
                             Id = 2,
                             Description = "",
+                            IsDefualt = false,
                             Name = "Gas Bay"
                         },
                         new
                         {
                             Id = 3,
                             Description = "",
+                            IsDefualt = false,
                             Name = "Epi Chase"
                         },
                         new
                         {
                             Id = 4,
                             Description = "",
+                            IsDefualt = false,
                             Name = "Process Lab"
                         },
                         new
                         {
                             Id = 5,
                             Description = "",
+                            IsDefualt = false,
                             Name = "Back Warehouse"
                         });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Alert", b =>
                 {
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "PartInstance")
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "Stock")
                         .WithMany()
-                        .HasForeignKey("PartInstanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StockId");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Attachment", b =>
@@ -1485,10 +1402,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Usage", "Usage")
-                        .WithMany("Parts")
-                        .HasForeignKey("UsageId");
-
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Warehouse", "Warehouse")
                         .WithMany("StoredParts")
                         .HasForeignKey("WarehouseId")
@@ -1518,14 +1431,20 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartType", "PartType")
-                        .WithMany("PartInstances")
-                        .HasForeignKey("PartTypeId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Price", "Price")
                         .WithMany("PartInstances")
                         .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "StockType")
+                        .WithMany("PartInstances")
+                        .HasForeignKey("StockTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Usage", "Usage")
+                        .WithMany("PartInstances")
+                        .HasForeignKey("UsageId")
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 

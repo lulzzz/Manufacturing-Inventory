@@ -96,7 +96,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private async Task<CheckOutOutputData> ExecuteStandard(PartInstance partInstance, Location location, CheckOutInputData item) {
             partInstance.UpdateQuantity(0-item.Quantity);
 
-            partInstance.LocationId = location.Id;
+            //partInstance.LocationId = location.Id;
             if (item.ConditionId != 0) {
                 var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
                 if (condition != null) {
@@ -125,7 +125,6 @@ namespace ManufacturingInventory.Application.UseCases {
                 return new CheckOutOutputData(transaction, false, builder.ToString());
             }
         }
-
 
         public async Task<IEnumerable<Condition>> GetConditions() {
             return (await this._categoryProvider.GetEntityListAsync()).OfType<Condition>();

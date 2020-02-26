@@ -8,6 +8,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsDefualt { get; set; }
         public byte[] RowVersion { get; set; }
         public virtual ICollection<PartInstance> ItemsAtLocation { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }

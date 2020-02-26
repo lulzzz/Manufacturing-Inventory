@@ -37,4 +37,13 @@ namespace ManufacturingInventory.PartsManagment.Internal {
         public int PartId { get; set; }
         public bool IsNew { get; set; }
     }
+
+    public class CheckInTraveler {
+        
+    }
+
+    public class CheckOutTraveler {
+
+    }
+
 }

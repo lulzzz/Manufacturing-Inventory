@@ -21,7 +21,6 @@ using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTableViewModel : InventoryViewModelBase {
-
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("PartInstanceTableExportService"); }
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("PartInstanceTableDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("PartInstanceTableMessageBoxService"); }
@@ -99,47 +98,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         #endregion
 
-        private async Task ExportTableHandler(ExportFormat format) {
-            await Task.Run(() => {
-                this.DispatcherService.BeginInvoke(() => {
-                    var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
-                    using (FileStream file = File.Create(path)) {
-                        this.ExportService.Export(file, format);
-                    }
-                    using (var process = new Process()) {
-                        process.StartInfo.UseShellExecute = true;
-                        process.StartInfo.FileName = path;
-                        process.StartInfo.CreateNoWindow = true;
-                        process.Start();
-                    }
-                });
-            });
-        }
-
-        private async Task InitializeHandler() {
-            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            this.DispatcherService.BeginInvoke(() => {
-                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
-                this.ShowTableLoading = false;
-            });
-        }
-
-        private async Task EditInstanceHandler() {
-            if (this.SelectedPartInstance != null) {
-                await Task.Run(() => {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.CleanupRegions();
-                        NavigationParameters parameters = new NavigationParameters();
-                        parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-                        parameters.Add(ParameterKeys.IsEdit, true);
-                        parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
-                        parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                        this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
-                    });
-                });
-            }
-        }
+        #region RequestNavigationRegion
 
         private void ViewInstanceDetailsHandler() {
             if (this.SelectedPartInstance != null) {
@@ -197,6 +156,88 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
+        private async Task EditInstanceHandler() {
+            if (this.SelectedPartInstance != null) {
+                await Task.Run(() => {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.CleanupRegions();
+                        NavigationParameters parameters = new NavigationParameters();
+                        parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+                        parameters.Add(ParameterKeys.IsEdit, true);
+                        parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                        parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                        this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                    });
+                });
+            }
+        }
+
+        private async Task CheckInHandler() {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CleanupRegions();
+                    this._checkInInProgress = true;
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    parameters.Add(ParameterKeys.IsExisiting, false);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
+                });
+            });
+        }
+
+        private async Task CheckInExisitingHandler() {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.CleanupRegions();
+                    this._checkInInProgress = true;
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
+                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
+                    parameters.Add(ParameterKeys.IsExisiting, true);
+                    parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
+                });
+            });
+        }
+
+        #endregion
+
+        #region CallbackRegion
+
+        public void CleanupRegions() {
+            this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
+        }
+
+        public bool CanExecute() {
+            return !(this._editInProgess && this._checkInInProgress && this._outgoingInProgress);
+        }
+
+        public bool CanExecuteAddToExisting() {
+            return !(this._editInProgess && this._checkInInProgress  && this._outgoingInProgress) && (!this.SelectedPartInstance.IsReusable && !this.SelectedPartInstance.IsBubbler);
+        }
+
+        public bool CanExecuteOutgoing() {
+            return !(this._editInProgess && this._checkInInProgress);
+        }
+
+        private async Task ExportTableHandler(ExportFormat format) {
+            await Task.Run(() => {
+                this.DispatcherService.BeginInvoke(() => {
+                    var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
+                    using (FileStream file = File.Create(path)) {
+                        this.ExportService.Export(file, format);
+                    }
+                    using (var process = new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
+                });
+            });
+        }
+
         private async Task OutgoingCancelHandler() {
             await Task.Run(() => {
                 this._outgoingInProgress = false;
@@ -210,26 +251,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task OutGoingDoneHandler(int firstInstanceId) {
             this._outgoingInProgress = false;
             await this.ReloadHandler(new ReloadEventTraveler() { PartId=this.SelectedPartId,PartInstanceId= firstInstanceId});
-        }
-
-        private async Task ReloadNoTraveler() {
-            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-
-            await this._partInstanceView.Load();
-            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
-
-            this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = bubbler;
-                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
-                if (this.SelectedPartInstance != null) {
-                    this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);
-                    this.ViewInstanceDetailsHandler();
-                } else {
-                    this.CleanupRegions();
-                }
-                this.ShowTableLoading = false;
-            });
         }
 
         private async Task PriceEditDoneHandler() {
@@ -255,51 +276,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._editInProgess = false;
             await this.ReloadHandler(traveler);
         }
-
-        private async Task ReloadHandler(ReloadEventTraveler traveler) {
-            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-            await this._partInstanceView.Load();
-            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
-
-            this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = bubbler;
-                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
-                this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
-                this.ShowTableLoading = false;
-                this.ViewInstanceDetailsHandler();
-            });
-        }
         
-        private async Task CheckInHandler() {
-            await Task.Run(() => {
-                this.DispatcherService.BeginInvoke(() => {
-                    this.CleanupRegions();
-                    this._checkInInProgress = true;
-                    NavigationParameters parameters = new NavigationParameters();
-                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
-                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                    parameters.Add(ParameterKeys.IsExisiting, false);
-                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
-                });
-            });
-        }
-
-        private async Task CheckInExisitingHandler() {
-            await Task.Run(() => {
-                this.DispatcherService.BeginInvoke(() => {
-                    this.CleanupRegions();
-                    this._checkInInProgress = true;
-                    NavigationParameters parameters = new NavigationParameters();
-                    parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
-                    parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
-                    parameters.Add(ParameterKeys.IsExisiting,true);
-                    parameters.Add(ParameterKeys.InstanceId, this.SelectedPartInstance.Id);
-                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.CheckInView, parameters);
-                });
-            });
-        }
-
         private async Task CheckInDoneHandler(int instanceId) {
             this._checkInInProgress = false;
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
@@ -320,21 +297,58 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._checkInInProgress = false;
             await this.ReloadNoTraveler();
         }
-    
-        public void CleanupRegions() {
-            this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
-        }
-    
-        public bool CanExecute() {
-            return !(this._editInProgess && this._checkInInProgress && this._outgoingInProgress);
+
+        #endregion
+
+        #region LoadRegion
+
+        private async Task InitializeHandler() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
+            this.DispatcherService.BeginInvoke(() => {
+                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+                this.ShowTableLoading = false;
+            });
         }
 
-        public bool CanExecuteAddToExisting() {
-            return !this.IsBubbler;
+        private async Task ReloadHandler(ReloadEventTraveler traveler) {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            await this._partInstanceView.Load();
+            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
+            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.IsBubbler = bubbler;
+                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+                this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
+                this.ShowTableLoading = false;
+                this.ViewInstanceDetailsHandler();
+            });
         }
 
-        public bool CanExecuteOutgoing() {
-            return !(this._editInProgess && this._checkInInProgress);
+        private async Task ReloadNoTraveler() {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+
+            await this._partInstanceView.Load();
+            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
+            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.IsBubbler = bubbler;
+                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+                if (this.SelectedPartInstance != null) {
+                    this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);
+                    this.ViewInstanceDetailsHandler();
+                } else {
+                    this.CleanupRegions();
+                }
+                this.ShowTableLoading = false;
+            });
         }
+
+        #endregion
+
+
+
     }
 }

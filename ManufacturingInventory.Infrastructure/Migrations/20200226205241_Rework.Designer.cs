@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200212194259_PartInstance-CommentsDescription")]
-    partial class PartInstanceCommentsDescription
+    [Migration("20200226205241_Rework")]
+    partial class Rework
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -34,7 +34,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PartInstanceId")
+                    b.Property<int>("PartId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
@@ -42,9 +42,12 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int?>("StockId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("PartInstanceId");
+                    b.HasIndex("StockId");
 
                     b.ToTable("Alerts");
                 });
@@ -167,6 +170,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -263,6 +269,44 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Distributors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Boron Nitride Parts",
+                            Name = "LSP Industrial Ceramics Inc."
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Sapphire Parts",
+                            Name = "Rayotek"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "SiC & TaC Coated Graphite parts",
+                            Name = "Mersen"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Original Aixtron Parts",
+                            Name = "Aixtron"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "All Quartz Parts",
+                            Name = "Quality Quartz Engineering "
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "",
+                            Name = "Akzo Nobel"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.InstanceParameter", b =>
@@ -357,6 +401,14 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Manufacturers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Mersen deals with all SiC coated & TaC coated graphite parts.",
+                            Name = "Mersen"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Parameter", b =>
@@ -394,6 +446,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("DefaultToCostReported")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -411,17 +466,12 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<int?>("UsageId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("WarehouseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrganizationId");
-
-                    b.HasIndex("UsageId");
 
                     b.HasIndex("WarehouseId");
 
@@ -456,6 +506,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<bool>("IsBubbler")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsReusable")
+                        .HasColumnType("bit");
+
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
@@ -466,9 +519,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PartTypeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("PriceId")
@@ -491,11 +541,17 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<string>("SkuNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StockTypeId")
+                        .HasColumnType("int");
+
                     b.Property<double>("TotalCost")
                         .HasColumnType("float");
 
                     b.Property<double>("UnitCost")
                         .HasColumnType("float");
+
+                    b.Property<int?>("UsageId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -509,9 +565,11 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("PartId");
 
-                    b.HasIndex("PartTypeId");
-
                     b.HasIndex("PriceId");
+
+                    b.HasIndex("StockTypeId");
+
+                    b.HasIndex("UsageId");
 
                     b.ToTable("PartInstances");
                 });
@@ -886,6 +944,50 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
                     b.HasDiscriminator().HasValue("Condition");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "A new Part",
+                            IsDefault = true,
+                            Name = "New"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Part that has been used and returned to inventory",
+                            IsDefault = false,
+                            Name = "Used"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "A part returned to inventory and needs cleaning. i.e. Satellites",
+                            IsDefault = false,
+                            Name = "Need Cleaning"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "A part returned to inventory in need of repair/refurbish",
+                            IsDefault = false,
+                            Name = "Needs Repair"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "A part in inventory that was repaired/refurbished",
+                            IsDefault = false,
+                            Name = "Refurbished"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "A part's stock is depleted. No additional stock will be added or returned",
+                            IsDefault = false,
+                            Name = "Depleted"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Organization", b =>
@@ -893,13 +995,50 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
                     b.HasDiscriminator().HasValue("Organization");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 7,
+                            Description = "",
+                            IsDefault = false,
+                            Name = "Raw Materials"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "",
+                            IsDefault = false,
+                            Name = "Supplies"
+                        });
                 });
 
-            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartType", b =>
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.StockType", b =>
                 {
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
-                    b.HasDiscriminator().HasValue("PartType");
+                    b.Property<int>("MinQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SafeQuantity")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("StockType");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 14,
+                            Description = "Individual Stock",
+                            IsDefault = true,
+                            Name = "Individual",
+                            MinQuantity = 0,
+                            Quantity = 0,
+                            SafeQuantity = 0
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Usage", b =>
@@ -907,6 +1046,43 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
                     b.HasDiscriminator().HasValue("Usage");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 9,
+                            Description = "Used on all Epi Systems",
+                            IsDefault = false,
+                            Name = "All Systems"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "General Growth Usage",
+                            IsDefault = true,
+                            Name = "Growth"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "Used on A Systems",
+                            IsDefault = false,
+                            Name = "A Systems"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Description = "Used on B Systems",
+                            IsDefault = false,
+                            Name = "B Systems"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Description = "Used on C Systems",
+                            IsDefault = false,
+                            Name = "C Systems"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Consumer", b =>
@@ -914,6 +1090,164 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Location");
 
                     b.HasDiscriminator().HasValue("Consumer");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 6,
+                            Description = "Reactor B01",
+                            Name = "System B01"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Description = "Reactor B02",
+                            Name = "System B02"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "Reactor B03",
+                            Name = "System B03"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Description = "Reactor B04",
+                            Name = "System B04"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "Reactor B05",
+                            Name = "System B05"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "Reactor B06",
+                            Name = "System B06"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Description = "Reactor B07",
+                            Name = "System B07"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Description = "Reactor A01",
+                            Name = "System A01"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Description = "Reactor A02",
+                            Name = "System A02"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Description = "Reactor A03",
+                            Name = "System A03"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Description = "Reactor A04",
+                            Name = "System A04"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Description = "Reactor A05",
+                            Name = "System A05"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Description = "Reactor A06",
+                            Name = "System A06"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Description = "Reactor A07",
+                            Name = "System A07"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Description = "Reactor C01",
+                            Name = "System C01"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Description = "Reactor C02",
+                            Name = "System C02"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Description = "Reactor C03",
+                            Name = "System C03"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Description = "Reactor C04",
+                            Name = "System C04"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Description = "Reactor C05",
+                            Name = "System C05"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Description = "Reactor C06",
+                            Name = "System C06"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Description = "Reactor C07",
+                            Name = "System C07"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Description = "Reactor C08",
+                            Name = "System C08"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Description = "Reactor C09",
+                            Name = "System C09"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Description = "Reactor C10",
+                            Name = "System C10"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Description = "Reactor C11",
+                            Name = "System C11"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Description = "Generic Consumer for cost reporting",
+                            Name = "Epi Process"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Warehouse", b =>
@@ -921,15 +1255,45 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Location");
 
                     b.HasDiscriminator().HasValue("Warehouse");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "",
+                            Name = "Epi System Parts"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "",
+                            Name = "Gas Bay"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "",
+                            Name = "Epi Chase"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "",
+                            Name = "Process Lab"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "",
+                            Name = "Back Warehouse"
+                        });
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Alert", b =>
                 {
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "PartInstance")
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "Stock")
                         .WithMany()
-                        .HasForeignKey("PartInstanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StockId");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Attachment", b =>
@@ -1004,10 +1368,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Usage", "Usage")
-                        .WithMany("Parts")
-                        .HasForeignKey("UsageId");
-
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Warehouse", "Warehouse")
                         .WithMany("StoredParts")
                         .HasForeignKey("WarehouseId")
@@ -1037,14 +1397,20 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.PartType", "PartType")
-                        .WithMany("PartInstances")
-                        .HasForeignKey("PartTypeId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Price", "Price")
                         .WithMany("PartInstances")
                         .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "StockType")
+                        .WithMany("PartInstances")
+                        .HasForeignKey("StockTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Usage", "Usage")
+                        .WithMany("PartInstances")
+                        .HasForeignKey("UsageId")
                         .OnDelete(DeleteBehavior.NoAction);
                 });
 

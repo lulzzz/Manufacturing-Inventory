@@ -212,12 +212,12 @@ namespace ManufacturingInventory.Application.UseCases {
             return (await this._locationProvider.GetEntityListAsync()).OfType<Warehouse>();
         }
 
-        public async Task<bool> DefaultCostReported(int partId) {
+        public async Task<Part> GetPart(int partId) {
             var part = await this._partRepository.GetEntityAsync(e => e.Id == partId);
             if (part != null) {
-                return part.DefaultToCostReported;
+                return part;
             } else {
-                return false;
+                return null;
             }
         }
 

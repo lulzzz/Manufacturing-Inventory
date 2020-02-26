@@ -75,6 +75,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private string _comments;
         private string _description;
         private int _quantity;
+        private bool _canEditStock;
 
 
         public AsyncCommand InitializeCommand { get; private set; }
@@ -290,7 +291,14 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedUsage, value);
         }
 
+        public bool CanEditStock {
+            get => this._canEditStock;
+            set => SetProperty(ref this._canEditStock, value);
+        }
+
         #endregion
+
+
 
         #region ButtonHandlers
 
@@ -425,7 +433,20 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public bool CanModifyPrice() {
-            return !this._priceEditInProgress && !this.CanEdit;
+            return !this._priceEditInProgress && !this.CanEdit  && this.HasPrice;
+        }
+
+        private async Task StockTypeSelectionChangedHandler() {
+            if (this.SelectedStockType != null) {
+                await Task.Run(() => {
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.CanEditStock = false;
+                        this.SelectedPartInstance.MinQuantity = this.SelectedStockType.MinQuantity;
+                        this.SelectedPartInstance.SafeQuantity = this.SelectedStockType.SafeQuantity;
+                        RaisePropertyChanged("SelectedPartInstance");
+                    });
+                });
+            }
         }
 
         #endregion
@@ -460,6 +481,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.Comments = this.SelectedPartInstance.Comments;
                     this.Description = this.SelectedPartInstance.Description;
                     this.Quantity = this.SelectedPartInstance.Quantity;
+
                     if (this.IsBubbler) {
                         this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
                         this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
@@ -480,22 +502,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     }
 
                     this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
+
                     if (this.SelectedPartInstance.Condition != null) {
                         this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
                     }
 
-                    if (this.SelectedPartInstance.CurrentLocation != null) {
-                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                    if (this.SelectedPartInstance.Usage != null) {
+                        this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);
                     }
 
-                    if (this.SelectedPartInstance.StockType != null) {
-                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
-                    }
-
-                    if (this.SelectedPartInstance.StockType != null) {
-                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
-                    }
-
+                    this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
+                    this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && !this.CanEdit;
                 }
             });
         }
@@ -582,13 +600,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
                         }
 
-                        if (this.SelectedPartInstance.CurrentLocation != null) {
-                            this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                        }
 
-                        if (this.SelectedPartInstance.StockType != null) {
-                            this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
-                        }
+                        this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
+                        this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && !this.CanEdit;
 
                         if (this.SelectedPartInstance.Usage != null) {
                             this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);

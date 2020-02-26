@@ -20,5 +20,6 @@ namespace ManufacturingInventory.Common.Application {
         public static readonly string DefaultLotNumber = "Enter Lot Number Here";
         public static readonly string DefaultSupplierPo = "Enter Supplier Po Number Here";
         public static readonly string DefaultRankName = "Enter Rank/Bin Here";
+        public static readonly int DefaultStockId = 14;
     }
 }
