@@ -49,8 +49,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 var container = containerRegistry.GetContainer();
                 container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
-                //containerRegistry.RegisterSingleton<ManufacturingContext>();
-                //containerRegistry.RegisterSingleton<IUnitOfWork,UnitOfWork>();
                 container.Register<IUnitOfWork,UnitOfWork>(setup:Setup.With(allowDisposableTransient: true));
                 container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
 
@@ -94,8 +92,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
             //ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
-            GridControl.AllowInfiniteGridSize = true;
             //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
+            GridControl.AllowInfiniteGridSize = true;
+
 
             using var context= new ManufacturingContext();
 

@@ -142,7 +142,7 @@
                             <dxlc:LayoutItem Label="Unit Cost"
                                              Style="{StaticResource LayoutItemStyle}">
                                 <dxe:SpinEdit Increment="1"
-                                              IsReadOnly="{Binding CanEdit, Mode=TwoWay, Converter={dxmvvm:BooleanNegationConverter}}"
+                                              IsReadOnly="True"
                                               Mask="c3"
                                               MaskType="Numeric"
                                               MinValue="0"
@@ -163,6 +163,7 @@
                                          Label="Description"
                                          Style="{StaticResource LayoutItemStyle}">
                             <dxe:TextEdit EditValue="{Binding Description}"
+                                          IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"
                                           Style="{StaticResource TextEditComments}" />
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem HorizontalAlignment="Stretch"
@@ -170,7 +171,31 @@
                                          Label="Comments"
                                          Style="{StaticResource LayoutItemStyle}">
                             <dxe:TextEdit EditValue="{Binding Comments}"
+                                          IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"
                                           Style="{StaticResource TextEditComments}" />
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                    <dxlc:LayoutGroup Orientation="Horizontal">
+                        <dxlc:LayoutItem Label="Cost Reported?"
+                                         Style="{StaticResource LayoutItemStyle}">
+                            <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              CheckedStateContent="YES"
+                                              ContentPlacement="Both"
+                                              IsChecked="{Binding CostReported}"
+                                              IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"
+                                              UncheckedStateContent="NO" />
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Label="Reusable?"
+                                         Style="{StaticResource LayoutItemStyle}"
+                                         Visibility="{Binding IsBubbler, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}">
+                            <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              CheckedStateContent="YES"
+                                              ContentPlacement="Both"
+                                              IsChecked="{Binding IsReusable}"
+                                              IsReadOnly="True"
+                                              UncheckedStateContent="NO" />
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
@@ -205,17 +230,18 @@
                                 <dxlc:LayoutItem Label="Quantity"
                                                  Style="{StaticResource LayoutItemStyle}">
                                     <dxe:SpinEdit Increment="1"
-                                                  IsReadOnly="{Binding IsBubbler}"
+                                                  IsReadOnly="True"
                                                   Mask="d"
                                                   MaskType="Numeric"
                                                   MinValue="0"
-                                                  Text="{Binding SelectedPartInstance.Quantity}" />
+                                                  Text="{Binding SelectedPartInstance.Quantity}"
+                                                  ToolTip="To Edit Quantity You Must Check In or Check Out" />
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutItem Label="Min Quantity"
                                                  LabelHorizontalAlignment="Center"
                                                  LabelPosition="Top">
                                     <dxe:SpinEdit Increment="1"
-                                                  IsReadOnly="{Binding IsBubbler}"
+                                                  IsReadOnly="{Binding CanEditStock, Converter={dxmvvm:BooleanNegationConverter}}"
                                                   Mask="d"
                                                   MaskType="Numeric"
                                                   MinValue="0"
@@ -225,7 +251,7 @@
                                                  LabelHorizontalAlignment="Center"
                                                  LabelPosition="Top">
                                     <dxe:SpinEdit Increment="1"
-                                                  IsReadOnly="{Binding IsBubbler}"
+                                                  IsReadOnly="{Binding CanEditStock, Converter={dxmvvm:BooleanNegationConverter}}"
                                                   Mask="d"
                                                   MaskType="Numeric"
                                                   MinValue="0"
@@ -325,7 +351,7 @@
                                             <dxmvvm:EventToCommand Command="{Binding ElementName=tTableView, Path=TableViewCommands.BestFitColumns}"
                                                                    EventName="Loaded" />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <dxg:TableView.RowCellMenuCustomizations>
+                                        <!--<dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ViewDetailsCommand}"
                                                                Content="View Details"
                                                                Glyph="{dx:DXImage Image=Right_16x16.png}"
@@ -334,7 +360,7 @@
                                                                Content="Return Item"
                                                                Glyph="{dx:DXImage Image=Undo_16x16.png}"
                                                                IsEnabled="True" />
-                                        </dxg:TableView.RowCellMenuCustomizations>
+                                        </dxg:TableView.RowCellMenuCustomizations>-->
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                                 <dxg:GridControl.Bands>
@@ -408,10 +434,6 @@
                                   Header="Price"
                                   IsSelected="True"
                                   TabIndex="2">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command=""
-                                                   Event="Loaded" />
-                        </dxmvvm:Interaction.Behaviors>
                         <Grid Margin="5,5,5,5">
                             <dxlc:LayoutGroup Orientation="Vertical">
                                 <dxlc:LayoutGroup>
@@ -422,19 +444,18 @@
                                                          Glyph="{dx:DXImage Image=EditDataSource_16x16.png}" />
                                         <dx:SimpleButton Command="{Binding NewPriceCommand}"
                                                          Content="{Binding AddPriceButtonText}"
-                                                         Glyph="{dx:DXImage Image=Add_32x32.png}"
-                                                         IsEnabled="{Binding IsEdit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                                         Glyph="{dx:DXImage Image=Add_32x32.png}" />
                                         <dx:SimpleButton Command="{Binding SelectPriceCommand}"
                                                          Content="Select Existing price"
-                                                         Glyph="{dx:DXImage Image=SwitchRowColumn_32x32.png}"
-                                                         IsEnabled="{Binding IsEdit, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                                         Glyph="{dx:DXImage Image=SwitchRowColumn_32x32.png}" />
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
-                                <ContentControl prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstancePriceEditDetailsRegion}" />
+                                <ContentControl prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
+                                                prism:RegionManager.RegionName="{x:Static localcore:LocalRegions.InstancePriceEditDetailsRegion}" />
                             </dxlc:LayoutGroup>
                         </Grid>
                     </dx:DXTabItem>
-                    <dx:DXTabItem Glyph="{dx:DXImage Image=InsertTable_16x16.png}"
+                    <!--<dx:DXTabItem Glyph="{dx:DXImage Image=InsertTable_16x16.png}"
                                   Header="Price Log"
                                   TabIndex="3">
                         <dxb:BarManager>
@@ -463,7 +484,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                             </dxg:GridControl>
                         </dxb:BarManager>
-                    </dx:DXTabItem>
+                    </dx:DXTabItem>-->
                 </dx:DXTabControl>
                 <dxlc:LayoutItem VerticalAlignment="Bottom"
                                  Label="Save or Cancel Changes"

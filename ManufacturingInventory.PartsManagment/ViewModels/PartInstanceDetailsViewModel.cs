@@ -42,6 +42,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isBubbler = false;
         private bool _isInitialized = false;
         private bool _canEdit = false;
+        private bool _canChangeQuantity;
+        private bool _isReusable;
+        private bool _canEditStock;
+        private bool _costReported;
 
         private bool _priceEditInProgress = false;
         private int _partId;
@@ -75,7 +79,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private string _comments;
         private string _description;
         private int _quantity;
-        private bool _canEditStock;
 
 
         public AsyncCommand InitializeCommand { get; private set; }
@@ -97,7 +100,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.InitializedHandler);
             this.EditPriceCommand = new AsyncCommand(this.EditPriceHandler, this.CanModifyPrice);
-            this.NewPriceCommand = new AsyncCommand(this.NewPriceHandler,this.CanModifyPrice);
+            this.NewPriceCommand = new AsyncCommand(this.NewPriceHandler,this.CanAddPrice);
             this.SelectPriceCommand = new AsyncCommand(this.SelectPriceHandler, this.CanModifyPrice);
             this.SaveCommand = new AsyncCommand(this.SaveHandler,this.CanSave);
             this.CancelCommand = new AsyncCommand(this.DiscardHandler);
@@ -106,8 +109,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ClosingCommand = new AsyncCommand(this.ClosingHandler);
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.PriceEditDoneHandler());
             this._eventAggregator.GetEvent<PriceEditCancelEvent>().Subscribe(async () => await this.PriceEditCancelHandler());
-            //this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(this.PriceEditDoneHandler);
-            //this._eventAggregator.GetEvent<PriceEditCancelEvent>().Subscribe(this.PriceEditCancelHandler);
+
         }
 
         #region BindingVariables
@@ -146,7 +148,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public StockType SelectedStockType {
             get => this._selectedPartType;
-            set => SetProperty(ref this._selectedPartType, value);
+            set {
+                this.CanEditStock = !value.IsDefault;
+                if (!value.IsDefault) {
+                    this.SelectedPartInstance.MinQuantity = this.SelectedStockType.MinQuantity;
+                    this.SelectedPartInstance.SafeQuantity = this.SelectedStockType.SafeQuantity;
+                    RaisePropertyChanged("SelectedPartInstance");
+                }
+                SetProperty(ref this._selectedPartType, value);
+            }
         }
 
         public Condition SelectedCondition {
@@ -157,11 +167,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public bool IsBubbler {
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
-        }
-
-        public bool IsEdit {
-            get => this._isEdit;
-            set => SetProperty(ref this._isEdit, value);
         }
 
         public bool CanEdit {
@@ -223,10 +228,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public int Quantity {
             get => this._quantity;
             set {
-                if (!this.IsBubbler && this.SelectedPartInstance != null) {
-                    this.SelectedPartInstance.EditQuantity(value);
-                    this.TotalCost = this.SelectedPartInstance.TotalCost;
-                }
+                //if (!this.IsBubbler && this.SelectedPartInstance != null) {
+                //    this.SelectedPartInstance.EditQuantity(value);
+                //    this.TotalCost = this.SelectedPartInstance.TotalCost;
+                //}
                 SetProperty(ref this._quantity, value);
             }
         }
@@ -296,9 +301,20 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._canEditStock, value);
         }
 
+        public bool CostReported {
+            get => this._costReported;
+            set {
+                this.SelectedPartInstance.CostReported = value;
+                SetProperty(ref this._costReported, value);
+            }
+        }
+
+        public bool IsReusable {
+            get => this._isReusable;
+            set => SetProperty(ref this._isReusable, value);
+        }
+
         #endregion
-
-
 
         #region ButtonHandlers
 
@@ -359,7 +375,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     PartInstanceId = this.SelectedPartInstance.Id
                 };
                 this._eventAggregator.GetEvent<PartInstanceEditDoneEvent>().Publish(traveler);
-                this.CanEdit = false;
             } else {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage("Error Save Part Instance", "Error", MessageButton.OK, MessageIcon.Error);
@@ -388,7 +403,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     var response=this.MessageBoxService.ShowMessage(builder.ToString(), "Warning", MessageButton.YesNo, MessageIcon.Warning);
                     if (response ==MessageResult.Yes) {
                         this._eventAggregator.GetEvent<PartInstanceEditCancelEvent>().Publish(traveler);
-                        this.IsEdit = false;
+                        this.CanEdit = false;
                     }
                 });
             });
@@ -436,17 +451,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             return !this._priceEditInProgress && !this.CanEdit  && this.HasPrice;
         }
 
-        private async Task StockTypeSelectionChangedHandler() {
-            if (this.SelectedStockType != null) {
-                await Task.Run(() => {
-                    this.DispatcherService.BeginInvoke(() => {
-                        this.CanEditStock = false;
-                        this.SelectedPartInstance.MinQuantity = this.SelectedStockType.MinQuantity;
-                        this.SelectedPartInstance.SafeQuantity = this.SelectedStockType.SafeQuantity;
-                        RaisePropertyChanged("SelectedPartInstance");
-                    });
-                });
-            }
+        public bool CanAddPrice() {
+            return !this._priceEditInProgress && !this.CanEdit;
         }
 
         #endregion
@@ -513,7 +519,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
                     this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
                     this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
-                    this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && !this.CanEdit;
+                    this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && this.CanEdit;
+                    this.IsReusable = this.SelectedPartInstance.IsReusable || this.IsBubbler;
                 }
             });
         }
@@ -587,7 +594,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             this.HasPrice = true;
                             this.AddPriceButtonText = "Add and Replace Price";
                             this.NavigatePriceEdit(false, false);
-
                         } else {
                             this.UnitCost = 0;
                             this.TotalCost = 0;
@@ -600,10 +606,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                             this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
                         }
 
-
                         this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
                         this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
-                        this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && !this.CanEdit;
+                        this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && this.CanEdit;
+                        this.IsReusable = (this.SelectedPartInstance.IsReusable || this.IsBubbler);
+                        this.CostReported = this.SelectedPartInstance.CostReported;
 
                         if (this.SelectedPartInstance.Usage != null) {
                             this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);
@@ -635,8 +642,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.IsBubbler = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsBubbler]);
             this._partId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
             this._instanceId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.InstanceId]);
-            this.IsEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
-            this.CanEdit = this.IsEdit;
+            this.CanEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
             this._eventAggregator.GetEvent<RenameHeaderEvent>().Publish("Details");
         }
 

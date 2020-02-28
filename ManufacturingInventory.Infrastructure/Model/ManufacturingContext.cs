@@ -556,6 +556,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             builder.Entity<Usage>().HasData(new Usage { Id = 12, Name = "B Systems", Description = "Used on B Systems", IsDefault = false });
             builder.Entity<Usage>().HasData(new Usage { Id = 13, Name = "C Systems", Description = "Used on C Systems", IsDefault = false });
             builder.Entity<StockType>().HasData(new StockType { Id = 14, Name = "Individual", Description = "Individual Stock", MinQuantity = 0, SafeQuantity = 0, IsDefault = true });
+            //builder.Entity<Usage>().HasData(new Usage { Id = 15, Name = "A & B Systems", Description = "Parts used on A and B systems", IsDefault = false });
 
         }
 
@@ -601,6 +602,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
         private void SeedManufacturers(ModelBuilder builder) {
             builder.Entity<Manufacturer>().HasData(new Manufacturer { Id = 1, Name = "Mersen", Description = "Mersen deals with all SiC coated & TaC coated graphite parts." });
         }
+
 
     }
 }

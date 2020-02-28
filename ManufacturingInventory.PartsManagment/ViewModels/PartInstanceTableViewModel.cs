@@ -65,6 +65,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator.GetEvent<CheckInDoneEvent>().Subscribe(async (instanceId) => await this.CheckInDoneHandler(instanceId));
             this._eventAggregator.GetEvent<CheckInCancelEvent>().Subscribe(async () => await this.CheckInCanceledHandler());
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.PriceEditDoneHandler());
+            this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async (instanceId) => { await this.ReturnDoneHandler(instanceId); });
         }
 
         #region BindingVariables
@@ -214,7 +215,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public bool CanExecuteAddToExisting() {
-            return !(this._editInProgess && this._checkInInProgress  && this._outgoingInProgress) && (!this.SelectedPartInstance.IsReusable && !this.SelectedPartInstance.IsBubbler);
+            return !(this._editInProgess && this._checkInInProgress && this._outgoingInProgress) && (!this.SelectedPartInstance.IsReusable && !this.SelectedPartInstance.IsBubbler);
         }
 
         public bool CanExecuteOutgoing() {
@@ -296,6 +297,21 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task CheckInCanceledHandler() {
             this._checkInInProgress = false;
             await this.ReloadNoTraveler();
+        }
+
+        private async Task ReturnDoneHandler(int instanceId) {
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            await this._partInstanceView.Load();
+            var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
+            var isbubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.IsBubbler = isbubbler;
+                this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
+                this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == instanceId);
+                this.ShowTableLoading = false;
+                this.ViewInstanceDetailsHandler();
+            });
         }
 
         #endregion

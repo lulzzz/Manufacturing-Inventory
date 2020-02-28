@@ -71,8 +71,9 @@
                 <dxg:GridControl.View>
                     <dxg:TableView x:Name="_instanceTableView"
                                    AllowBestFit="True"
-                                   AutoWidth="False"
-                                   BestFitMode="Smart"
+                                   AutoWidth="True"
+                                   BestFitArea="All"
+                                   BestFitMode="AllRows"
                                    HorizontalScrollbarVisibility="Visible"
                                    SearchColumns="Name"
                                    SearchPanelNullText="Search By Name"
@@ -97,6 +98,10 @@
                                                Content="Check In Stock"
                                                Glyph="{dx:DXImage Image=NewTask_16x16.png}" />
                             <dxb:BarItemSeparator />
+                            <dxb:BarButtonItem Content="Return Item"
+                                               Glyph="{dx:DXImage Image=Undo_16x16.png}"
+                                               IsEnabled="False" />
+                            <dxb:BarItemSeparator />
                         </dxg:TableView.RowCellMenuCustomizations>
                     </dxg:TableView>
                 </dxg:GridControl.View>
@@ -110,7 +115,6 @@
                                         FieldName="Name" />
                         <dxg:GridColumn AllowGrouping="True"
                                         FieldName="StockType.Name"
-                                        GroupIndex="0"
                                         Header="Stock Type" />
                         <dxg:GridColumn FieldName="SerialNumber" />
                         <dxg:GridColumn FieldName="BatchNumber" />
@@ -119,6 +123,7 @@
                                         Header="Condition" />
                         <dxg:GridColumn AllowGrouping="True"
                                         FieldName="Usage.Name"
+                                        GroupIndex="0"
                                         Header="Usage" />
                         <dxg:GridColumn FieldName="Quantity"
                                         Header="Quantity"

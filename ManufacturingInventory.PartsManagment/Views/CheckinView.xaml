@@ -39,7 +39,7 @@
             </dx:DialogService.ViewTemplate>
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:ThemedWindow">
-                    <Setter Property="Width" Value="600" />
+                    <Setter Property="Width" Value="900" />
                     <Setter Property="Height" Value="400" />
                 </Style>
             </dx:DialogService.DialogStyle>
@@ -165,15 +165,16 @@
                     <dxlc:LayoutItem Label="Description"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:TextEdit Height="50"
-                                      IsReadOnly="{Binding IsExisting, Converter={dxmvvm:BooleanNegationConverter}}"
+                                      IsReadOnly="{Binding IsExisting}"
                                       Style="{StaticResource TextEditComments}"
-                                      Text="{Binding Description}" />
+                                      Text="{Binding SelectedPartInstance.Description}" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Comments"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:TextEdit Height="50"
+                                      IsReadOnly="{Binding IsExisting}"
                                       Style="{StaticResource TextEditComments}"
-                                      Text="{Binding Comments}" />
+                                      Text="{Binding SelectedPartInstance.Comments}" />
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Orientation="Horizontal">
@@ -195,14 +196,7 @@
                                           CheckedStateContent="YES"
                                           ContentPlacement="Both"
                                           IsChecked="{Binding IsReusable}"
-                                          UncheckedStateContent="NO">
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding ReusableCheckedCommand}"
-                                                       EventName="Checked" />
-                                <dxmvvm:EventToCommand Command="{Binding ReusableUnCheckedCommand}"
-                                                       EventName="Unchecked" />
-                            </dxmvvm:Interaction.Behaviors>
-                        </dxe:ToggleSwitch>
+                                          UncheckedStateContent="NO" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutGroup>
                         <dxlc:LayoutItem Label="Transaction TimeStamp"
@@ -228,8 +222,7 @@
                                     </DataTemplate>
                                 </dxlc:LayoutGroup.HeaderTemplate>
                                 <dxlc:LayoutItem Label="Stock Type(Optional)"
-                                                 Style="{StaticResource LayoutItemStyle}"
-                                                 Visibility="{Binding IsBubbler, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}">
+                                                 Style="{StaticResource LayoutItemStyle}">
                                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsTextEditable="False"
                                                       ItemsSource="{Binding StockTypes}"
@@ -453,7 +446,6 @@
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
-
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutGroup>
                     </dx:DXTabItem>

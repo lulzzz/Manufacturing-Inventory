@@ -45,6 +45,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _isReusable;
         private bool _notNoPriceOption;
         private bool _canEditStock;
+        private bool _costReported;
 
         private PartInstance _selectedPartInstance=new PartInstance();
         private Price _price;
@@ -54,7 +55,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ObservableCollection<Usage> _usageList;
         private ObservableCollection<Distributor> _distributors;
         private IEnumerable<Price> _prices;
-        private bool _costReported;
+
         private Condition _selectedCondition;
         private StockType _selectedPartType;
         private Warehouse _selectedWarehouse;
@@ -71,8 +72,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private DateTime _transactionTimeStamp;
         private PriceOption _selectedPriceOption=PriceOption.NoPrice;
         private bool returningFromOption = false;
-
-
 
         public AsyncCommand CheckInCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
@@ -93,7 +92,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.StockTypeSelectionChanged = new AsyncCommand(this.StockTypeSelectionChangedHandler);
             //this.ReusableCheckedCommand = new AsyncCommand(this.ReusableUnCheckedHandler);
             //this.ReusableUnCheckedCommand = new AsyncCommand(this.ReusableUnCheckedHandler);
-
         }
 
         #region VariableBindings
@@ -703,7 +701,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.CanEditStock = this.SelectedPartInstance.StockTypeId==Constants.DefaultStockId;
                     this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == partInstance.StockTypeId);
                     this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == partInstance.LocationId);
-
+                    this.IsReusable = this.SelectedPartInstance.IsReusable;
                     if (this.SelectedPartInstance.ConditionId.HasValue) {
                         this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == partInstance.ConditionId);
                     }
@@ -768,7 +766,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             this._partId =Convert.ToInt32(navigationContext.Parameters[ParameterKeys.PartId]);
             this.IsBubbler = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsBubbler]);
-            this._isExisting = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsExisiting]);
+            this.IsExisting = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsExisiting]);
             if (this._isExisting) {
                 this._instanceId=Convert.ToInt32(navigationContext.Parameters[ParameterKeys.InstanceId]);
             }

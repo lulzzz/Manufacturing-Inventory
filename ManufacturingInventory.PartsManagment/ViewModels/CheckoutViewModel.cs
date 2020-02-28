@@ -207,7 +207,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
                     DispatcherService.BeginInvoke(() => {
                         this.Transactions.Add(newTransaction);
-                        this.MessageBoxService.ShowMessage("Item added to Output: "+newTransaction.Weight, "Success");
+                        //this.MessageBoxService.ShowMessage("Item added to Output: "+newTransaction.Weight, "Success");
                         this.SelectedPartInstance = null;
                         this.SelectedConsumer = null;
                         this.Quantity = 0;
