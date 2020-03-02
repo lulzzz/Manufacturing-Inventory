@@ -45,7 +45,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-NGE4P2E;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
@@ -483,11 +484,69 @@ namespace ManufacturingInventory.Infrastructure.Model {
         }
 
         private void Seed(ModelBuilder builder) {
+            //this.SeedParts(builder);
             this.SeedPermissions(builder);
             this.SeedDistributors(builder);
             this.SeedCategories(builder);
             this.SeedLocations(builder);
             this.SeedManufacturers(builder);
+        }
+
+        private void SeedParts(ModelBuilder builder) {
+            builder.Entity<Part>()
+                .HasData(new Part() {
+                    Id = 1,
+                    Name = "Epi Parts-Consumable",
+                    Description = "",
+                    DefaultToCostReported = true,
+                    HoldsBubblers = false
+                });
+
+            builder.Entity<Part>()
+                .HasData(new Part() {
+                    Id=2,
+                    Name = "Epi Parts-Reusable",
+                    Description = "",
+                    DefaultToCostReported = true,
+                    HoldsBubblers = false
+                });
+
+
+            builder.Entity<Part>()
+                .HasData(new Part() {
+                    Id = 3,
+                    Name ="Suceptors",
+                    Description="",
+                    DefaultToCostReported=true,
+                    HoldsBubblers=false
+                });
+
+            builder.Entity<Part>()
+                .HasData(new Part() {
+                    Id = 4,
+                    Name = "Sapphire",
+                    Description = "",
+                    DefaultToCostReported = true,
+                    HoldsBubblers = false
+                });
+
+            builder.Entity<Part>()
+                .HasData(new Part() {
+                    Id = 5,
+                    Name = "Chemicals",
+                    Description = "",
+                    DefaultToCostReported = true,
+                    HoldsBubblers = false
+                });
+
+            builder.Entity<Part>()
+                .HasData(new Part() {
+                    Id = 6,
+                    Name = "Equipment Materials",
+                    Description = "",
+                    DefaultToCostReported = true,
+                    HoldsBubblers = false
+                });
         }
 
         private void SeedPermissions(ModelBuilder builder) {
@@ -537,6 +596,12 @@ namespace ManufacturingInventory.Infrastructure.Model {
             builder.Entity<Distributor>().HasData(new Distributor { Id = 4, Name = "Aixtron", Description = "Original Aixtron Parts" });
             builder.Entity<Distributor>().HasData(new Distributor { Id = 5, Name = "Quality Quartz Engineering ", Description = "All Quartz Parts" });
             builder.Entity<Distributor>().HasData(new Distributor { Id = 6, Name = "Akzo Nobel", Description = "" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 7, Name = "K.J Lesker", Description = "" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 8, Name = "Fisher", Description = "" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 9, Name = "SVC", Description = "" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 10, Name = "lljin", Description = "" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 11, Name = "Nouryon", Description = "" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 12, Name = "SAFC", Description = "" });
         }
 
         private void SeedCategories(ModelBuilder builder) {
@@ -546,6 +611,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             builder.Entity<Condition>().HasData(new Condition { Id = 4, Name = "Needs Repair", Description = "A part returned to inventory in need of repair/refurbish" , IsDefault = false });
             builder.Entity<Condition>().HasData(new Condition { Id = 5, Name = "Refurbished", Description = "A part in inventory that was repaired/refurbished", IsDefault = false });
             builder.Entity<Condition>().HasData(new Condition { Id = 6, Name = "Depleted", Description = "A part's stock is depleted. No additional stock will be added or returned",IsDefault = false });
+
 
             builder.Entity<Organization>().HasData(new Organization { Id = 7, Name = "Raw Materials", Description = "", IsDefault = false });
             builder.Entity<Organization>().HasData(new Organization { Id = 8, Name = "Supplies", Description = "", IsDefault = false });

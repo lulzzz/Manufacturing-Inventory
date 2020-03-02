@@ -130,7 +130,8 @@
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Select Condition(Optional)"
-                                     Style="{StaticResource LayoutItemStyle}">
+                                     Style="{StaticResource LayoutItemStyle}"
+                                     Visibility="{Binding IsReusable, Converter={dxmvvm:BooleanToVisibilityConverter}}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
                                           IsTextEditable="False"

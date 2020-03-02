@@ -111,17 +111,4 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             }
         }
     }
-
-    //public partial class Designation : Category {
-    //    public virtual ICollection<PartInstance> PartInstances { get; set; }
-
-    //    public Designation() {
-    //        this.PartInstances = new HashSet<PartInstance>();
-    //    }
-
-    //    public Designation(string name,string description) {
-    //        this.Name = name;
-    //        this.Description = description;
-    //    }
-    //}
 }

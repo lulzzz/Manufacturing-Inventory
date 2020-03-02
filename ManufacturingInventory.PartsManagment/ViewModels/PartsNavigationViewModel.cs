@@ -37,6 +37,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand NewPartCommand { get; private set; }
         public PrismCommands.DelegateCommand ViewPartDetailsCommand { get; private set; }
         public PrismCommands.DelegateCommand EditPartCommand { get; private set; }
+        public PrismCommands.DelegateCommand DoubleClickViewCommand { get; private set; }
 
         public PartsNavigationViewModel(IPartNavigationEditUseCase partEdit, IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._partEdit = partEdit;
@@ -47,6 +48,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.ViewPartDetailsCommand = new PrismCommands.DelegateCommand(this.ViewPartDetailsHandler, this.CanNew);
             this.EditPartCommand = new PrismCommands.DelegateCommand(this.EditPartDetailsHandler, this.CanNew);
             this.NewPartCommand = new AsyncCommand(this.NewPartHandler,this.CanNew);
+            this.DoubleClickViewCommand = new PrismCommands.DelegateCommand(this.ViewPartDetailsHandler,this.CanNew);
 
             this._eventAggregator.GetEvent<PartEditDoneEvent>().Subscribe(async (partId)=>await this.ReloadEditDoneHandler(partId));
             this._eventAggregator.GetEvent<PartEditCancelEvent>().Subscribe(async () => await this.ReloadEditCancelHandle());
@@ -186,7 +188,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._regionManager.Regions.Remove(LocalRegions.PartInstanceTableRegion);
             this._regionManager.Regions.Remove(LocalRegions.TransactionTableRegion);
             this._regionManager.Regions.Remove(LocalRegions.PartSummaryRegion);
-            this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion); 
+            this._regionManager.Regions.Remove(LocalRegions.InstancePriceEditDetailsRegion);
+            this._regionManager.Regions.Remove(LocalRegions.InstanceAttachmentRegion);
         }
     }
 }

@@ -45,6 +45,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand EditInstanceCommand { get; private set; }
         public AsyncCommand CheckInCommand { get; private set; }
         public AsyncCommand CheckInExisitingCommand { get; private set; }
+        public AsyncCommand ReturnItemCommand { get; private set; }
+        public AsyncCommand DoubleClickViewCommand { get; private set; }
 
         public PartInstanceTableViewModel(IPartInstanceTableViewUseCase partInstanceView, IEventAggregator eventAggregator,IRegionManager regionManager) {
             this._partInstanceView = partInstanceView;
@@ -57,6 +59,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.CheckInCommand = new AsyncCommand(this.CheckInHandler);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this.CheckInExisitingCommand = new AsyncCommand(this.CheckInExisitingHandler,this.CanExecuteAddToExisting);
+            this.DoubleClickViewCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync);
+            this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler, this.CanReturnItem);
 
             this._eventAggregator.GetEvent<PartInstanceEditDoneEvent>().Subscribe(async (traveler) => await this.PartInstanceEditDoneEvent(traveler));
             this._eventAggregator.GetEvent<PartInstanceEditCancelEvent>().Subscribe(async (traveler) => await this.PartInstanceEditCancelHandler(traveler));
@@ -202,6 +206,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             });
         }
 
+        private async Task ReturnItemHandler() {
+        }
+
         #endregion
 
         #region CallbackRegion
@@ -220,6 +227,14 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         public bool CanExecuteOutgoing() {
             return !(this._editInProgess && this._checkInInProgress);
+        }
+
+        public bool CanReturnItem() {
+            if (this.SelectedPartInstance != null) {
+                return (!this._editInProgess && !this._checkInInProgress && !this._outgoingInProgress) && (this.SelectedPartInstance.IsReusable || this.SelectedPartInstance.IsBubbler);
+            } else {
+                return false;
+            }
         }
 
         private async Task ExportTableHandler(ExportFormat format) {

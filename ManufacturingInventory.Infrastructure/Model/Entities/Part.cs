@@ -34,15 +34,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartPrices = new HashSet<PartPrice>();
         }
 
-        //public Part(string name, string description, bool holdsBubblers, Organization organization, Warehouse warehouse, Usage usage) : this() {
-        //    this.Name = name;
-        //    this.Description = description;
-        //    this.HoldsBubblers = holdsBubblers;
-        //    this.Organization = organization;
-        //    this.Warehouse = warehouse;
-        //    //this.Usage = usage;
-        //}
-
         public Part(string name, string description, bool holdsBubblers, Organization organization, Warehouse warehouse) : this() {
             this.Name = name;
             this.Description = description;

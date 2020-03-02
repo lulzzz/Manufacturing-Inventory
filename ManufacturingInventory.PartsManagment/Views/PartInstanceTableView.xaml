@@ -40,19 +40,19 @@
         <dxb:BarManager>
             <dxb:BarManager.Bars>
                 <dxb:Bar Style="{StaticResource BarStyle}">
-                    <dxb:BarButtonItem x:Name="_transactionExportExcel"
+                    <dxb:BarButtonItem x:Name="_instanceTableExportXL"
                                        BarItemDisplayMode="ContentAndGlyph"
                                        Command="{Binding ExportTableCommand}"
                                        CommandParameter="Xlsx"
                                        Content="Export Excel"
                                        Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="_transactionExportPDF"
+                    <dxb:BarButtonItem x:Name="_instanceTableExportPDF"
                                        BarItemDisplayMode="ContentAndGlyph"
                                        Command="{Binding ExportTableCommand}"
                                        CommandParameter="Pdf"
                                        Content="Export PDF"
                                        Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="_transactionExportCSV"
+                    <dxb:BarButtonItem x:Name="_instanceTableExportCSV"
                                        BarItemDisplayMode="ContentAndGlyph"
                                        Command="{Binding ExportTableCommand}"
                                        CommandParameter="Csv"
@@ -68,10 +68,17 @@
                 <dxmvvm:Interaction.Behaviors>
                     <common:GridExportService x:Name="PartInstanceTableExportService" />
                 </dxmvvm:Interaction.Behaviors>
+                <dxg:GridControl.GroupSummary>
+                    <dxg:GridSummaryItem Alignment="Left"
+                                         DisplayFormat="[Total Quantity: {0:n}]"
+                                         FieldName="Quantity"
+                                         ShowInGroupColumnFooter="True"
+                                         SummaryType="Sum" />
+                </dxg:GridControl.GroupSummary>
                 <dxg:GridControl.View>
                     <dxg:TableView x:Name="_instanceTableView"
                                    AllowBestFit="True"
-                                   AutoWidth="True"
+                                   AutoWidth="False"
                                    BestFitArea="All"
                                    BestFitMode="AllRows"
                                    HorizontalScrollbarVisibility="Visible"
@@ -82,6 +89,8 @@
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding ElementName=_instanceTableView, Path=TableViewCommands.BestFitColumns}"
                                                    EventName="Loaded" />
+                            <dxmvvm:EventToCommand Command="{Binding DoubleClickViewCommand}"
+                                                   EventName="MouseDoubleClick" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:TableView.RowCellMenuCustomizations>
                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ViewInstanceDetailsCommand}"
@@ -98,7 +107,8 @@
                                                Content="Check In Stock"
                                                Glyph="{dx:DXImage Image=NewTask_16x16.png}" />
                             <dxb:BarItemSeparator />
-                            <dxb:BarButtonItem Content="Return Item"
+                            <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ReturnItemCommand}"
+                                               Content="Return Item"
                                                Glyph="{dx:DXImage Image=Undo_16x16.png}"
                                                IsEnabled="False" />
                             <dxb:BarItemSeparator />
@@ -123,7 +133,6 @@
                                         Header="Condition" />
                         <dxg:GridColumn AllowGrouping="True"
                                         FieldName="Usage.Name"
-                                        GroupIndex="0"
                                         Header="Usage" />
                         <dxg:GridColumn FieldName="Quantity"
                                         Header="Quantity"
