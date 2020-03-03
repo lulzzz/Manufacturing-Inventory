@@ -45,8 +45,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-NGE4P2E;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
@@ -484,7 +484,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
         }
 
         private void Seed(ModelBuilder builder) {
-            //this.SeedParts(builder);
+            this.SeedParts(builder);
             this.SeedPermissions(builder);
             this.SeedDistributors(builder);
             this.SeedCategories(builder);
@@ -590,7 +590,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
         private void SeedDistributors(ModelBuilder builder) {
 
-            builder.Entity<Distributor>().HasData(new Distributor {Id=1, Name = "LSP Industrial Ceramics Inc.", Description = "Boron Nitride Parts" });
+            builder.Entity<Distributor>().HasData(new Distributor { Id = 1, Name = "LSP Industrial Ceramics Inc.", Description = "Boron Nitride Parts" });
             builder.Entity<Distributor>().HasData(new Distributor { Id = 2, Name = "Rayotek", Description = "Sapphire Parts" });
             builder.Entity<Distributor>().HasData(new Distributor { Id = 3, Name = "Mersen", Description = "SiC & TaC Coated Graphite parts" });
             builder.Entity<Distributor>().HasData(new Distributor { Id = 4, Name = "Aixtron", Description = "Original Aixtron Parts" });
@@ -668,7 +668,6 @@ namespace ManufacturingInventory.Infrastructure.Model {
         private void SeedManufacturers(ModelBuilder builder) {
             builder.Entity<Manufacturer>().HasData(new Manufacturer { Id = 1, Name = "Mersen", Description = "Mersen deals with all SiC coated & TaC coated graphite parts." });
         }
-
 
     }
 }

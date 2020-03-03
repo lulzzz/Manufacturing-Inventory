@@ -296,8 +296,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         #region CallbackRegion
 
-
-
         private async Task ExportTableHandler(ExportFormat format) {
             await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
