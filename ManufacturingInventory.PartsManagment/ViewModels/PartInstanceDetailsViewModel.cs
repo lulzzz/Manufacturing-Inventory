@@ -38,11 +38,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private IRegionManager _regionManager;
         private IPartInstanceDetailsEditUseCase _editInstance;
 
-        private bool _isEdit = false;
         private bool _isBubbler = false;
         private bool _isInitialized = false;
         private bool _canEdit = false;
-        private bool _canChangeQuantity;
         private bool _isReusable;
         private bool _canEditStock;
         private bool _costReported;

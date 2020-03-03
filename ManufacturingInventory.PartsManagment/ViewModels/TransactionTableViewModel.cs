@@ -1,5 +1,5 @@
 ﻿using DevExpress.Mvvm;
-using ManufacturingInventory.Application.Boundaries.TransactionEdit;
+using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Common.Application.UI.Services;
 using ManufacturingInventory.Infrastructure.Model.Entities;
@@ -15,7 +15,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class TransactionTableViewModel : InventoryViewModelBase {
 
         private IRegionManager _regionManager;
-        private ITransactionEditUseCase _transactionEdit;
+        private ITransactionTableUndoUseCase _transactionEdit;
         private IEventAggregator _eventAggregator;
 
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
@@ -34,7 +34,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public AsyncCommand ReturnItemCommand { get; private set; }
         public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
 
-        public TransactionTableViewModel(ITransactionEditUseCase transactionEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
+        public TransactionTableViewModel(ITransactionTableUndoUseCase transactionEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._regionManager = regionManager;
             this._transactionEdit = transactionEdit;
             this._eventAggregator = eventAggregator;

@@ -74,6 +74,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.PriceId = entity.PriceId;
                 instance.Usage = entity.Usage;
                 instance.IsReusable = entity.IsReusable;
+                instance.DateInstalled = entity.DateInstalled;
+                instance.DateRemoved = entity.DateRemoved;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;
@@ -100,6 +102,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 instance.PriceId = entity.PriceId;
                 instance.Usage = entity.Usage;
                 instance.IsReusable = entity.IsReusable;
+                instance.DateInstalled = entity.DateInstalled;
+                instance.DateRemoved = entity.DateRemoved;
                 return this._context.PartInstances.Update(instance).Entity;
             } else {
                 return null;

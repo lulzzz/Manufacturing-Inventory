@@ -32,7 +32,7 @@
         <Setter Property="AllowEditing" Value="False" />
         <Setter Property="HeaderHorizontalAlignment" Value="Center" />
         <Setter Property="BestFitArea" Value="All" />
-        <Setter Property="BestFitMode" Value="VisibleRows" />
+        <Setter Property="BestFitMode" Value="Smart" />
         <Setter Property="AllowBestFit" Value="True" />
         <Setter Property="PrintAutoWidth" Value="True" />
         <Setter Property="AutoWidth" Value="True" />
@@ -166,7 +166,7 @@
         <Setter Property="AllowEditing" Value="False" />
         <Setter Property="HeaderHorizontalAlignment" Value="Center" />
         <Setter Property="BestFitArea" Value="All" />
-        <Setter Property="BestFitMode" Value="VisibleRows" />
+        <Setter Property="BestFitMode" Value="AllRows" />
         <Setter Property="AllowBestFit" Value="True" />
         <Setter Property="PrintAutoWidth" Value="True" />
         <Setter Property="AutoWidth" Value="True" />

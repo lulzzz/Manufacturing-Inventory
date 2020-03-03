@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ManufacturingInventory.Application.Boundaries.TransactionEdit {
+namespace ManufacturingInventory.Application.Boundaries.TransactionTableEdit {
     public enum GetBy {
         PART,
         PARTINSTANCE
     }
 
-    public interface ITransactionEditUseCase:IUseCase<TransactionEditInput,TransactionEditOutput> {
+    public interface ITransactionTableUndoUseCase:IUseCase<TransactionTableUndoInput,TransactionUndoOutput> {
         Task<IEnumerable<Transaction>> GetTransactions(GetBy by,int id);
         Task Load();
     }

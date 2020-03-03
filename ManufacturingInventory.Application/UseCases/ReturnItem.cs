@@ -84,11 +84,12 @@ namespace ManufacturingInventory.Application.UseCases {
 
         private async Task<ReturnItemOutput> ExecuteBubbler(PartInstance partInstance, Location location,Transaction refTransaction, ReturnItemInput item) {
             partInstance.UpdateWeight(item.MeasuredWeight);
-            partInstance.BubblerParameter.DateRemoved = item.TimeStamp;
+            //partInstance.BubblerParameter.DateRemoved = item.TimeStamp;
             partInstance.UpdateQuantity(1);
             partInstance.CostReported = false;
 
             partInstance.LocationId = location.Id;
+            partInstance.DateRemoved = item.TimeStamp;
             if (item.ConditionId != 0) {
                 var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
                 if (condition != null) {

@@ -322,6 +322,7 @@
                                                      Style="{StaticResource LayoutItemStyle}">
                                         <dxe:SpinEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
                                                       AllowSpinOnMouseWheel="False"
+                                                      IsReadOnly="True"
                                                       Mask="f"
                                                       MaskType="Numeric"
                                                       MaskUseAsDisplayFormat="True"

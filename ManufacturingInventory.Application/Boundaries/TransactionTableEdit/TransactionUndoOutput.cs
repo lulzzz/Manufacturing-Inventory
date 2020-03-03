@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
 
-namespace ManufacturingInventory.Application.Boundaries.TransactionEdit {
-    public class TransactionEditOutput : IOutput {
+namespace ManufacturingInventory.Application.Boundaries.TransactionTableEdit {
+    public class TransactionUndoOutput : IOutput {
 
-        public TransactionEditOutput(Transaction transaction, bool success, string message) {
+        public TransactionUndoOutput(Transaction transaction, bool success, string message) {
             this.Transaction = transaction;
             this.Success = success;
             this.Message = message;

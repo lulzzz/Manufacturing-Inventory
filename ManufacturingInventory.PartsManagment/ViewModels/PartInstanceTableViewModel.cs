@@ -33,6 +33,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private bool _editInProgess;
         private bool _showTableLoading;
         private bool _isBubbler;
+        private bool _displayReusable;
+        private bool _returnInProgress;
+        private string _returnItemToolTip;
+        private string _outgoingItemToolTip;
+        private string _checkInExistingToolTip;
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
@@ -53,14 +58,15 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
-            this.ViewInstanceDetailsCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync);
-            this.EditInstanceCommand = new AsyncCommand(this.EditInstanceHandler);
-            this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler);
-            this.CheckInCommand = new AsyncCommand(this.CheckInHandler);
+            this.ViewInstanceDetailsCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync,this.CanExecuteView);
+            this.EditInstanceCommand = new AsyncCommand(this.EditInstanceHandler,this.CanExecuteEdit);
+            this.AddToOutgoingCommand = new AsyncCommand(this.AddToOutgoingHandler,this.CanExecuteOutgoing);
+            this.CheckInCommand = new AsyncCommand(this.CheckInHandler,this.CanExecuteCheckIn);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this.CheckInExisitingCommand = new AsyncCommand(this.CheckInExisitingHandler,this.CanExecuteAddToExisting);
-            this.DoubleClickViewCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync);
+            this.DoubleClickViewCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync,this.CanExecuteView);
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler, this.CanReturnItem);
+
 
             this._eventAggregator.GetEvent<PartInstanceEditDoneEvent>().Subscribe(async (traveler) => await this.PartInstanceEditDoneEvent(traveler));
             this._eventAggregator.GetEvent<PartInstanceEditCancelEvent>().Subscribe(async (traveler) => await this.PartInstanceEditCancelHandler(traveler));
@@ -70,6 +76,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator.GetEvent<CheckInCancelEvent>().Subscribe(async () => await this.CheckInCanceledHandler());
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.PriceEditDoneHandler());
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async (instanceId) => { await this.ReturnDoneHandler(instanceId); });
+            this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => { await this.ReturnCancelHandler(); });
         }
 
         #region BindingVariables
@@ -99,6 +106,26 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public bool IsBubbler { 
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
+        }
+
+        public bool DisplayReusable { 
+            get => this._displayReusable; 
+            set=>SetProperty(ref this._displayReusable,value);
+        }
+        
+        public string ReturnItemToolTip { 
+            get => this._returnItemToolTip;
+            set => SetProperty(ref this._returnItemToolTip, value);
+        }
+        
+        public string OutgoingItemToolTip { 
+            get => this._outgoingItemToolTip;
+            set => SetProperty(ref this._outgoingItemToolTip, value);
+        }
+        
+        public string CheckInExistingToolTip { 
+            get => this._checkInExistingToolTip;
+            set => SetProperty(ref this._checkInExistingToolTip, value);
         }
 
         #endregion
@@ -172,6 +199,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         parameters.Add(ParameterKeys.IsBubbler, this.IsBubbler);
                         parameters.Add(ParameterKeys.PartId, this.SelectedPartId);
                         this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.PartInstanceDetailsView, parameters);
+                        this._editInProgess = true;
                     });
                 });
             }
@@ -207,35 +235,68 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task ReturnItemHandler() {
+            var lastOutgoing = await this._partInstanceView.GetLastOutgoing(this.SelectedPartInstance.Id);
+            if (lastOutgoing != null) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this._returnInProgress = true;
+                    NavigationParameters parameters = new NavigationParameters();
+                    parameters.Add(ParameterKeys.SelectedTransaction,lastOutgoing);
+                    this._regionManager.RequestNavigate(LocalRegions.DetailsRegion, ModuleViews.ReturnItemView, parameters);
+                });
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("Error: Unable to return selected item","Error",MessageButton.OK,MessageIcon.Error);
+                });
+            }
         }
 
         #endregion
 
-        #region CallbackRegion
+        #region buttonCanEdits
 
         public void CleanupRegions() {
             this._regionManager.Regions[LocalRegions.DetailsRegion].RemoveAll();
         }
 
-        public bool CanExecute() {
-            return !(this._editInProgess && this._checkInInProgress && this._outgoingInProgress);
+        public bool CanExecuteView() {
+            return (!this._editInProgess && !this._checkInInProgress && !this._returnInProgress && !this._outgoingInProgress);
         }
 
         public bool CanExecuteAddToExisting() {
-            return !(this._editInProgess && this._checkInInProgress && this._outgoingInProgress) && (!this.SelectedPartInstance.IsReusable && !this.SelectedPartInstance.IsBubbler);
+            return (!this._editInProgess && !this._checkInInProgress && !this._outgoingInProgress && !this._returnInProgress)
+                    && (!this.SelectedPartInstance.IsReusable && !this.SelectedPartInstance.IsBubbler);
         }
 
         public bool CanExecuteOutgoing() {
-            return !(this._editInProgess && this._checkInInProgress);
+            if (this.SelectedPartInstance.IsBubbler || this.SelectedPartInstance.IsReusable) {
+                return (!this._editInProgess && !this._checkInInProgress && !this._returnInProgress)
+                && ((!this.SelectedPartInstance.DateInstalled.HasValue && !this.SelectedPartInstance.DateRemoved.HasValue)
+                        || (this.SelectedPartInstance.DateInstalled.HasValue && this.SelectedPartInstance.DateRemoved.HasValue));
+            } else {
+                return (!this._editInProgess && !this._checkInInProgress && !this._returnInProgress);
+            }
         }
 
         public bool CanReturnItem() {
-            if (this.SelectedPartInstance != null) {
-                return (!this._editInProgess && !this._checkInInProgress && !this._outgoingInProgress) && (this.SelectedPartInstance.IsReusable || this.SelectedPartInstance.IsBubbler);
-            } else {
-                return false;
-            }
+            return (!this._editInProgess && !this._checkInInProgress && !this._outgoingInProgress && !this._returnInProgress)
+                && (this.SelectedPartInstance.IsReusable || this.SelectedPartInstance.IsBubbler)
+                && (this.SelectedPartInstance.DateInstalled.HasValue && !this.SelectedPartInstance.DateRemoved.HasValue);
         }
+
+        public bool CanExecuteEdit() {
+            return (!this._editInProgess && !this._checkInInProgress && !this._outgoingInProgress && !this._returnInProgress);
+        }
+
+        public bool CanExecuteCheckIn() {
+            return (!this._editInProgess && !this._checkInInProgress && !this._outgoingInProgress && !this._returnInProgress);
+        }
+
+        #endregion
+
+
+        #region CallbackRegion
+
+
 
         private async Task ExportTableHandler(ExportFormat format) {
             await Task.Run(() => {
@@ -315,7 +376,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private async Task ReturnDoneHandler(int instanceId) {
-            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);          
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
             var isbubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
@@ -327,6 +388,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.ShowTableLoading = false;
                 this.ViewInstanceDetailsHandler();
             });
+            this._returnInProgress = false;
+        }
+
+        private async Task ReturnCancelHandler() {
+            this._returnInProgress = false;
+            await this.ReloadNoTraveler();
         }
 
         #endregion
@@ -336,7 +403,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
+            bool isBubbler = false;
+            bool displayReusable = false;
+            var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
+            if (check.Count() > 0) {
+                displayReusable = true;
+                isBubbler = check.Select(e => e.IsBubbler).Contains(true);
+            }
             this.DispatcherService.BeginInvoke(() => {
+                this.IsBubbler = isBubbler;
+                this.DisplayReusable = displayReusable;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.ShowTableLoading = false;
             });
@@ -346,10 +422,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+            bool isBubbler = false;
+            bool displayReusable = false;
+            var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
+            if (check.Count() > 0) {
+                displayReusable = true;
+                isBubbler = check.Select(e => e.IsBubbler).Contains(true);
+            }
+
+            //var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = bubbler;
+                this.IsBubbler = isBubbler;
+                this.DisplayReusable = displayReusable;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
                 this.ShowTableLoading = false;
@@ -362,10 +447,18 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+            //var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
+            bool isBubbler = false;
+            bool displayReusable = false;
+            var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
+            if (check.Count() > 0) {
+                displayReusable = true;
+                isBubbler = check.Select(e => e.IsBubbler).Contains(true);
+            }
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = bubbler;
+                this.IsBubbler = isBubbler;
+                this.DisplayReusable = displayReusable;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 if (this.SelectedPartInstance != null) {
                     this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);

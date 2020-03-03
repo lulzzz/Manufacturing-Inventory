@@ -333,7 +333,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         private void OnValidationFailed(string error) {
-            this.MessageBoxService.Show("Check In Failed. " + error, "Registration Form", MessageBoxButton.OK);
+            this.MessageBoxService.ShowMessage("Check In Failed. "+Environment.NewLine+ error, "Error",MessageButton.OK,MessageIcon.Error);
         }
 
         private string EnableValidationAndGetError() {
@@ -697,7 +697,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
                     this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
                     this.TransactionTimeStamp = DateTime.Now;
-                    partInstance.CostReported = partInstance.CostReported;
+                    this.CostReported = this.SelectedPartInstance.CostReported;
                     this.CanEditStock = this.SelectedPartInstance.StockTypeId==Constants.DefaultStockId;
                     this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == partInstance.StockTypeId);
                     this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == partInstance.LocationId);
@@ -736,7 +736,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.TransactionTimeStamp = DateTime.Now;
                     var partInstance = new PartInstance();
                     if (part != null) {
-                        partInstance.CostReported = part.DefaultToCostReported;
+                        //partInstance.CostReported = part.DefaultToCostReported;
                         this.CostReported = part.DefaultToCostReported;
                         if (part.WarehouseId.HasValue) {
                             partInstance.LocationId = part.WarehouseId.Value;

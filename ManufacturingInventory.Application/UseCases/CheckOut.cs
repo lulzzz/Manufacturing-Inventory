@@ -61,7 +61,9 @@ namespace ManufacturingInventory.Application.UseCases {
 
         private async Task<CheckOutOutputData> ExecuteBubbler(PartInstance partInstance,Location location,CheckOutInputData item) {
             partInstance.UpdateWeight(item.MeasuredWeight);
-            partInstance.BubblerParameter.DateInstalled = item.TimeStamp;
+            //partInstance.BubblerParameter.DateInstalled = item.TimeStamp;
+            partInstance.DateInstalled = item.TimeStamp;
+            partInstance.DateRemoved = null;
             partInstance.UpdateQuantity(-1);
             partInstance.CostReported = false;
 

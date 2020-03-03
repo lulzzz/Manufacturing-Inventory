@@ -24,6 +24,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public bool CostReported { get; set; }
         public bool IsBubbler { get; set; }
         public bool IsReusable { get; set; }
+
+        public DateTime? DateInstalled { get; set; }
+        public DateTime? DateRemoved { get; set; }
+
         public byte[] RowVersion { get; set; }
 
         public int PartId { get; set; }

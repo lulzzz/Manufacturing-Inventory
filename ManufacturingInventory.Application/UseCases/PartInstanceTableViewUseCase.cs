@@ -28,19 +28,20 @@ namespace ManufacturingInventory.Application.UseCases {
             return await this._partInstanceProvider.GetEntityListAsync(e => e.PartId == partId);
         }
 
-        public async Task<bool> CanReturnInstance(int partInstanceId) {
-            var partInstance=await this._partInstanceProvider.GetEntityAsync(e => e.Id == partInstanceId);
-            if (partInstance != null) {
-                var newest = (await this._transactionProvider.GetEntityListAsync(e => e.PartInstanceId == partInstance.Id  && e.InventoryAction==InventoryAction.OUTGOING)).OrderByDescending(e=>e.TimeStamp).FirstOrDefault();
-                if (newest != null) {
-                    //if()
+        public async Task<Transaction> GetLastOutgoing(int partInstanceId) {
+            //var partInstance = await this._partInstanceProvider.GetEntityAsync(e => e.Id == partInstanceId);
+            var transactions = await this._transactionProvider.GetEntityListAsync(e => e.PartInstanceId == partInstanceId);
+            var lastOutgoing = transactions.OrderByDescending(e => e.TimeStamp).FirstOrDefault(e => e.InventoryAction == InventoryAction.OUTGOING);
+            if (lastOutgoing != null) {
+                var returned=transactions.FirstOrDefault(e=>e.ReferenceTransactionId==lastOutgoing.Id);
+                if (returned == null) {
+                    return lastOutgoing;
                 } else {
-                    return false;
+                    return null;
                 }
             } else {
-                return false;
+                return null;
             }
-
         }
 
         public async Task Load() {

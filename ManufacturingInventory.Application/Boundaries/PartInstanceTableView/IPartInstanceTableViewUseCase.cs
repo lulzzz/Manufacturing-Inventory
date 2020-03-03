@@ -9,6 +9,7 @@ namespace ManufacturingInventory.Application.Boundaries.PartInstanceTableView {
     public interface IPartInstanceTableViewUseCase{
         Task<IEnumerable<PartInstance>> GetPartInstances(int partId);
         Task<PartInstance> GetPartInstance(int partInstanceId);
+        Task<Transaction> GetLastOutgoing(int partInstanceId);
         Task Load();
     }
 }

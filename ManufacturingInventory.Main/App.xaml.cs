@@ -25,7 +25,7 @@ using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 using ManufacturingInventory.Application.Boundaries.PartDetails;
 using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
-using ManufacturingInventory.Application.Boundaries.TransactionEdit;
+using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
@@ -58,7 +58,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
                 container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
                 container.Register<IAttachmentEditUseCase, AttachmentEdit>();
-                container.Register<ITransactionEditUseCase, TransactionEdit>();
+                container.Register<ITransactionTableUndoUseCase, TransactionTableEdit>();
                 container.Register<IReturnItemUseCase, ReturnItem>();
                 container.Register<IPriceEditUseCase, PriceEdit>();
                 container.Register<IPartInstanceTableViewUseCase, PartInstanceTableViewUseCase>();

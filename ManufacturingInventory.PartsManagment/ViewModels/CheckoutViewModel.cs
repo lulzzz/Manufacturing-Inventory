@@ -20,9 +20,13 @@ using ManufacturingInventory.Domain.Buisness.Interfaces;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Domain.DTOs;
+using System.ComponentModel;
+using ManufacturingInventory.Common.Application.ValidationRules;
+using System.Windows;
+using Condition = ManufacturingInventory.Infrastructure.Model.Entities.Condition;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
-    public class CheckoutViewModel : InventoryViewModelNavigationBase {
+    public class CheckoutViewModel : InventoryViewModelNavigationBase, IDataErrorInfo {
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("CheckoutMessageBoxService"); }
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("CheckoutDispatcherService"); }
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("ExportOutgoingService"); }
@@ -148,9 +152,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     if (!this.IsBubbler) {
                         this.TotalCost = this.SelectedPartInstance.UnitCost * value;
                     } else {
-                        if (this.SelectedPartInstance.CostReported) {
                             this.TotalCost = this.SelectedPartInstance.TotalCost;
-                        }
                     }
                 }
                 SetProperty(ref this._quantity, value);
@@ -170,6 +172,54 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public DateTime TimeStamp { 
             get => this._timeStamp;
             set => SetProperty(ref this._timeStamp, value);
+        }
+
+        public string this[string columnName] {
+            get {
+                string quantityProp = BindableBase.GetPropertyName(() => this.Quantity);
+                string measuredProp = BindableBase.GetPropertyName(() => this.MeasuredWeight);
+                string locationProp = BindableBase.GetPropertyName(() => this.SelectedConsumer);
+
+                if (columnName == locationProp) {
+                    if (this.SelectedConsumer == null)
+                        return "Consumer must be selected";
+                }else if (columnName == quantityProp) {
+                    if ((this.Quantity == 0 || this.Quantity>this.SelectedPartInstance.Quantity) && !this.IsBubbler)
+                        return "Quantity must be > 0 and <= Stock";
+                } else if (columnName == measuredProp) {
+                    if (this.IsBubbler) {
+                        if (this.MeasuredWeight == 0 || this.MeasuredWeight>this.SelectedPartInstance.BubblerParameter.Measured)
+                            return "Measured must be > 0 and <= Current Measured Stock";
+                    }
+                }
+                return null;
+            }
+        }
+
+        private void OnValidationFailed(string error) {
+            this.MessageBoxService.ShowMessage("Check In Failed. " + Environment.NewLine + error, "Error", MessageButton.OK, MessageIcon.Error);
+        }
+
+        private string EnableValidationAndGetError() {
+            //this._validationEnabled = true;
+            string error = ((IDataErrorInfo)this).Error;
+            if (!string.IsNullOrEmpty(error)) {
+                this.RaisePropertyChanged();
+                return error;
+            }
+            return null;
+        }
+
+        public string Error {
+            get {
+                IDataErrorInfo me = (IDataErrorInfo)this;
+                string error =me[BindableBase.GetPropertyName(() => this.Quantity)]+
+                              me[BindableBase.GetPropertyName(() => this.MeasuredWeight)]+
+                              me[BindableBase.GetPropertyName(() => this.SelectedConsumer)];
+                if (!string.IsNullOrEmpty(error))
+                    return "Please check inputs, 1 or more required items missing";
+                return null;
+            }
         }
 
         private void RecievePartInstance(PartInstance instance) {
@@ -195,30 +245,37 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task AddToOutgoingHandler() {
             await Task.Run(() => {
-                var transaction = this.Transactions.FirstOrDefault(e => e.PartInstanceId == this.SelectedPartInstance.Id);
-                if (transaction==null) {
-                    int conditionId = (this.SelectedCondition != null) ? this.SelectedCondition.Id : 0;
-
-                    TransactionDTO newTransaction = new TransactionDTO(this.TimeStamp,
-                        InventoryAction.OUTGOING, this.Quantity, false, this.UnitCost,
-                        this.TotalCost,this.SelectedPartInstance.Id,this.SelectedPartInstance.Name,
-                        this.SelectedConsumer.Name,this.SelectedConsumer.Id, this.IsBubbler,
-                        this.MeasuredWeight, this.Weight,conditionId:conditionId);
-
-                    DispatcherService.BeginInvoke(() => {
-                        this.Transactions.Add(newTransaction);
-                        //this.MessageBoxService.ShowMessage("Item added to Output: "+newTransaction.Weight, "Success");
-                        this.SelectedPartInstance = null;
-                        this.SelectedConsumer = null;
-                        this.Quantity = 0;
-                        this.MeasuredWeight = 0;
-                        this.TimeStamp = DateTime.Now;
-                    });
-
-                } else {
+            string error = this.EnableValidationAndGetError();
+                if (error != null) {
                     this.DispatcherService.BeginInvoke(() => {
-                        this.MessageBoxService.ShowMessage("Error: Outgoing Already Contains Item", "Error", MessageButton.OK, MessageIcon.Error);
+                        this.OnValidationFailed(error);
                     });
+                } else {
+                    var transaction = this.Transactions.FirstOrDefault(e => e.PartInstanceId == this.SelectedPartInstance.Id);
+                    if (transaction == null) {
+                        int conditionId = (this.SelectedCondition != null) ? this.SelectedCondition.Id : 0;
+
+                        TransactionDTO newTransaction = new TransactionDTO(this.TimeStamp,
+                            InventoryAction.OUTGOING, this.Quantity, false, this.UnitCost,
+                            this.TotalCost, this.SelectedPartInstance.Id, this.SelectedPartInstance.Name,
+                            this.SelectedConsumer.Name, this.SelectedConsumer.Id, this.IsBubbler,
+                            this.MeasuredWeight, this.Weight, conditionId: conditionId);
+
+                        DispatcherService.BeginInvoke(() => {
+                            this.Transactions.Add(newTransaction);
+                            //this.MessageBoxService.ShowMessage("Item added to Output: "+newTransaction.Weight, "Success");
+                            this.SelectedPartInstance = null;
+                            this.SelectedConsumer = null;
+                            this.Quantity = 0;
+                            this.MeasuredWeight = 0;
+                            this.TimeStamp = DateTime.Now;
+                        });
+
+                    } else {
+                        this.DispatcherService.BeginInvoke(() => {
+                            this.MessageBoxService.ShowMessage("Error: Outgoing Already Contains Item", "Error", MessageButton.OK, MessageIcon.Error);
+                        });
+                    }
                 }
             });
         }
@@ -243,8 +300,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 await Task.Run(() => {
                     foreach (var transaction in this.Transactions) {
                         input.Items.Add(new CheckOutInputData(transaction.TimeStamp, transaction.PartInstanceId, transaction.LocationId, transaction.Quantity,
-                            transaction.UnitCost, transaction.TotalCost,isBubbler:this.IsBubbler,measuredWeight:transaction.Measured,weight:transaction.Measured,
-                            conditionId:transaction.ConditionId));
+                            transaction.UnitCost, transaction.TotalCost, isBubbler: this.IsBubbler, measuredWeight: transaction.Measured, weight: transaction.Measured,
+                            conditionId: transaction.ConditionId));
                     }
                 });
 
@@ -257,24 +314,30 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 StringBuilder failBuilder = new StringBuilder();
 
                 okayBuilder.AppendLine("Succeeded: ");
-                failBuilder.AppendLine("Failed: ");
 
                 foreach (var success in succeeded) {
                     okayBuilder.AppendLine(success.Message);
                 }
 
-                foreach (var fail in failed) {
-                    failBuilder.AppendLine(fail.Message);
+                if (failed.Count() > 0) {
+                    failBuilder.AppendLine("Failed: ");
+                    foreach (var fail in failed) {
+                        failBuilder.AppendLine(fail.Message);
+                    }
+                    okayBuilder.AppendLine(failBuilder.ToString());
                 }
-
-                okayBuilder.AppendLine();
-                okayBuilder.AppendLine(failBuilder.ToString());
 
                 var firstInstance = response.OutputList.Select(e => e.Transaction.PartInstanceId).First();
 
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(okayBuilder.ToString(), "Success", MessageButton.OK, MessageIcon.Information);
                     this._eventAggregator.GetEvent<OutgoingDoneEvent>().Publish(firstInstance);
+                });
+                
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("Error:Not Items in Outgoing List"+Environment.NewLine+
+                        "Check that you have added outgoing item to list","Error", MessageButton.OK,MessageIcon.Error);
                 });
             }
         }

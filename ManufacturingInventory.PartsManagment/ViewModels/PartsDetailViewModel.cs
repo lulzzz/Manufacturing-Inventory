@@ -38,6 +38,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.SelectedTabIndex = 0;
+            this._eventAggregator.GetEvent<ChangeSelectedTab>().Subscribe(this.SelectTabIndexHandler);
         }
 
         public override bool KeepAlive => false;
@@ -67,10 +68,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._selectedTabIndex, value);
         }
 
-
         public bool IsBubbler { 
             get => this._isBubbler;
             set => SetProperty(ref this._isBubbler, value);
+        }
+
+        public void SelectTabIndexHandler(int tabIndex) {
+            this.SelectedTabIndex = tabIndex;
         }
 
 

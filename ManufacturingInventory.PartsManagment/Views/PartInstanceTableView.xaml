@@ -109,8 +109,8 @@
                             <dxb:BarItemSeparator />
                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ReturnItemCommand}"
                                                Content="Return Item"
-                                               Glyph="{dx:DXImage Image=Undo_16x16.png}"
-                                               IsEnabled="False" />
+                                               Glyph="{dx:DXImage Image=Undo_16x16.png}" />
+
                             <dxb:BarItemSeparator />
                         </dxg:TableView.RowCellMenuCustomizations>
                     </dxg:TableView>
@@ -162,9 +162,9 @@
                         <dxg:GridColumn FieldName="Quantity"
                                         Header="Quantity" />
                         <dxg:GridColumn FieldName="MinQuantity"
-                                        Visible="{Binding IsBubbler, Mode=TwoWay, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        Visible="{Binding DisplayReusable, Mode=TwoWay, Converter={dxmvvm:BooleanNegationConverter}}" />
                         <dxg:GridColumn FieldName="SafeQuantity"
-                                        Visible="{Binding IsBubbler, Mode=TwoWay, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        Visible="{Binding DisplayReusable, Mode=TwoWay, Converter={dxmvvm:BooleanNegationConverter}}" />
                         <dxg:GridColumn FieldName="BubblerParameter.NetWeight"
                                         Header="Net"
                                         Visible="{Binding IsBubbler, Mode=TwoWay}" />
@@ -177,12 +177,12 @@
                         <dxg:GridColumn FieldName="BubblerParameter.Weight"
                                         Header="Weight"
                                         Visible="{Binding IsBubbler, Mode=TwoWay}" />
-                        <dxg:GridColumn FieldName="BubblerParameter.DateInstalled"
+                        <dxg:GridColumn FieldName="DateInstalled"
                                         Header="Date Installed"
-                                        Visible="{Binding IsBubbler, Mode=TwoWay}" />
-                        <dxg:GridColumn FieldName="BubblerParameter.DateRemoved"
+                                        Visible="{Binding DisplayReusable, Mode=TwoWay}" />
+                        <dxg:GridColumn FieldName="DateRemoved"
                                         Header="Date Removed"
-                                        Visible="{Binding IsBubbler, Mode=TwoWay}" />
+                                        Visible="{Binding DisplayReusable, Mode=TwoWay}" />
                     </dxg:GridControlBand>
                 </dxg:GridControl.Bands>
             </dxg:GridControl>

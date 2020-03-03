@@ -51,7 +51,8 @@ namespace ManufacturingInventory.PartsManagment.Internal {
     public class ReturnCancelEvent : PubSubEvent { }
 
     //DoneAndView
-    public class ViewModifiedInstanceEvent : PubSubEvent<ReloadEventTraveler> {
+    public class ViewModifiedInstanceEvent : PubSubEvent<ReloadEventTraveler> { }
 
-    }
+    //Change Tab Index
+    public class ChangeSelectedTab:PubSubEvent<int> { }
 }
