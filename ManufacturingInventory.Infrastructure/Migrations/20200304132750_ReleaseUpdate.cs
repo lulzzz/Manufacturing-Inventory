@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
-    public partial class Rework : Migration
+    public partial class ReleaseUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,9 +17,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     Tare = table.Column<double>(nullable: false),
                     GrossWeight = table.Column<double>(nullable: false),
                     Measured = table.Column<double>(nullable: false),
-                    Weight = table.Column<double>(nullable: false),
-                    DateInstalled = table.Column<DateTime>(nullable: true),
-                    DateRemoved = table.Column<DateTime>(nullable: true)
+                    Weight = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,6 +67,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
+                    IsDefualt = table.Column<bool>(nullable: false),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     Discriminator = table.Column<string>(nullable: false)
                 },
@@ -307,6 +306,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     CostReported = table.Column<bool>(nullable: false),
                     IsBubbler = table.Column<bool>(nullable: false),
                     IsReusable = table.Column<bool>(nullable: false),
+                    DateInstalled = table.Column<DateTime>(nullable: true),
+                    DateRemoved = table.Column<DateTime>(nullable: true),
                     RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
                     PartId = table.Column<int>(nullable: false),
                     StockTypeId = table.Column<int>(nullable: false),
@@ -611,7 +612,11 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 {
                     { 1, "A new Part", "Condition", true, "New" },
                     { 7, "", "Organization", false, "Raw Materials" },
-                    { 8, "", "Organization", false, "Supplies" }
+                    { 8, "", "Organization", false, "Supplies" },
+                    { 9, "Used on all Epi Systems", "Usage", false, "All Systems" },
+                    { 10, "General Growth Usage", "Usage", true, "Growth" },
+                    { 11, "Used on A Systems", "Usage", false, "A Systems" },
+                    { 12, "Used on B Systems", "Usage", false, "B Systems" }
                 });
 
             migrationBuilder.InsertData(
@@ -624,16 +629,13 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 columns: new[] { "Id", "Description", "Discriminator", "IsDefault", "Name" },
                 values: new object[,]
                 {
-                    { 10, "General Growth Usage", "Usage", true, "Growth" },
-                    { 11, "Used on A Systems", "Usage", false, "A Systems" },
-                    { 12, "Used on B Systems", "Usage", false, "B Systems" },
-                    { 13, "Used on C Systems", "Usage", false, "C Systems" },
-                    { 9, "Used on all Epi Systems", "Usage", false, "All Systems" },
+                    { 15, "Parts used on A and B systems", "Usage", false, "A & B Systems" },
                     { 6, "A part's stock is depleted. No additional stock will be added or returned", "Condition", false, "Depleted" },
                     { 5, "A part in inventory that was repaired/refurbished", "Condition", false, "Refurbished" },
                     { 4, "A part returned to inventory in need of repair/refurbish", "Condition", false, "Needs Repair" },
                     { 3, "A part returned to inventory and needs cleaning. i.e. Satellites", "Condition", false, "Need Cleaning" },
-                    { 2, "Part that has been used and returned to inventory", "Condition", false, "Used" }
+                    { 2, "Part that has been used and returned to inventory", "Condition", false, "Used" },
+                    { 13, "Used on C Systems", "Usage", false, "C Systems" }
                 });
 
             migrationBuilder.InsertData(
@@ -641,50 +643,56 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 6, "", "Akzo Nobel" },
-                    { 1, "Boron Nitride Parts", "LSP Industrial Ceramics Inc." },
-                    { 5, "All Quartz Parts", "Quality Quartz Engineering " },
                     { 4, "Original Aixtron Parts", "Aixtron" },
-                    { 3, "SiC & TaC Coated Graphite parts", "Mersen" },
-                    { 2, "Sapphire Parts", "Rayotek" }
+                    { 5, "All Quartz Parts", "Quality Quartz Engineering " },
+                    { 6, "", "Akzo Nobel" },
+                    { 7, "", "K.J Lesker" },
+                    { 11, "", "Nouryon" },
+                    { 9, "", "SVC" },
+                    { 10, "", "lljin" },
+                    { 12, "", "SAFC" },
+                    { 2, "Sapphire Parts", "Rayotek" },
+                    { 8, "", "Fisher" },
+                    { 1, "Boron Nitride Parts", "LSP Industrial Ceramics Inc." },
+                    { 3, "SiC & TaC Coated Graphite parts", "Mersen" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Locations",
-                columns: new[] { "Id", "Description", "Discriminator", "Name" },
+                columns: new[] { "Id", "Description", "Discriminator", "IsDefualt", "Name" },
                 values: new object[,]
                 {
-                    { 30, "Reactor C11", "Consumer", "System C11" },
-                    { 31, "Generic Consumer for cost reporting", "Consumer", "Epi Process" },
-                    { 2, "", "Warehouse", "Gas Bay" },
-                    { 29, "Reactor C10", "Consumer", "System C10" },
-                    { 3, "", "Warehouse", "Epi Chase" },
-                    { 1, "", "Warehouse", "Epi System Parts" },
-                    { 28, "Reactor C09", "Consumer", "System C09" },
-                    { 27, "Reactor C08", "Consumer", "System C08" },
-                    { 26, "Reactor C07", "Consumer", "System C07" },
-                    { 6, "Reactor B01", "Consumer", "System B01" },
-                    { 7, "Reactor B02", "Consumer", "System B02" },
-                    { 8, "Reactor B03", "Consumer", "System B03" },
-                    { 9, "Reactor B04", "Consumer", "System B04" },
-                    { 10, "Reactor B05", "Consumer", "System B05" },
-                    { 11, "Reactor B06", "Consumer", "System B06" },
-                    { 12, "Reactor B07", "Consumer", "System B07" },
-                    { 13, "Reactor A01", "Consumer", "System A01" },
-                    { 14, "Reactor A02", "Consumer", "System A02" },
-                    { 4, "", "Warehouse", "Process Lab" },
-                    { 15, "Reactor A03", "Consumer", "System A03" },
-                    { 5, "", "Warehouse", "Back Warehouse" },
-                    { 17, "Reactor A05", "Consumer", "System A05" },
-                    { 18, "Reactor A06", "Consumer", "System A06" },
-                    { 19, "Reactor A07", "Consumer", "System A07" },
-                    { 20, "Reactor C01", "Consumer", "System C01" },
-                    { 21, "Reactor C02", "Consumer", "System C02" },
-                    { 22, "Reactor C03", "Consumer", "System C03" },
-                    { 23, "Reactor C04", "Consumer", "System C04" },
-                    { 24, "Reactor C05", "Consumer", "System C05" },
-                    { 25, "Reactor C06", "Consumer", "System C06" },
-                    { 16, "Reactor A04", "Consumer", "System A04" }
+                    { 27, "Reactor C08", "Consumer", false, "System C08" },
+                    { 3, "", "Warehouse", false, "Epi Chase" },
+                    { 2, "", "Warehouse", false, "Gas Bay" },
+                    { 1, "", "Warehouse", false, "Epi System Parts" },
+                    { 6, "Reactor B01", "Consumer", false, "System B01" },
+                    { 7, "Reactor B02", "Consumer", false, "System B02" },
+                    { 8, "Reactor B03", "Consumer", false, "System B03" },
+                    { 9, "Reactor B04", "Consumer", false, "System B04" },
+                    { 10, "Reactor B05", "Consumer", false, "System B05" },
+                    { 11, "Reactor B06", "Consumer", false, "System B06" },
+                    { 12, "Reactor B07", "Consumer", false, "System B07" },
+                    { 26, "Reactor C07", "Consumer", false, "System C07" },
+                    { 13, "Reactor A01", "Consumer", false, "System A01" },
+                    { 14, "Reactor A02", "Consumer", false, "System A02" },
+                    { 15, "Reactor A03", "Consumer", false, "System A03" },
+                    { 5, "", "Warehouse", false, "Back Warehouse" },
+                    { 17, "Reactor A05", "Consumer", false, "System A05" },
+                    { 18, "Reactor A06", "Consumer", false, "System A06" },
+                    { 19, "Reactor A07", "Consumer", false, "System A07" },
+                    { 20, "Reactor C01", "Consumer", false, "System C01" },
+                    { 28, "Reactor C09", "Consumer", false, "System C09" },
+                    { 29, "Reactor C10", "Consumer", false, "System C10" },
+                    { 30, "Reactor C11", "Consumer", false, "System C11" },
+                    { 31, "Generic Consumer for cost reporting", "Consumer", false, "Epi Process" },
+                    { 25, "Reactor C06", "Consumer", false, "System C06" },
+                    { 24, "Reactor C05", "Consumer", false, "System C05" },
+                    { 4, "", "Warehouse", false, "Process Lab" },
+                    { 16, "Reactor A04", "Consumer", false, "System A04" },
+                    { 23, "Reactor C04", "Consumer", false, "System C04" },
+                    { 21, "Reactor C02", "Consumer", false, "System C02" },
+                    { 22, "Reactor C03", "Consumer", false, "System C03" }
                 });
 
             migrationBuilder.InsertData(
@@ -693,14 +701,27 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 values: new object[] { 1, null, "Mersen deals with all SiC coated & TaC coated graphite parts.", "Mersen" });
 
             migrationBuilder.InsertData(
+                table: "Parts",
+                columns: new[] { "Id", "DefaultToCostReported", "Description", "HoldsBubblers", "Name", "OrganizationId", "WarehouseId" },
+                values: new object[,]
+                {
+                    { 1, true, "", false, "Epi Parts-Consumable", null, null },
+                    { 6, true, "", false, "Equipment Materials", null, null },
+                    { 5, true, "", false, "Chemicals", null, null },
+                    { 4, true, "", false, "Sapphire", null, null },
+                    { 3, true, "", false, "Suceptors", null, null },
+                    { 2, true, "", false, "Epi Parts-Reusable", null, null }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Permissions",
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
                     { 2, "Inventory View Only", "InventoryUserAccount" },
-                    { 3, "Full Inventory Privileges", "InventoryUserFullAccount" },
+                    { 1, "Full Inventory Privileges and User Control", "InventoryAdminAccount" },
                     { 4, "Inventory Check In/Check Out/Create", "InventoryUserLimitedAccount" },
-                    { 1, "Full Inventory Privileges and User Control", "InventoryAdminAccount" }
+                    { 3, "Full Inventory Privileges", "InventoryUserFullAccount" }
                 });
 
             migrationBuilder.InsertData(

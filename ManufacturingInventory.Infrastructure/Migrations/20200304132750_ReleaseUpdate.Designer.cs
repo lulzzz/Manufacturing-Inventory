@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200303214030_migrateProduction-rework")]
-    partial class migrateProductionrework
+    [Migration("20200304132750_ReleaseUpdate")]
+    partial class ReleaseUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -511,6 +511,14 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.ToTable("Parts");
 
                     b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DefaultToCostReported = true,
+                            Description = "",
+                            HoldsBubblers = false,
+                            Name = "Epi Parts-Consumable"
+                        },
                         new
                         {
                             Id = 2,
@@ -1163,6 +1171,13 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                             Description = "Used on C Systems",
                             IsDefault = false,
                             Name = "C Systems"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Description = "Parts used on A and B systems",
+                            IsDefault = false,
+                            Name = "A & B Systems"
                         });
                 });
 

@@ -99,9 +99,6 @@
                                     FieldName="Organization.Name"
                                     Header="Organization" />
                     <dxg:GridColumn AllowGrouping="True"
-                                    FieldName="Usage.Name"
-                                    Header="Usage" />
-                    <dxg:GridColumn AllowGrouping="True"
                                     FieldName="Warehouse.Name"
                                     Header="Warehouse" />
                 </dxg:GridControl.Columns>

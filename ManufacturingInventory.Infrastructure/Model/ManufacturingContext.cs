@@ -45,8 +45,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;User Id=aelmendorf;Password=Drizzle123!;");
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-NGE4P2E;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
             //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
@@ -606,11 +606,11 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
         private void SeedCategories(ModelBuilder builder) {
             builder.Entity<Condition>().HasData(new Condition { Id = 1, Name = "New", Description = "A new Part", IsDefault = true }); ;
-            builder.Entity<Condition>().HasData(new Condition { Id = 2, Name = "Used", Description = "Part that has been used and returned to inventory" , IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 2, Name = "Used", Description = "Part that has been used and returned to inventory", IsDefault = false });
             builder.Entity<Condition>().HasData(new Condition { Id = 3, Name = "Need Cleaning", Description = "A part returned to inventory and needs cleaning. i.e. Satellites", IsDefault = false });
-            builder.Entity<Condition>().HasData(new Condition { Id = 4, Name = "Needs Repair", Description = "A part returned to inventory in need of repair/refurbish" , IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 4, Name = "Needs Repair", Description = "A part returned to inventory in need of repair/refurbish", IsDefault = false });
             builder.Entity<Condition>().HasData(new Condition { Id = 5, Name = "Refurbished", Description = "A part in inventory that was repaired/refurbished", IsDefault = false });
-            builder.Entity<Condition>().HasData(new Condition { Id = 6, Name = "Depleted", Description = "A part's stock is depleted. No additional stock will be added or returned",IsDefault = false });
+            builder.Entity<Condition>().HasData(new Condition { Id = 6, Name = "Depleted", Description = "A part's stock is depleted. No additional stock will be added or returned", IsDefault = false });
 
 
             builder.Entity<Organization>().HasData(new Organization { Id = 7, Name = "Raw Materials", Description = "", IsDefault = false });
@@ -622,7 +622,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             builder.Entity<Usage>().HasData(new Usage { Id = 12, Name = "B Systems", Description = "Used on B Systems", IsDefault = false });
             builder.Entity<Usage>().HasData(new Usage { Id = 13, Name = "C Systems", Description = "Used on C Systems", IsDefault = false });
             builder.Entity<StockType>().HasData(new StockType { Id = 14, Name = "Individual", Description = "Individual Stock", MinQuantity = 0, SafeQuantity = 0, IsDefault = true });
-            //builder.Entity<Usage>().HasData(new Usage { Id = 15, Name = "A & B Systems", Description = "Parts used on A and B systems", IsDefault = false });
+            builder.Entity<Usage>().HasData(new Usage { Id = 15, Name = "A & B Systems", Description = "Parts used on A and B systems", IsDefault = false });
 
         }
 

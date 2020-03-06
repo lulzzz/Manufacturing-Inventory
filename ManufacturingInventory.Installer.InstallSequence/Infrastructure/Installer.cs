@@ -21,7 +21,9 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
     public class Installer:IInstaller {
         private string sourceDirectory = Constants.SourceDirectory;
         private string targetDirectory = Constants.InstallLocationDefault;
+        private string tempDirectrory;
         private IEventAggregator _eventAggregator;
+        private VersionCheckerResponce _installTraveler;
         
 
         public string InstallLocation {
@@ -29,8 +31,9 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
             set => this.targetDirectory = value;
         }
 
-        public Installer(IEventAggregator eventAggregator) {
+        public Installer(IEventAggregator eventAggregator,VersionCheckerResponce installTraveler) {
             this._eventAggregator = eventAggregator;
+            this._installTraveler = installTraveler;
         }
 
         public bool Install(string location=null) {
@@ -66,7 +69,17 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
                 this.sourceDirectory = location;
             }
 
-            DirectoryInfo diSource = new DirectoryInfo(this.sourceDirectory);
+            this.tempDirectrory = Path.Combine(Constants.TempDirectory, "ManufacturingTemp");
+            try {
+                Directory.CreateDirectory(tempDirectrory);
+            } catch {
+                return false;
+            }
+
+            DirectoryInfo tSource = new DirectoryInfo(tempDirectrory);
+            await ZipHelper.Execute(tempDirectrory, this._installTraveler.VersionPath,ZipAction.UnZip,(message)=>this._eventAggregator.GetEvent<IncrementProgress>().Publish(message));
+
+            DirectoryInfo diSource = new DirectoryInfo(this.tempDirectrory);
             DirectoryInfo diTarget = new DirectoryInfo(this.targetDirectory);
             try {
                 await CopyAllAsync(diSource, diTarget,cancellationToken);
@@ -134,11 +147,8 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
         }
 
         public async Task CopyAllAsync(DirectoryInfo source, DirectoryInfo target, CancellationToken cancellationToken) {
-            //if (source.FullName.ToLower() == target.FullName.ToLower()) {
-            //    return;
-            //}
             bool canceled = false;
-            if (Directory.Exists(target.FullName) == false) {
+            if (!Directory.Exists(target.FullName)) {
                 Directory.CreateDirectory(target.FullName);
             }
             // Copy each file into it's new directory.

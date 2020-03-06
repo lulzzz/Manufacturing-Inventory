@@ -133,6 +133,7 @@
                                         Header="Condition" />
                         <dxg:GridColumn AllowGrouping="True"
                                         FieldName="Usage.Name"
+                                        GroupIndex="0"
                                         Header="Usage" />
                         <dxg:GridColumn FieldName="Quantity"
                                         Header="Quantity"

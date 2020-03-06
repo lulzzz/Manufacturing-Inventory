@@ -1,10 +1,18 @@
 ﻿using System;
 using System.IO;
+using ManufacturingInventory.InstallSequence.Infrastructure;
 
 namespace ManufacturingInventory.InstallConsole {
     class Program {
         static void Main(string[] args) {
+            var response=VersionChecker.CheckInstalledVersion();
+            Console.WriteLine("Message: {0}",response.Message);
+            Console.WriteLine("Server Version: {0}",response.Version);
+            Console.WriteLine("Should be done");
+            Console.ReadKey();
+        }
 
+        public static void Testing() {
             string sourceDirectory = @"\\172.20.4.20\Manufacturing Install";
             string targetDirectory = @"C:\Program Files (x86)\InventoryTestInstall";
             //string sourceDirectory = @"\\172.20.4.20\Testing Installs";
@@ -20,6 +28,7 @@ namespace ManufacturingInventory.InstallConsole {
 
             Console.ReadKey();
         }
+
 
         public static void CopyAll(DirectoryInfo source, DirectoryInfo target) {
             if (source.FullName.ToLower() == target.FullName.ToLower()) {
@@ -37,7 +46,7 @@ namespace ManufacturingInventory.InstallConsole {
                 if (File.Exists(dest)) {
                     FileInfo info = new FileInfo(dest);
                     if (fi.LastWriteTime != info.LastWriteTime) {
-                        Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
+                        //Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
                         fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
                     } else {
                         Console.WriteLine(@"Not Copying {0}\{1}", target.FullName, fi.Name);
@@ -52,6 +61,8 @@ namespace ManufacturingInventory.InstallConsole {
                 CopyAll(diSourceSubDir, nextTargetSubDir);
             }
         }
+    
+    
     }
 
 

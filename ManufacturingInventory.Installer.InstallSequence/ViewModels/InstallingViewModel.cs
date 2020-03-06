@@ -20,6 +20,7 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         private IRegionNavigationJournal _journal;
         private IEventAggregator _eventAggregator;
         private IInstaller _installer;
+        private VersionCheckerResponce _installTraveler;
         private int _itemCount;
         private int _maxProgress;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -37,10 +38,11 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         public PrismCommands.DelegateCommand CancelCommand { get; private set; }
         public AsyncCommand InstallCommand { get; private set; }
 
-        public InstallingViewModel(IRegionManager regionManager, IEventAggregator eventAggregator,IInstaller installer) {
+        public InstallingViewModel(IRegionManager regionManager, IEventAggregator eventAggregator,IInstaller installer,VersionCheckerResponce installTraveler) {
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this._installer = installer;
+            this._installTraveler=installTraveler;
             this.IsIndeterminate = false;
             this.ItemCount = 0;
             this.IsInstalling = false;
@@ -51,7 +53,7 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             this.BackCommand = new PrismCommands.DelegateCommand(this.GoBack);
             this.CancelCommand = new PrismCommands.DelegateCommand(this.Cancel);
             this.InstallCommand = new AsyncCommand(this.InstallHandler,()=>!this._installing);
-            this._eventAggregator.GetEvent<IncrementProgress>().Subscribe(this.IncrementProgressHandler);
+            this._eventAggregator.GetEvent<IncrementProgress>().Subscribe(async (logLine)=> await this.IncrementProgressHandler(logLine));
         }
 
         public override bool KeepAlive {
@@ -89,7 +91,23 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             set => SetProperty(ref this._buttonLabel,value); 
         }
 
+        private void SetProgressMessage() {
+            switch (this._installTraveler.InstallStatus) {
+                case InstallStatus.InstalledNewVersion:
+                    this.ProgressLabel = "Updating....";
+                    break;
+                case InstallStatus.InstalledUpToDate:
+                    break;
+                case InstallStatus.NotInstalled:
+                    this.ProgressLabel = "Installing....";
+                    break;
+                case InstallStatus.ServerFilesMissing:
+                    break;
+            }
+        }
+
         private async Task InstallHandler() {
+
             this.IsInstalling = true;
             this._installer.InstallLocation = this._installLocation;
             this.MaxProgress = this._installer.CalculateWork();
@@ -129,10 +147,12 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             }
         }
 
-        private void IncrementProgressHandler(string logLine) {
-            this.ItemCount = this.ItemCount + 1;
-            string line = DateTime.Now + ": " + logLine + Environment.NewLine;
-            this.InstallLog += line;
+        private async Task IncrementProgressHandler(string logLine) {
+            await Task.Run(() => {
+                this.ItemCount = this.ItemCount + 1;
+                string line = DateTime.Now + ": " + logLine + Environment.NewLine;
+                this.InstallLog += line;
+            });
         }
 
         private void Cancel() {

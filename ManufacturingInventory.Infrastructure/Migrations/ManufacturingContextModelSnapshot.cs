@@ -511,6 +511,14 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+                            Id = 1,
+                            DefaultToCostReported = true,
+                            Description = "",
+                            HoldsBubblers = false,
+                            Name = "Epi Parts-Consumable"
+                        },
+                        new
+                        {
                             Id = 2,
                             DefaultToCostReported = true,
                             Description = "",
@@ -1161,6 +1169,13 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                             Description = "Used on C Systems",
                             IsDefault = false,
                             Name = "C Systems"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Description = "Parts used on A and B systems",
+                            IsDefault = false,
+                            Name = "A & B Systems"
                         });
                 });
 

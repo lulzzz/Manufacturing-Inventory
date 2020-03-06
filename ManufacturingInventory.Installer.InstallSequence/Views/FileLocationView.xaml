@@ -1,28 +1,41 @@
 ﻿<UserControl x:Class="ManufacturingInventory.InstallSequence.Views.FileLocationView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
+             d:DesignHeight="220"
+             d:DesignWidth="530"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             mc:Ignorable="d" d:DesignHeight="220" d:DesignWidth="530">
+             mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:FolderBrowserDialogService x:Name="FolderBrowserDialog"/>
+        <dxmvvm:FolderBrowserDialogService x:Name="FolderBrowserDialog" />
     </dxmvvm:Interaction.Behaviors>
     <dxlc:DockLayoutControl>
-        <dxlc:LayoutItem Label="Install Location" LabelPosition="Top" LabelHorizontalAlignment="Center" dxlc:DockLayoutControl.Dock="Client" VerticalAlignment="Center">
-                <dxe:ButtonEdit x:Name="_installLocation" Text="{Binding InstallLocation,Mode=TwoWay}" AllowDefaultButton="False">
-                    <dxe:ButtonInfo Command="{Binding ChangeInstallLocationCommand}" Content="Select"/>
-                </dxe:ButtonEdit>
-            </dxlc:LayoutItem>
-        <dxlc:LayoutGroup Height="30" dxlc:DockLayoutControl.Dock="Bottom" VerticalAlignment="Center">
-            <dx:SimpleButton Content="Next" Command="{Binding NextCommand}"></dx:SimpleButton>
-            <dx:SimpleButton Content="Cancel" Command="{Binding CancelCommand}"></dx:SimpleButton>
+        <dxlc:LayoutItem VerticalAlignment="Center"
+                         dxlc:DockLayoutControl.Dock="Client"
+                         Label="Install Location"
+                         LabelHorizontalAlignment="Center"
+                         LabelPosition="Top">
+            <dxe:ButtonEdit x:Name="_installLocation"
+                            AllowDefaultButton="False"
+                            Text="{Binding InstallLocation, Mode=TwoWay}">
+                <dxe:ButtonInfo Command="{Binding ChangeInstallLocationCommand}"
+                                Content="Select" />
+            </dxe:ButtonEdit>
+        </dxlc:LayoutItem>
+        <dxlc:LayoutGroup Height="30"
+                          VerticalAlignment="Center"
+                          dxlc:DockLayoutControl.Dock="Bottom">
+            <dx:SimpleButton Command="{Binding NextCommand}"
+                             Content="Next" />
+            <dx:SimpleButton Command="{Binding CancelCommand}"
+                             Content="Cancel" />
         </dxlc:LayoutGroup>
     </dxlc:DockLayoutControl>
 </UserControl>

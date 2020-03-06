@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
@@ -18,8 +19,8 @@ namespace ManufacturingInventory.ConsoleTesting {
             {7,"IsReusable"},
             {8,"PartId"},
             {9,"StockTypeId"},
-            {10,"LocationId"},
-            {11,"UsageId"}
+            {10,"UsageId"},
+            {11,"LocationId"}
         };
 
 

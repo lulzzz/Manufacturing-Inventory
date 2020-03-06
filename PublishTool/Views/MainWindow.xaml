@@ -1,0 +1,97 @@
+﻿<dx:ThemedWindow x:Class="PublishTool.Views.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+                 xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+                 xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+                 xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+                 xmlns:prism="http://prismlibrary.com/"
+                 Title="Publish Tool"
+                 Width="525"
+                 Height="400"
+                 prism:ViewModelLocator.AutoWireViewModel="True">
+    <dx:ThemedWindow.Resources>
+        <Style x:Key="ConsoleTextBox"
+               TargetType="{x:Type TextBox}">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <ScrollViewer RenderTransformOrigin="0.5,0.5"
+                                      VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer.RenderTransform>
+                                <ScaleTransform ScaleY="-1" />
+                            </ScrollViewer.RenderTransform>
+                            <TextBox RenderTransformOrigin="0.5,0.5"
+                                     Text="{TemplateBinding Text}">
+                                <TextBox.RenderTransform>
+                                    <ScaleTransform ScaleY="-1" />
+                                </TextBox.RenderTransform>
+                            </TextBox>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </dx:ThemedWindow.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog"
+                                      Title="Select Project To Publish" />
+        <dxmvvm:FolderBrowserDialogService x:Name="SelectFolderDialog" />
+        <dxmvvm:DispatcherService x:Name="DispatcherService" />
+        <dx:DXMessageBoxService x:Name="MessageBoxService" />
+    </dxmvvm:Interaction.Behaviors>
+    <dxlc:LayoutControl>
+        <dxlc:LayoutGroup Orientation="Vertical">
+            <dxlc:LayoutGroup>
+                <dxlc:LayoutItem Label="Project"
+                                 LabelHorizontalAlignment="Center"
+                                 LabelPosition="Top">
+                    <dxe:ButtonEdit AllowDefaultButton="True"
+                                    FontSize="14"
+                                    Text="{Binding ProjectPath}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding SelectProjectCommand}"
+                                                   EventName="DefaultButtonClick" />
+                        </dxmvvm:Interaction.Behaviors>
+                    </dxe:ButtonEdit>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Label="Output Location"
+                                 LabelHorizontalAlignment="Center"
+                                 LabelPosition="Top">
+                    <dxe:ButtonEdit AllowDefaultButton="True"
+                                    FontSize="14"
+                                    Text="{Binding OutputPath}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand Command="{Binding ChangeOutputLocationCommand}"
+                                                   EventName="DefaultButtonClick" />
+                        </dxmvvm:Interaction.Behaviors>
+                    </dxe:ButtonEdit>
+                </dxlc:LayoutItem>
+
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutItem Label="Log"
+                             LabelHorizontalAlignment="Center"
+                             LabelPosition="Top">
+                <TextBox Height="200"
+                         Style="{StaticResource ResourceKey=ConsoleTextBox}"
+                         Text="{Binding Log}" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem VerticalAlignment="Bottom"
+                             Label="Save or Cancel Changes"
+                             LabelHorizontalAlignment="Center"
+                             LabelPosition="Top">
+                <dxlc:LayoutGroup Height="30"
+                                  Orientation="Horizontal">
+                    <dx:SimpleButton Command="{Binding PublishCommand}"
+                                     Content="Publish"
+                                     Glyph="{dx:DXImage Image=Save_16x16.png}" />
+                    <dx:SimpleButton Command="{Binding CancelCommand}"
+                                     Content="Discard Changes"
+                                     Glyph="{dx:DXImage Image=Cancel_16x16.png}" />
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+
+    </dxlc:LayoutControl>
+</dx:ThemedWindow>
