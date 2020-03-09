@@ -22,7 +22,8 @@
         <dxlc:LayoutGroup Orientation="Vertical">
             <dx:SimpleButton Height="40"
                              Command="{Binding InstallCommand}"
-                             Content="Install" />
+                             Content="Install"
+                             IsEnabled="{Binding IsInstalling, Converter={dxmvvm:BooleanNegationConverter}}" />
             <dxlc:LayoutItem Margin="0,5,0,0"
                              Label="{Binding ProgressLabel}"
                              LabelHorizontalAlignment="Center"
@@ -48,10 +49,8 @@
                               VerticalAlignment="Center">
                 <dx:SimpleButton Command="{Binding BackCommand}"
                                  Content="Back"
-                                 IsEnabled="{Binding IsInstalling}" />
-                <dx:SimpleButton Command="{Binding NextCommand}"
-                                 Content="Next"
-                                 IsEnabled="{Binding IsInstalling}" />
+                                 IsEnabled="{Binding CanGoBack}" />
+
                 <dx:SimpleButton Command="{Binding CancelCommand}"
                                  Content="{Binding ButtonLabel}" />
             </dxlc:LayoutGroup>

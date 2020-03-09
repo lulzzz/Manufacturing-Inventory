@@ -112,13 +112,13 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 this.userService.CurrentSession = session;
             }
 
-            //Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            //if (this.ShowLogin()) {
-            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            //} else {
-            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            //    this.Shutdown();
-            //}
+            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (this.CheckVersion()) {
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            } else {
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                this.Shutdown();
+            }
             base.OnStartup(e);
         }
 

@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>PublishTool</AssemblyName>
-    <FileVersion>1.0.14.0306</FileVersion>
+    <FileVersion>1.0.22.0309</FileVersion>
     <StartupObject>PublishTool.App</StartupObject>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
@@ -12,5 +12,6 @@
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
     <PackageReference Include="Prism.DryIoc" Version="7.2.0.1367" />
+    <PackageReference Include="ZipHelperLibrary" Version="1.0.0" />
   </ItemGroup>
 </Project>

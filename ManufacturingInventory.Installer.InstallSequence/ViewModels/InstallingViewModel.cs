@@ -27,6 +27,8 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         private bool _installing = false;
         private string _progressLabel;
         private string _buttonLabel;
+        private bool _canGoForward;
+        private bool _canGoBack;
 
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DispatcherService"); }
         protected ICurrentWindowService CurrentWindowService { get => ServiceContainer.GetService<ICurrentWindowService>("InstallerCurrentWindow"); }
@@ -35,7 +37,7 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
 
         public PrismCommands.DelegateCommand BackCommand { get; private set; }
         public PrismCommands.DelegateCommand NextCommand { get; private set; }
-        public PrismCommands.DelegateCommand CancelCommand { get; private set; }
+        public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InstallCommand { get; private set; }
 
         public InstallingViewModel(IRegionManager regionManager, IEventAggregator eventAggregator,IInstaller installer,VersionCheckerResponce installTraveler) {
@@ -47,13 +49,14 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             this.ItemCount = 0;
             this.IsInstalling = false;
             this.MaxProgress = 100;
-            this.ProgressLabel = "Uninstall Progress";
+            this.ProgressLabel = "Install/Update Progress....";
             this.ButtonLabel = "Cancel";
             this.NextCommand = new PrismCommands.DelegateCommand(this.GoForward);
             this.BackCommand = new PrismCommands.DelegateCommand(this.GoBack);
-            this.CancelCommand = new PrismCommands.DelegateCommand(this.Cancel);
-            this.InstallCommand = new AsyncCommand(this.InstallHandler,()=>!this._installing);
+            this.CancelCommand = new AsyncCommand(this.Cancel);
+            this.InstallCommand = new AsyncCommand(this.InstallHandler);
             this._eventAggregator.GetEvent<IncrementProgress>().Subscribe(async (logLine)=> await this.IncrementProgressHandler(logLine));
+            this.SetProgressMessage();
         }
 
         public override bool KeepAlive {
@@ -61,7 +64,7 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         }
 
         public bool IsInstalling {
-            get => !this._installing;
+            get => this._installing;
             set => SetProperty(ref this._installing, value);
         }
 
@@ -91,6 +94,16 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             set => SetProperty(ref this._buttonLabel,value); 
         }
 
+        public bool CanGoForward { 
+            get => this._canGoForward;
+            set => SetProperty(ref this._canGoBack, value);
+        }
+        
+        public bool CanGoBack { 
+            get => this._canGoBack;
+            set => SetProperty(ref this._canGoBack, value);
+        }
+
         private void SetProgressMessage() {
             switch (this._installTraveler.InstallStatus) {
                 case InstallStatus.InstalledNewVersion:
@@ -103,15 +116,27 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
                     break;
                 case InstallStatus.ServerFilesMissing:
                     break;
+                default:
+                    this.ProgressLabel = "Installing...";
+                    break;
             }
         }
 
         private async Task InstallHandler() {
-
             this.IsInstalling = true;
-            this._installer.InstallLocation = this._installLocation;
-            this.MaxProgress = this._installer.CalculateWork();
+            this.CanGoBack = false;
+            this.CanGoForward = false;
+            this.ProgressLabel="Decompressing....";
+            this.InstallLog = DateTime.Now.ToString() + ": Stating Decompression"+Environment.NewLine;
+            this.ItemCount = 0;
+            this.MaxProgress = this._installer.CalculateZipWork();
+            await this._installer.UnZipAndMove();
+            this.SetProgressMessage();
+            this.InstallLog = DateTime.Now.ToString() + ": Stating Install" + Environment.NewLine;
 
+            this._installer.InstallLocation = this._installLocation;
+            this.ItemCount = 0;
+            this.MaxProgress = this._installer.CalculateWork();
             var token = this._tokenSource.Token;
             Task task;
             if (!string.IsNullOrEmpty(this._installLocation)) {
@@ -142,25 +167,31 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
                     });
                 });
             } else {
-                this.IsInstalling = false;
+                await this._installer.Cleanup();
+                this.CanGoForward = true;
                 this.InstallLog = (data.Result) ? ("Install Complete" + Environment.NewLine) : ("Install Failed" + Environment.NewLine);
+                this.DispatcherService.BeginInvoke(() => {
+                    this.GoForward();
+                });
             }
         }
 
         private async Task IncrementProgressHandler(string logLine) {
             await Task.Run(() => {
-                this.ItemCount = this.ItemCount + 1;
+                this.ItemCount += 1;
                 string line = DateTime.Now + ": " + logLine + Environment.NewLine;
                 this.InstallLog += line;
             });
         }
 
-        private void Cancel() {
-            if (this._installing) {
-                this._tokenSource.Cancel();
-            } else {
-                this._eventAggregator.GetEvent<CancelEvent>().Publish();
-            }
+        private async Task Cancel() {
+            await Task.Run(() => {
+                if (this._installing) {
+                    this._tokenSource.Cancel();
+                } else {
+                    this._eventAggregator.GetEvent<CancelEvent>().Publish();
+                }
+            });
         }
 
         private void GoBack() {

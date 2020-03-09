@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Prism.Events;
+using ZipHelperLibrary;
 using File = System.IO.File;
+using System.IO.Compression;
 
 namespace ManufacturingInventory.InstallSequence.Infrastructure {
     public interface IInstaller {
@@ -15,28 +17,31 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
         int CalculateWork();
         Task UnInstall();
         int CalculateWorkUninstall();
+        Task Cleanup();
+        int CalculateZipWork();
+        Task<bool> UnZipAndMove();
         string InstallLocation { get; set; }
     }
 
-    public class Installer:IInstaller {
+    public class Installer : IInstaller {
         private string sourceDirectory = Constants.SourceDirectory;
         private string targetDirectory = Constants.InstallLocationDefault;
         private string tempDirectrory;
         private IEventAggregator _eventAggregator;
         private VersionCheckerResponce _installTraveler;
-        
+
 
         public string InstallLocation {
-            get=>this.targetDirectory;
+            get => this.targetDirectory;
             set => this.targetDirectory = value;
         }
 
-        public Installer(IEventAggregator eventAggregator,VersionCheckerResponce installTraveler) {
+        public Installer(IEventAggregator eventAggregator, VersionCheckerResponce installTraveler) {
             this._eventAggregator = eventAggregator;
             this._installTraveler = installTraveler;
         }
 
-        public bool Install(string location=null) {
+        public bool Install(string location = null) {
             bool success = true;
 
             if (!string.IsNullOrEmpty(location)) {
@@ -62,13 +67,7 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
             return success;
         }
 
-        public async Task<bool> InstallAsync(CancellationToken cancellationToken,string location = null) {
-            bool success = true;
-
-            if (!string.IsNullOrEmpty(location)) {
-                this.sourceDirectory = location;
-            }
-
+        public async Task<bool> UnZipAndMove() {
             this.tempDirectrory = Path.Combine(Constants.TempDirectory, "ManufacturingTemp");
             try {
                 Directory.CreateDirectory(tempDirectrory);
@@ -77,12 +76,21 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
             }
 
             DirectoryInfo tSource = new DirectoryInfo(tempDirectrory);
-            await ZipHelper.Execute(tempDirectrory, this._installTraveler.VersionPath,ZipAction.UnZip,(message)=>this._eventAggregator.GetEvent<IncrementProgress>().Publish(message));
+            var responce=await ZipHelper.Execute(tempDirectrory, this._installTraveler.VersionPath, ZipAction.UnZip, (message) => this._eventAggregator.GetEvent<IncrementProgress>().Publish(message));
+            return responce.Success;
+        }
+        
+        public async Task<bool> InstallAsync(CancellationToken cancellationToken, string location = null) {
+            bool success = true;
+
+            if (!string.IsNullOrEmpty(location)) {
+                this.sourceDirectory = location;
+            }
 
             DirectoryInfo diSource = new DirectoryInfo(this.tempDirectrory);
             DirectoryInfo diTarget = new DirectoryInfo(this.targetDirectory);
             try {
-                await CopyAllAsync(diSource, diTarget,cancellationToken);
+                await CopyAllAsync(diSource, diTarget, cancellationToken);
             } catch {
                 success = false;
             }
@@ -97,8 +105,12 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
             return success;
         }
 
+        public int CalculateZipWork() {
+            return ZipFile.OpenRead(this._installTraveler.VersionPath).Entries.Count;
+        }
+
         public int CalculateWork() {
-            DirectoryInfo diSource = new DirectoryInfo(this.sourceDirectory);
+            DirectoryInfo diSource = new DirectoryInfo(this.tempDirectrory);
             var fileCount = diSource.GetFiles().Length;
             foreach (DirectoryInfo diSourceSubDir in diSource.GetDirectories()) {
                 fileCount += diSourceSubDir.GetFiles().Length;
@@ -160,8 +172,8 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
                         if (fi.LastWriteTime != info.LastWriteTime) {
                             File.Delete(dest);
                             await this.CopyFileAsync(fi.FullName, dest, cancellationToken);
-                            File.SetLastWriteTime(dest,fi.LastWriteTime);
-                            this._eventAggregator.GetEvent<IncrementProgress>().Publish("Updating "+fi.Name);
+                            File.SetLastWriteTime(dest, fi.LastWriteTime);
+                            this._eventAggregator.GetEvent<IncrementProgress>().Publish("Updating " + fi.Name);
                         } else {
                             this._eventAggregator.GetEvent<IncrementProgress>().Publish("Skipping " + fi.Name);
                         }
@@ -185,10 +197,17 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
 
         public async Task UnInstall() {
             await this.DeleteInnerAsync(this.targetDirectory);
+            await this.Cleanup();
         }
 
         public async Task DeleteAsync(string path) {
             await DeleteInnerAsync(path);
+        }
+
+        public async Task Cleanup() {
+            if (Directory.Exists(this.tempDirectrory)) {
+                await this.DeleteAsync(this.tempDirectrory);
+            }
         }
 
         private async Task DeleteInnerAsync(string path) {
@@ -196,14 +215,12 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
                 var f = new FileInfo(file);
                 this._eventAggregator.GetEvent<IncrementProgress>().Publish("Deleteing " + f.Name);
                 await DeleteFileAsync(file);
-                await Task.Delay(100);
             }
 
             foreach (string directory in Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly)) {
                 DirectoryInfo d = new DirectoryInfo(directory);
                 this._eventAggregator.GetEvent<IncrementProgress>().Publish("Deleteing " + d.Name);
                 await DeleteInnerAsync(directory);
-                await Task.Delay(100);
             }
             Directory.Delete(path);
         }
@@ -224,13 +241,25 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
             await sourceStream.CopyToAsync(destinationStream, bufferSize, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
         }
 
+        public void RemoveStartMenuShortcut() {
+            string pathToExe = Path.Combine(this.targetDirectory, "ManufacturingApplication.exe");
+            string commonStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
+            string appStartMenuPath = Path.Combine(commonStartMenuPath, "Programs", "Manufacturing Inventory");
+            string shortcutLocation = Path.Combine(appStartMenuPath, "Manufacturing Inventory" + ".lnk");
+            if (System.IO.File.Exists(shortcutLocation)) {
+                try {
+                    System.IO.File.Delete(shortcutLocation);
+                } catch { }
+            }
+        }
+
         public void AddStartMenuShortCut() {
-            string pathToExe = Path.Combine(this.targetDirectory, "ManufacturingInventory.ManufacturingApplication.exe");
+            string pathToExe = Path.Combine(this.targetDirectory, "ManufacturingApplication.exe");
             string commonStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
             string appStartMenuPath = Path.Combine(commonStartMenuPath, "Programs", "Manufacturing Inventory");
 
             if (!Directory.Exists(appStartMenuPath))
-                Directory.CreateDirectory(appStartMenuPath);
+                Directory.CreateDirectory(appStartMenuPath);                            
 
             string shortcutLocation = Path.Combine(appStartMenuPath, "Manufacturing Inventory" + ".lnk");
             if (System.IO.File.Exists(shortcutLocation)) {

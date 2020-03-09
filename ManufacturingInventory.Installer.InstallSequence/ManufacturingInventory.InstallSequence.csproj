@@ -3,13 +3,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.InstallSequence</AssemblyName>
-    <FileVersion>1.0.156.0306</FileVersion>
+    <FileVersion>1.0.178.0309</FileVersion>
     <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
+    <PackageReference Include="ZipHelperLibrary" Version="1.0.0" />
     <COMReference Include="IWshRuntimeLibrary.dll">
       <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
       <VersionMajor>1</VersionMajor>

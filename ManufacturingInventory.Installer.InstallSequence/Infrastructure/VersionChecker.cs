@@ -40,8 +40,8 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
                         string name = file.Name;
                         string versionString = GetVersionString(file.Name);
                         var values = versionString.Split(".");
-                        var version = Array.ConvertAll(values, e => Convert.ToInt32(e)).Sum();
-                        versionLookup.Add(version, file);
+                       var version = Array.ConvertAll(values, e => Convert.ToInt32(e)).Sum();
+                       versionLookup.Add(version, file);
                     }
                     var newVersionKey = versionLookup.Max(e => e.Key);
                     var newFile = versionLookup[newVersionKey];
@@ -68,6 +68,5 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
         public static string GetVersionString(string fileNameWithVersion) {
             return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
         }
-
     }
 }
