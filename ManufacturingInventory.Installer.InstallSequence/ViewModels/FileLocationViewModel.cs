@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DevExpress.Mvvm;
+﻿using DevExpress.Mvvm;
 using ManufacturingInventory.InstallSequence.Infrastructure;
-using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
 using PrismCommands = Prism.Commands;

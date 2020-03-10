@@ -31,6 +31,8 @@ using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
 using ManufacturingInventory.Application.Boundaries.CheckIn;
 using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
+using ManufacturingInventory.ManufacturingApplication.Services;
+using System.Diagnostics;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -113,11 +115,21 @@ namespace ManufacturingInventory.ManufacturingApplication {
             }
 
             Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            if (this.CheckVersion()) {
-                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            } else {
+            if (this.ShowCheckVersionWindow()) {
+                Process process = new Process();
+                ProcessStartInfo psi = new ProcessStartInfo {
+                    FileName = @"C:\Program Files (x86)\Manufacturing Inventory\Installer\InventoryInstaller.exe",
+                    UseShellExecute = false,
+                };
+                process.StartInfo = psi;
+                process.Start();
                 Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
                 this.Shutdown();
+            } else {
+                if (!DXSplashScreen.IsActive)
+                    DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
+
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
             }
             base.OnStartup(e);
         }
@@ -145,15 +157,24 @@ namespace ManufacturingInventory.ManufacturingApplication {
             return this.userService.IsValid();
         }
 
-        private bool CheckVersion() {
-            CheckVersionWindow versionWindow = new CheckVersionWindow();
-            var versionVM = new CheckVersionViewModel();
-            versionVM.CheckCompleted += (sender, args) => {
-                versionWindow.Close();
-            };
-            versionWindow.DataContext = versionVM;
-            versionWindow.ShowDialog();
-            return true;
+        private bool ShowCheckVersionWindow() {
+            CheckVersion versionChecker = new CheckVersion();
+            var response = versionChecker.Check();
+            if (response.NewVersionAvailable) {
+                CheckVersionWindow versionWindow = new CheckVersionWindow();
+                var versionVM = new CheckVersionViewModel(response);
+                versionVM.CheckCompleted += (sender, args) => {
+                    versionWindow.Close();
+                };
+                versionWindow.DataContext = versionVM;
+                if (DXSplashScreen.IsActive)
+                    DXSplashScreen.Close();
+
+                versionWindow.ShowDialog();
+                return versionVM.Update;
+            } else {
+                return false;
+            }
         }
 
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) {

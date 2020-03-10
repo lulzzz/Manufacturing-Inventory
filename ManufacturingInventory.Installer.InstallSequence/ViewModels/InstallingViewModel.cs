@@ -29,6 +29,7 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         private string _buttonLabel;
         private bool _canGoForward;
         private bool _canGoBack;
+        private string _installName;
 
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DispatcherService"); }
         protected ICurrentWindowService CurrentWindowService { get => ServiceContainer.GetService<ICurrentWindowService>("InstallerCurrentWindow"); }
@@ -104,20 +105,28 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             set => SetProperty(ref this._canGoBack, value);
         }
 
+        public string InstallName { 
+            get => this._installName;
+            set => SetProperty(ref this._installName, value);
+        }
+
         private void SetProgressMessage() {
             switch (this._installTraveler.InstallStatus) {
                 case InstallStatus.InstalledNewVersion:
                     this.ProgressLabel = "Updating....";
+                    this.InstallName = "Update";
                     break;
                 case InstallStatus.InstalledUpToDate:
                     break;
                 case InstallStatus.NotInstalled:
                     this.ProgressLabel = "Installing....";
+                    this.InstallName = "Install";
                     break;
                 case InstallStatus.ServerFilesMissing:
                     break;
                 default:
                     this.ProgressLabel = "Installing...";
+                    this.InstallName = "Install";
                     break;
             }
         }
@@ -130,9 +139,10 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
             this.InstallLog = DateTime.Now.ToString() + ": Stating Decompression"+Environment.NewLine;
             this.ItemCount = 0;
             this.MaxProgress = this._installer.CalculateZipWork();
-            await this._installer.UnZipAndMove();
+            await this._installer.UnZipAndMoveMain();
             this.SetProgressMessage();
             this.InstallLog = DateTime.Now.ToString() + ": Stating Install" + Environment.NewLine;
+
 
             this._installer.InstallLocation = this._installLocation;
             this.ItemCount = 0;

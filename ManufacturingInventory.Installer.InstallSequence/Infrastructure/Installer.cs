@@ -19,7 +19,7 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
         int CalculateWorkUninstall();
         Task Cleanup();
         int CalculateZipWork();
-        Task<bool> UnZipAndMove();
+        Task<bool> UnZipAndMoveMain();
         string InstallLocation { get; set; }
     }
 
@@ -27,6 +27,7 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
         private string sourceDirectory = Constants.SourceDirectory;
         private string targetDirectory = Constants.InstallLocationDefault;
         private string tempDirectrory;
+        private string tempInstallDirectory;
         private IEventAggregator _eventAggregator;
         private VersionCheckerResponce _installTraveler;
 
@@ -67,16 +68,35 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
             return success;
         }
 
-        public async Task<bool> UnZipAndMove() {
+        public async Task<bool> UnZipAndMoveMain() {
             this.tempDirectrory = Path.Combine(Constants.TempDirectory, "ManufacturingTemp");
+            this.tempInstallDirectory = Path.Combine(this.tempDirectrory, "Installer");
+
+            if (Directory.Exists(this.tempInstallDirectory)) {
+                await this.DeleteAsync(this.tempInstallDirectory);
+            }
+            if (Directory.Exists(this.tempDirectrory)) {
+                await this.DeleteAsync(this.tempDirectrory);
+            }
+
             try {
                 Directory.CreateDirectory(tempDirectrory);
             } catch {
                 return false;
             }
-
-            DirectoryInfo tSource = new DirectoryInfo(tempDirectrory);
-            var responce=await ZipHelper.Execute(tempDirectrory, this._installTraveler.VersionPath, ZipAction.UnZip, (message) => this._eventAggregator.GetEvent<IncrementProgress>().Publish(message));
+            bool firstTime = false;
+            if (this._installTraveler.InstallStatus == InstallStatus.NotInstalled) {
+                try {
+                    Directory.CreateDirectory(this.tempInstallDirectory);
+                    firstTime = true;
+                } catch {
+                    return false;
+                }
+            }
+            var responce=await ZipHelper.Execute(this.tempDirectrory, this._installTraveler.VersionPath, ZipAction.UnZip, (message) => this._eventAggregator.GetEvent<IncrementProgress>().Publish(message));
+            if (firstTime) {
+                var responce2 = await ZipHelper.Execute(this.tempInstallDirectory, Constants.InstallArchive, ZipAction.UnZip, (message) => this._eventAggregator.GetEvent<IncrementProgress>().Publish(message));
+            }
             return responce.Success;
         }
         
@@ -205,6 +225,9 @@ namespace ManufacturingInventory.InstallSequence.Infrastructure {
         }
 
         public async Task Cleanup() {
+            if (Directory.Exists(this.tempInstallDirectory)) {
+                await this.DeleteAsync(this.tempInstallDirectory);
+            }
             if (Directory.Exists(this.tempDirectrory)) {
                 await this.DeleteAsync(this.tempDirectrory);
             }

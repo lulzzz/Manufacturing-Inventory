@@ -11,11 +11,14 @@ using ZipHelperLibrary;
 namespace PublishTool.Common {
     
     public class UpdateLogEvent : PubSubEvent<string> { }
+    public class PublishDoneEvent : PubSubEvent { }
 
     public class PublishConstants {
         public static string SourceDirectory { get => @"D:\Software Development\Application Publish\Published"; }
         public static string PublishDirectroy { get=> @"\\172.20.4.20\Manufacturing Install\Application"; }
         public static string TargetProject { get => "\"D:/Software Development/Manufacturing Inventory/ManufacturingInventory/ManufacturingInventory.Main/ManufacturingInventory.UI.csproj\""; }
+        public static string ManufacturingPublish { get=> "publish \"D:/Software Development/Manufacturing Inventory/ManufacturingInventory/ManufacturingInventory.Main/ManufacturingInventory.UI.csproj\" " +
+                    "-c Release --output \"D:/Software Development/Application Publish/Published\" --self-contained false -r win7-x64";}
     }
 
     public interface IPublishToolService {
@@ -59,8 +62,7 @@ namespace PublishTool.Common {
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                 };
-                psi.Arguments = "publish \"D:/Software Development/Manufacturing Inventory/ManufacturingInventory/ManufacturingInventory.Main/ManufacturingInventory.UI.csproj\" " +
-                    "-c Release --output \"D:/Software Development/Application Publish/Published\" --self-contained false -r win7-x64";
+                psi.Arguments = PublishConstants.ManufacturingPublish;
                 process.StartInfo = psi;
                 process.OutputDataReceived += (sender, args) => this._eventAggregator.GetEvent<UpdateLogEvent>().Publish("Output: " + args.Data);
                 process.ErrorDataReceived += (sender, args) => this._eventAggregator.GetEvent<UpdateLogEvent>().Publish("Error: " + args.Data);
@@ -73,6 +75,7 @@ namespace PublishTool.Common {
             this.ParseFileName();
             if (!this._error) {
                 var response = await ZipHelper.Execute(this.SourceDirectroy, this.FinalPublishDirectory, ZipAction.Zip, (message) => this._eventAggregator.GetEvent<UpdateLogEvent>().Publish(message));
+                this._eventAggregator.GetEvent<UpdateLogEvent>().Publish("Publish Done!");
             } else {
                 this._eventAggregator.GetEvent<UpdateLogEvent>().Publish("File IO Error!!");
             }

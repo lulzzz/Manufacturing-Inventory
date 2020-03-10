@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DevExpress.Mvvm;
+﻿using System.Text;
 using ManufacturingInventory.InstallSequence.Infrastructure;
-using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
 using PrismCommands = Prism.Commands;
@@ -65,7 +61,13 @@ namespace ManufacturingInventory.InstallSequence.ViewModels {
         }
 
         private void GoFoward() {
-            this._regionManager.RequestNavigate("ContentRegion", "FileLocationView");
+            if (this._installTraveler.InstallStatus == InstallStatus.InstalledNewVersion) {
+                var parameters = new NavigationParameters();
+                parameters.Add("InstallLocation", Constants.InstallLocationDefault);
+                this._regionManager.RequestNavigate("ContentRegion", "InstallingView", parameters);
+            } else {
+                this._regionManager.RequestNavigate("ContentRegion", "FileLocationView");
+            }
             this._journal.GoForward();
         }
 

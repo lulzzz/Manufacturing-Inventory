@@ -31,9 +31,10 @@ namespace ManufacturingInventory.ManufacturingApplication.Services {
 
         public CheckVersionResponse Check() {
             var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var location = assemblyLocation;
             var fileVersion = FileVersionInfo.GetVersionInfo(assemblyLocation).FileVersion;
-            var temp = GetVersionString(fileVersion).Split(".");          
-            var fileVersionValue= Array.ConvertAll(temp, e => Convert.ToInt32(e)).Sum();
+            var temp = fileVersion.Split(".");
+            var fileVersionValue = CalculateVersion(temp);
             if (Directory.Exists(Constants.SourceDirectory)) {
                 DirectoryInfo directoryInfo = new DirectoryInfo(Constants.SourceDirectory);
                 var files = directoryInfo.GetFiles();
@@ -43,18 +44,17 @@ namespace ManufacturingInventory.ManufacturingApplication.Services {
                         string name = file.Name;
                         string versionString = GetVersionString(file.Name);
                         var values = versionString.Split(".");
-                        var version = Array.ConvertAll(values, e => Convert.ToInt32(e)).Sum();
+                        var version = CalculateVersion(values);
                         versionLookup.Add(version, file);
                     }
                     var newVersionKey = versionLookup.Max(e => e.Key);
                     var newFile = versionLookup[newVersionKey];
-                    var serverVersion = FileVersionInfo.GetVersionInfo(newFile.FullName).FileVersion;
+                    var serverVersion = GetVersionString(newFile.FullName);
                     if (fileVersionValue < newVersionKey) {
                         return new CheckVersionResponse(true, fileVersion,serverVersion);
                     } else {
                         return new CheckVersionResponse(false, fileVersion, serverVersion);
                     }
-
                 } else {
                     return new CheckVersionResponse(false, "", "");
                 }
@@ -66,46 +66,60 @@ namespace ManufacturingInventory.ManufacturingApplication.Services {
         public static string GetVersionString(string fileNameWithVersion) {
             return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
         }
-    }
 
-    public static class VersionChecker {
-        public static CheckVersion CheckInstalledVersion() {
-            if (Directory.Exists(Constants.SourceDirectory)) {
-                DirectoryInfo directoryInfo = new DirectoryInfo(Constants.SourceDirectory);
-                var files = directoryInfo.GetFiles();
-                if (files.Count() > 0) {
-                    Dictionary<int, FileInfo> versionLookup = new Dictionary<int, FileInfo>();
-                    foreach (var file in files) {
-                        string name = file.Name;
-                        string versionString = GetVersionString(file.Name);
-                        var values = versionString.Split(".");
-                        var version = Array.ConvertAll(values, e => Convert.ToInt32(e)).Sum();
-                        versionLookup.Add(version, file);
-                    }
-                    var newVersionKey = versionLookup.Max(e => e.Key);
-                    var newFile = versionLookup[newVersionKey];
-                    var newVersionStr = GetVersionString(newFile.Name);
-                    var dest = Path.Combine(Constants.InstallLocationDefault, "ManufacturingApplication.exe");
-                    if (File.Exists(dest)) {
-                        var installedVersionStr = FileVersionInfo.GetVersionInfo(dest).FileVersion;
-                        if (installedVersionStr == newVersionStr) {
-                            return 
-                        } else {
-                            return new VersionCheckerResponce(, newVersionStr, "New Version Available", newFile.FullName);
-                        }
-                    } else {
-                        return new VersionCheckerResponce(InstallStatus.NotInstalled, newVersionStr, "Not Installed", newFile.FullName);
-                    }
+        public static int CalculateVersion(string[] versionStringArray) {
+            var versionArrray = Array.ConvertAll(versionStringArray, e => Convert.ToInt32(e));
+            int dateTimeValue = 1;
+            int majorMinorValue = 0;
+            for (int i = 0; i < versionArrray.Length; i++) {
+                if (i >= 2) {
+                    dateTimeValue *= versionArrray[i];
                 } else {
-                    return new VersionCheckerResponce(InstallStatus.ServerFilesMissing, "", "No Files Found In Directory", "");
+                    majorMinorValue += versionArrray[i];
                 }
-            } else {
-                return new VersionCheckerResponce(InstallStatus.ServerFilesMissing, "", "Directory Not Found", "");
             }
-        }
-
-        public static string GetVersionString(string fileNameWithVersion) {
-            return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
+            return dateTimeValue + majorMinorValue;
         }
     }
+
+    //public static class VersionChecker {
+    //    public static CheckVersion CheckInstalledVersion() {
+    //        if (Directory.Exists(Constants.SourceDirectory)) {
+    //            DirectoryInfo directoryInfo = new DirectoryInfo(Constants.SourceDirectory);
+    //            var files = directoryInfo.GetFiles();
+    //            if (files.Count() > 0) {
+    //                Dictionary<int, FileInfo> versionLookup = new Dictionary<int, FileInfo>();
+    //                foreach (var file in files) {
+    //                    string name = file.Name;
+    //                    string versionString = GetVersionString(file.Name);
+    //                    var values = versionString.Split(".");
+    //                    var version = Array.ConvertAll(values, e => Convert.ToInt32(e)).Sum();
+    //                    versionLookup.Add(version, file);
+    //                }
+    //                var newVersionKey = versionLookup.Max(e => e.Key);
+    //                var newFile = versionLookup[newVersionKey];
+    //                var newVersionStr = GetVersionString(newFile.Name);
+    //                var dest = Path.Combine(Constants.InstallLocationDefault, "ManufacturingApplication.exe");
+    //                if (File.Exists(dest)) {
+    //                    var installedVersionStr = FileVersionInfo.GetVersionInfo(dest).FileVersion;
+    //                    if (installedVersionStr == newVersionStr) {
+    //                        return 
+    //                    } else {
+    //                        return new VersionCheckerResponce(, newVersionStr, "New Version Available", newFile.FullName);
+    //                    }
+    //                } else {
+    //                    return new VersionCheckerResponce(InstallStatus.NotInstalled, newVersionStr, "Not Installed", newFile.FullName);
+    //                }
+    //            } else {
+    //                return new VersionCheckerResponce(InstallStatus.ServerFilesMissing, "", "No Files Found In Directory", "");
+    //            }
+    //        } else {
+    //            return new VersionCheckerResponce(InstallStatus.ServerFilesMissing, "", "Directory Not Found", "");
+    //        }
+    //    }
+
+    //    public static string GetVersionString(string fileNameWithVersion) {
+    //        return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
+    //    }
+    //}
 }

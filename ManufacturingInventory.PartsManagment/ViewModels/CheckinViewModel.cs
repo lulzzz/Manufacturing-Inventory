@@ -738,6 +738,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     if (part != null) {
                         //partInstance.CostReported = part.DefaultToCostReported;
                         this.CostReported = part.DefaultToCostReported;
+                        partInstance.CostReported = part.DefaultToCostReported;
                         if (part.WarehouseId.HasValue) {
                             partInstance.LocationId = part.WarehouseId.Value;
                             this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == part.WarehouseId);

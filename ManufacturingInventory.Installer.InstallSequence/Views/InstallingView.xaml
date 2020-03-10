@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:local="clr-namespace:ManufacturingInventory.InstallSequence.Views"
@@ -13,6 +12,30 @@
              d:DesignWidth="530"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="ConsoleTextBox"
+               TargetType="{x:Type TextBox}">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <ScrollViewer RenderTransformOrigin="0.5,0.5"
+                                      VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer.RenderTransform>
+                                <ScaleTransform ScaleY="-1" />
+                            </ScrollViewer.RenderTransform>
+                            <TextBox RenderTransformOrigin="0.5,0.5"
+                                     Text="{TemplateBinding Text}">
+                                <TextBox.RenderTransform>
+                                    <ScaleTransform ScaleY="-1" />
+                                </TextBox.RenderTransform>
+                            </TextBox>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="DispatcherService" />
         <dxmvvm:CurrentWindowService x:Name="InstallerCurrentWindow" />
@@ -22,7 +45,7 @@
         <dxlc:LayoutGroup Orientation="Vertical">
             <dx:SimpleButton Height="40"
                              Command="{Binding InstallCommand}"
-                             Content="Install"
+                             Content="{Binding InstallName}"
                              IsEnabled="{Binding IsInstalling, Converter={dxmvvm:BooleanNegationConverter}}" />
             <dxlc:LayoutItem Margin="0,5,0,0"
                              Label="{Binding ProgressLabel}"
@@ -39,11 +62,8 @@
                              LabelHorizontalAlignment="Center"
                              LabelPosition="Top">
                 <TextBox Height="120"
-                         AcceptsReturn="True"
-                         AcceptsTab="True"
-                         IsReadOnly="True"
-                         Text="{Binding InstallLog}"
-                         VerticalScrollBarVisibility="Visible" />
+                         Style="{StaticResource ResourceKey=ConsoleTextBox}"
+                         Text="{Binding InstallLog}" />
             </dxlc:LayoutItem>
             <dxlc:LayoutGroup Height="30"
                               VerticalAlignment="Center">

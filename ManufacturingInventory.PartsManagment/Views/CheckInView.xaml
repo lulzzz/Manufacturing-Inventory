@@ -1,0 +1,472 @@
+﻿<UserControl x:Class="ManufacturingInventory.PartsManagment.Views.CheckInView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:appDef="clr-namespace:ManufacturingInventory.Application.Boundaries.CheckIn;assembly=ManufacturingInventory.Application"
+             xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.ValueConverters;assembly=ManufacturingInventory.Common"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:validationRules="clr-namespace:ManufacturingInventory.Common.Application.ValidationRules;assembly=ManufacturingInventory.Common"
+             d:DesignHeight="600"
+             d:DesignWidth="700"
+             dx:ThemeManager.Theme="VS2017Blue"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
+                               EventName="Loaded" />
+        <dx:DXMessageBoxService x:Name="CheckInMessageBoxService" />
+        <dxmvvm:DispatcherService x:Name="CheckInDispatcherService" />
+        <dx:DialogService x:Name="SelectPriceDialog"
+                          DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:SelectPricePopupView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width" Value="900" />
+                    <Setter Property="Height" Value="400" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+    </dxmvvm:Interaction.Behaviors>
+    <dx:LoadingDecorator>
+        <dxlc:LayoutGroup Orientation="Vertical"
+                          View="GroupBox">
+            <dxlc:LayoutGroup.HeaderTemplate>
+                <DataTemplate>
+                    <dxlc:LayoutGroup>
+                        <dx:DXImage Width="16"
+                                    Height="16"
+                                    HorizontalAlignment="Center"
+                                    Source="{dx:DXImage Image=BOProductGroup_16x16.png}" />
+                        <TextBlock HorizontalAlignment="Center"
+                                   FontSize="14">
+                            Step 1: General PartInstance Information
+                        </TextBlock>
+
+                    </dxlc:LayoutGroup>
+
+                </DataTemplate>
+            </dxlc:LayoutGroup.HeaderTemplate>
+            <dxlc:LayoutGroup Orientation="Vertical">
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem Label="Name"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:TextEdit EditValue="{Binding Name, ValidatesOnDataErrors=True}"
+                                      IsReadOnly="{Binding IsExisting}"
+                                      ValidateOnEnterKeyPressed="True"
+                                      ValidateOnTextInput="True" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Serial Number"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:TextEdit EditValue="{Binding SelectedPartInstance.SerialNumber}"
+                                      IsReadOnly="{Binding IsExisting}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Batch Number"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:TextEdit EditValue="{Binding SelectedPartInstance.BatchNumber}"
+                                      IsReadOnly="{Binding IsExisting}" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Visibility="{Binding IsExisting, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                    <dxlc:LayoutItem Label="Unit Cost"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:TextEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      AllowSpinOnMouseWheel="False"
+                                      IsReadOnly="True"
+                                      Mask="c3"
+                                      MaskType="Numeric"
+                                      MaskUseAsDisplayFormat="True"
+                                      Text="{Binding UnitCost}"
+                                      TextWrapping="Wrap" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Total Cost"
+                                     LabelHorizontalAlignment="Center"
+                                     LabelPosition="Top">
+                        <dxe:TextEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                      IsReadOnly="True"
+                                      Mask="c3"
+                                      MaskType="Numeric"
+                                      MaskUseAsDisplayFormat="True"
+                                      Text="{Binding TotalCost}"
+                                      TextWrapping="Wrap" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem Label="Select Warehouse"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                          IsReadOnly="{Binding IsExisting}"
+                                          IsTextEditable="False"
+                                          ItemsSource="{Binding Warehouses}"
+                                          SelectedItem="{Binding SelectedWarehouse, ValidatesOnDataErrors=True}"
+                                          ValidateOnEnterKeyPressed="True"
+                                          ValidateOnTextInput="True">
+                            <dxe:ComboBoxEdit.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Stretch"
+                                               Text="{Binding Name}" />
+                                </DataTemplate>
+                            </dxe:ComboBoxEdit.ItemTemplate>
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Select Condition(Optional)"
+                                     Style="{StaticResource LayoutItemStyle}"
+                                     Visibility="{Binding IsReusable, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                        <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                          IsReadOnly="{Binding IsExisting}"
+                                          IsTextEditable="False"
+                                          ItemsSource="{Binding Conditions}"
+                                          SelectedItem="{Binding SelectedCondition}">
+                            <dxe:ComboBoxEdit.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Stretch"
+                                               Text="{Binding Name}" />
+                                </DataTemplate>
+                            </dxe:ComboBoxEdit.ItemTemplate>
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Usage"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                          IsReadOnly="{Binding IsExisting}"
+                                          IsTextEditable="False"
+                                          ItemsSource="{Binding UsageList}"
+                                          SelectedItem="{Binding SelectedUsage}">
+                            <dxe:ComboBoxEdit.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Stretch"
+                                               Text="{Binding Name}" />
+                                </DataTemplate>
+                            </dxe:ComboBoxEdit.ItemTemplate>
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Orientation="Horizontal"
+                                  Visibility="{Binding IsExisting, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}">
+                    <dxlc:LayoutItem Label="Description"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:TextEdit Height="50"
+                                      IsReadOnly="{Binding IsExisting}"
+                                      Style="{StaticResource TextEditComments}"
+                                      Text="{Binding SelectedPartInstance.Description}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Comments"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:TextEdit Height="50"
+                                      IsReadOnly="{Binding IsExisting}"
+                                      Style="{StaticResource TextEditComments}"
+                                      Text="{Binding SelectedPartInstance.Comments}" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Orientation="Horizontal">
+                    <dxlc:LayoutItem Label="Cost Reported?"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          CheckedStateContent="YES"
+                                          ContentPlacement="Both"
+                                          IsChecked="{Binding CostReported}"
+                                          IsReadOnly="{Binding IsExisting}"
+                                          UncheckedStateContent="NO" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Reusable?"
+                                     Style="{StaticResource LayoutItemStyle}"
+                                     Visibility="{Binding IsExisting, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}">
+                        <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          CheckedStateContent="YES"
+                                          ContentPlacement="Both"
+                                          IsChecked="{Binding IsReusable}"
+                                          UncheckedStateContent="NO" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutGroup>
+                        <dxlc:LayoutItem Label="Transaction TimeStamp"
+                                         LabelHorizontalAlignment="Center"
+                                         LabelPosition="Top">
+                            <dxe:DateEdit HorizontalContentAlignment="Center"
+                                          EditValue="{Binding TransactionTimeStamp, Mode=TwoWay}" />
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutGroup>
+                <dx:DXTabControl>
+                    <dx:DXTabItem Glyph="{dx:DXImage Image=BOProductGroup_16x16.png}"
+                                  Header="Step 2: Stock Information"
+                                  IsSelected="True">
+                        <dxlc:LayoutGroup Orientation="Vertical">
+                            <dxlc:LayoutGroup Orientation="Horizontal"
+                                              View="GroupBox">
+                                <dxlc:LayoutGroup.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   FontSize="12"
+                                                   Text="Stock Input" />
+                                    </DataTemplate>
+                                </dxlc:LayoutGroup.HeaderTemplate>
+                                <dxlc:LayoutItem Label="Stock Type(Optional)"
+                                                 Style="{StaticResource LayoutItemStyle}">
+                                    <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                                      IsTextEditable="False"
+                                                      ItemsSource="{Binding StockTypes}"
+                                                      SelectedItem="{Binding SelectedStockType}">
+                                        <dxe:ComboBoxEdit.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock HorizontalAlignment="Stretch"
+                                                           Text="{Binding Name}" />
+                                            </DataTemplate>
+                                        </dxe:ComboBoxEdit.ItemTemplate>
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding StockTypeSelectionChanged}"
+                                                                   EventName="EditValueChanged" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </dxe:ComboBoxEdit>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem Label="Quantity"
+                                                 Style="{StaticResource LayoutItemStyle}">
+                                    <dxe:SpinEdit Increment="1"
+                                                  IsReadOnly="{Binding CanChangeQuantity, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                  Mask="d"
+                                                  MaskType="Numeric"
+                                                  MinValue="0"
+                                                  Text="{Binding Quantity, ValidatesOnDataErrors=True}"
+                                                  ValidateOnEnterKeyPressed="True"
+                                                  ValidateOnTextInput="True" />
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem Label="Min Quantity"
+                                                 LabelHorizontalAlignment="Center"
+                                                 LabelPosition="Top">
+                                    <dxe:SpinEdit Increment="1"
+                                                  IsReadOnly="{Binding CanEditStock, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                  Mask="d"
+                                                  MaskType="Numeric"
+                                                  MinValue="0"
+                                                  Text="{Binding SelectedPartInstance.MinQuantity}" />
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem Label="Safe Quantity"
+                                                 LabelHorizontalAlignment="Center"
+                                                 LabelPosition="Top">
+                                    <dxe:SpinEdit Increment="1"
+                                                  IsReadOnly="{Binding CanEditStock, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                  Mask="d"
+                                                  MaskType="Numeric"
+                                                  MinValue="0"
+                                                  Text="{Binding SelectedPartInstance.SafeQuantity}" />
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+                            <dxlc:LayoutGroup Orientation="Vertical"
+                                              View="GroupBox"
+                                              Visibility="{Binding IsBubbler, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                <dxlc:LayoutGroup.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   FontSize="12"
+                                                   Text="Bubbler Input" />
+                                    </DataTemplate>
+                                </dxlc:LayoutGroup.HeaderTemplate>
+                                <dxlc:LayoutGroup>
+                                    <dxlc:LayoutItem Label="Net"
+                                                     Style="{StaticResource LayoutItemStyle}">
+                                        <dxe:SpinEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                                      AllowSpinOnMouseWheel="False"
+                                                      Mask="f"
+                                                      MaskType="Numeric"
+                                                      MaskUseAsDisplayFormat="True"
+                                                      Text="{Binding NetWeight, ValidatesOnDataErrors=True}"
+                                                      ValidateOnEnterKeyPressed="True"
+                                                      ValidateOnTextInput="True" />
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem Label="Gross"
+                                                     Style="{StaticResource LayoutItemStyle}">
+                                        <dxe:SpinEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                                      AllowSpinOnMouseWheel="False"
+                                                      Mask="f"
+                                                      MaskType="Numeric"
+                                                      MaskUseAsDisplayFormat="True"
+                                                      Text="{Binding GrossWeight, ValidatesOnDataErrors=True}"
+                                                      ValidateOnEnterKeyPressed="True"
+                                                      ValidateOnTextInput="True" />
+                                    </dxlc:LayoutItem>
+                                </dxlc:LayoutGroup>
+                                <dxlc:LayoutGroup>
+                                    <dxlc:LayoutItem Label="Measured"
+                                                     Style="{StaticResource LayoutItemStyle}">
+                                        <dxe:SpinEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                                      AllowSpinOnMouseWheel="False"
+                                                      Mask="f"
+                                                      MaskType="Numeric"
+                                                      MaskUseAsDisplayFormat="True"
+                                                      Text="{Binding Measured, ValidatesOnDataErrors=True}"
+                                                      ValidateOnEnterKeyPressed="True"
+                                                      ValidateOnTextInput="True" />
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem Label="Weight"
+                                                     Style="{StaticResource LayoutItemStyle}">
+                                        <dxe:SpinEdit dxe:NumericMaskOptions.AlwaysShowDecimalSeparator="False"
+                                                      AllowSpinOnMouseWheel="False"
+                                                      IsReadOnly="True"
+                                                      Mask="f"
+                                                      MaskType="Numeric"
+                                                      MaskUseAsDisplayFormat="True"
+                                                      Text="{Binding Weight}" />
+                                    </dxlc:LayoutItem>
+                                </dxlc:LayoutGroup>
+                            </dxlc:LayoutGroup>
+                        </dxlc:LayoutGroup>
+                    </dx:DXTabItem>
+                    <dx:DXTabItem Glyph="{dx:DXImage Image=BO_Price.png}"
+                                  Header="Step 3:Pricing"
+                                  Visibility="{Binding IsExisting, Converter={dxmvvm:BooleanToVisibilityConverter Inverse=True}}">
+                        <dxlc:LayoutGroup Orientation="Vertical">
+                            <dxlc:LayoutGroup>
+                                <dxlc:LayoutItem Label="Select Pricing Option"
+                                                 Style="{StaticResource LayoutItemStyle}">
+                                    <dxe:ComboBoxEdit Name="comboBoxEdit"
+                                                      ApplyItemTemplateToSelectedItem="True"
+                                                      EditValue="{Binding SelectedPriceOption, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                                      IsTextEditable="False"
+                                                      ValidateOnEnterKeyPressed="True"
+                                                      ValidateOnTextInput="True">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:PriceOption}"
+                                                                            SortMode="DisplayName" />
+                                            <dxmvvm:EventToCommand Command="{Binding PriceOptionSelectionChangedCommand}"
+                                                                   EventName="EditValueChanged">
+                                                <dxmvvm:EventToCommand.EventArgsConverter>
+                                                    <common:EditValueChangedEventArgsConverter />
+                                                </dxmvvm:EventToCommand.EventArgsConverter>
+                                            </dxmvvm:EventToCommand>
+                                        </dxmvvm:Interaction.Behaviors>
+                                        <dxe:ComboBoxEdit.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Text="{Binding Name}" />
+                                                    <TextBlock Grid.Row="1"
+                                                               FontSize="9"
+                                                               Text="{Binding Description}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </dxe:ComboBoxEdit.ItemTemplate>
+                                    </dxe:ComboBoxEdit>
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+                            <dxlc:LayoutGroup Orientation="Horizontal">
+                                <dxlc:LayoutGroup Orientation="Vertical">
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem Label="Unit Cost"
+                                                         Style="{StaticResource LayoutItemStyle}">
+                                            <dxe:SpinEdit Increment="1"
+                                                          IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                          Mask="c3"
+                                                          MaskType="Numeric"
+                                                          MinValue="0"
+                                                          Text="{Binding Price.UnitCost, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Select Distributor"
+                                                         Style="{StaticResource LayoutItemStyle}">
+                                            <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                                              IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                              IsTextEditable="False"
+                                                              ItemsSource="{Binding Distributors}"
+                                                              SelectedItem="{Binding SelectedDistributor}">
+                                                <dxe:ComboBoxEdit.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock HorizontalAlignment="Stretch"
+                                                                   Text="{Binding Name}" />
+                                                    </DataTemplate>
+                                                </dxe:ComboBoxEdit.ItemTemplate>
+                                            </dxe:ComboBoxEdit>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem Label="Min Order"
+                                                         LabelHorizontalAlignment="Center"
+                                                         LabelPosition="Top">
+                                            <dxe:SpinEdit Increment="1"
+                                                          IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                          Mask="d"
+                                                          MaskType="Numeric"
+                                                          MinValue="0"
+                                                          Text="{Binding Price.MinOrder}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="LeadTime(days)"
+                                                         LabelHorizontalAlignment="Center"
+                                                         LabelPosition="Top">
+                                            <dxe:SpinEdit Increment="1"
+                                                          IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}"
+                                                          Mask="d"
+                                                          MaskType="Numeric"
+                                                          MinValue="0"
+                                                          Text="{Binding Price.LeadTime}" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup Orientation="Vertical">
+                                        <dxlc:LayoutItem Label="TimeStamp"
+                                                         LabelHorizontalAlignment="Center"
+                                                         LabelPosition="Top">
+                                            <dxe:DateEdit HorizontalContentAlignment="Center"
+                                                          EditValue="{Binding Price.TimeStamp, Mode=TwoWay}"
+                                                          IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutGroup>
+                                            <dxlc:LayoutItem Label="Valid From(optional)"
+                                                             LabelHorizontalAlignment="Center"
+                                                             LabelPosition="Top">
+                                                <dxe:DateEdit HorizontalContentAlignment="Center"
+                                                              EditValue="{Binding Price.ValidFrom, Mode=TwoWay}"
+                                                              IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Valid Until(optional)"
+                                                             LabelHorizontalAlignment="Center"
+                                                             LabelPosition="Top">
+                                                <dxe:DateEdit HorizontalContentAlignment="Center"
+                                                              EditValue="{Binding Price.ValidUntil, Mode=TwoWay}"
+                                                              IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}" />
+                                            </dxlc:LayoutItem>
+                                        </dxlc:LayoutGroup>
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutGroup>
+                            </dxlc:LayoutGroup>
+                        </dxlc:LayoutGroup>
+                    </dx:DXTabItem>
+                </dx:DXTabControl>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutItem DockPanel.Dock="Bottom"
+                             Label="Save or Cancel Changes"
+                             Style="{StaticResource LayoutItemStyle}">
+                <dxlc:LayoutGroup Orientation="Horizontal">
+                    <dx:SimpleButton Height="50"
+                                     Command="{Binding CheckInCommand}"
+                                     Content="Check In"
+                                     Glyph="{dx:DXImage Image=Save_32x32.png}" />
+                    <dx:SimpleButton Height="50"
+                                     Command="{Binding CancelCommand}"
+                                     Content="Cancel"
+                                     Glyph="{dx:DXImage Image=Cancel_32x32.png}" />
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+    </dx:LoadingDecorator>
+</UserControl>

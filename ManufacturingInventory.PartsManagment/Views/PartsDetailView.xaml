@@ -17,7 +17,6 @@
              xmlns:prism="http://prismlibrary.com/"
              d:DesignHeight="600"
              d:DesignWidth="1000"
-             dx:ThemeManager.Theme="VS2017Blue"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d">
     <UserControl.Resources>
