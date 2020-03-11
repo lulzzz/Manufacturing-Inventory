@@ -10,8 +10,6 @@
                     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
                     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
-
-
     <Style x:Key="GridControlStyle"
            TargetType="dxg:GridControl">
         <Setter Property="AutoGenerateColumns" Value="None" />
@@ -90,8 +88,7 @@
         <Setter Property="ShowSearchPanelMode" Value="Never" />
     </Style>
 
-    <Style x:Key="BarStyle"
-           TargetType="dxb:Bar">
+    <Style x:Key="BarStyle" TargetType="dxb:Bar">
         <Setter Property="AllowCollapse" Value="False" />
         <Setter Property="AllowCustomizationMenu" Value="False" />
         <Setter Property="AllowDrop" Value="False" />

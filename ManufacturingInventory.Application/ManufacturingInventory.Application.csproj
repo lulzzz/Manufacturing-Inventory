@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.1.18.7374</FileVersion>
+    <FileVersion>1.1.28.7375</FileVersion>
     <Configurations>Debug;Release;fr</Configurations>
     <Version>1.5.9</Version>
   </PropertyGroup>
@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Boundaries\DistributorEdit\" />
-    <Folder Include="Boundaries\ManufacturerEdit\" />
     <Folder Include="Boundaries\ContactEdit\" />
     <Folder Include="Boundaries\AlertEdit\" />
   </ItemGroup>

@@ -3,12 +3,17 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.DistributorManagment</AssemblyName>
-    <FileVersion>1.0.1.0310</FileVersion>
+    <FileVersion>1.0.7.7375</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
     <PackageReference Include="DevExpress.WindowsDesktop.Mvvm" Version="19.1.8" />
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
-    <PackageReference Include="Prism.Wpf" Version="7.2.0.1367" />
+    <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ManufacturingInventory.Application\ManufacturingInventory.Application.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ManufacturingInventory.Common.Application.UI.ViewModels {
     public class FileNameViewModel {
+
         public FileNameViewModel() {
             this.FileName = "";
             this.Description = "";

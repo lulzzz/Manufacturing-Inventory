@@ -13,9 +13,76 @@
              xmlns:local="clr-namespace:ManufacturingInventory.DistributorManagment.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
-             d:DesignHeight="450"
-             d:DesignWidth="800"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             d:DesignHeight="450"
+             d:DesignWidth="800"          
              mc:Ignorable="d">
-    <Grid />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="PriceDetailDispatcher" />
+        <dx:DXMessageBoxService x:Name="PriceDetailsMessageService" />
+        <dxmvvm:EventToCommand Command="{Binding InitializeCommand}" EventName="Loaded" />
+    </dxmvvm:Interaction.Behaviors>
+    <dxb:BarManager>
+        <dxb:BarManager.Bars>
+            <dxb:Bar Style="{StaticResource BarStyle}">
+                <dxb:BarButtonItem x:Name="_instanceTableExportPDF"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   Command="{Binding AddNewDistributorCommand}"
+                                   Content="New Distributor"
+                                   Glyph="{dx:DXImage Image=Add_32x32.png}" />
+                <dxb:BarButtonItem x:Name="_distributorAdd"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   Command="{Binding DeleteDistributorCommand}"
+                                   Content="Delete Distributor"
+                                   Glyph="{dx:DXImage Image=Delete_32x32.png}" />
+            </dxb:Bar>
+        </dxb:BarManager.Bars>
+        <dxg:GridControl x:Name="_listOfDistributors"
+                         ItemsSource="{Binding Distributor, IsAsync=True, Mode=TwoWay}"
+                         SelectedItem="{Binding SelectedDistributor, Mode=TwoWay, IsAsync=True}"
+                         ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                         Style="{StaticResource GridControlStyle}">
+            <dxg:GridControl.View>
+                <dxg:TableView x:Name="_distributorTableView"
+                               AllowBestFit="True"
+                               AutoWidth="False"
+                               BestFitArea="All"
+                               BestFitMode="AllRows"
+                               HorizontalScrollbarVisibility="Visible"
+                               SearchColumns="Name"
+                               SearchPanelNullText="Search By Name"
+                               ShowSearchPanelMode="Always"
+                               Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand Command="{Binding ElementName=_distributorTableView, Path=TableViewCommands.BestFitColumns}"
+                                               EventName="Loaded" />
+                        <dxmvvm:EventToCommand Command="{Binding DoubleClickViewCommand}"
+                                               EventName="MouseDoubleClick" />
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:TableView.RowCellMenuCustomizations>
+                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ViewDistributorDetailsCommand}"
+                                           Content="View Details"
+                                           Glyph="{dx:DXImage Image=ConvertToRange_16x16.png}" />
+                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.EditDistributorCommand}"
+                                           Content="Edit Distributor"
+                                           Glyph="{dx:DXImage Image=Action_Edit.png}" />
+                        <dxb:BarItemSeparator />
+                    </dxg:TableView.RowCellMenuCustomizations>
+                </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridColumn Header="Name"
+                            FieldName="Name" />
+            <dxg:GridColumn Header="Description"
+                            FieldName="Description" />
+            
+        </dxg:GridControl>
+    </dxb:BarManager>
 </UserControl>

@@ -21,7 +21,13 @@ using ManufacturingInventory.Application.Boundaries.CheckIn;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static async Task<int> Main(string[] args) {
-            return await UndoTransactionTesting();
+            using var context = new ManufacturingContext();
+            var distributor = context.Distributors.FirstOrDefault(e=>e.Id==13);
+            await context.AddAsync(distributor);
+           // context.Update(new Distributor("AETestDistributor","Some Description"));
+            await context.SaveChangesAsync();
+            Console.WriteLine("Should be done");
+            return 1;
         }
 
         public static async Task<int> UndoTransactionTesting() {

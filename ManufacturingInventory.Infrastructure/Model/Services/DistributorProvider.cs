@@ -16,15 +16,27 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
         }
 
         public Distributor GetEntity(Expression<Func<Distributor, bool>> expression) {
-            return this._context.Distributors.FirstOrDefault(expression);
+            return this._context.Distributors
+                .Include(e => e.Attachments)
+                .Include(e => e.Prices)
+                .Include(e => e.Contacts)
+                .FirstOrDefault(expression);
         }
 
         public async Task<Distributor> GetEntityAsync(Expression<Func<Distributor, bool>> expression) {
-            return await this._context.Distributors.FirstOrDefaultAsync(expression);
+            return await this._context.Distributors
+                .Include(e => e.Attachments)
+                .Include(e => e.Prices)
+                .Include(e => e.Contacts)
+                .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<Distributor> GetEntityList(Expression<Func<Distributor, bool>> expression = null, Func<IQueryable<Distributor>, IOrderedQueryable<Distributor>> orderBy = null) {
-            IQueryable<Distributor> query = this._context.Set<Distributor>().AsNoTracking();
+            IQueryable<Distributor> query = this._context.Set<Distributor>()
+                .Include(e => e.Attachments)
+                .Include(e => e.Prices)
+                .Include(e => e.Contacts)
+                .AsNoTracking();
 
             if (expression != null) {
                 query = query.Where(expression);
@@ -38,7 +50,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
         }
 
         public async Task<IEnumerable<Distributor>> GetEntityListAsync(Expression<Func<Distributor, bool>> expression = null, Func<IQueryable<Distributor>, IOrderedQueryable<Distributor>> orderBy = null) {
-            IQueryable<Distributor> query = this._context.Set<Distributor>().AsNoTracking();
+            IQueryable<Distributor> query = this._context.Set<Distributor>()
+                .Include(e => e.Attachments)
+                .Include(e => e.Prices)
+                .Include(e => e.Contacts)
+                .AsNoTracking();
 
             if (expression != null) {
                 query = query.Where(expression);
@@ -52,11 +68,19 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
         }
 
         public void Load() {
-            this._context.Distributors.Load();
+            this._context.Distributors
+                .Include(e => e.Attachments)
+                .Include(e => e.Prices)
+                .Include(e => e.Contacts)
+                .Load();
         }
 
         public async Task LoadAsync() {
-            await this._context.Distributors.LoadAsync();
+            await this._context.Distributors
+                .Include(e => e.Attachments)
+                .Include(e => e.Prices)
+                .Include(e => e.Contacts)
+                .LoadAsync();
         }
     }
 }
