@@ -11,11 +11,121 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:local="clr-namespace:ManufacturingInventory.DistributorManagment.Views"
+             xmlns:localCommon="clr-namespace:ManufacturingInventory.DistributorManagment.Internal"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
-             d:DesignHeight="450"
-             d:DesignWidth="800"
+             d:DesignHeight="700"
+             d:DesignWidth="500"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d">
-    <Grid />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="DistributorDetailsDispatcher" />
+        <dx:DXMessageBoxService x:Name="DistributorDetailsMessageBox" />
+        <dxmvvm:EventToCommand EventName="Loaded"
+                               Command="{Binding InitializeCommand}" />
+    </dxmvvm:Interaction.Behaviors>
+    <dx:LoadingDecorator>
+        <dxlc:LayoutGroup Orientation="Vertical">
+            <!--<dxlc:LayoutGroup.HeaderTemplate>
+            <DataTemplate>
+                <TextBlock HorizontalAlignment="Center"
+                           FontSize="12"
+                           Text="Distributor" />
+            </DataTemplate>
+        </dxlc:LayoutGroup.HeaderTemplate>-->
+            <dxlc:LayoutGroup View="GroupBox"
+                              Orientation="Vertical">
+                <dxlc:LayoutItem Label="Name"
+                                 Style="{StaticResource LayoutItemStyle}">
+                    <dxe:TextEdit EditValue="{Binding SelectedDistributor.Name}"
+                                  NullText="Distributor Name"
+                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Label="Description"
+                                 Style="{StaticResource LayoutItemStyle}">
+                    <dxe:TextEdit EditValue="{Binding SelectedDistributor.Description}"
+                                  Style="{StaticResource TextEditComments}"
+                                  Height="50"
+                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dx:DXTabControl>
+                <dx:DXTabItem Header="Contacts"
+                              IsSelected="True"
+                              Glyph="{dx:DXImage Image=BOContact2_16x16.png}">
+                    <dxlc:LayoutGroup>
+                        <dxg:GridControl x:Name="_contacts"
+                                         ItemsSource="{Binding Contacts, IsAsync=True, Mode=TwoWay}"
+                                         SelectedItem="{Binding SelectedContact, Mode=TwoWay, IsAsync=True}">
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="_contactTableView"
+                                               SearchPanelNullText="Search by Rank"
+                                               Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                            <dxg:GridColumn FieldName="FirstName" />
+                            <dxg:GridColumn FieldName="LastName" />
+                        </dxg:GridControl>
+                        <dxlc:DataLayoutControl CurrentItem="{Binding SelectedContact}" />
+                    </dxlc:LayoutGroup>
+                </dx:DXTabItem>
+                <dx:DXTabItem Header="Prices"
+                              Glyph="{dx:DXImage Image=BO_Price.png}">
+                    <dxg:GridControl x:Name="_"
+                                     Style="{StaticResource GridControlStyle}"
+                                     ItemsSource="{Binding Prices, IsAsync=True, Mode=TwoWay}"
+                                     ShowLoadingPanel="{Binding ShowPriceTableLoading,Mode=TwoWay}">
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="_instanceTableView"
+                                           FontSize="9"
+                                           Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}" />
+                        </dxg:GridControl.View>
+                        <dxg:GridColumn FieldName="Id"
+                                        Visible="False" />
+                        <dxg:GridColumn FieldName="TimeStamp"
+                                        Header="TimeStamp" />
+                        <dxg:GridColumn FieldName="UnitCost"
+                                        Header="Unit Cost" />
+                        <dxg:GridColumn FieldName="MinOrder"
+                                        Header="Min Order" />
+                        <dxg:GridColumn FieldName="LeadTime"
+                                        Header="Lead Time" />
+                        <dxg:GridColumn FieldName="ValidFrom"
+                                        Header="Valid From" />
+                        <dxg:GridColumn FieldName="ValidUntil"
+                                        Header="Valid Until" />
+                    </dxg:GridControl>
+                </dx:DXTabItem>
+                <dx:DXTabItem Header="Attachments"
+                              Glyph="{dx:DXImage Image=LoadFrom_16x16.png}"
+                              prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.AttachmentTableRegion}"
+                              prism:RegionManager.RegionContext="{Binding AttachmentDataTraveler, Mode=TwoWay}"
+                              TabIndex="2" />
+            </dx:DXTabControl>
+            <dxlc:LayoutItem VerticalAlignment="Bottom"
+                             Label="Save or Cancel Changes"
+                             Style="{StaticResource LayoutItemStyle}"
+                             Visibility="{Binding CanEdit, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                <dxlc:LayoutGroup Orientation="Horizontal">
+                    <dx:SimpleButton Height="50"
+                                     Command="{Binding SaveCommand}"
+                                     Content="Save Changes"
+                                     Glyph="{dx:DXImage Image=Save_32x32.png}" />
+                    <dx:SimpleButton Height="50"
+                                     Command="{Binding CancelCommand}"
+                                     Content="Discard Changes"
+                                     Glyph="{dx:DXImage Image=Cancel_32x32.png}" />
+                </dxlc:LayoutGroup>
+
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+    </dx:LoadingDecorator>
 </UserControl>

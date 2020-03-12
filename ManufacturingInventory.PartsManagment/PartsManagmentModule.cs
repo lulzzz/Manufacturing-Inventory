@@ -2,10 +2,9 @@
 using ManufacturingInventory.PartsManagment.Internal;
 using ManufacturingInventory.PartsManagment.Views;
 using Prism.Ioc;
-using DryIoc;
-using Prism.DryIoc;
 using Prism.Modularity;
 using Prism.Regions;
+using ManufacturingInventory.Common.Application.UI.Views;
 
 namespace ManufacturingInventory.PartsManagment
 {

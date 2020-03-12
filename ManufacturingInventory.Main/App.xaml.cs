@@ -1,38 +1,39 @@
-﻿using Prism.Ioc;
-using DryIoc;
-using Prism.DryIoc;
-using Prism.Regions;
-using System.Windows;
-using DevExpress.Xpf.Core;
-using DevExpress.Xpf.Grid;
+﻿using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Docking;
+using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Prism;
-using ManufacturingInventory.ManufacturingApplication.ViewModels;
-using ManufacturingInventory.ManufacturingApplication.Views;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using Prism.Modularity;
-using ManufacturingInventory.PartsManagment;
-using ManufacturingInventory.PartsManagment.Internal;
+using DryIoc;
+using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
+using ManufacturingInventory.Application.Boundaries.CheckIn;
+using ManufacturingInventory.Application.Boundaries.Checkout;
+using ManufacturingInventory.Application.Boundaries.PartDetails;
+using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
+using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
+using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
+using ManufacturingInventory.Application.Boundaries.PriceEdit;
+using ManufacturingInventory.Application.Boundaries.ReturnItem;
+using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
+using ManufacturingInventory.Application.Boundaries.DistributorManagment;
+using ManufacturingInventory.Application.UseCases;
+using ManufacturingInventory.DistributorManagment;
 using ManufacturingInventory.Domain.Buisness.Concrete;
 using ManufacturingInventory.Domain.Buisness.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Application.UseCases;
-using ManufacturingInventory.Application.Boundaries.Checkout;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
-using ManufacturingInventory.Application.Boundaries.PartDetails;
-using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
-using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
-using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
 using ManufacturingInventory.Infrastructure.Model.Providers;
-using ManufacturingInventory.Application.Boundaries.ReturnItem;
-using ManufacturingInventory.Application.Boundaries.PriceEdit;
-using ManufacturingInventory.Application.Boundaries.CheckIn;
-using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.ManufacturingApplication.Services;
+using ManufacturingInventory.ManufacturingApplication.ViewModels;
+using ManufacturingInventory.ManufacturingApplication.Views;
+using ManufacturingInventory.PartsManagment;
+using Microsoft.EntityFrameworkCore;
+using Prism.DryIoc;
+using Prism.Ioc;
+using Prism.Modularity;
+using Prism.Regions;
 using System.Diagnostics;
+using System.Linq;
+using System.Windows;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -44,49 +45,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
 
         protected override Window CreateShell() {
             return Container.Resolve<MainWindow>();
-        }
-
-        protected override void RegisterTypes(IContainerRegistry containerRegistry) {
-            if (this.userService.IsValid()) {
-                var container = containerRegistry.GetContainer();
-                container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
-                container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
-                container.Register<IUnitOfWork,UnitOfWork>(setup:Setup.With(allowDisposableTransient: true));
-                container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
-
-                container.Register<ICheckOutUseCase, CheckOut>();
-                container.Register<ICheckInUseCase, CheckIn>();
-                container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
-                container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
-                container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
-                container.Register<IAttachmentEditUseCase, AttachmentEdit>();
-                container.Register<ITransactionTableUndoUseCase, TransactionTableEdit>();
-                container.Register<IReturnItemUseCase, ReturnItem>();
-                container.Register<IPriceEditUseCase, PriceEdit>();
-                container.Register<IPartInstanceTableViewUseCase, PartInstanceTableViewUseCase>();
-
-                container.Register<IRepository<Category>, CategoryRepository>();
-                container.Register<IRepository<Location>, LocationRepository>();
-                container.Register<IRepository<PartInstance>, PartInstanceRepository>();
-                container.Register<IRepository<Part>, PartRepository>();
-                container.Register<IRepository<Attachment>, AttachmentRepository>();
-                container.Register<IRepository<Transaction>, TransactionRepository>();
-                container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
-
-
-                container.Register<IEntityProvider<Category>, CategoryProvider>();
-                container.Register<IEntityProvider<Location>, LocationProvider>();
-                container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
-                container.Register<IEntityProvider<Part>, PartProvider>();
-                container.Register<IEntityProvider<Transaction>, TransactionProvider>();
-
-                container.Register<ILogInService, LogInService>();
-                container.Register<IDomainManager, DomainManager>();
-                container.RegisterInstance<IUserService>(this.userService);
-
-            } else {
-                this.Shutdown();
-            }
         }
 
         protected override void OnStartup(StartupEventArgs e) {
@@ -179,6 +137,52 @@ namespace ManufacturingInventory.ManufacturingApplication {
 
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) {
             moduleCatalog.AddModule<PartsManagmentModule>();
+            moduleCatalog.AddModule<DistributorManagmentModule>();
+
+        }
+
+        protected override void RegisterTypes(IContainerRegistry containerRegistry) {
+            if (this.userService.IsValid()) {
+                var container = containerRegistry.GetContainer();
+                container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
+                container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
+                container.Register<IUnitOfWork, UnitOfWork>(setup: Setup.With(allowDisposableTransient: true));
+                //container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
+
+                container.Register<ICheckOutUseCase, CheckOut>();
+                container.Register<ICheckInUseCase, CheckIn>();
+                container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
+                container.Register<IPartSummaryEditUseCase, PartSummaryEdit>();
+                container.Register<IPartInstanceDetailsEditUseCase, PartInstanceDetailsEdit>();
+                container.Register<IAttachmentEditUseCase, AttachmentEdit>();
+                container.Register<ITransactionTableUndoUseCase, TransactionTableEdit>();
+                container.Register<IReturnItemUseCase, ReturnItem>();
+                container.Register<IPriceEditUseCase, PriceEdit>();
+                container.Register<IPartInstanceTableViewUseCase, PartInstanceTableViewUseCase>();
+                container.Register<IDistributorEditUseCase, DistributorEdit>();
+
+                container.Register<IRepository<Category>, CategoryRepository>();
+                container.Register<IRepository<Location>, LocationRepository>();
+                container.Register<IRepository<PartInstance>, PartInstanceRepository>();
+                container.Register<IRepository<Part>, PartRepository>();
+                container.Register<IRepository<Attachment>, AttachmentRepository>();
+                container.Register<IRepository<Transaction>, TransactionRepository>();
+                container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
+
+
+                container.Register<IEntityProvider<Category>, CategoryProvider>();
+                container.Register<IEntityProvider<Location>, LocationProvider>();
+                container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
+                container.Register<IEntityProvider<Part>, PartProvider>();
+                container.Register<IEntityProvider<Transaction>, TransactionProvider>();
+
+                container.Register<ILogInService, LogInService>();
+                container.Register<IDomainManager, DomainManager>();
+                container.RegisterInstance<IUserService>(this.userService);
+
+            } else {
+                this.Shutdown();
+            }
         }
 
         protected override void ConfigureRegionAdapterMappings(RegionAdapterMappings regionAdapterMappings) {

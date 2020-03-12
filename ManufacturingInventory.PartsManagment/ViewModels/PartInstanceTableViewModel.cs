@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using DevExpress.Mvvm;
+﻿using DevExpress.Mvvm;
+using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Common.Application.UI.Services;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.PartsManagment.Internal;
+using Microsoft.EntityFrameworkCore;
 using Prism.Events;
 using Prism.Regions;
-using PrismCommands = Prism.Commands;
-using System.Threading.Tasks;
-using System.IO;
+using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Linq;
-using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Infrastructure.Model.Providers;
-using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
+using System.Threading.Tasks;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartInstanceTableViewModel : InventoryViewModelBase {

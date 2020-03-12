@@ -16,8 +16,16 @@ namespace ManufacturingInventory.DistributorManagment.Views {
     /// Interaction logic for DistributorMainView.xaml
     /// </summary>
     public partial class DistributorMainView : UserControl {
+        private bool _isactive;
+        public string PanelCaption { get { return "Distributor Managment"; } }
+
+        public bool IsActive {
+            get => this._isactive;
+            set => this._isactive = value;
+        }
         public DistributorMainView() {
             InitializeComponent();
+            this.IsActive = true;
         }
     }
 }

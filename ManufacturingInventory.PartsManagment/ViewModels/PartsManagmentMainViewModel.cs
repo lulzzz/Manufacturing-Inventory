@@ -25,6 +25,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._detailHeaderText, value);
         }
 
-        public override bool KeepAlive => false;
+        public override bool KeepAlive => true;
     }
 }

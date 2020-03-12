@@ -11,15 +11,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="400">
-
-        <dxlc:LayoutGroup Orientation="Vertical" GroupBoxDisplayMode="Normal" View="GroupBox">
-        <dxlc:LayoutGroup.HeaderTemplate>
-            <DataTemplate>
-                <TextBlock HorizontalAlignment="Center"
-                           FontSize="12"
-                           Text="New Distributor" />
-            </DataTemplate>
-        </dxlc:LayoutGroup.HeaderTemplate>
+    <dxlc:LayoutGroup Orientation="Vertical">
         <dxlc:LayoutItem Label="Name"
                                  LabelPosition="Top"
                                  LabelHorizontalAlignment="Center">

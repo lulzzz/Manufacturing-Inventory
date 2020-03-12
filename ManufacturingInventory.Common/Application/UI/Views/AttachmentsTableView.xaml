@@ -1,20 +1,20 @@
-﻿<UserControl x:Class="ManufacturingInventory.PartsManagment.Views.AttachmentsTableView"
+﻿<UserControl x:Class="ManufacturingInventory.Common.Application.UI.Views.AttachmentsTableView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ManufacturingInventory.Common.Application.UI.Views"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             dx:ThemeManager.Theme="VS2017Blue"
              xmlns:prism="http://prismlibrary.com/"
-             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -24,7 +24,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding InitializeCommand}"/>
+        <dxmvvm:EventToCommand EventName="Loaded"
+                               Command="{Binding InitializeCommand}" />
         <dx:DialogService x:Name="FileNameDialog"
                           DialogWindowStartupLocation="CenterOwner">
             <dx:DialogService.ViewTemplate>
@@ -41,8 +42,10 @@
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
-        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog" Title="{Binding Title}" />
-        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog" Title="{Binding Title}" />
+        <dxmvvm:OpenFileDialogService x:Name="OpenFileDialog"
+                                      Title="{Binding Title}" />
+        <dxmvvm:SaveFileDialogService x:Name="SaveFileDialog"
+                                      Title="{Binding Title}" />
         <dxmvvm:DispatcherService x:Name="AttachmentDispatcher" />
         <dx:DXMessageBoxService x:Name="AttachmentNotifications" />
     </dxmvvm:Interaction.Behaviors>
@@ -73,7 +76,7 @@
                                        Command="{Binding DeleteAttachmentCommand}"
                                        BarItemDisplayMode="ContentAndGlyph"
                                        ShowScreenTip="True"
-                                       ToolTipService.ToolTip="Delete Attachment"/>
+                                       ToolTipService.ToolTip="Delete Attachment" />
                 </dxb:Bar>
             </dxb:BarManager.Bars>
             <dxg:GridControl x:Name="_productAttachments"

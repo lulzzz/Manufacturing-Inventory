@@ -10,7 +10,7 @@ namespace ManufacturingInventory.Application.Boundaries.DistributorManagment {
         public string Message { get; set; }
         public Distributor Distributor { get; set; }
 
-        public DistributorEditOutput(bool success, string message, Distributor distributor) {
+        public DistributorEditOutput(Distributor distributor,bool success, string message) {
             this.Success = success;
             this.Message = message;
             this.Distributor = distributor;

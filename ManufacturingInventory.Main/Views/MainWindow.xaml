@@ -67,10 +67,9 @@
 
                             <dxb:BarButtonItem x:Name="distributorView"
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:MainAppViews.DistributorsManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.DistributorMainView}"
                                                Content="Distributor Managment"
                                                Glyph="{dx:DXImage Image=BOPosition2_16x16.png}"
-                                               IsEnabled="False"
                                                LargeGlyph="{dx:DXImage Image=BOPosition2_32x32.png}" />
 
                             <dxb:BarButtonItem x:Name="reportsView"

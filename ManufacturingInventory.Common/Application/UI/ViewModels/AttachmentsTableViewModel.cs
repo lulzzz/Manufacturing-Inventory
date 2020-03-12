@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Windows;
-using DevExpress.Mvvm;
-using ManufacturingInventory.Common.Application;
-using ManufacturingInventory.Common.Application.UI.Views;
-using Prism.Regions;
-using ManufacturingInventory.Common.Application.UI.ViewModels;
-using PrismCommands = Prism.Commands;
-using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
-using Prism.Events;
+﻿using DevExpress.Mvvm;
 using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
 using ManufacturingInventory.Domain.Enums;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using Prism.Events;
+using Prism.Regions;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
 
-namespace ManufacturingInventory.PartsManagment.ViewModels {
+namespace ManufacturingInventory.Common.Application.UI.ViewModels {
     public class AttachmentsTableViewModel : InventoryViewModelBase {
         private ObservableCollection<Attachment> _attachments;
         private int _entityId;

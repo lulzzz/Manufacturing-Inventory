@@ -34,7 +34,8 @@
                 <dxdo:LayoutPanel x:Name="_navPane"
                                   prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartsNavigationRegion}"
                                   CaptionHorizontalAlignment="Center"
-                                  Style="{StaticResource PanelStyle}">
+                                  Style="{StaticResource PanelStyle}"
+                                  ItemWidth="500">
                     <dxdo:LayoutPanel.CaptionTemplate>
                         <DataTemplate>
                             <TextBlock Text="Navigation"
@@ -46,7 +47,8 @@
                 <dxdo:LayoutPanel x:Name="_mainDetailsPane"
                                   prism:RegionManager.RegionName="{x:Static common:LocalRegions.PartDetailsRegion}"
                                   CaptionHorizontalAlignment="Center"
-                                  Style="{StaticResource PanelStyle}">
+                                  Style="{StaticResource PanelStyle}"
+                                  ItemWidth="900">
                     <dxdo:LayoutPanel.CaptionTemplate>
                         <DataTemplate>
                             <TextBlock Text="Part Details"

@@ -70,9 +70,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
             }
 
             if (orderBy != null) {
-                return await query.ToListAsync();
-            } else {
                 return await orderBy(query).ToListAsync();
+            } else {
+                return await query.ToListAsync();
             }
         }
 

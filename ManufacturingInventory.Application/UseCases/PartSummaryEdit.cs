@@ -15,14 +15,14 @@ namespace ManufacturingInventory.Application.UseCases {
         private IRepository<Part> _partRepository;
         private IEntityProvider<Location> _locationProvider;
         private IEntityProvider<Category> _categoryProvider;
-        private IUnitOfWorkV2 _unitOfWork;
+        private IUnitOfWork _unitOfWork;
 
         public PartSummaryEdit(ManufacturingContext context) {
             this._context = context;
             this._partRepository =new PartRepository(context);
             this._locationProvider = new LocationProvider(context);
             this._categoryProvider = new CategoryProvider(context);
-            this._unitOfWork =new UnitOfWorkV2(context);
+            this._unitOfWork =new UnitOfWork(context);
         }
 
         //public PartSummaryEditOutput Execute(PartSummaryEditInput input) {
@@ -126,10 +126,10 @@ namespace ManufacturingInventory.Application.UseCases {
 
             var newPart = await this._partRepository.AddAsync(part);
             if (newPart != null) {
-                await this._unitOfWork.SaveAsync();
+                await this._unitOfWork.Save();
                 return new PartSummaryEditOutput(newPart, true, "Part " + newPart.Name + " Created Successfully");
             } else {
-                await this._unitOfWork.UndoAsync();
+                await this._unitOfWork.Undo();
                 return new PartSummaryEditOutput(null, false, "Error Saving New Part, Please Contact Admin");
             }
         }
@@ -159,10 +159,10 @@ namespace ManufacturingInventory.Application.UseCases {
 
             var updated = await this._partRepository.UpdateAsync(part);
             if (updated != null) {
-                await this._unitOfWork.SaveAsync();
+                await this._unitOfWork.Save();
                 return new PartSummaryEditOutput(updated, true, "Part " + updated.Name + " Updated Successfully");
             } else {
-                await this._unitOfWork.UndoAsync();
+                await this._unitOfWork.Save();
                 return new PartSummaryEditOutput(null, false, "Error Saving Part, Please Contact Admin");
             }
         }

@@ -32,7 +32,8 @@
                 <dxdo:LayoutPanel x:Name="_navigationPane"
                                   prism:RegionManager.RegionName="{x:Static commonLocal:LocalRegions.DistributorNavigationRegion}"
                                   CaptionHorizontalAlignment="Center"
-                                  Style="{StaticResource PanelStyle}">
+                                  Style="{StaticResource PanelStyle}"
+                                  ItemWidth="400">
                     <dxdo:LayoutPanel.CaptionTemplate>
                         <DataTemplate>
                             <TextBlock Text="Distributors"

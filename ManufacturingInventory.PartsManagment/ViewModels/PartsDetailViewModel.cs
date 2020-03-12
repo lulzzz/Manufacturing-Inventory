@@ -1,20 +1,13 @@
-﻿using Prism.Commands;
-using Prism.Mvvm;
+﻿using DevExpress.Mvvm;
 using ManufacturingInventory.Common.Application;
-using Prism.Regions;
-using DevExpress.Mvvm;
-using PrismCommands = Prism.Commands;
-using Prism.Events;
-using System.Windows;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using ManufacturingInventory.PartsManagment.Internal;
-using System;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Common.Application.UI.Services;
 using ManufacturingInventory.Domain.Enums;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.PartsManagment.Internal;
+using Prism.Events;
+using Prism.Regions;
+using System;
+using System.Windows;
 
 namespace ManufacturingInventory.PartsManagment.ViewModels {
     public class PartsDetailViewModel:InventoryViewModelNavigationBase {

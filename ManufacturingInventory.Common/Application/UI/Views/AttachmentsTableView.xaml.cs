@@ -1,12 +1,9 @@
-﻿using ManufacturingInventory.PartsManagment.Internal;
-using ManufacturingInventory.PartsManagment.ViewModels;
-using Prism.Common;
-using Prism.Regions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
+using Prism.Common;
+using Prism.Regions;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -15,8 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ManufacturingInventory.Common.Application.UI.Services;
+using ManufacturingInventory.Common.Application.UI.ViewModels;
 
-namespace ManufacturingInventory.PartsManagment.Views {
+namespace ManufacturingInventory.Common.Application.UI.Views {
     /// <summary>
     /// Interaction logic for AttachmentsTableView.xaml
     /// </summary>

@@ -2,9 +2,28 @@
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.Domain.DTOs {
     public class ContactDTO {
+        public ContactDTO() {
+
+        }
+
+        public ContactDTO(Contact contact) {
+            this.FirstName = contact.FirstName;
+            this.LastName = contact.LastName;
+            this.Address = contact.Address;
+            this.Phone = contact.Phone;
+            this.Fax = contact.Fax;
+            this.Website = contact.Website;
+            this.Extension = contact.Extension;
+            this.Comments = contact.Extension;
+            this.Title = contact.Title;
+            this.Email = contact.Email;
+            this.CountryCode = contact.CountryCode;
+        }
+
 
         [Display(GroupName = "[Name]", Name = "First name")]
         public string FirstName { get; set; }

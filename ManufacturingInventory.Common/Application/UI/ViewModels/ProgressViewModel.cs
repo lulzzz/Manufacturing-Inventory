@@ -50,8 +50,8 @@ namespace ManufacturingInventory.Common.Application.UI.ViewModels {
 
         public override bool KeepAlive => false;
 
-        public async Task StartHandler() {
-
+        public Task StartHandler() {
+            return Task.CompletedTask;
         }
 
         private void IncrementProgressHandler(string logLine) {

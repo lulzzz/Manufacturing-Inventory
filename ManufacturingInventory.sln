@@ -40,9 +40,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Publish-Zip", "Publish-Zip"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishTool", "PublishTool\PublishTool.csproj", "{F03D0521-0401-4F6D-8688-C8F3F210954A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.DistributorManagment", "ManufacturingInventory.DistributorManagment\ManufacturingInventory.DistributorManagment.csproj", "{85F2BBE9-42A6-4282-A2E0-DAC8290C2962}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.DistributorManagment", "ManufacturingInventory.DistributorManagment\ManufacturingInventory.DistributorManagment.csproj", "{85F2BBE9-42A6-4282-A2E0-DAC8290C2962}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.CategoryManagment", "ManufacturingInventory.CategoryManagment\ManufacturingInventory.CategoryManagment.csproj", "{14B167E6-A8C7-444B-AA48-A58EB9F04A22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.CategoryManagment", "ManufacturingInventory.CategoryManagment\ManufacturingInventory.CategoryManagment.csproj", "{14B167E6-A8C7-444B-AA48-A58EB9F04A22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

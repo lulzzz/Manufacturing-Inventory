@@ -6,7 +6,7 @@
     <AssemblyName>ManufacturingApplication</AssemblyName>
     <StartupObject>ManufacturingInventory.ManufacturingApplication.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>1.00.15.7375</FileVersion>
+    <FileVersion>1.00.35.7376</FileVersion>
     <PackageId>ManufacturingInventory.UI</PackageId>
     <UserSecretsId>d873c8c3-b819-4a49-87d8-529888f6ea4b</UserSecretsId>
     <Configurations>Debug;Release;fr</Configurations>
@@ -54,6 +54,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Application\ManufacturingInventory.Application.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.DistributorManagment\ManufacturingInventory.DistributorManagment.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.PartsManagment\ManufacturingInventory.PartsManagment.csproj" />
   </ItemGroup>

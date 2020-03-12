@@ -23,6 +23,6 @@ using System.Collections.Generic;
 
 namespace ManufacturingInventory.DistributorManagment.ViewModels {
     public class DistributorMainViewModel : InventoryViewModelBase {
-        public override bool KeepAlive => false;
+        public override bool KeepAlive => true;
     }
 }

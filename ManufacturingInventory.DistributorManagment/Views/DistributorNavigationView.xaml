@@ -10,6 +10,7 @@
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
              xmlns:local="clr-namespace:ManufacturingInventory.DistributorManagment.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
@@ -26,9 +27,24 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:DispatcherService x:Name="PriceDetailDispatcher" />
-        <dx:DXMessageBoxService x:Name="PriceDetailsMessageService" />
+        <dxmvvm:DispatcherService x:Name="DistributorDispatcherService" />
+        <dx:DXMessageBoxService x:Name="DistributorMessageBoxService" />
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}" EventName="Loaded" />
+        <dx:DialogService x:Name="NewDistributorDialog">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:NewDistributorView/>
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="SizeToContent"
+                            Value="WidthAndHeight" />
+                    <Setter Property="WindowStyle"
+                            Value="ToolWindow" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <dxb:BarManager.Bars>
@@ -46,16 +62,14 @@
             </dxb:Bar>
         </dxb:BarManager.Bars>
         <dxg:GridControl x:Name="_listOfDistributors"
-                         ItemsSource="{Binding Distributor, IsAsync=True, Mode=TwoWay}"
+                         ItemsSource="{Binding Distributors, IsAsync=True, Mode=TwoWay}"
                          SelectedItem="{Binding SelectedDistributor, Mode=TwoWay, IsAsync=True}"
                          ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                          Style="{StaticResource GridControlStyle}">
             <dxg:GridControl.View>
                 <dxg:TableView x:Name="_distributorTableView"
-                               AllowBestFit="True"
-                               AutoWidth="False"
-                               BestFitArea="All"
-                               BestFitMode="AllRows"
+                               AutoWidth="True"
+
                                HorizontalScrollbarVisibility="Visible"
                                SearchColumns="Name"
                                SearchPanelNullText="Search By Name"
