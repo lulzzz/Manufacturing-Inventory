@@ -89,7 +89,7 @@
                                    Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand EventName="Loaded"
-                                                   Command="{Binding ElementName=__attachmentTblView, Path=TableViewCommands.BestFitColumns}" />
+                                                   Command="{Binding ElementName=_attachmentTblView, Path=TableViewCommands.BestFitColumns}" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:TableView.RowCellMenuCustomizations>
                             <dxb:BarButtonItem Content="Open File"

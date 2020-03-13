@@ -1,15 +1,16 @@
 ﻿using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Domain.DTOs {
-    public class TransactionDTO {
-        public TransactionDTO(DateTime timeStamp, InventoryAction inventoryAction, 
+    public class TransactionDTO : ITransaction {
+        public TransactionDTO(DateTime timeStamp, InventoryAction inventoryAction,
             int quantity, bool isReturning, double unitCost, double totalCost,
-            int partInstanceId, string partInstanceName, string locationName, 
-            int locationId,bool isBubbler=false,double measured=0,double weight=0, 
-            int referenceTransactionId=0,int conditionId=0) {
+            int partInstanceId, string partInstanceName, string locationName,
+            int locationId, bool isBubbler = false, double measured = 0, double weight = 0,
+            int referenceTransactionId = 0, int conditionId = 0) {
 
             this.TimeStamp = timeStamp;
             this.InventoryAction = inventoryAction;
@@ -25,7 +26,7 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.LocationId = locationId;
             this.IsBubbler = isBubbler;
 
-            if(referenceTransactionId!=0)
+            if (referenceTransactionId != 0)
                 this.ReferenceTransactionId = referenceTransactionId;
 
             this.ConditionId = conditionId;

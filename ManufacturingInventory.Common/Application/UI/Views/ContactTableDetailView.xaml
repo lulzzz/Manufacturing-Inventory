@@ -1,0 +1,91 @@
+﻿<UserControl x:Class="ManufacturingInventory.Common.Application.UI.Views.ContactTableDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ManufacturingInventory.Common.Application.UI.Views"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="ContactDispatcher" />
+        <dx:DXMessageBoxService x:Name="ContactMessageBox" />
+        <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
+                               EventName="Loaded" />
+        <dx:DialogService x:Name="ContactDialog">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:NewContactView/>
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="SizeToContent"
+                            Value="WidthAndHeight" />
+                    <Setter Property="WindowStyle"
+                            Value="ToolWindow" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+    </dxmvvm:Interaction.Behaviors>
+    <dxb:BarManager>
+        <dxb:BarManager.Bars>
+            <dxb:Bar Style="{StaticResource BarStyle}">
+                <dxb:BarButtonItem Content="New Contact"
+                                   Command="{Binding AddContactCommand}"
+                                   Glyph="{dx:DXImage Image=Add_16x16.png}"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   ShowScreenTip="True"
+                                   ToolTipService.ToolTip="Add New Contact" />
+                <dxb:BarButtonItem Content="Delete Contact"
+                                   Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                   Command="{Binding DeleteContactCommand}"
+                                   BarItemDisplayMode="ContentAndGlyph"
+                                   ShowScreenTip="True"
+                                   ToolTipService.ToolTip="Delete Attachment" />
+            </dxb:Bar>
+        </dxb:BarManager.Bars>
+        <dxlc:LayoutGroup>
+            <dxg:GridControl x:Name="_contacts"
+                             ItemsSource="{Binding Contacts, IsAsync=True, Mode=TwoWay}"
+                             SelectedItem="{Binding SelectedContact, Mode=TwoWay, IsAsync=True}"
+                             ShowLoadingPanel="{Binding ShowTableLoading}">
+                <dxg:GridControl.View>
+                    <dxg:TableView x:Name="_contactTableView"
+                                   SearchPanelNullText="Search by Rank"
+                                   Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
+                        <dxg:TableView.RowCellMenuCustomizations>
+                            <dxb:BarButtonItem Content="Edit Contact"
+                                               Glyph="{dx:DXImage Image=Open_16x16.png}"
+                                               Command="{Binding Path=View.DataContext.EditContactCommand}"/>
+                            <dxb:BarButtonItem Content="Delete File"
+                                               Glyph="{dx:DXImage Image=Close_16x16.png}"
+                                               Command="{Binding Path=View.DataContext.DeleteContactCommand}" />
+                        </dxg:TableView.RowCellMenuCustomizations>
+                    </dxg:TableView>
+                </dxg:GridControl.View>
+                <dxg:GridColumn FieldName="FirstName" />
+                <dxg:GridColumn FieldName="LastName" />
+            </dxg:GridControl>
+            <dxlc:DataLayoutControl CurrentItem="{Binding SelectedContact}" />
+        </dxlc:LayoutGroup>
+    </dxb:BarManager>
+</UserControl>

@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using ManufacturingInventory.Infrastructure.Model.Interfaces;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
-    public class Contact {
+    public class Contact:IContact {
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -27,6 +28,34 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
        
         public Contact() {
 
+        }
+
+        public Contact(IContact contact) {
+            this.FirstName = contact.FirstName;
+            this.LastName = contact.LastName;
+            this.Address = contact.Address;
+            this.Phone = contact.Phone;
+            this.Fax = contact.Fax;
+            this.Website = contact.Website;
+            this.Extension = contact.Extension;
+            this.Comments = contact.Extension;
+            this.Title = contact.Title;
+            this.Email = contact.Email;
+            this.CountryCode = contact.CountryCode;
+        }
+
+        public void Set(IContact contact) {
+            this.FirstName = contact.FirstName;
+            this.LastName = contact.LastName;
+            this.Address = contact.Address;
+            this.Phone = contact.Phone;
+            this.Fax = contact.Fax;
+            this.Website = contact.Website;
+            this.Extension = contact.Extension;
+            this.Comments = contact.Extension;
+            this.Title = contact.Title;
+            this.Email = contact.Email;
+            this.CountryCode = contact.CountryCode;
         }
     }
 }

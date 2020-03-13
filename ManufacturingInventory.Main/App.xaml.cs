@@ -34,6 +34,7 @@ using Prism.Regions;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using ManufacturingInventory.Application.Boundaries.ContactTableDetailEdit;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -160,6 +161,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IPriceEditUseCase, PriceEdit>();
                 container.Register<IPartInstanceTableViewUseCase, PartInstanceTableViewUseCase>();
                 container.Register<IDistributorEditUseCase, DistributorEdit>();
+                container.Register<IContactTableDetailEditUseCase, ContactTableDetailEdit>();
 
                 container.Register<IRepository<Category>, CategoryRepository>();
                 container.Register<IRepository<Location>, LocationRepository>();

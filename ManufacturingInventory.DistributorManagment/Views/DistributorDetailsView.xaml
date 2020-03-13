@@ -59,24 +59,9 @@
             </dxlc:LayoutGroup>
             <dx:DXTabControl>
                 <dx:DXTabItem Header="Contacts"
-                              IsSelected="True"
-                              Glyph="{dx:DXImage Image=BOContact2_16x16.png}">
-                    <dxlc:LayoutGroup>
-                        <dxg:GridControl x:Name="_contacts"
-                                         ItemsSource="{Binding Contacts, IsAsync=True, Mode=TwoWay}"
-                                         SelectedItem="{Binding SelectedContact, Mode=TwoWay, IsAsync=True}">
-                            <dxg:GridControl.View>
-                                <dxg:TableView x:Name="_contactTableView"
-                                               SearchPanelNullText="Search by Rank"
-                                               Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                            <dxg:GridColumn FieldName="FirstName" />
-                            <dxg:GridColumn FieldName="LastName" />
-                        </dxg:GridControl>
-                        <dxlc:DataLayoutControl CurrentItem="{Binding SelectedContact}" />
-                    </dxlc:LayoutGroup>
-                </dx:DXTabItem>
+                              Glyph="{dx:DXImage Image=BOContact2_16x16.png}"
+                              prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.ContactRegion}"
+                              prism:RegionManager.RegionContext="{Binding ContactDataTraveler, Mode=TwoWay}" />
                 <dx:DXTabItem Header="Prices"
                               Glyph="{dx:DXImage Image=BO_Price.png}">
                     <dxg:GridControl x:Name="_"

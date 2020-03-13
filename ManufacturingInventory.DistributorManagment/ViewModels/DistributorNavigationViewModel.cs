@@ -71,21 +71,12 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             set => SetProperty(ref this._showTableLoading, value);
         }
 
-
-
-
-
         #region Misc
 
         private async Task AddNewDistributorHandler() {
             this._editInProgress = true;
-            bool createNew = false; ;
-            this.DispatcherService.BeginInvoke(() => {
-                if (this.ShowNewDistributorDialog()) {
-                    createNew = true;
-                }
-            });
-            if (createNew) {
+
+            if (this.ShowNewDistributorDialog()) {
                 DistributorEditInput input = new DistributorEditInput(this._newDistributorViewModel.Name, this._newDistributorViewModel.Description, EditAction.Add);
                 var response = await this._distributorEdit.Execute(input);
                 await this.ShowActionResponse(response);
@@ -190,6 +181,7 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
         private void CleaupRegions() {
             this._regionManager.Regions[LocalRegions.DistributorDetailsRegion].RemoveAll();
             this._regionManager.Regions.Remove(LocalRegions.AttachmentTableRegion);
+            this._regionManager.Regions.Remove(LocalRegions.ContactRegion);
         }
 
         #endregion
@@ -223,9 +215,5 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
         }
 
         #endregion
-
-
-
-
     }
 }

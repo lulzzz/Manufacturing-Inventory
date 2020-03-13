@@ -12,11 +12,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using ManufacturingInventory.Domain.DTOs;
 using System;
+using ManufacturingInventory.Common.Application.UI.ViewModels;
+using System.Windows;
+using System.Collections.Generic;
 
 namespace ManufacturingInventory.DistributorManagment.ViewModels {
     public class DistributorDetailsViewModel : InventoryViewModelNavigationBase {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DistributorDetailsDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("DistributorDetailsMessageBox"); }
+        protected IDialogService NewContactDialog { get => ServiceContainer.GetService<IDialogService>("NewContactDialog"); }
 
         private IDistributorEditUseCase _distributorEdit;
         private IRegionManager _regionManager;
@@ -25,6 +29,7 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
         private int _distributorId;
         private bool _isEdit;
         private bool _canEdit;
+        private ContactDataTraveler _contactDataTraveler;
         private AttachmentDataTraveler _attachmentTraveler;
         private ObservableCollection<ContactDTO> _contacts;
         private ContactDTO _selectedContact;
@@ -32,6 +37,9 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
         private Distributor _selectedDistributor;
 
         public AsyncCommand InitializeCommand { get; private set; }
+        public AsyncCommand AddNewContactCommand { get; private set; }
+        public AsyncCommand DeleteContactCommand { get; private set; }
+        public AsyncCommand EditContactCommand { get; private set; }
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
 
@@ -48,6 +56,7 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             get => this._attachmentTraveler; 
             set => SetProperty(ref this._attachmentTraveler,value); 
         }
+        
         public ObservableCollection<ContactDTO> Contacts { 
             get => this._contacts;
             set => SetProperty(ref this._contacts, value);
@@ -73,6 +82,10 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             set => SetProperty(ref this._selectedDistributor, value);
         }
 
+        public ContactDataTraveler ContactDataTraveler {
+            get => this._contactDataTraveler; 
+            set =>SetProperty(ref this._contactDataTraveler,value);
+        }
 
         private Task SaveHandler() {
             return Task.CompletedTask;
@@ -91,14 +104,17 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
 
                 this.Prices = new ObservableCollection<Price>();
                 this.Contacts = new ObservableCollection<ContactDTO>(contacts);
-                this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.DISTRIBUTOR, this._distributorId);
+                
                 this.CanEdit = this._isEdit;
+
             });
         }
 
         public override void OnNavigatedTo(NavigationContext navigationContext) {
             this._distributorId = Convert.ToInt32(navigationContext.Parameters[ParameterKeys.SelectedDistributorId]);
             this._isEdit = Convert.ToBoolean(navigationContext.Parameters[ParameterKeys.IsEdit]);
+            this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.DISTRIBUTOR, this._distributorId);
+            this.ContactDataTraveler = new ContactDataTraveler(this._distributorId, !this._isEdit);
         }
 
         public override bool IsNavigationTarget(NavigationContext navigationContext) {

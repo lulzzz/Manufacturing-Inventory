@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
-using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 
 namespace ManufacturingInventory.Domain.DTOs {
-    public class ContactDTO {
+    public class ContactDTO : IContact {
+
         public ContactDTO() {
 
         }
 
-        public ContactDTO(Contact contact) {
+        public ContactDTO(IContact contact) {
+            this.Id = contact.Id;
             this.FirstName = contact.FirstName;
             this.LastName = contact.LastName;
             this.Address = contact.Address;
@@ -24,6 +26,7 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.CountryCode = contact.CountryCode;
         }
 
+        public int Id { get; set; }
 
         [Display(GroupName = "[Name]", Name = "First name")]
         public string FirstName { get; set; }
@@ -34,7 +37,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         [Display(GroupName = "[Name]", Name = "Job Title", Order = 0)]
         public string Title { get; set; }
 
-        [Display(GroupName = "{Tabs}/Contact",Name="Country Code"),DataType(DataType.PhoneNumber)]
+        [Display(GroupName = "{Tabs}/Contact", Name = "Country Code"), DataType(DataType.PhoneNumber)]
         public string CountryCode { get; set; }
         [Display(GroupName = "{Tabs}/Contact", Name = "Phone"), DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
@@ -51,7 +54,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         [Display(GroupName = "{Tabs}/Misc", Name = "Website", Order = 4), DataType(DataType.Url)]
         public string Website { get; set; }
 
-        [Display(GroupName = "{Tabs}/Misc", Name = "Comments", Order =5), DataType(DataType.MultilineText)]
+        [Display(GroupName = "{Tabs}/Misc", Name = "Comments", Order = 5), DataType(DataType.MultilineText)]
         public string Comments { get; set; }
     }
 }

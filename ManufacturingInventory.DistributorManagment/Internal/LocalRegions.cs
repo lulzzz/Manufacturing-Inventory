@@ -7,5 +7,6 @@ namespace ManufacturingInventory.DistributorManagment.Internal {
         public static string DistributorNavigationRegion { get => "DistributorNavigationRegion"; }
         public static string DistributorDetailsRegion { get => "DistributorDetailsRegion"; }
         public static string AttachmentTableRegion { get => "AttachmentTableRegion"; }
+        public static string ContactRegion { get => "ContactRegion"; }
     }
 }

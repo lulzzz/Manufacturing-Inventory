@@ -7,7 +7,7 @@ namespace ManufacturingInventory.Common.Application.UI.ViewModels {
     public class NewContactViewModel {
                
         public NewContactViewModel() {
-
+            this.Contact = new ContactDTO();
         }
 
         public virtual ContactDTO Contact { get; set; }
