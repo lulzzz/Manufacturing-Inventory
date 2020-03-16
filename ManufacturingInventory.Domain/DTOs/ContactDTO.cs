@@ -25,7 +25,7 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.Email = contact.Email;
             this.CountryCode = contact.CountryCode;
         }
-
+        [Display(AutoGenerateField =false)]
         public int Id { get; set; }
 
         [Display(GroupName = "[Name]", Name = "First name")]

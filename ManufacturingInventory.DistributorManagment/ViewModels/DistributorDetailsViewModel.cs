@@ -101,12 +101,9 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             var prices = await this._distributorEdit.GetPrices(this._distributorId);
             this.SelectedDistributor = distributor;
             this.DispatcherService.BeginInvoke(() => {
-
                 this.Prices = new ObservableCollection<Price>();
-                this.Contacts = new ObservableCollection<ContactDTO>(contacts);
-                
+                this.Contacts = new ObservableCollection<ContactDTO>(contacts);          
                 this.CanEdit = this._isEdit;
-
             });
         }
 

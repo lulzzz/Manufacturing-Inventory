@@ -38,10 +38,14 @@
             </dx:DialogService.ViewTemplate>
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="350" />
                     <Setter Property="SizeToContent"
-                            Value="WidthAndHeight" />
+                            Value="Height" />
                     <Setter Property="WindowStyle"
                             Value="ToolWindow" />
+                    <Setter Property="Title"
+                            Value="Contact" />
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
