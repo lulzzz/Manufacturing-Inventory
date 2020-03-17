@@ -39,7 +39,7 @@
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:ThemedWindow">
                     <Setter Property="Width"
-                            Value="350" />
+                            Value="450" />
                     <Setter Property="SizeToContent"
                             Value="Height" />
                     <Setter Property="WindowStyle"
@@ -79,7 +79,7 @@
                         <dxg:TableView.RowCellMenuCustomizations>
                             <dxb:BarButtonItem Content="Edit Contact"
                                                Glyph="{dx:DXImage Image=Open_16x16.png}"
-                                               Command="{Binding Path=View.DataContext.EditContactCommand}"/>
+                                               Command="{Binding Path=View.DataContext.EditContactCommand}" />
                             <dxb:BarButtonItem Content="Delete File"
                                                Glyph="{dx:DXImage Image=Close_16x16.png}"
                                                Command="{Binding Path=View.DataContext.DeleteContactCommand}" />
@@ -89,7 +89,8 @@
                 <dxg:GridColumn FieldName="FirstName" />
                 <dxg:GridColumn FieldName="LastName" />
             </dxg:GridControl>
-            <dxlc:DataLayoutControl CurrentItem="{Binding SelectedContact}" />
+            <dxlc:DataLayoutControl CurrentItem="{Binding SelectedContact}"
+                                    IsReadOnly="{Binding EditInProgress,Converter={dxmvvm:BooleanNegationConverter}}" />
         </dxlc:LayoutGroup>
     </dxb:BarManager>
 </UserControl>

@@ -74,7 +74,20 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         private async Task<ContactTableDetailEditOutput> ExecuteDelete(ContactTableDetailEditInput input) {
-            return new ContactTableDetailEditOutput(null, false, "Error:Delete Option Not Implemented Yet");
+            var contact = await this._contactRepository.GetEntityAsync(e => e.Id == input.Contact.Id);
+            var deleted = await this._contactRepository.DeleteAsync(contact);
+            if (deleted != null) {
+                var count = await this._unitOfWork.Save();
+                if (count > 0) {
+                    return new ContactTableDetailEditOutput(deleted, true, "Success: Contact Deleted");
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new ContactTableDetailEditOutput(null, false, "Error: Delete Failed,Please Contact Admin");
+                }
+            } else {
+                await this._unitOfWork.Undo();
+                return new ContactTableDetailEditOutput(null, false, "Error: Could Not Delete Contact,Please Contact Admin");
+            }
         }
 
         public async Task<ContactDTO> GetContact(int contactId) {

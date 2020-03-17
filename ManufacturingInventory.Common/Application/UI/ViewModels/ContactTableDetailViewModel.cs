@@ -78,6 +78,11 @@ namespace ManufacturingInventory.Common.Application.UI.ViewModels {
             set => this._distributorId = value; 
         }
 
+        public bool EditInProgress { 
+            get => this._editInProgress; 
+            set => SetProperty(ref this._editInProgress,value);
+        }
+
         private async Task AddNewContactHandler() {
             this._editInProgress = true;
             if (this.ShowNewContactDialog()) {
