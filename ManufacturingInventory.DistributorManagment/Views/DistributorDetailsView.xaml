@@ -45,13 +45,13 @@
                               Orientation="Vertical">
                 <dxlc:LayoutItem Label="Name"
                                  Style="{StaticResource LayoutItemStyle}">
-                    <dxe:TextEdit EditValue="{Binding SelectedDistributor.Name}"
+                    <dxe:TextEdit EditValue="{Binding Name}"
                                   NullText="Distributor Name"
                                   IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Label="Description"
                                  Style="{StaticResource LayoutItemStyle}">
-                    <dxe:TextEdit EditValue="{Binding SelectedDistributor.Description}"
+                    <dxe:TextEdit EditValue="{Binding Description}"
                                   Style="{StaticResource TextEditComments}"
                                   Height="50"
                                   IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
@@ -64,13 +64,12 @@
                               prism:RegionManager.RegionContext="{Binding ContactDataTraveler, Mode=TwoWay}" />
                 <dx:DXTabItem Header="Prices"
                               Glyph="{dx:DXImage Image=BO_Price.png}">
-                    <dxg:GridControl x:Name="_"
+                    <dxg:GridControl x:Name="_distributorPriceTable"
                                      Style="{StaticResource GridControlStyle}"
                                      ItemsSource="{Binding Prices, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowPriceTableLoading,Mode=TwoWay}">
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="_instanceTableView"
-                                           FontSize="9"
+                            <dxg:TableView x:Name="_distributorPriceView"
                                            Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}" />
                         </dxg:GridControl.View>
                         <dxg:GridColumn FieldName="Id"

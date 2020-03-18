@@ -78,9 +78,7 @@
                 <dxg:GridControl.View>
                     <dxg:TableView x:Name="_instanceTableView"
                                    AllowBestFit="True"
-                                   AutoWidth="False"
-                                   BestFitArea="All"
-                                   BestFitMode="AllRows"
+                                   AutoWidth="True"
                                    HorizontalScrollbarVisibility="Visible"
                                    SearchColumns="Name"
                                    SearchPanelNullText="Search By Name"

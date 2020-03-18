@@ -20,7 +20,7 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
     public class DistributorDetailsViewModel : InventoryViewModelNavigationBase {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DistributorDetailsDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("DistributorDetailsMessageBox"); }
-        protected IDialogService NewContactDialog { get => ServiceContainer.GetService<IDialogService>("NewContactDialog"); }
+        //protected IDialogService NewContactDialog { get => ServiceContainer.GetService<IDialogService>("NewContactDialog"); }
 
         private IDistributorEditUseCase _distributorEdit;
         private IRegionManager _regionManager;
@@ -29,17 +29,17 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
         private int _distributorId;
         private bool _isEdit;
         private bool _canEdit;
+        private string _name;
+        private string _description;
         private ContactDataTraveler _contactDataTraveler;
         private AttachmentDataTraveler _attachmentTraveler;
         private ObservableCollection<ContactDTO> _contacts;
-        private ContactDTO _selectedContact;
+        //private ContactDTO _selectedContact;
         private ObservableCollection<Price> _prices;
         private Distributor _selectedDistributor;
+        private bool _showPriceTableLoading;
 
         public AsyncCommand InitializeCommand { get; private set; }
-        public AsyncCommand AddNewContactCommand { get; private set; }
-        public AsyncCommand DeleteContactCommand { get; private set; }
-        public AsyncCommand EditContactCommand { get; private set; }
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
 
@@ -48,6 +48,8 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.Load);
+            this.SaveCommand = new AsyncCommand(this.SaveHandler);
+            this.CancelCommand = new AsyncCommand(this.CancelHandler); 
         }
 
         public override bool KeepAlive => false;
@@ -57,15 +59,15 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             set => SetProperty(ref this._attachmentTraveler,value); 
         }
         
-        public ObservableCollection<ContactDTO> Contacts { 
-            get => this._contacts;
-            set => SetProperty(ref this._contacts, value);
-        }
+        //public ObservableCollection<ContactDTO> Contacts { 
+        //    get => this._contacts;
+        //    set => SetProperty(ref this._contacts, value);
+        //}
 
-        public ContactDTO SelectedContact { 
-            get => this._selectedContact;
-            set => SetProperty(ref this._selectedContact, value);
-        }
+        //public ContactDTO SelectedContact { 
+        //    get => this._selectedContact;
+        //    set => SetProperty(ref this._selectedContact, value);
+        //}
 
         public ObservableCollection<Price> Prices { 
             get => this._prices;
@@ -86,24 +88,71 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             get => this._contactDataTraveler; 
             set =>SetProperty(ref this._contactDataTraveler,value);
         }
-
-        private Task SaveHandler() {
-            return Task.CompletedTask;
+        public string Name { 
+            get => this._name; 
+            set => SetProperty(ref this._name, value); 
+        }
+        
+        public string Description { 
+            get => this._description;
+            set => SetProperty(ref this._description, value);
+        }
+        public bool ShowPriceTableLoading { 
+            get => this._showPriceTableLoading;
+            set => SetProperty(ref this._showPriceTableLoading, value);
         }
 
-        private Task CancelHandler() {
-            return Task.CompletedTask;
+        private async Task SaveHandler() {
+            DistributorEditInput input = new DistributorEditInput(this._distributorId, this.Name, this.Description, Application.Boundaries.EditAction.Update);
+            var response = await this._distributorEdit.Execute(input);
+            await this.ShowActionResponseAndReload(response);
+        }
+
+        private async Task CancelHandler() {
+            await Task.Run(() => {
+                this._eventAggregator.GetEvent<DistributorEditCancelEvent>().Publish(this._distributorId);
+            });
+        }
+
+        private async Task ShowActionResponseAndReload(DistributorEditOutput response) {
+            await Task.Run(() => {
+                if (response.Success) {
+                    this.DispatcherService.BeginInvoke(() => {
+                        var resp=this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information,MessageResult.OK);
+                        if (resp == MessageResult.OK) {
+                            this._eventAggregator.GetEvent<DistributorEditDoneEvent>().Publish(response.Distributor.Id);
+                        } else {
+                            this._eventAggregator.GetEvent<DistributorEditDoneEvent>().Publish(response.Distributor.Id);
+                        }
+
+                    });
+                } else {
+                    this.DispatcherService.BeginInvoke(() => {
+                        var resp = this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error, MessageResult.OK);
+                        if (resp == MessageResult.OK) {
+                            this._eventAggregator.GetEvent<DistributorEditDoneEvent>().Publish(response.Distributor.Id);
+                        } else {
+                            this._eventAggregator.GetEvent<DistributorEditDoneEvent>().Publish(response.Distributor.Id);
+                        }
+                        this._eventAggregator.GetEvent<DistributorEditCancelEvent>().Publish(response.Distributor.Id);
+                    });
+                }
+            });
         }
 
         private async Task Load() {
+            this.DispatcherService.BeginInvoke(() =>this.ShowPriceTableLoading=true);
             var distributor = await this._distributorEdit.GetDistributor(this._distributorId);
-            var contacts = await this._distributorEdit.GetContacts(this._distributorId);
+            //var contacts = await this._distributorEdit.GetContacts(this._distributorId);
             var prices = await this._distributorEdit.GetPrices(this._distributorId);
             this.SelectedDistributor = distributor;
             this.DispatcherService.BeginInvoke(() => {
-                this.Prices = new ObservableCollection<Price>();
-                this.Contacts = new ObservableCollection<ContactDTO>(contacts);          
+                this.Name = distributor.Name;
+                this.Description = distributor.Description;
+                this.Prices = new ObservableCollection<Price>(prices);
+               // this.Contacts = new ObservableCollection<ContactDTO>(contacts);          
                 this.CanEdit = this._isEdit;
+                this.ShowPriceTableLoading =false;
             });
         }
 

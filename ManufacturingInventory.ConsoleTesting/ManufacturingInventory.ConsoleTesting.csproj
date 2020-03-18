@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <FileVersion>1.4.270.7377</FileVersion>
-    <StartupObject>ManufacturingInventory.ConsoleTesting.Program</StartupObject>
+    <StartupObject>ManufacturingInventory.ConsoleTesting.InventoryTransfer</StartupObject>
     <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
 

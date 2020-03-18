@@ -39,8 +39,10 @@
             </dx:DialogService.ViewTemplate>
             <dx:DialogService.DialogStyle>
                 <Style TargetType="dx:ThemedWindow">
-                    <Setter Property="Width" Value="900" />
-                    <Setter Property="Height" Value="400" />
+                    <Setter Property="Width"
+                            Value="900" />
+                    <Setter Property="Height"
+                            Value="400" />
                 </Style>
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
@@ -185,6 +187,7 @@
                                           VerticalAlignment="Center"
                                           CheckedStateContent="YES"
                                           ContentPlacement="Both"
+                                          EnableAnimation="False"
                                           IsChecked="{Binding CostReported}"
                                           IsReadOnly="{Binding IsExisting}"
                                           UncheckedStateContent="NO" />
@@ -196,7 +199,9 @@
                                           VerticalAlignment="Center"
                                           CheckedStateContent="YES"
                                           ContentPlacement="Both"
+                                          EnableAnimation="False"
                                           IsChecked="{Binding IsReusable}"
+                                          IsReadOnly="{Binding IsBubbler}"
                                           UncheckedStateContent="NO" />
                     </dxlc:LayoutItem>
                     <dxlc:LayoutGroup>

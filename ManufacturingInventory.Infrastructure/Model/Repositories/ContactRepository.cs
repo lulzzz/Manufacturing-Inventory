@@ -31,8 +31,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             return (await Task.Run(() => this._context.Update(entity))).Entity;
         }
 
-        public Contact Delete(Contact entity) => throw new NotImplementedException();
-        public Task<Contact> DeleteAsync(Contact entity) => throw new NotImplementedException();
+        public Contact Delete(Contact entity) {
+            return this._context.Remove(entity).Entity;
+        }
+
+        public async Task<Contact> DeleteAsync(Contact entity) {
+           return await Task.Run(() => this._context.Remove(entity).Entity);
+        }
 
         public Contact GetEntity(Expression<Func<Contact, bool>> expression) {
             return this._context.Contacts.Include(e => e.Distributor).Include(e => e.Manufacturer).FirstOrDefault(expression);

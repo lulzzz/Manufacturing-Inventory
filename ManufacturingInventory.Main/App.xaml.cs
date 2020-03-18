@@ -73,23 +73,23 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 this.userService.CurrentSession = session;
             }
 
-            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            if (this.ShowCheckVersionWindow()) {
-                Process process = new Process();
-                ProcessStartInfo psi = new ProcessStartInfo {
-                    FileName = @"C:\Program Files (x86)\Manufacturing Inventory\Installer\InventoryInstaller.exe",
-                    UseShellExecute = false,
-                };
-                process.StartInfo = psi;
-                process.Start();
-                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-                this.Shutdown();
-            } else {
-                if (!DXSplashScreen.IsActive)
-                    DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
+            //Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            //if (this.ShowCheckVersionWindow()) {
+            //    Process process = new Process();
+            //    ProcessStartInfo psi = new ProcessStartInfo {
+            //        FileName = @"C:\Program Files (x86)\Manufacturing Inventory\Installer\InventoryInstaller.exe",
+            //        UseShellExecute = false,
+            //    };
+            //    process.StartInfo = psi;
+            //    process.Start();
+            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //    this.Shutdown();
+            //} else {
+            //    if (!DXSplashScreen.IsActive)
+            //        DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
 
-                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            }
+            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //}
             base.OnStartup(e);
         }
 

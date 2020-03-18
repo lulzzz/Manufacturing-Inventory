@@ -95,11 +95,9 @@ namespace ManufacturingInventory.Common.Application.UI.ViewModels {
 
         private async Task DeleteContactHandler() {
             if (this.SelectedContact != null) {
-                this._editInProgress = true;
                 ContactTableDetailEditInput input = new ContactTableDetailEditInput(EditAction.Delete, this.SelectedContact, this._distributorId);
                 var response = await this._contactUseCase.Execute(input);
                 await this.ShowActionResponseAndReload(response);
-                this._editInProgress = false;
             }
         }
 
@@ -192,8 +190,7 @@ namespace ManufacturingInventory.Common.Application.UI.ViewModels {
         }
 
         private async Task Load() {
-            if (!this._isInitialized) {
-                
+            if (!this._isInitialized) {             
                 this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 var contacts = await this._contactUseCase.GetContacts(this._distributorId);
                 this.DispatcherService.BeginInvoke(() => {

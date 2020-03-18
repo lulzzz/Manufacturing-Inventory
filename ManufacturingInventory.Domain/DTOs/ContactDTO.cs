@@ -37,7 +37,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         [Display(GroupName = "[Name]", Name = "Job Title", Order = 0)]
         public string Title { get; set; }
 
-        [Display(GroupName = "{Tabs}/Contact", Name = "Country Code"), DataType(DataType.PhoneNumber)]
+        [Display(GroupName = "{Tabs}/Contact", Name = "Country Code"), DataType(DataType.Text)]
         public string CountryCode { get; set; }
         [Display(GroupName = "{Tabs}/Contact", Name = "Phone"), DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
@@ -51,7 +51,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         [Display(GroupName = "{Tabs}/Contact/Address", Name = "Address", Order = 3), DataType(DataType.Text)]
         public string Address { get; set; }
 
-        [Display(GroupName = "{Tabs}/Misc", Name = "Website", Order = 4), DataType(DataType.Url)]
+        [Display(GroupName = "{Tabs}/Misc", Name = "Website", Order = 4), DataType(DataType.Text)]
         public string Website { get; set; }
 
         [Display(GroupName = "{Tabs}/Misc", Name = "Comments", Order = 5), DataType(DataType.MultilineText)]

@@ -182,6 +182,7 @@
                                               VerticalAlignment="Center"
                                               CheckedStateContent="YES"
                                               ContentPlacement="Both"
+                                              EnableAnimation="False"
                                               IsChecked="{Binding CostReported}"
                                               IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"
                                               UncheckedStateContent="NO" />
@@ -193,6 +194,7 @@
                                               VerticalAlignment="Center"
                                               CheckedStateContent="YES"
                                               ContentPlacement="Both"
+                                              EnableAnimation="False"
                                               IsChecked="{Binding IsReusable}"
                                               IsReadOnly="True"
                                               UncheckedStateContent="NO" />

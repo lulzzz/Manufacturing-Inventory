@@ -396,16 +396,16 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            bool isBubbler = false;
-            bool displayReusable = false;
-            var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
-            if (check.Count() > 0) {
-                displayReusable = true;
-                isBubbler = check.Select(e => e.IsBubbler).Contains(true);
-            }
+            //bool isBubbler = false;
+            //bool displayReusable = false;
+            //var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
+            //if (check.Count() > 0) {
+            //    displayReusable = true;
+            //    isBubbler = check.Select(e => e.IsBubbler).Contains(true);
+            //}
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = isBubbler;
-                this.DisplayReusable = displayReusable;
+                //this.IsBubbler = isBubbler;
+                this.DisplayReusable = this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.ShowTableLoading = false;
             });
@@ -415,19 +415,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            bool isBubbler = false;
-            bool displayReusable = false;
-            var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
-            if (check.Count() > 0) {
-                displayReusable = true;
-                isBubbler = check.Select(e => e.IsBubbler).Contains(true);
-            }
+            //bool isBubbler = false;
+            //bool displayReusable = false;
+            //var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
+            //if (check.Count() > 0) {
+            //    displayReusable = true;
+            //    isBubbler = check.Select(e => e.IsBubbler).Contains(true);
+            //}
 
             //var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = isBubbler;
-                this.DisplayReusable = displayReusable;
+                //this.IsBubbler = isBubbler;
+                this.DisplayReusable = this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
                 this.ShowTableLoading = false;
@@ -441,17 +441,17 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
             //var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
-            bool isBubbler = false;
-            bool displayReusable = false;
-            var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
-            if (check.Count() > 0) {
-                displayReusable = true;
-                isBubbler = check.Select(e => e.IsBubbler).Contains(true);
-            }
+            //bool isBubbler = false;
+            //bool displayReusable = false;
+            //var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
+            //if (check.Count() > 0) {
+            //    displayReusable = true;
+            //    isBubbler = check.Select(e => e.IsBubbler).Contains(true);
+            //}
 
             this.DispatcherService.BeginInvoke(() => {
-                this.IsBubbler = isBubbler;
-                this.DisplayReusable = displayReusable;
+                //this.IsBubbler = isBubbler;
+                this.DisplayReusable = this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 if (this.SelectedPartInstance != null) {
                     this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == this.SelectedPartInstance.Id);

@@ -86,11 +86,9 @@
                              ShowLoadingPanel="{Binding ShowTableLoading}">
                 <dxg:GridControl.View>
                     <dxg:TableView x:Name="_attachmentTblView"
+                                   AllowBestFit="True"
+                                   AutoWidth="True"
                                    Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand EventName="Loaded"
-                                                   Command="{Binding ElementName=_attachmentTblView, Path=TableViewCommands.BestFitColumns}" />
-                        </dxmvvm:Interaction.Behaviors>
                         <dxg:TableView.RowCellMenuCustomizations>
                             <dxb:BarButtonItem Content="Open File"
                                                Glyph="{dx:DXImage Image=Open_16x16.png}"

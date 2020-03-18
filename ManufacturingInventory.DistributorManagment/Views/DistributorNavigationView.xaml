@@ -58,6 +58,7 @@
                                    BarItemDisplayMode="ContentAndGlyph"
                                    Command="{Binding DeleteDistributorCommand}"
                                    Content="Delete Distributor"
+                                   IsEnabled="False"
                                    Glyph="{dx:DXImage Image=Delete_32x32.png}" />
             </dxb:Bar>
         </dxb:BarManager.Bars>
@@ -69,7 +70,7 @@
             <dxg:GridControl.View>
                 <dxg:TableView x:Name="_distributorTableView"
                                AutoWidth="True"
-
+                               AllowBestFit="True"
                                HorizontalScrollbarVisibility="Visible"
                                SearchColumns="Name"
                                SearchPanelNullText="Search By Name"
@@ -88,6 +89,10 @@
                         <dxb:BarButtonItem Command="{Binding Path=View.DataContext.EditDistributorCommand}"
                                            Content="Edit Distributor"
                                            Glyph="{dx:DXImage Image=Action_Edit.png}" />
+                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.DeleteDistributorCommand}"
+                                           Content="Delete Distributor"
+                                           IsEnabled="False"
+                                           Glyph="{dx:DXImage Image=Delete_32x32.png}"/>
                         <dxb:BarItemSeparator />
                     </dxg:TableView.RowCellMenuCustomizations>
                 </dxg:TableView>
@@ -96,7 +101,7 @@
                             FieldName="Name" />
             <dxg:GridColumn Header="Description"
                             FieldName="Description" />
-            
+
         </dxg:GridControl>
     </dxb:BarManager>
 </UserControl>

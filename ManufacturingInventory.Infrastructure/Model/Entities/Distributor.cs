@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
-    public class Distributor {
+    public class Distributor:ICloneable {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -24,6 +24,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public Distributor(string name, string description):this() {
             this.Name = name;
             this.Description = description;
+        }
+
+        public object Clone() {
+            return this.MemberwiseClone();
         }
     }
 }

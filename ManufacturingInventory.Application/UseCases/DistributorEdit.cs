@@ -57,7 +57,22 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<DistributorEditOutput> ExecuteUpdate(DistributorEditInput input) {
-            return new DistributorEditOutput(null, false, "Error: Not Implemented Yet");
+            var distributor = await this._distributorRepository.GetEntityAsync(e => e.Id == input.DistributorId);
+            distributor.Name = input.Name;
+            distributor.Description = input.Description;
+            var updated = await this._distributorRepository.UpdateAsync(distributor);
+            if (updated != null) {
+                var count = await this._unitOfWork.Save();
+                if (count > 0) {
+                    return new DistributorEditOutput(updated, true, "Success: Distributor Updated");
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new DistributorEditOutput(null, false, "Error: Update Failed, Please Contact Admin");
+                }
+            } else {
+                await this._unitOfWork.Undo();
+                return new DistributorEditOutput(null, false, "Error: Update Failed, Please Contact Admin");
+            }
         }
 
         public async Task<DistributorEditOutput> ExecuteDelete(DistributorEditInput input) {

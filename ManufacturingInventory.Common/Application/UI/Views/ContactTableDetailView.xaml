@@ -88,6 +88,7 @@
                 </dxg:GridControl.View>
                 <dxg:GridColumn FieldName="FirstName" />
                 <dxg:GridColumn FieldName="LastName" />
+                <dxg:GridColumn FieldName="Email" />
             </dxg:GridControl>
             <dxlc:DataLayoutControl CurrentItem="{Binding SelectedContact}"
                                     IsReadOnly="{Binding EditInProgress,Converter={dxmvvm:BooleanNegationConverter}}" />
