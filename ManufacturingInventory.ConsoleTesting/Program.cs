@@ -22,11 +22,22 @@ namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static async Task<int> Main(string[] args) {
             using var context = new ManufacturingContext();
-            var distributor = context.Distributors.FirstOrDefault(e=>e.Id==13);
-            await context.AddAsync(distributor);
-           // context.Update(new Distributor("AETestDistributor","Some Description"));
-            await context.SaveChangesAsync();
-            Console.WriteLine("Should be done");
+            IUnitOfWork unitOfWork = new UnitOfWork(context);
+            IRepository<PartInstance> repo = new PartInstanceRepository(context);
+            var partInstance = await repo.GetEntityAsync(e => e.Id == 64);
+            var removed = await repo.DeleteAsync(partInstance);
+            if (removed != null) {
+                var count = await unitOfWork.Save();
+                if (count > 0) {
+                    Console.WriteLine("Instance Deleted");
+                } else {
+                   await unitOfWork.Undo();
+                }
+            } else {
+                Console.WriteLine("Delete Failed");
+            }
+
+            Console.ReadKey();
             return 1;
         }
 

@@ -31,24 +31,22 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public PartInstance Delete(PartInstance entity) {
-            var toRemove = this._context.PartInstances.FirstOrDefault(e => e.Id == entity.Id);
-            if (toRemove != null) {
-
-                var removed = this._context.PartInstances.Remove(toRemove).Entity;
-                return removed;
+            var partInstance = this.GetEntity(e => e.Id == entity.Id);
+            if (partInstance != null) {
+                this._context.RemoveRange(partInstance.Transactions);
+                this._context.RemoveRange(partInstance.PriceLogs);
+                return this._context.PartInstances.Remove(partInstance).Entity;
             } else {
                 return null;
             }
         }
 
         public async Task<PartInstance> DeleteAsync(PartInstance entity) {
-            var toRemove = await this._context.PartInstances.FirstOrDefaultAsync(e => e.Id == entity.Id);
-            if (toRemove != null) {
-                var removed = (await Task.Run(() => {
-                    return this._context.PartInstances.Remove(toRemove);
-                })).Entity;
-
-                return removed;
+            var partInstance = await this.GetEntityAsync(e => e.Id == entity.Id);
+            if (partInstance != null) {
+                this._context.RemoveRange(partInstance.Transactions);
+                this._context.RemoveRange(partInstance.PriceLogs);
+                return this._context.PartInstances.Remove(partInstance).Entity;
             } else {
                 return null;
             }
