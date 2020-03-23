@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
-    public abstract class Category {
+    public abstract class Category:ICategory {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -24,11 +25,20 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public Category(Category category) {
             this.Name = category.Name;
             this.Description = category.Description;
+            this.IsDefault = category.IsDefault;
+            
         }
 
         public void Set(Category category) {
             this.Name = category.Name;
             this.Description = category.Description;
+            this.IsDefault = category.IsDefault;
+        }
+
+        public void Set(ICategory category) {
+            this.Name = category.Name;
+            this.Description = category.Description;
+            this.IsDefault = category.IsDefault;
         }
     }
 
@@ -57,7 +67,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartInstances = new HashSet<PartInstance>();
         }
 
-        public Condition(Condition condition):base(condition) {
+        public Condition(ICategory condition):base(condition) {
             this.PartInstances = new HashSet<PartInstance>();
         }
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,10 +13,10 @@ using System.Windows.Shapes;
 
 namespace ManufacturingInventory.CategoryManagment.Views {
     /// <summary>
-    /// Interaction logic for ViewA.xaml
+    /// Interaction logic for CategoryDetailsView.xaml
     /// </summary>
-    public partial class ViewA : UserControl {
-        public ViewA() {
+    public partial class CategoryDetailsView : UserControl {
+        public CategoryDetailsView() {
             InitializeComponent();
         }
     }

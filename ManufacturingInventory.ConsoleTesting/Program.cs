@@ -11,7 +11,7 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Domain.Buisness.Concrete;
 using ManufacturingInventory.Application.UseCases;
-
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Collections.ObjectModel;
@@ -21,17 +21,24 @@ using ManufacturingInventory.Application.Boundaries.CheckIn;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static async Task<int> Main(string[] args) {
+            Category category = new Organization();
+            ICategory test = category;
+            Console.WriteLine(test.GetType().Name);
+            return 1;
+        }
+
+        public static async Task<int> DeletePartInstance(int id) {
             using var context = new ManufacturingContext();
             IUnitOfWork unitOfWork = new UnitOfWork(context);
             IRepository<PartInstance> repo = new PartInstanceRepository(context);
-            var partInstance = await repo.GetEntityAsync(e => e.Id == 64);
+            var partInstance = await repo.GetEntityAsync(e => e.Id == id);
             var removed = await repo.DeleteAsync(partInstance);
             if (removed != null) {
                 var count = await unitOfWork.Save();
                 if (count > 0) {
                     Console.WriteLine("Instance Deleted");
                 } else {
-                   await unitOfWork.Undo();
+                    await unitOfWork.Undo();
                 }
             } else {
                 Console.WriteLine("Delete Failed");
