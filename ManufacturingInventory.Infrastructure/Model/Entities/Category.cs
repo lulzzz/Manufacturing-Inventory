@@ -4,8 +4,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Interfaces;
+using System.ComponentModel;
 
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
+    public enum CategoryTypes {
+        [Description("Organization")] Organization,
+        [Description("Condition")] Condition,
+        [Description("StockType")] StockType,
+        [Description("Usage")] Usage,
+        [Description("InvalidType")]InvalidType
+    }
+
     public abstract class Category:ICategory {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -22,11 +31,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Description = description;
         }
 
-        public Category(Category category) {
+        public Category(ICategory category) {
             this.Name = category.Name;
             this.Description = category.Description;
             this.IsDefault = category.IsDefault;
-            
         }
 
         public void Set(Category category) {
@@ -53,7 +61,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Parts = new HashSet<Part>();
         }
 
-        public Organization(Organization organization) : base(organization) { }
+        public Organization(ICategory organization) : base(organization) { }
     }
 
     public partial class Condition : Category {
@@ -83,7 +91,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartInstances = new HashSet<PartInstance>();
         }
 
-        public Usage(Usage usage):base(usage) {
+        public Usage(ICategory usage):base(usage) {
             this.PartInstances = new HashSet<PartInstance>();
         }
     }
@@ -102,11 +110,14 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.PartInstances = new HashSet<PartInstance>();
         }
 
-        public StockType(StockType type):base(type) {
+        public StockType(ICategory stockType):base(stockType) {
             this.PartInstances = new HashSet<PartInstance>();
-            this.MinQuantity = type.MinQuantity;
-            this.SafeQuantity = type.SafeQuantity;
-            this.Quantity = type.Quantity;
+            Type catType = stockType.GetType();
+            if (catType.Equals(typeof(StockType))) {
+                this.MinQuantity = ((StockType)stockType).MinQuantity;
+                this.SafeQuantity = ((StockType)stockType).SafeQuantity;
+                this.Quantity = ((StockType)stockType).Quantity;
+            }
         }
 
         public void UpdateQuantity() {

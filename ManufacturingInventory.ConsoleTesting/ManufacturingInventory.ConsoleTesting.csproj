@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Application\ManufacturingInventory.Application.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Extensions\ManufacturingInventory.Extensions.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
   </ItemGroup>
 

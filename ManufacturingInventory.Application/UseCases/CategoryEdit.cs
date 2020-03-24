@@ -26,6 +26,7 @@ namespace ManufacturingInventory.Application.UseCases {
             this._partInstanceProvider = new PartInstanceProvider(context);
             this._partProvider = new PartProvider(context);
             this._unitOfWork = new UnitOfWork(context);
+
         }
 
         public async Task<CategoryBoundaryOutput> Execute(CategoryBoundaryInput input) {
@@ -42,8 +43,23 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<CategoryBoundaryOutput> ExecuteAdd(CategoryBoundaryInput input) {
-            
-            return new CategoryBoundaryOutput(null, false, "Error: Update Action Not Implemented Yet");
+            var category = input.Category.GetCategory();
+            if (category == null) {
+                return new CategoryBoundaryOutput(null, false,"Internal Error: Could not Cast to Specified Category, Please Contact Admin");
+            }
+            var added = await this._categoryRepository.AddAsync(category);
+            if (added != null) {
+                var count = await this._unitOfWork.Save();
+                if (count > 0) {
+                    return new CategoryBoundaryOutput(category, true, "Success: Category Added");
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new CategoryBoundaryOutput(null, false, "Error:  Failed to Add new Category");
+                }
+            } else {
+                await this._unitOfWork.Undo();
+                return new CategoryBoundaryOutput(null, false, "Error:  Failed to Add new Category");
+            }
         }
 
         public async Task<CategoryBoundaryOutput> ExecuteUpdate(CategoryBoundaryInput input) {
@@ -57,14 +73,12 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<IEnumerable<CategoryDTO>> GetCategories() {
             return (await this._categoryRepository.GetEntityListAsync()).Select(category => new CategoryDTO(category));
         }
+
         public async Task<T> GetCategory<T>(int categoryId) where T:Category {
             var category = (await this._categoryRepository.GetEntityAsync(e => e.Id == categoryId));
-
             return (category != null && category.GetType().Equals(typeof(T))) ? (T)category : null;
-            //Type type = typeof(T);
-            //var cat=(T)Activator.CreateInstanceFrom(category);
-           
         }
+
         public async Task<IEnumerable<PartInstance>> GetCategoryPartInstances(int categoryId) {
             return await this._partInstanceProvider.GetEntityListAsync(e => (e.StockTypeId == categoryId || e.UsageId == categoryId || e.ConditionId == categoryId));
         }

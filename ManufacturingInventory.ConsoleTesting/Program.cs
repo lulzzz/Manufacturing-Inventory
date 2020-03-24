@@ -17,13 +17,44 @@ using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Collections.ObjectModel;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.CheckIn;
+using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
+using ManufacturingInventory.Application.Boundaries;
+using ManufacturingInventory.Domain.DTOs;
+using ManufacturingInventory.Extensions;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static async Task<int> Main(string[] args) {
-            Category category = new Organization();
+            ManufacturingContext context = new ManufacturingContext();
+            CategoryEdit categoryEdit = new CategoryEdit(context);
+            ICategory category = new StockType() { 
+                Name="Things2",
+                Description="Something",
+                Quantity=125,
+                MinQuantity=52,
+                SafeQuantity=98
+            };
+            var transfer = new CategoryDTO(category);
+            CategoryBoundaryInput input = new CategoryBoundaryInput(EditAction.Add,transfer);
+            var response = await categoryEdit.Execute(input);
+            if (response.Success) {
+                Console.WriteLine(response.Message);
+                Console.WriteLine(response.Category.Name);
+                Console.WriteLine(transfer.Type.GetDescription());
+            } else {
+                Console.WriteLine(response.Message);
+            }
+            Console.WriteLine("Press any key to exit");
+            Console.ReadKey();
+            return 1;
+        }
+
+        public static async Task<int> TestInterfaceCast() {
+            Category category = new StockType();
+            ((StockType)category).MinQuantity = 52;
             ICategory test = category;
             Console.WriteLine(test.GetType().Name);
+            Console.WriteLine("Min Quantity: {0}", ((StockType)test).MinQuantity);
             return 1;
         }
 

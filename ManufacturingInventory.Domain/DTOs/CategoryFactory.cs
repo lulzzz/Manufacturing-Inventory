@@ -6,17 +6,19 @@ using System.Text;
 namespace ManufacturingInventory.Domain.DTOs {
     public static class CategoryFactory {
         public static Category CreateCategory(CategoryDTO category) {
-            if (typeof(Condition).Name == category.Type) {
-                return null;
-            } else if(typeof(Organization).Name == category.Type) {
-                return null;
-            } else if (typeof(Usage).Name == category.Type) {
-                return null;
-            } else if (typeof(StockType).Name == category.Type) {
-                return null;
-            } else {
-                return null;
-            }
+            //if (typeof(Condition).Name == category.Type) {
+            //    return null;
+            //} else if(typeof(Organization).Name == category.Type) {
+            //    return null;
+            //} else if (typeof(Usage).Name == category.Type) {
+            //    return null;
+            //} else if (typeof(StockType).Name == category.Type) {
+            //    return null;
+            //} else {
+            //    return null;
+            //}
+
+            return null;
         }
     }
 }
