@@ -74,10 +74,19 @@ namespace ManufacturingInventory.Application.UseCases {
             return (await this._categoryRepository.GetEntityListAsync()).Select(category => new CategoryDTO(category));
         }
 
-        public async Task<T> GetCategory<T>(int categoryId) where T:Category {
-            var category = (await this._categoryRepository.GetEntityAsync(e => e.Id == categoryId));
-            return (category != null && category.GetType().Equals(typeof(T))) ? (T)category : null;
+        public async Task<CategoryDTO> GetCategory(int categoryId) {
+            var category = await this._categoryRepository.GetEntityAsync(e => e.Id == categoryId);
+            if (category != null) {
+                return new CategoryDTO(category);
+            } else {
+                return null;
+            }
         }
+
+        //public async Task<T> GetCategory<T>(int categoryId) where T:Category {
+        //    var category = (await this._categoryRepository.GetEntityAsync(e => e.Id == categoryId));
+        //    return (category != null && category.GetType().Equals(typeof(T))) ? (T)category : null;
+        //}
 
         public async Task<IEnumerable<PartInstance>> GetCategoryPartInstances(int categoryId) {
             return await this._partInstanceProvider.GetEntityListAsync(e => (e.StockTypeId == categoryId || e.UsageId == categoryId || e.ConditionId == categoryId));

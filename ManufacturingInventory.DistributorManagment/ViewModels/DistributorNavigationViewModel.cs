@@ -54,9 +54,11 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             this._eventAggregator.GetEvent<DistributorEditCancelEvent>().Subscribe(async (id) => await this.DistributorEditCancelHandler(id));
         }
 
+        #region ParameterBinding
+
         public override bool KeepAlive => false;
 
-        public ObservableCollection<Distributor> Distributors { 
+        public ObservableCollection<Distributor> Distributors {
             get => this._distributors;
             set => SetProperty(ref this._distributors, value);
         }
@@ -66,10 +68,12 @@ namespace ManufacturingInventory.DistributorManagment.ViewModels {
             set => SetProperty(ref this._selectedDistributor, value);
         }
 
-        public bool ShowTableLoading { 
+        public bool ShowTableLoading {
             get => this._showTableLoading;
             set => SetProperty(ref this._showTableLoading, value);
         }
+
+        #endregion
 
         #region Misc
 
