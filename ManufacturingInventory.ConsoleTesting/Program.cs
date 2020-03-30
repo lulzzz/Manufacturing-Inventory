@@ -20,7 +20,8 @@ using ManufacturingInventory.Application.Boundaries.CheckIn;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Application.Boundaries;
 using ManufacturingInventory.Domain.DTOs;
-using ManufacturingInventory.Extensions;
+using ManufacturingInventory.Domain.Extensions;
+
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {

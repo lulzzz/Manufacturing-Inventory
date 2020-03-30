@@ -13,7 +13,8 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:localCommon="clr-namespace:ManufacturingInventory.CategoryManagment.Internal"
-             xmlns:appDef="clr-namespace:ManufacturingInventory.Application.Boundaries.CategoryBoundaries;assembly=ManufacturingInventory.Application"
+             xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.ValueConverters;assembly=ManufacturingInventory.Common"
+             xmlns:appDef="clr-namespace:ManufacturingInventory.Domain.Enums;assembly=ManufacturingInventory.Domain"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d"
@@ -36,22 +37,20 @@
     <dx:LoadingDecorator>
         <dxlc:LayoutGroup Orientation="Vertical">
             <dxlc:LayoutGroup Orientation="Vertical">
-                <dxlc:LayoutGroup>
-                    <dxlc:LayoutItem Label="Name"
-                                     Style="{StaticResource LayoutItemStyle}">
-                        <dxe:TextEdit EditValue="{Binding Name}"
-                                      NullText="Category Name"
-                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Select Pricing Option"
+                <dxlc:LayoutGroup Orientation="Vertical">
+                    <dxlc:LayoutItem Label="{Binding CategoryTypeLabel}"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit Name="comboBoxEdit"
                                           ApplyItemTemplateToSelectedItem="True"
                                           EditValue="{Binding SelectedCategoryType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                          IsTextEditable="False">
+                                          IsTextEditable="False"
+                                          IsEnabled="{Binding CanChangeType,Mode=TwoWay,IsAsync=True}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:CategoryOption}"
                                                                 SortMode="DisplayName" />
+                                <dxmvvm:EventToCommand Command="{Binding CategoryTypeChangedCommand}"
+                                                       EventName="EditValueChanged">
+                                </dxmvvm:EventToCommand>
                             </dxmvvm:Interaction.Behaviors>
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
@@ -69,6 +68,13 @@
                             </dxe:ComboBoxEdit.ItemTemplate>
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Name"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:TextEdit EditValue="{Binding Name}"
+                                      NullText="Category Name"
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                    </dxlc:LayoutItem>
+
                 </dxlc:LayoutGroup>
 
                 <dxlc:LayoutItem Label="Description"
@@ -76,10 +82,10 @@
                     <dxe:TextEdit EditValue="{Binding Description}" NullText="Category Description"
                                   Style="{StaticResource TextEditComments}"
                                   Height="50"
-                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                                  IsReadOnly="{Binding CanEdit}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}">
+            <dxlc:LayoutGroup Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}">
                 <dxlc:LayoutItem Label="Total Quantity"
                                  LabelHorizontalAlignment="Center"
                                  LabelPosition="Top">
@@ -110,10 +116,12 @@
                 </dxlc:LayoutItem>
 
             </dxlc:LayoutGroup>
-            <dx:DXTabControl>
+            <dx:DXTabControl Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}"
+                             SelectedIndex="{Binding TabIndex,Mode=TwoWay,IsAsync=True}">
                 <dx:DXTabItem Header="PartInstances"
-                              Visibility="{Binding PartInstancesEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}"
-                              Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}">
+                              Visibility="{Binding PartInstancesEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True}}"
+                              Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
+                              TabIndex="{Binding PartInstanceTabIndex,Mode=TwoWay,IsAsync=True}">
                     <dxg:GridControl x:Name="_listOfPartInstances"
                                      ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
@@ -128,18 +136,18 @@
                         <dxg:GridColumn AllowSearchPanel="true"
                                         FieldName="Name" />
                         <dxg:GridColumn FieldName="IsBubbler" />
-                        
+
                     </dxg:GridControl>
                 </dx:DXTabItem>
                 <dx:DXTabItem Header="Parts"
-                              Visibility="{Binding PartsEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}"
-                              Glyph="{dx:DXImage Image=BOProductGroup_16x16.png}">
+                              Visibility="{Binding PartsEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True}}"
+                              Glyph="{dx:DXImage Image=BOProductGroup_16x16.png}"
+                              TabIndex="{Binding PartTabIndex,Mode=TwoWay,IsAsync=True}">
                     <dxg:GridControl x:Name="_listOfParts"
                                      dxlc:DockLayoutControl.Dock="Client"
                                      ClipboardCopyMode="ExcludeHeader"
                                      ItemsSource="{Binding Parts, IsAsync=True, Mode=TwoWay}"
-                                     SelectedItem="{Binding SelectedPart, IsAsync=True, Mode=TwoWay}"
-                                     ShowLoadingPanel="{Binding IsLoading, Mode=TwoWay}"
+                                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
                             <dxg:TableView AllowEditing="False"
@@ -169,7 +177,6 @@
                                      Content="Discard Changes"
                                      Glyph="{dx:DXImage Image=Cancel_32x32.png}" />
                 </dxlc:LayoutGroup>
-
             </dxlc:LayoutItem>
         </dxlc:LayoutGroup>
     </dx:LoadingDecorator>

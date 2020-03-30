@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.9" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.9" />
     <PackageReference Include="Effortless.Net.Encryption" Version="1.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />

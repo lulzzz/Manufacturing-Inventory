@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Mvvm" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Mvvm" Version="19.1.9" />
   </ItemGroup>
 
   <ItemGroup>

@@ -61,7 +61,7 @@
                                SearchColumns="Name"
                                SearchPanelNullText="Search By Name"
                                ShowSearchPanelMode="Always"
-                               Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                               Style="{StaticResource TableViewStyleNoMaster}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding ElementName=_categoryTableView, Path=TableViewCommands.BestFitColumns}"
                                                EventName="Loaded" />

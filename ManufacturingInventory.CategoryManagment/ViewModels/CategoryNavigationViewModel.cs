@@ -45,6 +45,15 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             this._categoryEdit = categoryEdit;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
+            this.InitializeCommand = new AsyncCommand(this.Load);
+            this.AddNewCategoryCommand = new AsyncCommand(this.AddNewCategoryHandler);
+            this.DeleteCategoryCommand = new AsyncCommand(this.DeleteCategoryHandler);
+            this.EditCategoryCommand = new AsyncCommand(this.EditCategoryHandler);
+            this.ViewCategoryDetailsCommand = new AsyncCommand(this.ViewCategoryDetailsHandler);
+            this.DoubleClickViewCommand = new AsyncCommand(this.ViewCategoryDetailsHandler);
+            this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Subscribe(async ( categoryId) => await this.CategoryEditDoneHandler(categoryId));
+            this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Subscribe(async (categoryId) => await this.CategoryEditCancelHandler(categoryId));
+
         }
 
         #region ParameterBinding
@@ -124,7 +133,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
 
         #region CallBackRegion
 
-        private async Task CategoryEditDoneHandler(int categoryId) {
+        private async Task CategoryEditDoneHandler(int? categoryId) {
             this._editInProgress = false;
             await this.Reload(categoryId);
         }
@@ -160,7 +169,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => {
                     this.Categories = new ObservableCollection<CategoryDTO>(categories);
                     this._editInProgress = false;
-                    this.ShowTableLoading = true;
+                    this.ShowTableLoading = false;
                     this._isInitialized = true;
                 });
             }

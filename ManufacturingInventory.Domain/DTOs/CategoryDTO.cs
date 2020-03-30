@@ -4,7 +4,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using ManufacturingInventory.Infrastructure.Model.Interfaces;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Extensions;
+using ManufacturingInventory.Domain.Extensions;
 
 namespace ManufacturingInventory.Domain.DTOs {
     public class CategoryDTO : ICategory {

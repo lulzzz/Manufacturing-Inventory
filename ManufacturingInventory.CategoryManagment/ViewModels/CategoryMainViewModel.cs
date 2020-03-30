@@ -23,6 +23,6 @@ using System.Collections.Generic;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryMainViewModel : InventoryViewModelBase {
-        public override bool KeepAlive => throw new NotImplementedException();
+        public override bool KeepAlive => true;
     }
 }

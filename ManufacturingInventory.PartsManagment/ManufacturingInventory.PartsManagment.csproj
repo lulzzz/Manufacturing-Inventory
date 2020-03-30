@@ -7,10 +7,10 @@
     <Configurations>Debug;Release;fr</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.Seven" Version="19.1.8" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.VS2010" Version="19.1.8" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.VS2017Blue" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.9" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.Seven" Version="19.1.9" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.VS2010" Version="19.1.9" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.VS2017Blue" Version="19.1.9" />
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
   </ItemGroup>
   <ItemGroup>

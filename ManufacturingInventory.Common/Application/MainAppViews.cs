@@ -8,7 +8,7 @@ namespace ManufacturingInventory.Common.Application {
 
         public static string LocationsManagmentMainView { get => "LocationsManagmentMainView"; }
 
-        public static string CategoriesManagmentMainView { get => "CategoriesManagmentMainView"; }
+        public static string CategoryMainView { get => "CategoryMainView"; }
 
         public static string UserManagmentMainView { get => "UserManagmentMainView"; }
 

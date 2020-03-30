@@ -9,10 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Effortless.Net.Encryption" Version="1.0.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="4.7.0" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Mvvm" Version="19.1.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ManufacturingInventory.Extensions\ManufacturingInventory.Extensions.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
   </ItemGroup>
 

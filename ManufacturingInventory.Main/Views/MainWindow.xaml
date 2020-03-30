@@ -51,10 +51,10 @@
 
                             <dxb:BarButtonItem x:Name="categoryView"
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:MainAppViews.CategoriesManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.CategoryMainView}"
                                                Content="Category Managment"
                                                Glyph="{dx:DXImage Image=BO_Category.png}"
-                                               IsEnabled="False"
+                                               IsEnabled="True"
                                                LargeGlyph="{dx:DXImage Image=BO_Category.png}" />
 
                             <dxb:BarButtonItem x:Name="usersView"

@@ -14,6 +14,7 @@ using ManufacturingInventory.Application.Boundaries.PriceEdit;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
 using ManufacturingInventory.Application.Boundaries.DistributorManagment;
+using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.DistributorManagment;
 using ManufacturingInventory.Domain.Buisness.Concrete;
@@ -35,6 +36,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using ManufacturingInventory.Application.Boundaries.ContactTableDetailEdit;
+using ManufacturingInventory.CategoryManagment;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -139,6 +141,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) {
             moduleCatalog.AddModule<PartsManagmentModule>();
             moduleCatalog.AddModule<DistributorManagmentModule>();
+            moduleCatalog.AddModule<CategoryManagmentModule>();
 
         }
 
@@ -162,6 +165,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IPartInstanceTableViewUseCase, PartInstanceTableViewUseCase>();
                 container.Register<IDistributorEditUseCase, DistributorEdit>();
                 container.Register<IContactTableDetailEditUseCase, ContactTableDetailEdit>();
+                container.Register<ICategoryEditUseCase, CategoryEdit>();
 
                 container.Register<IRepository<Category>, CategoryRepository>();
                 container.Register<IRepository<Location>, LocationRepository>();

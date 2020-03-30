@@ -43,9 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.8" />
-    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.All" Version="19.1.8" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.9" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.9" />
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.All" Version="19.1.9" />
     <PackageReference Include="Effortless.Net.Encryption" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.2" />
     <PackageReference Include="Prism.DryIoc" Version="7.2.0.1367" />
@@ -53,6 +53,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Application\ManufacturingInventory.Application.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.CategoryManagment\ManufacturingInventory.CategoryManagment.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.DistributorManagment\ManufacturingInventory.DistributorManagment.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />

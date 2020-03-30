@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 
+
 namespace ManufacturingInventory.Extensions {
     public static class EnumHelper {
 
@@ -29,5 +30,7 @@ namespace ManufacturingInventory.Extensions {
             }
             return description;
         }
+
+
     }
 }
