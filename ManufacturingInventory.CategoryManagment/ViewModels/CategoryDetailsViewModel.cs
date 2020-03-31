@@ -43,10 +43,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private bool _partsEnabled;
         private bool _canChangeType;
 
-        private int _partTabIndex = 1;
-        private int _partInstanceTabIndex = 0;
-        private int _tabIndex;
-
         private bool _canEdit;
         private bool _isStockType;
         private int _categoryId;
@@ -186,21 +182,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             set => SetProperty(ref this._canChangeType,value); 
         }
 
-        public int PartTabIndex { 
-            get => this._partTabIndex;
-            set => SetProperty(ref this._partTabIndex, value);
-        }
-
-        public int PartInstanceTabIndex {
-            get => this._partInstanceTabIndex;
-            set => SetProperty(ref this._partInstanceTabIndex,value);
-        }
-
-        public int TabIndex { 
-            get => this._tabIndex;
-            set => SetProperty(ref this._tabIndex, value);
-        }
-
         #endregion
 
         #region HandlerRegion
@@ -293,26 +274,18 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 case CategoryOption.Usage:
                     this.PartsEnabled = false;
                     this.PartInstancesEnabled = true;
-                    this.PartTabIndex = 1;
-                    this.PartInstanceTabIndex = 0;
-                    this.TabIndex = 0;
                     break;
                 case CategoryOption.Organization:
                     this.PartsEnabled = true;
                     this.PartInstancesEnabled = false;
-                    this.PartTabIndex = 0;
-                    this.PartInstanceTabIndex = 1;
-                    this.TabIndex = 0;
                     break;
                 case CategoryOption.NotSelected:
                     this.PartsEnabled = false;
                     this.PartInstancesEnabled = false;
-                    this.TabIndex = 0;
                     break;
                 default:
                     this.PartsEnabled = false;
                     this.PartInstancesEnabled = false;
-                    this.TabIndex = 0;
                     break;
             }
         }

@@ -23,8 +23,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary x:Name="resource"
-                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+                <ResourceDictionary Source="/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -38,7 +37,7 @@
         <dxlc:LayoutGroup Orientation="Vertical">
             <dxlc:LayoutGroup Orientation="Vertical">
                 <dxlc:LayoutGroup Orientation="Vertical">
-                    <dxlc:LayoutItem Label="{Binding CategoryTypeLabel}"
+                    <dxlc:LayoutItem Label="{Binding CategoryTypeLabel,Mode=TwoWay,IsAsync=True}"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit Name="comboBoxEdit"
                                           ApplyItemTemplateToSelectedItem="True"
@@ -116,12 +115,18 @@
                 </dxlc:LayoutItem>
 
             </dxlc:LayoutGroup>
-            <dx:DXTabControl Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}"
-                             SelectedIndex="{Binding TabIndex,Mode=TwoWay,IsAsync=True}">
-                <dx:DXTabItem Header="PartInstances"
-                              Visibility="{Binding PartInstancesEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True}}"
-                              Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
-                              TabIndex="{Binding PartInstanceTabIndex,Mode=TwoWay,IsAsync=True}">
+            <dxlc:LayoutGroup Orientation="Vertical"
+                              Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False, Inverse=True}}">
+                <dxlc:LayoutGroup View="GroupBox"
+                                  Visibility="{Binding PartInstancesEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False}}"
+                                  VerticalAlignment="Stretch">
+                    <dxlc:LayoutGroup.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="PartInstances"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </dxlc:LayoutGroup.HeaderTemplate>
                     <dxg:GridControl x:Name="_listOfPartInstances"
                                      ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
@@ -138,11 +143,17 @@
                         <dxg:GridColumn FieldName="IsBubbler" />
 
                     </dxg:GridControl>
-                </dx:DXTabItem>
-                <dx:DXTabItem Header="Parts"
-                              Visibility="{Binding PartsEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True}}"
-                              Glyph="{dx:DXImage Image=BOProductGroup_16x16.png}"
-                              TabIndex="{Binding PartTabIndex,Mode=TwoWay,IsAsync=True}">
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutGroup Visibility="{Binding PartsEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False}}"
+                                  VerticalAlignment="Stretch"
+                                  View="GroupBox">
+                    <dxlc:LayoutGroup.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="Parts"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </dxlc:LayoutGroup.HeaderTemplate>
                     <dxg:GridControl x:Name="_listOfParts"
                                      dxlc:DockLayoutControl.Dock="Client"
                                      ClipboardCopyMode="ExcludeHeader"
@@ -161,8 +172,8 @@
                                             Header="Part" />
                         </dxg:GridControl.Columns>
                     </dxg:GridControl>
-                </dx:DXTabItem>
-            </dx:DXTabControl>
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutGroup>
             <dxlc:LayoutItem VerticalAlignment="Bottom"
                              Label="Save or Cancel Changes"
                              Style="{StaticResource LayoutItemStyle}"
