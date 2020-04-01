@@ -17,6 +17,7 @@ using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.CategoryManagment.Internal;
 using ManufacturingInventory.Domain.Extensions;
 using ManufacturingInventory.Application.Boundaries;
+using System.Text;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryDetailsViewModel : InventoryViewModelNavigationBase {
@@ -37,14 +38,17 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private int _minQuantity;
         private string _name;
         private string _description;
+        private bool _isDefault;
 
         private bool _partInstancesEnabled;
-        private bool _showTableLoading;
+        private bool _showPartInstanceTableLoading;
+        private bool _showPartTableLoading;
         private bool _partsEnabled;
         private bool _canChangeType;
 
         private bool _canEdit;
         private bool _isStockType;
+        private bool _canEditDefault;
         private int _categoryId;
         private bool _isNew;
         private bool _isEdit;
@@ -151,20 +155,25 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             set {
                 SetProperty(ref this._description, value);
                 if (this.SelectedCategory != null) {
-
+                    this.SelectedCategory.Description = value;
                 }
-                this.SelectedCategory.Description = value;
+
+            }
+        }
+
+        public bool IsDefault {
+            get => this._isDefault;
+            set {
+                SetProperty(ref this._isDefault, value);
+                if (this.SelectedCategory != null) {
+                    this.SelectedCategory.IsDefault = value;
+                }
             }
         }
 
         public bool PartInstancesEnabled { 
             get => this._partInstancesEnabled;
             set=>SetProperty(ref this._partInstancesEnabled, value);
-        }
-
-        public bool ShowTableLoading { 
-            get => this._showTableLoading;
-            set=>SetProperty(ref this._showTableLoading, value);
         }
 
         public bool PartsEnabled { 
@@ -182,29 +191,112 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             set => SetProperty(ref this._canChangeType,value); 
         }
 
+        public bool CanEditDefault { 
+            get => this._canEditDefault;
+            set => SetProperty(ref this._canEditDefault, value); 
+        }
+        
+        public bool ShowPartInstanceTableLoading { 
+            get => this._showPartInstanceTableLoading;
+            set => SetProperty(ref this._showPartInstanceTableLoading, value);
+        }
+        
+        public bool ShowPartTableLoading { 
+            get => this._showPartTableLoading;
+            set => SetProperty(ref this._showPartTableLoading, value);
+        }
+
         #endregion
 
         #region HandlerRegion
 
         private async Task SaveHandler() {
             EditAction action = (this.IsNew) ? EditAction.Add : EditAction.Update;
-            CategoryBoundaryInput input = new CategoryBoundaryInput(action, this.SelectedCategory);
-            var response=await this._categoryEdit.Execute(input);
-            await this.ShowActionResponse(response);
+            var defaultCategory = await this._categoryEdit.GetDefault(this.SelectedCategory.Type);
+            bool cancel = false;
+            bool defaultChanged = false; ;
+            if (defaultCategory != null) {
+                if (this.IsDefault) {
+                    if (this.SelectedCategory.Id != defaultCategory.Id) {
+                        StringBuilder builder = new StringBuilder();
+                        builder.AppendLine("Are you sure you want to make default?");
+                        builder.AppendFormat("Doing so will replace {0} as default {1} category", defaultCategory.Name, defaultCategory.Type.GetDescription()).AppendLine();
+                        builder.AppendLine("Would you like to continue?");
+                        builder.AppendLine("Yes: Continue, Replacing default category");
+                        builder.AppendLine("No: Mark as not default and save");
+                        builder.AppendLine("Cancel: Do Nothing");
+                        builder.AppendLine();
+                        var messageResult = this.MessageBoxService.ShowMessage(builder.ToString(), "Warning", MessageButton.YesNoCancel, MessageIcon.Question, MessageResult.No);
+                        switch (messageResult) {
+                            case MessageResult.Cancel:
+                                cancel = true;
+                                break;
+                            case MessageResult.Yes:
+                                defaultChanged = true;
+                                break;
+                            case MessageResult.No:
+                                this.SelectedCategory.IsDefault = false;
+                                defaultChanged = false;
+                                break;
+                        }
+                        //if (messageResult == MessageResult.No) {
+                        //    this.SelectedCategory.IsDefault = false;
+                        //} else if (messageResult == MessageResult.Cancel) {
+                        //    cancel = true;
+                        //}
+                    }
+                } else {
+                    if (this.SelectedCategory.Id == defaultCategory.Id) {
+                        StringBuilder builder = new StringBuilder();
+                        builder.AppendLine("Cannot clear default category without replacing with another");
+                        builder.AppendLine("Would you like to continue?");
+                        builder.AppendLine("Yes: Saves but leaves as default");
+                        builder.AppendLine("No: Do Nothing");
+                        builder.AppendLine("Cancel: Do Nothing");
+                        builder.AppendLine();
+                        var messageResult = this.MessageBoxService.ShowMessage(builder.ToString(), "Warning", MessageButton.YesNoCancel, MessageIcon.Question, MessageResult.No);
+                        switch (messageResult) {
+                            case MessageResult.Cancel:
+                                cancel = true;
+                                break;
+                            case MessageResult.Yes:
+                                this.SelectedCategory.IsDefault = true;
+                                break;
+                            case MessageResult.No:
+                                cancel = true;
+                                break;
+                        }
+
+                        //if (messageResult == MessageResult.Yes) {
+                        //    this.SelectedCategory.IsDefault = false;
+                        //} else if (messageResult == MessageResult.Cancel) {
+                        //    cancel = true;
+                        //}
+                    }
+                }
+            }
+            if (!cancel) {
+                CategoryBoundaryInput input = new CategoryBoundaryInput(action, this.SelectedCategory,defaultChanged);
+                var response = await this._categoryEdit.Execute(input);
+                await this.ShowActionResponse(response);
+            }
         }
 
         private async Task CancelHandler() {
             await Task.Run(() => {
-                var response = this.MessageBoxService.ShowMessage("Are you sure you want to cancel? All Changes will be lost" 
-                    + Environment.NewLine + "Yes: Continue, No: Do nothing", "Warning", MessageButton.YesNo, MessageIcon.Warning, MessageResult.No);
-                if (response == MessageResult.Yes) {
-                    if (this._isEdit) {
-                        this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Publish(this.SelectedCategory.Id);
-                    } else {
-                        this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Publish(null);
-                    }
+                this.DispatcherService.BeginInvoke(() => {
+                    var response = this.MessageBoxService.ShowMessage("Are you sure you want to cancel? All Changes will be lost"
+                        + Environment.NewLine + "Yes: Continue, No: Do nothing", "Warning", MessageButton.YesNo, MessageIcon.Warning, MessageResult.No);
+                    if (response == MessageResult.Yes) {
+                        if (this._isEdit) {
+                            this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Publish(this.SelectedCategory.Id);
+                        } else {
+                            this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Publish(null);
+                        }
 
-                }
+                    }
+                });
+
             });
         }
 
@@ -245,23 +337,25 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private async Task Load() {
             if (this.IsNew) {
                 this.DispatcherService.BeginInvoke(() => {
-                    this.ShowTableLoading = false;
+                    this.ShowTableLoading(CategoryOption.NotSelected,false);
                     this.SetupUI();
                 });
             } else {
-                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 var category = await this._categoryEdit.GetCategory(this._categoryId);
-                var partInstances = await this._categoryEdit.GetCategoryPartInstances(this._categoryId);
-                var parts = await this._categoryEdit.GetCategoryParts(this._categoryId);
                 if (category != null) {
+                    this.SelectedCategory = category;
+                    this.SelectedCategoryType = category.Type.GetCategoryOption();
+                    this.DispatcherService.BeginInvoke(() => this.ShowTableLoading(this.SelectedCategoryType,true));
+                    var partInstances = await this._categoryEdit.GetCategoryPartInstances(this._categoryId);
+                    var parts = await this._categoryEdit.GetCategoryParts(this._categoryId);
                     this.DispatcherService.BeginInvoke(() => {
                         this.SetupUI(parts, partInstances, category);
-                        this.ShowTableLoading = false;
+                        this.ShowTableLoading(this.SelectedCategoryType, false);
                     });
                 } else {
                     this.DispatcherService.BeginInvoke(()=> { 
                         this.MessageBoxService.ShowMessage("Error: Category not found", "Error", MessageButton.OK, MessageIcon.Error);
-                        this.ShowTableLoading = false;
+                        this.ShowTableLoading(CategoryOption.NotSelected, false);
                     });
                 }
             }
@@ -297,6 +391,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 this.CanChangeType = true;
                 this.SelectedCategory = new CategoryDTO();
                 this.SelectedCategoryType = CategoryOption.NotSelected;
+                this.IsDefault = false;
                 this.DisplayCategorySpecificItems(CategoryOption.NotSelected);
             } else {
                 if (category != null) {
@@ -314,17 +409,43 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     this.SelectedCategory = category;
                     this.Name = category.Name;
                     this.Description = category.Description;
-                    this.SelectedCategoryType = category.Type.GetCategoryOption();
+                    this.IsDefault = category.IsDefault;
+
                     if (this.SelectedCategoryType == CategoryOption.StockType) {
                         this.IsStockType = true;
                         this.Quantity = category.Quantity;
                         this.MinQuantity = category.MinQuantity;
                         this.SafeQuantity = category.SafeQuantity;
+                        this.CanEditDefault = false;
                     } else {
                         this.IsStockType = false;
+                        this.CanEditDefault=this.CanEdit;
                     }
                     this.DisplayCategorySpecificItems(this.SelectedCategoryType);
                 }
+            }
+        }
+
+        private void ShowTableLoading(CategoryOption categoryOption,bool on_off) {
+            switch (categoryOption) {
+                case CategoryOption.Condition:
+                case CategoryOption.StockType:
+                case CategoryOption.Usage:
+                    this.ShowPartInstanceTableLoading = on_off;
+                    this.ShowPartTableLoading = false;
+                    break;
+                case CategoryOption.Organization:
+                    this.ShowPartTableLoading = on_off;
+                    this.ShowPartInstanceTableLoading = false;
+                    break;
+                case CategoryOption.NotSelected:
+                    this.PartsEnabled = false;
+                    this.PartInstancesEnabled = false;
+                    break;
+                default:
+                    this.ShowPartInstanceTableLoading = false;
+                    this.ShowPartTableLoading = false;
+                    break;
             }
         }
 

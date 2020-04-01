@@ -55,7 +55,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             if (category == null) {
                 return null;
             }
-
             return this._context.Categories.Remove(category).Entity;
         }
 
@@ -64,7 +63,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             if (category == null) {
                 return null;
             }
-
             return (await Task.Run(() => this._context.Categories.Remove(category))).Entity;
         }
 

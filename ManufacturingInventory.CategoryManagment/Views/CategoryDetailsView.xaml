@@ -67,12 +67,26 @@
                             </dxe:ComboBoxEdit.ItemTemplate>
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Name"
-                                     Style="{StaticResource LayoutItemStyle}">
-                        <dxe:TextEdit EditValue="{Binding Name}"
-                                      NullText="Category Name"
-                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
-                    </dxlc:LayoutItem>
+                    <dxlc:LayoutGroup>
+                        <dxlc:LayoutItem Label="Name"
+                                         Style="{StaticResource LayoutItemStyle}">
+                            <dxe:TextEdit EditValue="{Binding Name}"
+                                          NullText="Category Name"
+                                          IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Label="Default Category?"
+                                         Style="{StaticResource LayoutItemStyle}">
+                            <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              CheckedStateContent="YES"
+                                              ContentPlacement="Both"
+                                              EnableAnimation="False"
+                                              IsChecked="{Binding IsDefault}"
+                                              IsReadOnly="{Binding CanEditDefault,Converter={dxmvvm:BooleanNegationConverter}}"
+                                              UncheckedStateContent="NO" />
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+
 
                 </dxlc:LayoutGroup>
 
@@ -81,7 +95,7 @@
                     <dxe:TextEdit EditValue="{Binding Description}" NullText="Category Description"
                                   Style="{StaticResource TextEditComments}"
                                   Height="50"
-                                  IsReadOnly="{Binding CanEdit}" />
+                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}">
@@ -129,7 +143,7 @@
                     </dxlc:LayoutGroup.HeaderTemplate>
                     <dxg:GridControl x:Name="_listOfPartInstances"
                                      ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
-                                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                                     ShowLoadingPanel="{Binding ShowPartInstanceTableLoading, Mode=TwoWay}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="_instanceTableView"
@@ -158,7 +172,7 @@
                                      dxlc:DockLayoutControl.Dock="Client"
                                      ClipboardCopyMode="ExcludeHeader"
                                      ItemsSource="{Binding Parts, IsAsync=True, Mode=TwoWay}"
-                                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                                     ShowLoadingPanel="{Binding ShowPartTableLoading, Mode=TwoWay}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
                             <dxg:TableView AllowEditing="False"

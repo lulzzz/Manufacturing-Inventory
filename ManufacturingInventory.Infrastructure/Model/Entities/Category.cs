@@ -43,7 +43,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.IsDefault = category.IsDefault;
         }
 
-        public void Set(ICategory category) {
+        public virtual void Set(ICategory category) {
             this.Name = category.Name;
             this.Description = category.Description;
             this.IsDefault = category.IsDefault;
@@ -119,6 +119,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
                 this.Quantity = ((StockType)stockType).Quantity;
             }
         }
+
+        //public override void Set(ICategory category) {
+        //    Type catType = category.GetType();
+        //    if (catType.Equals(typeof(StockType))) {
+        //        this.MinQuantity = ((StockType)category).MinQuantity;
+        //        this.SafeQuantity = ((StockType)category).SafeQuantity;
+        //        this.Quantity = ((StockType)category).Quantity;
+        //    }
+        //}
 
         public void UpdateQuantity() {
             if (this.PartInstances != null) {

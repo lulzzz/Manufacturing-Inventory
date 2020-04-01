@@ -31,7 +31,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private bool _showTableLoading;
 
         private bool _isInitialized = false;
-        private bool _editInProgress;
+        private bool _editInProgress = false;
 
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand AddNewCategoryCommand { get; private set; }
@@ -46,11 +46,11 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.InitializeCommand = new AsyncCommand(this.Load);
-            this.AddNewCategoryCommand = new AsyncCommand(this.AddNewCategoryHandler);
-            this.DeleteCategoryCommand = new AsyncCommand(this.DeleteCategoryHandler);
-            this.EditCategoryCommand = new AsyncCommand(this.EditCategoryHandler);
-            this.ViewCategoryDetailsCommand = new AsyncCommand(this.ViewCategoryDetailsHandler);
-            this.DoubleClickViewCommand = new AsyncCommand(this.ViewCategoryDetailsHandler);
+            this.AddNewCategoryCommand = new AsyncCommand(this.AddNewCategoryHandler, () => !this._editInProgress);
+            this.DeleteCategoryCommand = new AsyncCommand(this.DeleteCategoryHandler, () => !this._editInProgress);
+            this.EditCategoryCommand = new AsyncCommand(this.EditCategoryHandler, () => !this._editInProgress);
+            this.ViewCategoryDetailsCommand = new AsyncCommand(this.ViewCategoryDetailsHandler, () => !this._editInProgress);
+            this.DoubleClickViewCommand = new AsyncCommand(this.ViewCategoryDetailsHandler,()=>!this._editInProgress);
             this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Subscribe(async ( categoryId) => await this.CategoryEditDoneHandler(categoryId));
             this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Subscribe(async (categoryId) => await this.CategoryEditCancelHandler(categoryId));
 
@@ -126,7 +126,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         }
 
         private void CleaupRegions() {
-            this._regionManager.Regions[LocalRegions.CategoryDetailsRegion].RemoveAll();
+            //this._regionManager.Regions[LocalRegions.CategoryDetailsRegion].RemoveAll();
         }
 
         #endregion
@@ -140,7 +140,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
 
         private async Task CategoryEditCancelHandler(int? categoryId) {
             this._editInProgress = false;
-            await this.Reload(); 
+            await this.Reload(categoryId); 
         }
 
         private async Task ShowActionResponse(CategoryBoundaryOutput response) {
@@ -182,6 +182,9 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 this.Categories = new ObservableCollection<CategoryDTO>(categories);
                 if (categoryId.HasValue) {
                     this.SelectedCategory = this.Categories.FirstOrDefault(cat => cat.Id == categoryId);
+                    this.NavigateDetails(categoryId, false,false);
+                } else {
+                    this.CleaupRegions();
                 }
                 this._editInProgress = false;
                 this.ShowTableLoading = false;

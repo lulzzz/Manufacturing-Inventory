@@ -13,5 +13,7 @@ namespace ManufacturingInventory.Application.Boundaries.CategoryBoundaries {
         Task<IEnumerable<PartInstance>> GetCategoryPartInstances(int categoryId);
         Task<IEnumerable<Part>> GetCategoryParts(int categoryId);
         Task<CategoryDTO> GetCategory(int categoryId);
+        Task<CategoryDTO> GetDefault(CategoryTypes type);
+        
     }
 }
