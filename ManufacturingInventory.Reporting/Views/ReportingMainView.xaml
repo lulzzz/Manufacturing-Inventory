@@ -12,12 +12,86 @@
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             xmlns:localCommon="clr-namespace:ManufacturingInventory.Reporting.Internal"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+    <dxdo:LayoutPanel ShowCloseButton="False"
+                      ShowPinButton="False"
+                      ShowCollapseButton="False"
+                      ShowControlBox="False">
+        <dxlc:DockLayoutControl>
+            <dxb:BarContainerControl dxlc:DockLayoutControl.Dock="Top"
+                                     BorderBrush="Black">
+                <dxb:ToolBarControl Caption="Categories"
+                                    ShowDragWidget="False"
+                                    AllowCustomizationMenu="False"
+                                    AllowQuickCustomization="False"
+                                    AllowHide="False"
+                                    BarItemDisplayMode="ContentAndGlyph"
+                                    Orientation="Horizontal"
+                                    RotateWhenVertical="True"
+                                    ShowBackground="True"
+                                    AllowCollapse="False"
+                                    IsCollapsed="False"
+                                    UseWholeRow="True">
+                    <dxb:BarButtonItem x:Name="_snapShot"
+                                       Content="Inventory Snapshot"
+                                       Command="{Binding LoadReportsViewCommand,IsAsync=True}"
+                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingMonthlySummary}"
+                                       Glyph="{dx:DXImage Image=Calendar_16x16.png}"
+                                       LargeGlyph="{dx:DXImage Image=Calendar_32x32.png}" />
+
+                    <dxb:BarButtonItem x:Name="_transactions"
+                                       Content="Transactions"
+                                       Command="{Binding LoadReportsViewCommand,IsAsync=True}"
+                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingTransactionLog}"
+                                       Glyph="{dx:DXImage Image=BottomUp_16x16.png}"
+                                       LargeGlyph="{dx:DXImage Image=BottomUp_32x32.png}"
+                                       IsEnabled="True" />
+
+                    <dxb:BarButtonItem x:Name="_currentInventory"
+                                       Content="Current Inventory"
+                                       Command="{Binding LoadReportsViewCommand,IsAsync=True}"
+                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingCurrentInventory}"
+                                       Glyph="{dx:DXImage Image=BOProduct_16x16.png}"
+                                       LargeGlyph="{dx:DXImage Image=BOProduct_32x32.png}"
+                                       IsEnabled="True" />
+                </dxb:ToolBarControl>
+            </dxb:BarContainerControl>
+            <dxdo:DockLayoutManager FloatingMode="Window"
+                                    dxlc:DockLayoutControl.Dock="Client">
+                <dxdo:LayoutGroup>
+                    <dxdo:DocumentGroup x:Name="_views"
+                                        DestroyOnClosingChildren="False"
+                                        prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.ReportingMainRegion}"
+                                        CaptionLocation="Top"
+                                        ShowTabForSinglePage="True"
+                                        GroupBorderStyle="GroupBox"
+                                        AllowFloat="True">
+                        <dxdo:TabbedGroup.ItemStyle>
+                            <Style TargetType="{x:Type dxdo:LayoutPanel}">
+                                <Setter Property="Caption"
+                                        Value="{Binding Content.PanelCaption, RelativeSource={RelativeSource Self}}" />
+                                <Setter Property="IsActive"
+                                        Value="{Binding Content.IsActive,RelativeSource={RelativeSource Self},Mode=TwoWay}" />
+                                <Setter Property="ClosingBehavior"
+                                        Value="ImmediatelyRemove" />
+                            </Style>
+                        </dxdo:TabbedGroup.ItemStyle>
+                    </dxdo:DocumentGroup>
+                </dxdo:LayoutGroup>
+            </dxdo:DockLayoutManager>
+        </dxlc:DockLayoutControl>
+    </dxdo:LayoutPanel>
 </UserControl>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ManufacturingInventory.CategoryManagment.Internal {
+namespace ManufacturingInventory.Reporting.Internal {
     public static class LocalRegions {
         public static string ReportingMainRegion { get => "ReportingMainRegion"; }
         public static string ReportingMonthlySummaryRegion { get => "ReportingMonthlySummaryRegion"; }

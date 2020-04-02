@@ -14,7 +14,6 @@ using ManufacturingInventory.Common.Application.UI.ViewModels;
 using System.Windows;
 using System.Collections.Generic;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
-using ManufacturingInventory.CategoryManagment.Internal;
 using ManufacturingInventory.Domain.Extensions;
 using ManufacturingInventory.Application.Boundaries;
 using System.Text;
