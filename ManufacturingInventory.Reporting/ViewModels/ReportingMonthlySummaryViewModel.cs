@@ -28,8 +28,14 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         private ManufacturingContext _context;
 
         private ObservableCollection<ReportSnapshot> _reportSnapshot;
+        private DateTime _start;
+        private DateTime _stop;
+        private bool _showTableLoading;
 
+        public AsyncCommand ExportTableCOmmand { get; private set; }
         public AsyncCommand CollectSnapshotCommand { get; private set; }
+        public AsyncCommand InitializeCommand { get; private set;
+        }
 
         public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,ManufacturingContext context) {
             this._context = context;
@@ -42,6 +48,21 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         public ObservableCollection<ReportSnapshot> ReportSnapshot {
             get => this._reportSnapshot;
             set => SetProperty(ref this._reportSnapshot, value);
+        }
+
+        public DateTime Start {
+            get => this._start;
+            set => SetProperty(ref this._start, value);
+        }
+
+        public DateTime Stop {
+            get => this._stop;
+            set => SetProperty(ref this._stop, value);
+        }
+
+        public bool ShowTableLoading {
+            get => this._showTableLoading;
+            set => SetProperty(ref this._showTableLoading, value);
         }
 
         private Task CollectSummaryHandler() {
