@@ -288,7 +288,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         #endregion
 
-
         #region CallbackRegion
 
         private async Task ExportTableHandler(ExportFormat format) {

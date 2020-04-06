@@ -19,6 +19,7 @@ using ManufacturingInventory.Application.Boundaries;
 using System.Text;
 
 namespace ManufacturingInventory.Reporting.ViewModels {
-    class ReportingCurrentInventoryViewModel {
+    public class ReportingCurrentInventoryViewModel : InventoryViewModelBase {
+        public override bool KeepAlive => true;
     }
 }
