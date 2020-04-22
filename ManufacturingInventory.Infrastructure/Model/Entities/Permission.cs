@@ -20,5 +20,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Name = name;
             this.Description = description;
         }
+
+        public void Set(Permission permission) {
+            this.Name = permission.Name;
+            this.Description = permission.Description;
+        }
     }
 }

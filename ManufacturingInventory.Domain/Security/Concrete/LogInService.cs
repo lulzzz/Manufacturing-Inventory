@@ -1,4 +1,4 @@
-﻿using ManufacturingInventory.Domain.Buisness.Interfaces;
+﻿using ManufacturingInventory.Domain.Security.Interfaces;
 
 namespace ManufacturingInventory.Domain.Buisness.Concrete {
 

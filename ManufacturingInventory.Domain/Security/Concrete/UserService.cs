@@ -1,4 +1,4 @@
-﻿using ManufacturingInventory.Domain.Buisness.Interfaces;
+﻿using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using Microsoft.EntityFrameworkCore;

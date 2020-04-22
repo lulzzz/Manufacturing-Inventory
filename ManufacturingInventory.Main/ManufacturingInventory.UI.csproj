@@ -6,7 +6,7 @@
     <AssemblyName>ManufacturingApplication</AssemblyName>
     <StartupObject>ManufacturingInventory.ManufacturingApplication.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>1.1.54.7398</FileVersion>
+    <FileVersion>1.1.60.7417</FileVersion>
     <PackageId>ManufacturingInventory.UI</PackageId>
     <UserSecretsId>d873c8c3-b819-4a49-87d8-529888f6ea4b</UserSecretsId>
     <Configurations>Debug;Release;fr</Configurations>
@@ -48,7 +48,13 @@
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf.Themes.All" Version="19.1.9" />
     <PackageReference Include="Effortless.Net.Encryption" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.2" />
-    <PackageReference Include="Prism.DryIoc" Version="7.2.0.1367" />
+    <PackageReference Include="Prism.DryIoc" Version="7.2.0.1422" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

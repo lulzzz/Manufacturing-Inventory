@@ -24,5 +24,11 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.User = user;
             //this.UserId = user.Id;
         }
+
+        public void Set(Session session) {
+            this.In = session.In;
+            this.Out = session.Out;
+            this.UserId = session.UserId;
+        }
     }
 }

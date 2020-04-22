@@ -18,7 +18,7 @@ using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.DistributorManagment;
 using ManufacturingInventory.Domain.Buisness.Concrete;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Providers;
@@ -37,6 +37,13 @@ using System.Linq;
 using System.Windows;
 using ManufacturingInventory.Application.Boundaries.ContactTableDetailEdit;
 using ManufacturingInventory.CategoryManagment;
+using System;
+using Serilog;
+using Serilog.Events;
+using Serilog.Enrichers;
+using Serilog.Sinks.SystemConsole.Themes;
+using Serilog.Sinks.Async;
+using System.IO;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -45,6 +52,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
     public partial class App {
 
         private IUserService userService = new UserService();
+        private ILogger _logger;
 
         protected override Window CreateShell() {
             return Container.Resolve<MainWindow>();
@@ -185,6 +193,10 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
+                this.CreateLogger();
+                container.RegisterInstance<ILogger>(this._logger);
+                //container.Register(Made.Of(() => Serilog.Log.Logger),setup: Setup.With(condition: r => r.Parent.ImplementationType == null));
+                //container.Register(Made.Of(() => Serilog.Log.ForContext(Arg.Index<Type>(0)), r => r.Parent.ImplementationType),setup: Setup.With(condition: r => r.Parent.ImplementationType != null));
 
             } else {
                 this.Shutdown();
@@ -199,6 +211,33 @@ namespace ManufacturingInventory.ManufacturingApplication {
             regionAdapterMappings.RegisterMapping(typeof(LayoutGroup), AdapterFactory.Make<RegionAdapterBase<LayoutGroup>>(factory));
             regionAdapterMappings.RegisterMapping(typeof(TabbedGroup), AdapterFactory.Make<RegionAdapterBase<TabbedGroup>>(factory));
             regionAdapterMappings.RegisterMapping(typeof(DXTabControl), AdapterFactory.Make<RegionAdapterBase<DXTabControl>>(factory));
+        }
+
+        private void CreateLogger() {
+            const string loggerTemplate = @"{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u4}]<{ThreadId}> [{SourceContext:l}] {Message:lj}{NewLine}{Exception}";
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var logfile = Path.Combine(baseDir, "App_Data", "logs", "log.txt");
+            //this._logger= new LoggerConfiguration()
+            //.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            //.Enrich.With(new ThreadIdEnricher())
+            //.Enrich.FromLogContext()
+            //.WriteTo.Console(LogEventLevel.Information, loggerTemplate, theme: AnsiConsoleTheme.Literate)
+            //.WriteTo.File(logfile, LogEventLevel.Information, loggerTemplate,
+            //    rollingInterval: RollingInterval.Day, retainedFileCountLimit: 90)
+            //.CreateLogger();
+
+            this._logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.With(new ThreadIdEnricher())
+                .Enrich.FromLogContext()
+                .WriteTo.Async(a => a.Console(LogEventLevel.Information, loggerTemplate, theme: AnsiConsoleTheme.Literate), blockWhenFull: true)
+                .WriteTo.Async(a => a.File(logfile, LogEventLevel.Information, loggerTemplate,rollingInterval: RollingInterval.Day, retainedFileCountLimit: 90),blockWhenFull:true)
+                .CreateLogger();
+
+            this._logger.Information("====================================================================");
+            this._logger.Information($"Application Starts. Version: {System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}");
+            this._logger.Information($"Application Directory: {AppDomain.CurrentDomain.BaseDirectory}");
+            this._logger.Information("====================================================================\r\n");
         }
 
         private void ThemeManager_ApplicationThemeChanged(DependencyObject sender, ThemeChangedRoutedEventArgs e) {

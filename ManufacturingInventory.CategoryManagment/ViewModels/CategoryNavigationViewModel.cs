@@ -15,6 +15,7 @@ using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Domain.DTOs;
 using ManufacturingInventory.CategoryManagment.Internal;
+using Serilog;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryNavigationViewModel : InventoryViewModelBase {
@@ -25,6 +26,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private ICategoryEditUseCase _categoryEdit;
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
+        private ILogger _logger;
 
         private ObservableCollection<CategoryDTO> _categories;
         private CategoryDTO _selectedCategory;
@@ -41,10 +43,14 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         public AsyncCommand ViewCategoryDetailsCommand { get; private set; }
         public AsyncCommand EditCategoryCommand { get; private set; }
 
-        public CategoryNavigationViewModel(ICategoryEditUseCase categoryEdit,IEventAggregator eventAggregator,IRegionManager regionManager) {
+        public CategoryNavigationViewModel(ICategoryEditUseCase categoryEdit,IEventAggregator eventAggregator,IRegionManager regionManager,ILogger logger) { 
             this._categoryEdit = categoryEdit;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
+            this._logger = logger;
+            //this._logger.Info("In CategoryNavigationViewModel!");
+            //Log.Logger.Information("In CategoryNavigationView");
+            this._logger.Information("In CategoryNavigationView");
             this.InitializeCommand = new AsyncCommand(this.Load);
             this.AddNewCategoryCommand = new AsyncCommand(this.AddNewCategoryHandler, () => !this._editInProgress);
             this.DeleteCategoryCommand = new AsyncCommand(this.DeleteCategoryHandler, () => !this._editInProgress);

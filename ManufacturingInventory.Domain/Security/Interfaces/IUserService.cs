@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ManufacturingInventory.Domain.Buisness.Interfaces {
+namespace ManufacturingInventory.Domain.Security.Interfaces {
     public enum UserAction {
         Add,
         Edit,

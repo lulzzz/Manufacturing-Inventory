@@ -27,5 +27,19 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.UserAlerts = new HashSet<UserAlert>();
             this.Sessions = new HashSet<Session>();
         }
+
+        public void Set(User user) {
+            this.UserName = user.UserName;
+            this.FirstName = user.FirstName;
+            this.LastName = user.LastName;
+            this.Email = user.Email;
+            this.Extension = user.Extension;
+            this.StorePassword = user.StorePassword;
+            this.EncryptedPassword = user.EncryptedPassword;
+            this.Key = user.Key;
+            this.IV = user.IV;
+            this.PermissionId = user.PermissionId;
+            //this.Permission = user.Permission;
+        }
     }
 }

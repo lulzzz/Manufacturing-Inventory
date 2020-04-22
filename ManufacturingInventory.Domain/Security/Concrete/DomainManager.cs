@@ -4,7 +4,7 @@ using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using Effortless.Net.Encryption;
 using System.Text;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.Domain.Buisness.Concrete {

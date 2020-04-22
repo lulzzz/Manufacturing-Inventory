@@ -3,7 +3,7 @@ using ManufacturingInventory.Infrastructure.Model.Entities;
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 
-namespace ManufacturingInventory.Domain.Buisness.Interfaces {
+namespace ManufacturingInventory.Domain.Security.Interfaces {
 
     public interface IDomainManager {
         IDictionary<string, string> InventoryGroups { get; set; }
