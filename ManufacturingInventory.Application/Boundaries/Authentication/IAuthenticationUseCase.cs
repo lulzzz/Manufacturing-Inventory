@@ -8,5 +8,6 @@ using System.Threading.Tasks;
 namespace ManufacturingInventory.Application.Boundaries.Authentication {
     public interface IAuthenticationUseCase:IUseCase<AuthenticationInput,AuthenticationOutput> {
         Task<User> GetUser(string userName);
+        Task<IEnumerable<User>> GetUsers();
     }
 }

@@ -1,5 +1,5 @@
 ﻿using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Domain.Enums;
 using ManufacturingInventory.Domain.IO;
 using ManufacturingInventory.Infrastructure.Model;

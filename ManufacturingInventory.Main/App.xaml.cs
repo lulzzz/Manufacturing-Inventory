@@ -4,6 +4,7 @@ using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Prism;
 using DryIoc;
 using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
+using ManufacturingInventory.Application.Boundaries.Authentication;
 using ManufacturingInventory.Application.Boundaries.CheckIn;
 using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Application.Boundaries.PartDetails;
@@ -44,6 +45,7 @@ using Serilog.Enrichers;
 using Serilog.Sinks.SystemConsole.Themes;
 using Serilog.Sinks.Async;
 using System.IO;
+using ManufacturingInventory.Domain.Security.Concrete;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -65,9 +67,45 @@ namespace ManufacturingInventory.ManufacturingApplication {
             //ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
             GridControl.AllowInfiniteGridSize = true;
+            this.CreateLogger();
+            //this.ManualLogIn();
+            //this.CheckVersion();
+            this.Login();
+            base.OnStartup(e);
+        }
 
+        private void Login() {
+            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (this.ShowLogin()) {
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            } else {
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                this.Shutdown();
+            }
+        }
 
-            using var context= new ManufacturingContext();
+        private void CheckVersion() {
+            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (this.ShowCheckVersionWindow()) {
+                Process process = new Process();
+                ProcessStartInfo psi = new ProcessStartInfo {
+                    FileName = @"C:\Program Files (x86)\Manufacturing Inventory\Installer\InventoryInstaller.exe",
+                    UseShellExecute = false,
+                };
+                process.StartInfo = psi;
+                process.Start();
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                this.Shutdown();
+            } else {
+                if (!DXSplashScreen.IsActive)
+                    DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
+
+                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            }
+        }
+
+        private void ManualLogIn() {
+            using var context = new ManufacturingContext();
 
             var user = context.Users
                 .Include(e => e.Sessions)
@@ -79,37 +117,22 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 Session session = new Session(user);
                 context.Sessions.Add(session);
                 context.SaveChanges();
-                this.userService.CurrentUser = user;
-                this.userService.CurrentSession = session;
+                this.userService.CurrentUserName = user.UserName;
+                this.userService.CurrentSessionId = session.Id;
+                this.userService.UserPermissionName = user.Permission.Name;
             }
-
-            //Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            //if (this.ShowCheckVersionWindow()) {
-            //    Process process = new Process();
-            //    ProcessStartInfo psi = new ProcessStartInfo {
-            //        FileName = @"C:\Program Files (x86)\Manufacturing Inventory\Installer\InventoryInstaller.exe",
-            //        UseShellExecute = false,
-            //    };
-            //    process.StartInfo = psi;
-            //    process.Start();
-            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            //    this.Shutdown();
-            //} else {
-            //    if (!DXSplashScreen.IsActive)
-            //        DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
-
-            //    Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            //}
-            base.OnStartup(e);
         }
 
         private bool ShowLogin() {
             //Startup Login
             LoginWindow loginWindow = new LoginWindow();
             DomainManager domainManager = new DomainManager();
-            UserServiceProvider userServiceProvider = new UserServiceProvider(new ManufacturingContext(), domainManager);
-            LogInService logInService = new LogInService(domainManager, userServiceProvider);
-            var loginVM = new LoginViewModel(logInService);
+            ManufacturingContext context = new ManufacturingContext();
+            IUserSettingsService userSettingsService = new UserSettingsService(this._logger, context);
+            IAuthenticationUseCase auth = new AuthenticationService(context, domainManager, this._logger,userSettingsService);
+            //UserServiceProvider userServiceProvider = new UserServiceProvider(new ManufacturingContext(), domainManager);
+            //LogInService logInService = new LogInService(domainManager, userServiceProvider);
+            var loginVM = new LoginViewModel(auth,userSettingsService);
             loginVM.LoginCompleted += (sender, args) => {
                 if (loginVM.LoginResponce.Success) {
                     this.userService = loginVM.LoginResponce.Service;
@@ -150,7 +173,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
             moduleCatalog.AddModule<PartsManagmentModule>();
             moduleCatalog.AddModule<DistributorManagmentModule>();
             moduleCatalog.AddModule<CategoryManagmentModule>();
-
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {
@@ -159,7 +181,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
                 container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
                 container.Register<IUnitOfWork, UnitOfWork>(setup: Setup.With(allowDisposableTransient: true));
-                //container.Register<IUnitOfWorkV2, UnitOfWorkV2>(setup: Setup.With(allowDisposableTransient: true));
 
                 container.Register<ICheckOutUseCase, CheckOut>();
                 container.Register<ICheckInUseCase, CheckIn>();
@@ -174,29 +195,29 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IDistributorEditUseCase, DistributorEdit>();
                 container.Register<IContactTableDetailEditUseCase, ContactTableDetailEdit>();
                 container.Register<ICategoryEditUseCase, CategoryEdit>();
-
-                container.Register<IRepository<Category>, CategoryRepository>();
-                container.Register<IRepository<Location>, LocationRepository>();
-                container.Register<IRepository<PartInstance>, PartInstanceRepository>();
-                container.Register<IRepository<Part>, PartRepository>();
-                container.Register<IRepository<Attachment>, AttachmentRepository>();
-                container.Register<IRepository<Transaction>, TransactionRepository>();
-                container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
-
-
-                container.Register<IEntityProvider<Category>, CategoryProvider>();
-                container.Register<IEntityProvider<Location>, LocationProvider>();
-                container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
-                container.Register<IEntityProvider<Part>, PartProvider>();
-                container.Register<IEntityProvider<Transaction>, TransactionProvider>();
+                container.Register<IAuthenticationUseCase, AuthenticationService>();
 
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
-                this.CreateLogger();
+                //this.CreateLogger();
                 container.RegisterInstance<ILogger>(this._logger);
-                //container.Register(Made.Of(() => Serilog.Log.Logger),setup: Setup.With(condition: r => r.Parent.ImplementationType == null));
-                //container.Register(Made.Of(() => Serilog.Log.ForContext(Arg.Index<Type>(0)), r => r.Parent.ImplementationType),setup: Setup.With(condition: r => r.Parent.ImplementationType != null));
+
+                //container.Register<IRepository<Category>, CategoryRepository>();
+                //container.Register<IRepository<Location>, LocationRepository>();
+                //container.Register<IRepository<PartInstance>, PartInstanceRepository>();
+                //container.Register<IRepository<Part>, PartRepository>();
+                //container.Register<IRepository<Attachment>, AttachmentRepository>();
+                //container.Register<IRepository<Transaction>, TransactionRepository>();
+                //container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
+
+
+                //container.Register<IEntityProvider<Category>, CategoryProvider>();
+                //container.Register<IEntityProvider<Location>, LocationProvider>();
+                //container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
+                //container.Register<IEntityProvider<Part>, PartProvider>();
+                //container.Register<IEntityProvider<Transaction>, TransactionProvider>();
+
 
             } else {
                 this.Shutdown();
@@ -217,15 +238,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
             const string loggerTemplate = @"{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u4}]<{ThreadId}> [{SourceContext:l}] {Message:lj}{NewLine}{Exception}";
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var logfile = Path.Combine(baseDir, "App_Data", "logs", "log.txt");
-            //this._logger= new LoggerConfiguration()
-            //.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            //.Enrich.With(new ThreadIdEnricher())
-            //.Enrich.FromLogContext()
-            //.WriteTo.Console(LogEventLevel.Information, loggerTemplate, theme: AnsiConsoleTheme.Literate)
-            //.WriteTo.File(logfile, LogEventLevel.Information, loggerTemplate,
-            //    rollingInterval: RollingInterval.Day, retainedFileCountLimit: 90)
-            //.CreateLogger();
-
             this._logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.With(new ThreadIdEnricher())

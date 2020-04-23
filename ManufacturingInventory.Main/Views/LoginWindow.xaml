@@ -11,6 +11,8 @@
         mc:Ignorable="d" Title="LoginWindow" TitleAlignment="Center" Height="280" Width="300">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService x:Name="Error"/>
+        <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
+                               EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl>
         <dxlc:LayoutControl.Background>

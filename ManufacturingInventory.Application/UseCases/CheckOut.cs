@@ -1,5 +1,5 @@
 ﻿using ManufacturingInventory.Application.Boundaries.Checkout;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
@@ -78,7 +78,7 @@ namespace ManufacturingInventory.Application.UseCases {
             Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
                 partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight, location, item.TimeStamp);
 
-            transaction.SessionId = this._userService.CurrentSession.Id;
+            transaction.SessionId = this._userService.CurrentSessionId.Value;
 
             var bubbler = await this._bubblerRepository.UpdateAsync(partInstance.BubblerParameter);
             var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
@@ -112,7 +112,7 @@ namespace ManufacturingInventory.Application.UseCases {
             transaction.UnitCost = item.UnitCost;
             transaction.TotalCost = item.Quantity * item.UnitCost;
 
-            transaction.SessionId = this._userService.CurrentSession.Id;
+            transaction.SessionId = this._userService.CurrentSessionId.Value;
 
             var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
             var trans = await this._transactionRepository.AddAsync(transaction);

@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Application.UseCases;
 using ManufacturingInventory.Application.Boundaries.Checkout;
 using ManufacturingInventory.Domain.DTOs;

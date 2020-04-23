@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Domain.Security.Concrete {
     public interface IUserSettingsService {
-        Task SaveUserSettings(UserSettings settings);
+        Task<bool> SaveUserSettings(UserSettings userSettings);
         Task<UserSettings> ReadUserSettings();
     }
 }

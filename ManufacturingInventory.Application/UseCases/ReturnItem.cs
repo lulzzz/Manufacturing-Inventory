@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
@@ -102,7 +102,7 @@ namespace ManufacturingInventory.Application.UseCases {
             transaction.UnitCost =0;
             transaction.TotalCost = 0;
             transaction.ReferenceTransactionId = refTransaction.Id;
-            transaction.SessionId = this._userService.CurrentSession.Id;
+            transaction.SessionId = this._userService.CurrentSessionId.Value;
 
             var bubbler = await this._bubblerRepository.UpdateAsync(partInstance.BubblerParameter);
             var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
@@ -144,7 +144,7 @@ namespace ManufacturingInventory.Application.UseCases {
             }
 
             transaction.ReferenceTransactionId = item.ReferenceTransactionId;
-            transaction.SessionId = this._userService.CurrentSession.Id;
+            transaction.SessionId = this._userService.CurrentSessionId.Value;
 
             var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
             var trans = await this._transactionRepository.AddAsync(transaction);

@@ -88,7 +88,9 @@ namespace ManufacturingInventory.Domain.Buisness.Concrete {
         //}
 
         public DomainManager() {
-
+            this.username = "elmendorfal";
+            this.password = "!23seti";
+            this.address = "172.20.3.5";
         }
 
         private void GetLDAPCredentials()

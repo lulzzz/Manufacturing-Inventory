@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using IWshRuntimeLibrary;
 using Microsoft.EntityFrameworkCore;
 using ManufacturingInventory.Infrastructure.Model;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Domain.Buisness.Concrete;
@@ -26,17 +26,26 @@ using ManufacturingInventory.Domain.Extensions;
 namespace ManufacturingInventory.ConsoleTesting {
     public class Program {
         public static async Task<int> Main(string[] args) {
+            DomainManager domainManager = new DomainManager();
+            var result=domainManager.Authenticate("AElmendo", "Drizzle123!");
+            Console.WriteLine("Result: {0}", result.Status);
+            Console.WriteLine("Press any key to exit");
+            Console.ReadKey();
+            return 1;
+        }
+
+        public static async Task CategoryTesting() {
             ManufacturingContext context = new ManufacturingContext();
             CategoryEdit categoryEdit = new CategoryEdit(context);
-            ICategory category = new StockType() { 
-                Name="Things2",
-                Description="Something",
-                Quantity=125,
-                MinQuantity=52,
-                SafeQuantity=98
+            ICategory category = new StockType() {
+                Name = "Things2",
+                Description = "Something",
+                Quantity = 125,
+                MinQuantity = 52,
+                SafeQuantity = 98
             };
             var transfer = new CategoryDTO(category);
-            CategoryBoundaryInput input = new CategoryBoundaryInput(EditAction.Add,transfer);
+            CategoryBoundaryInput input = new CategoryBoundaryInput(EditAction.Add, transfer);
             var response = await categoryEdit.Execute(input);
             if (response.Success) {
                 Console.WriteLine(response.Message);
@@ -45,9 +54,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             } else {
                 Console.WriteLine(response.Message);
             }
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
-            return 1;
+
         }
 
         public static async Task<int> TestInterfaceCast() {

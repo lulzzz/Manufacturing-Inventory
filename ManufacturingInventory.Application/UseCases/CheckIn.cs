@@ -1,5 +1,5 @@
 ﻿using ManufacturingInventory.Application.Boundaries.CheckIn;
-using ManufacturingInventory.Domain.Buisness.Interfaces;
+using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Providers;
@@ -78,7 +78,7 @@ namespace ManufacturingInventory.Application.UseCases {
                     await this._priceLogRepository.AddAsync(priceLog);
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
-                    transaction.SessionId = this._userService.CurrentSession.Id;
+                    transaction.SessionId = this._userService.CurrentSessionId.Value;
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count =await this._unitOfWork.Save();
                     if (count > 0) {
@@ -106,7 +106,7 @@ namespace ManufacturingInventory.Application.UseCases {
                 if (instanceEntity != null) {
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
-                    transaction.SessionId = this._userService.CurrentSession.Id;
+                    transaction.SessionId = this._userService.CurrentSessionId.Value;
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count = await this._unitOfWork.Save();
                     if (count > 0) {
@@ -141,7 +141,7 @@ namespace ManufacturingInventory.Application.UseCases {
                     await this._priceLogRepository.AddAsync(priceLog);
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
-                    transaction.SessionId = this._userService.CurrentSession.Id;
+                    transaction.SessionId = this._userService.CurrentSessionId.Value;
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count = await this._unitOfWork.Save();
                     if (count > 0) {
@@ -174,7 +174,7 @@ namespace ManufacturingInventory.Application.UseCases {
                 transaction.Quantity = input.Quantity.Value;
                 transaction.UnitCost = partInstance.UnitCost;
                 transaction.TotalCost = transaction.UnitCost*transaction.Quantity;
-                transaction.SessionId = this._userService.CurrentSession.Id;
+                transaction.SessionId = this._userService.CurrentSessionId.Value;
                 var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
                 var trans = await this._transactionRepository.AddAsync(transaction);
                 StringBuilder builder = new StringBuilder();
