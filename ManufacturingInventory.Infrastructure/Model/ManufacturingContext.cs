@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace ManufacturingInventory.Infrastructure.Model {
     public class ManufacturingContext : DbContext {
-
         public DbSet<Part> Parts { get; set; }
         public DbSet<PartInstance> PartInstances { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
@@ -45,11 +45,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;User Id=aelmendorf;Password=Drizzle123!;");
-            //optionsBuilder.UseSqlServer("server=DESKTOP-NGE4P2E;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            //optionsBuilder.UseSqlServer("server=DESKTOP-LJJI4KF;database=manufacturing_inventory;User Id=aelmendorf;Password=Drizzle123!;");
-            //optionsBuilder.UseSqlServer(Microsoft.Extensions.Configuration.GetConnectionString("FacilityConnection"));
+            //optionsBuilder.UseSqlServer()
+
         }
 
         protected override void OnModelCreating(ModelBuilder builder) {
@@ -439,7 +436,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             #endregion
 
-            this.Seed(builder);
+            //this.Seed(builder);
         }
 
         private void Seed(ModelBuilder builder) {

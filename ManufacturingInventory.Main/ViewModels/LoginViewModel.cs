@@ -11,6 +11,7 @@ using ManufacturingInventory.Application.Boundaries.Authentication;
 using ManufacturingInventory.Domain.Security.Concrete;
 using Castle.Core.Internal;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
     public class LoginViewModel : InventoryViewModelBase {
@@ -59,7 +60,7 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
                 var result = await this._authenticationService.Execute(input);
                 if (result.Success) {
                     this.LoginResponce = new LogInResponce(result.UserService, result.Success);
-                    this.LoginCompleted?.Invoke(this, EventArgs.Empty);
+                    AsyncContext.Run(()=>this.LoginCompleted?.Invoke(this, EventArgs.Empty));
                 } else {
                     this.LoginResponce = new LogInResponce(result.Message);
                     this.ShowErrorMessage(this.LoginResponce);
@@ -88,7 +89,8 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
 
         private void Cancel() {
             this.LoginResponce = new LogInResponce(null, false);
-            this.LoginCompleted?.Invoke(this, EventArgs.Empty);
+            //this.LoginCompleted?.Invoke(this, EventArgs.Empty);
+            AsyncContext.Run(() => this.LoginCompleted?.Invoke(this, EventArgs.Empty));
         }
 
         private async Task Load() {

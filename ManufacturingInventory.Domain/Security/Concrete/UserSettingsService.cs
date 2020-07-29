@@ -79,6 +79,7 @@ namespace ManufacturingInventory.Domain.Security.Concrete {
             bool error = false;
             await Task.Run(() => {
                 XmlSerializer reader = new XmlSerializer(typeof(UserSettings));
+                
                 using (StreamReader streamReader = new StreamReader(path)) {
                     try {
                         settings = (UserSettings)reader.Deserialize(streamReader);

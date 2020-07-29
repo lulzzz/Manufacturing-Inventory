@@ -4,7 +4,8 @@ using System.Text;
 
 namespace ManufacturingInventory.Domain.DTOs {
     public class ReportSnapshot {
-        public string ItemName { get; set; }
+        public string PartName { get; set; }
+        public string InstanceName { get; set; }
         public double StartQuantity { get; set; }
         public double StartCost { get; set; }
 

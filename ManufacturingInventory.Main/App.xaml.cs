@@ -5,8 +5,11 @@ using DevExpress.Xpf.Prism;
 using DryIoc;
 using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
 using ManufacturingInventory.Application.Boundaries.Authentication;
+using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Application.Boundaries.CheckIn;
 using ManufacturingInventory.Application.Boundaries.Checkout;
+using ManufacturingInventory.Application.Boundaries.ContactTableDetailEdit;
+using ManufacturingInventory.Application.Boundaries.DistributorManagment;
 using ManufacturingInventory.Application.Boundaries.PartDetails;
 using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
 using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
@@ -14,38 +17,34 @@ using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
 using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
-using ManufacturingInventory.Application.Boundaries.DistributorManagment;
-using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
+using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Application.UseCases;
+using ManufacturingInventory.CategoryManagment;
 using ManufacturingInventory.DistributorManagment;
 using ManufacturingInventory.Domain.Buisness.Concrete;
+using ManufacturingInventory.Domain.Security.Concrete;
 using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Providers;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.ManufacturingApplication.Services;
 using ManufacturingInventory.ManufacturingApplication.ViewModels;
 using ManufacturingInventory.ManufacturingApplication.Views;
 using ManufacturingInventory.PartsManagment;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Prism.DryIoc;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
+using Serilog;
+using Serilog.Enrichers;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
-using ManufacturingInventory.Application.Boundaries.ContactTableDetailEdit;
-using ManufacturingInventory.CategoryManagment;
-using System;
-using Serilog;
-using Serilog.Events;
-using Serilog.Enrichers;
-using Serilog.Sinks.SystemConsole.Themes;
-using Serilog.Sinks.Async;
-using System.IO;
-using ManufacturingInventory.Domain.Security.Concrete;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     /// <summary>
@@ -55,21 +54,32 @@ namespace ManufacturingInventory.ManufacturingApplication {
 
         private IUserService userService = new UserService();
         private ILogger _logger;
-
+        public IConfiguration Configuration { get; private set; }
+        public String ConnectionString { get; private set; }
+        public DbContextOptionsBuilder<ManufacturingContext> optionsBuilder { get; private set; }
         protected override Window CreateShell() {
             return Container.Resolve<MainWindow>();
         }
 
         protected override void OnStartup(StartupEventArgs e) {
             DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
+            var builder = new ConfigurationBuilder()
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            this.Configuration = builder.Build();
+            //this.ConnectionString = this.Configuration.GetConnectionString("InventoryConnection");
+            this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection"));
+
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
             //ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
             GridControl.AllowInfiniteGridSize = true;
+            
             this.CreateLogger();
-            //this.ManualLogIn();
-            //this.CheckVersion();
+           // this.ManualLogIn();
+           // this.CheckVersion();
             this.Login();
             base.OnStartup(e);
         }
@@ -127,7 +137,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             //Startup Login
             LoginWindow loginWindow = new LoginWindow();
             DomainManager domainManager = new DomainManager();
-            ManufacturingContext context = new ManufacturingContext();
+            ManufacturingContext context = new ManufacturingContext(this.optionsBuilder.Options);
             IUserSettingsService userSettingsService = new UserSettingsService(this._logger, context);
             IAuthenticationUseCase auth = new AuthenticationService(context, domainManager, this._logger,userSettingsService);
             //UserServiceProvider userServiceProvider = new UserServiceProvider(new ManufacturingContext(), domainManager);
@@ -179,9 +189,11 @@ namespace ManufacturingInventory.ManufacturingApplication {
             if (this.userService.IsValid()) {
                 var container = containerRegistry.GetContainer();
                 container.With(rules => rules.WithoutImplicitCheckForReuseMatchingScope());
-                container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true));
-                container.Register<IUnitOfWork, UnitOfWork>(setup: Setup.With(allowDisposableTransient: true));
 
+                container.Register<ManufacturingContext>(setup: Setup.With(allowDisposableTransient: true),
+                    made: Made.Of(()=>new ManufacturingContext(Arg.Index<DbContextOptions<ManufacturingContext>>(0)),requestIgnored=>this.optionsBuilder.Options));
+
+                container.Register<IUnitOfWork, UnitOfWork>(setup: Setup.With(allowDisposableTransient: true));
                 container.Register<ICheckOutUseCase, CheckOut>();
                 container.Register<ICheckInUseCase, CheckIn>();
                 container.Register<IPartNavigationEditUseCase, PartNavigationEdit>();
@@ -196,29 +208,13 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IContactTableDetailEditUseCase, ContactTableDetailEdit>();
                 container.Register<ICategoryEditUseCase, CategoryEdit>();
                 container.Register<IAuthenticationUseCase, AuthenticationService>();
+                container.Register<IReportingUseCase, ReportingUseCase>();
 
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
                 //this.CreateLogger();
                 container.RegisterInstance<ILogger>(this._logger);
-
-                //container.Register<IRepository<Category>, CategoryRepository>();
-                //container.Register<IRepository<Location>, LocationRepository>();
-                //container.Register<IRepository<PartInstance>, PartInstanceRepository>();
-                //container.Register<IRepository<Part>, PartRepository>();
-                //container.Register<IRepository<Attachment>, AttachmentRepository>();
-                //container.Register<IRepository<Transaction>, TransactionRepository>();
-                //container.Register<IRepository<BubblerParameter>, BubblerParameterRepository>();
-
-
-                //container.Register<IEntityProvider<Category>, CategoryProvider>();
-                //container.Register<IEntityProvider<Location>, LocationProvider>();
-                //container.Register<IEntityProvider<PartInstance>, PartInstanceProvider>();
-                //container.Register<IEntityProvider<Part>, PartProvider>();
-                //container.Register<IEntityProvider<Transaction>, TransactionProvider>();
-
-
             } else {
                 this.Shutdown();
             }

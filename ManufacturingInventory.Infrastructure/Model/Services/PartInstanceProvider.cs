@@ -38,6 +38,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e=>e.Transactions)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -52,6 +53,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.Transactions)
                 .AsNoTracking();
 
 
@@ -77,6 +79,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.Transactions)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -101,6 +104,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.Transactions)
                  .Load();
         }
 
@@ -115,6 +119,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Providers {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.Transactions)
                 .LoadAsync();
         }
     }
