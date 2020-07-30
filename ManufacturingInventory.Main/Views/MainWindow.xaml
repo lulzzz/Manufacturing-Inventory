@@ -77,7 +77,7 @@
                                                CommandParameter="{x:Static common:MainAppViews.ReportsMainView}"
                                                Content="Reports"
                                                Glyph="{dx:DXImage Image=Report_16x16.png}"
-                                               IsEnabled="False"
+                                               IsEnabled="True"
                                                LargeGlyph="{dx:DXImage Image=Report_32x32.png}" />
                         </dxr:RibbonPageGroup>
                     </dxr:RibbonPage>

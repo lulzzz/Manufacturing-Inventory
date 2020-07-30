@@ -76,6 +76,7 @@
     <ProjectReference Include="..\ManufacturingInventory.DistributorManagment\ManufacturingInventory.DistributorManagment.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.PartsManagment\ManufacturingInventory.PartsManagment.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Reporting\ManufacturingInventory.Reporting.csproj" />
   </ItemGroup>
 
   <ItemGroup>

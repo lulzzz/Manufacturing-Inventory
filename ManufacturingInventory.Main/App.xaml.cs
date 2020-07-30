@@ -24,6 +24,7 @@ using ManufacturingInventory.DistributorManagment;
 using ManufacturingInventory.Domain.Buisness.Concrete;
 using ManufacturingInventory.Domain.Security.Concrete;
 using ManufacturingInventory.Domain.Security.Interfaces;
+using ManufacturingInventory.Reporting;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.ManufacturingApplication.Services;
@@ -69,7 +70,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             this.Configuration = builder.Build();
             //this.ConnectionString = this.Configuration.GetConnectionString("InventoryConnection");
             this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection"));
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_home"));
 
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
@@ -78,9 +79,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
             GridControl.AllowInfiniteGridSize = true;
             
             this.CreateLogger();
-           // this.ManualLogIn();
+            this.ManualLogIn();
            // this.CheckVersion();
-            this.Login();
+           // this.Login();
             base.OnStartup(e);
         }
 
@@ -115,7 +116,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
         }
 
         private void ManualLogIn() {
-            using var context = new ManufacturingContext();
+            using var context = new ManufacturingContext(this.optionsBuilder.Options);
 
             var user = context.Users
                 .Include(e => e.Sessions)
@@ -140,8 +141,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
             ManufacturingContext context = new ManufacturingContext(this.optionsBuilder.Options);
             IUserSettingsService userSettingsService = new UserSettingsService(this._logger, context);
             IAuthenticationUseCase auth = new AuthenticationService(context, domainManager, this._logger,userSettingsService);
-            //UserServiceProvider userServiceProvider = new UserServiceProvider(new ManufacturingContext(), domainManager);
-            //LogInService logInService = new LogInService(domainManager, userServiceProvider);
             var loginVM = new LoginViewModel(auth,userSettingsService);
             loginVM.LoginCompleted += (sender, args) => {
                 if (loginVM.LoginResponce.Success) {
@@ -183,6 +182,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             moduleCatalog.AddModule<PartsManagmentModule>();
             moduleCatalog.AddModule<DistributorManagmentModule>();
             moduleCatalog.AddModule<CategoryManagmentModule>();
+            moduleCatalog.AddModule<ReportingModule>();
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {

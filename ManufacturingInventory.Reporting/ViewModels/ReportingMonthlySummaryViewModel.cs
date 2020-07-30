@@ -2,6 +2,7 @@
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Common.Application.UI.Services;
 using ManufacturingInventory.Domain.Enums;
+using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using Prism.Events;
 using Prism.Regions;
@@ -28,7 +29,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private ManufacturingContext _context;
+        private IReportingUseCase _reportingService;
 
         private ObservableCollection<ReportSnapshot> _reportSnapshot;
         private DateTime _start;
@@ -39,13 +40,14 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         public AsyncCommand CollectSnapshotCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set;}
 
-        public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,ManufacturingContext context) {
-            this._context = context;
+        public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,IReportingUseCase reportingService) {
+            this._reportingService = reportingService;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.Start = DateTime.Now;
             this.Stop = DateTime.Now;
             this.CollectSnapshotCommand = new AsyncCommand(this.CollectSummaryHandler);
+            this.InitializeCommand = new AsyncCommand(this.LoadAsync);
         }
 
         public override bool KeepAlive => true;
@@ -70,8 +72,17 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             set => SetProperty(ref this._showTableLoading, value);
         }
 
-        private Task CollectSummaryHandler() {
-            return Task.CompletedTask;
+        private async Task CollectSummaryHandler() {
+            ReportingInput reportInput = new ReportingInput(this._start, this._stop);
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading=true);
+            var output=await this._reportingService.Execute(reportInput);
+            if (output.Success) {
+                this.ReportSnapshot = new ObservableCollection<ReportSnapshot>(output.Snapshot);
+            } else {
+                this.MessageBoxService.ShowMessage(output.Message);
+            }
+
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
         }
 
         private async Task ExportTableHandler(ExportFormat format) {
@@ -87,6 +98,10 @@ namespace ManufacturingInventory.Reporting.ViewModels {
                     process.Start();
                 }
             });
+        }
+    
+        private async Task LoadAsync() {
+            await this._reportingService.Load();
         }
     }
 }
