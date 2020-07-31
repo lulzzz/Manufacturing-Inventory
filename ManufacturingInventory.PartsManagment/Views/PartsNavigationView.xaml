@@ -80,7 +80,6 @@
                             <dxmvvm:EventToCommand Command="{Binding DoubleClickViewCommand}"
                                                    EventName="MouseDoubleClick" />
                         </dxmvvm:Interaction.Behaviors>
-
                         <dxg:TableView.RowCellMenuCustomizations>
 
                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ViewPartDetailsCommand}"

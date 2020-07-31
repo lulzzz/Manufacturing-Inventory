@@ -5,6 +5,5 @@ using System.Text;
 namespace ManufacturingInventory.Reporting.Internal {
     public static class ParameterKeys {
 
-
     }
 }

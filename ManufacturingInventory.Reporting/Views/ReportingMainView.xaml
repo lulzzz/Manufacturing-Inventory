@@ -25,6 +25,9 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="ReportingMainDispatcher" />
+    </dxmvvm:Interaction.Behaviors>
 
     <dxdo:LayoutPanel ShowCloseButton="False"
                       ShowPinButton="False"
@@ -48,14 +51,14 @@
                     <dxb:BarButtonItem x:Name="_snapShot"
                                        Content="Inventory Snapshot"
                                        Command="{Binding LoadReportsViewCommand,IsAsync=True}"
-                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingMonthlySummary}"
+                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingMonthlySummaryView}"
                                        Glyph="{dx:DXImage Image=Calendar_16x16.png}"
                                        LargeGlyph="{dx:DXImage Image=Calendar_32x32.png}" />
 
                     <dxb:BarButtonItem x:Name="_transactions"
                                        Content="Transactions"
                                        Command="{Binding LoadReportsViewCommand,IsAsync=True}"
-                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingTransactionLog}"
+                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingTransactionLogView}"
                                        Glyph="{dx:DXImage Image=BottomUp_16x16.png}"
                                        LargeGlyph="{dx:DXImage Image=BottomUp_32x32.png}"
                                        IsEnabled="True" />
@@ -63,7 +66,7 @@
                     <dxb:BarButtonItem x:Name="_currentInventory"
                                        Content="Current Inventory"
                                        Command="{Binding LoadReportsViewCommand,IsAsync=True}"
-                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingCurrentInventory}"
+                                       CommandParameter="{x:Static localCommon:ModuleViews.ReportingCurrentInventoryView}"
                                        Glyph="{dx:DXImage Image=BOProduct_16x16.png}"
                                        LargeGlyph="{dx:DXImage Image=BOProduct_32x32.png}"
                                        IsEnabled="True" />
@@ -78,7 +81,7 @@
                                         CaptionLocation="Top"
                                         ShowTabForSinglePage="True"
                                         GroupBorderStyle="GroupBox"
-                                        AllowFloat="True">
+                                        AllowFloat="False">
                         <dxdo:TabbedGroup.ItemStyle>
                             <Style TargetType="{x:Type dxdo:LayoutPanel}">
                                 <Setter Property="Caption"

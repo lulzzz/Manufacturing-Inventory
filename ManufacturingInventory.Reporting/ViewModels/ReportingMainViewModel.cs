@@ -22,7 +22,7 @@ using ManufacturingInventory.Reporting.Internal;
 namespace ManufacturingInventory.Reporting.ViewModels {
     public class ReportingMainViewModel : InventoryViewModelBase {
         protected IDispatcherService DispatherService { get => ServiceContainer.GetService<IDispatcherService>("ReportingMainDispatcher"); }
-        protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("ReportMainMessageBoxService"); }
+        //protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("ReportMainMessageBoxService"); }
 
         private IRegionManager _regionManager;
         private IEventAggregator _eventAggregator;
@@ -40,7 +40,9 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         private async Task LoadModuleHandler(string navigationPath) {
             await Task.Run(() => {
                 if (!string.IsNullOrEmpty(navigationPath)) {
-                    this._regionManager.RequestNavigate(LocalRegions.ReportingMainRegion, navigationPath);
+                    this.DispatherService.BeginInvoke(() => {
+                        this._regionManager.RequestNavigate(LocalRegions.ReportingMainRegion, navigationPath);
+                    });
                 }           
             });
         }

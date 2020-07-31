@@ -6,6 +6,7 @@ namespace ManufacturingInventory.Domain.DTOs {
     public class ReportSnapshot {
         public string PartName { get; set; }
         public string InstanceName { get; set; }
+
         public double StartQuantity { get; set; }
         public double StartCost { get; set; }
 
@@ -15,7 +16,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         public double ProductionOutgoingQuantity { get; set; }
         public double ProductionOutgoingCost { get; set; }
 
-        public double RnDOutgoingQuantity { get; set; }
+        public double RndOutgoingQuantity { get; set; }
         public double RndOutgoingCost { get; set; }
 
         public double TotalOutgoingQuantity { get; set; }

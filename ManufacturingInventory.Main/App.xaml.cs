@@ -48,9 +48,6 @@ using System.Linq;
 using System.Windows;
 
 namespace ManufacturingInventory.ManufacturingApplication {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App {
 
         private IUserService userService = new UserService();
@@ -58,6 +55,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
         public IConfiguration Configuration { get; private set; }
         public String ConnectionString { get; private set; }
         public DbContextOptionsBuilder<ManufacturingContext> optionsBuilder { get; private set; }
+
         protected override Window CreateShell() {
             return Container.Resolve<MainWindow>();
         }
@@ -70,7 +68,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             this.Configuration = builder.Build();
             //this.ConnectionString = this.Configuration.GetConnectionString("InventoryConnection");
             this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_home"));
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection"));
 
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
@@ -208,8 +206,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IContactTableDetailEditUseCase, ContactTableDetailEdit>();
                 container.Register<ICategoryEditUseCase, CategoryEdit>();
                 container.Register<IAuthenticationUseCase, AuthenticationService>();
-                container.Register<IReportingUseCase, ReportingUseCase>();
-
+                container.Register<IMonthlySummaryUseCase, MonthlySummaryUseCase>();
+                container.Register<ICurrentInventoryUseCase, CurrentInventoryUseCase>();
+                container.Register<ITransactionSummaryUseCase, TransactionSummaryUseCase>();
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);

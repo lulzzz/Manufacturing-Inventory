@@ -29,24 +29,25 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private IReportingUseCase _reportingService;
+        private IMonthlySummaryUseCase _reportingService;
 
         private ObservableCollection<ReportSnapshot> _reportSnapshot;
         private DateTime _start;
         private DateTime _stop;
         private bool _showTableLoading;
 
-        public AsyncCommand ExportTableCommand { get; private set; }
+        public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
         public AsyncCommand CollectSnapshotCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set;}
 
-        public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,IReportingUseCase reportingService) {
+        public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,IMonthlySummaryUseCase reportingService) {
             this._reportingService = reportingService;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this.Start = DateTime.Now;
             this.Stop = DateTime.Now;
             this.CollectSnapshotCommand = new AsyncCommand(this.CollectSummaryHandler);
+            this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
         }
 
@@ -73,7 +74,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         }
 
         private async Task CollectSummaryHandler() {
-            ReportingInput reportInput = new ReportingInput(this._start, this._stop);
+            MonthlySummaryInput reportInput = new MonthlySummaryInput(this._start, this._stop);
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading=true);
             var output=await this._reportingService.Execute(reportInput);
             if (output.Success) {

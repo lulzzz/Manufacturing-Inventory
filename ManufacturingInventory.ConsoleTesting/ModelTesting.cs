@@ -42,13 +42,13 @@ namespace ManufacturingInventory.ConsoleTesting {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             var context = new ManufacturingContext(optionsBuilder.Options);
-            DateTime start = new DateTime(2020, 7, 1);
-            DateTime stop = DateTime.Now;
+            DateTime start = new DateTime(2020, 6, 1);
+            DateTime stop = new DateTime(2020, 6, 30);
 
             Console.WriteLine("Start: {0}/{1}/{2} Stop:{3}/{4}/{5}", start.Day, start.Month, start.Year, stop.Day, stop.Month, stop.Year);
 
-            ReportingInput input = new ReportingInput(start, stop);
-            ReportingUseCase reporting = new ReportingUseCase(context);
+            MonthlySummaryInput input = new MonthlySummaryInput(start, stop);
+            MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
             var snapShot = await reporting.Execute(input);
             StringBuilder builder = new StringBuilder();
             StringBuilder transactionBuffer = new StringBuilder();
@@ -81,8 +81,8 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             Console.WriteLine("Start: {0}/{1}/{2} Stop:{3}/{4}/{5}", start.Day, start.Month, start.Year, stop.Day, stop.Month, stop.Year);
 
-            ReportingInput input = new ReportingInput(start, stop);
-            ReportingUseCase reporting = new ReportingUseCase(context);
+            MonthlySummaryInput input = new MonthlySummaryInput(start, stop);
+            MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
             var snapShot = await reporting.Execute(input);
             await GenerateMissingTransactions(snapShot.TransactionsNeeded);
 

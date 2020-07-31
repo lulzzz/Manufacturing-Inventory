@@ -16,8 +16,16 @@ namespace ManufacturingInventory.Reporting.Views {
     /// Interaction logic for ReportingMonthlySummaryView.xaml
     /// </summary>
     public partial class ReportingMonthlySummaryView : UserControl {
+        private bool _isactive;
+        public string PanelCaption { get { return "Monthly Report"; } }
+
+        public bool IsActive {
+            get => this._isactive;
+            set => this._isactive = value;
+        }
         public ReportingMonthlySummaryView() {
             InitializeComponent();
+            this.IsActive = true;
         }
     }
 }

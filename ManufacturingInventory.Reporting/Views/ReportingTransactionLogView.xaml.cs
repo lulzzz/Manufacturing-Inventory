@@ -16,8 +16,16 @@ namespace ManufacturingInventory.Reporting.Views {
     /// Interaction logic for ReportingTransactionLogView.xaml
     /// </summary>
     public partial class ReportingTransactionLogView : UserControl {
+        private bool _isactive;
+        public string PanelCaption { get { return "Transaction Log"; } }
+
+        public bool IsActive {
+            get => this._isactive;
+            set => this._isactive = value;
+        }
         public ReportingTransactionLogView() {
             InitializeComponent();
+            this.IsActive = true;
         }
     }
 }

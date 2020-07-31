@@ -240,10 +240,12 @@
     </Style>
 
     <Style TargetType="{x:Type dxlc:ElementSizer}">
-        <Setter Property="Cursor" Value="SizeWE" />
-        <Setter Property="ShowResizingHandle" Value="True" />
-        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Cursor"
+                Value="SizeWE" />
+        <Setter Property="ShowResizingHandle"
+                Value="True" />
+        <Setter Property="UseLayoutRounding"
+                Value="True" />
     </Style>
-
 
 </ResourceDictionary>

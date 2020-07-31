@@ -16,8 +16,16 @@ namespace ManufacturingInventory.Reporting.Views {
     /// Interaction logic for ReportingCurrentInventoryView.xaml
     /// </summary>
     public partial class ReportingCurrentInventoryView : UserControl {
+        private bool _isactive;
+        public string PanelCaption { get { return "Current Inventory"; } }
+
+        public bool IsActive {
+            get => this._isactive;
+            set => this._isactive = value;
+        }
         public ReportingCurrentInventoryView() {
             InitializeComponent();
+            this.IsActive = true;
         }
     }
 }

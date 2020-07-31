@@ -1,13 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ManufacturingInventory.Application.UseCases;
-using ManufacturingInventory.Domain.DTOs;
-using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
-    public interface IReportingUseCase:IUseCase<ReportingInput,ReportingOutput> {
+
+    public interface IMonthlySummaryUseCase:IUseCase<MonthlySummaryInput,MonthlySummaryOutput> {
+        Task Load();
+    }
+
+    public interface ICurrentInventoryUseCase : IUseCase<CurrentInventoryInput, CurrentInventoryOutput> {
+        Task Load();
+    }
+
+    public interface ITransactionSummaryUseCase : IUseCase<TransactionSummaryInput, TransactionSummaryOutput> {
         Task Load();
     }
 }
