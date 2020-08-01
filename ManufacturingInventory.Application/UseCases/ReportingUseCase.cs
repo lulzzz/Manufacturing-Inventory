@@ -1,7 +1,9 @@
-﻿using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
+﻿using DevExpress.Mvvm.Native;
+using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Domain.DTOs;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using System;
 using System.Collections.Generic;
@@ -14,19 +16,22 @@ namespace ManufacturingInventory.Application.UseCases {
     public class MonthlySummaryUseCase : IMonthlySummaryUseCase {
         private ManufacturingContext _context;
         private IEntityProvider<PartInstance> _partInstanceProvider;
-        private IEntityProvider<Transaction> _transactionProvider;
+        private IUnitOfWork _unitOfWork;
+        private MonthlySummary _currentReport;
+        private List<PartMonthlySummaryDto> _monthlySnapshot; 
 
         public MonthlySummaryUseCase(ManufacturingContext context) {
             this._context = context;
             this._partInstanceProvider = new PartInstanceProvider(context);
-            this._transactionProvider = new TransactionProvider(context);
+            this._unitOfWork = new UnitOfWork(context);
         }
 
         public async Task<MonthlySummaryOutput> Execute(MonthlySummaryInput input) {
             var dStart = new DateTime(input.StartDate.Year, input.StartDate.Month, input.StartDate.Day, 0, 0, 0, DateTimeKind.Local);
             var dStop = new DateTime(input.StopDate.Year, input.StopDate.Month, input.StopDate.Day, 23, 59, 59, DateTimeKind.Local);
             var partInstances = await this._partInstanceProvider.GetEntityListAsync(instance => instance.CostReported || (instance.IsBubbler && instance.DateInstalled >= dStart && instance.DateInstalled <= dStop));
-            var summary = new List<ReportSnapshot>();
+            this._monthlySnapshot = new List<PartMonthlySummaryDto>();
+            this._currentReport = new MonthlySummary(dStart,dStop);
             StringBuilder transactionBuffer = new StringBuilder();
             foreach (var partInstance in partInstances) {
                 var incomingTransactions = from transaction in partInstance.Transactions
@@ -77,7 +82,7 @@ namespace ManufacturingInventory.Application.UseCases {
                 double outgoingCost = outgoingCostRange;
                 double outgoingQty = outgoingQtyRange;
 
-                ReportSnapshot snapshotRow = new ReportSnapshot();
+                PartMonthlySummaryDto snapshotRow = new PartMonthlySummaryDto();
                 snapshotRow.PartName = partInstance.Part.Name;
                 snapshotRow.InstanceName = partInstance.Name;
 
@@ -102,27 +107,35 @@ namespace ManufacturingInventory.Application.UseCases {
                 snapshotRow.CurrentCost = currentCost;
                 snapshotRow.CurrentQuantity = currentQty;
 
-                summary.Add(snapshotRow);
-
-                //if (snapshotRow.StartQuantity > 0) {
-                //    TransactionInfo transaction = new TransactionInfo();
-                //    transaction.PartInstanceId = partInstance.Id;
-                //    transaction.PartInstanceName = partInstance.Name;
-                //    transaction.LocationId = partInstance.CurrentLocation.Id;
-                //    transaction.LocationName = partInstance.CurrentLocation.Name;
-                //    transaction.Action = InventoryAction.INCOMING;
-                //    transaction.Quantity = snapshotRow.StartQuantity;
-                //    transaction.UnitCost = partInstance.UnitCost;
-                //    transaction.TotalCost = snapshotRow.StartQuantity * partInstance.UnitCost;
-                //    transactions.Add(transaction);
-                //}
+                this._monthlySnapshot.Add(snapshotRow);
             }
-            return new MonthlySummaryOutput(summary, true, "Done");
+            return new MonthlySummaryOutput(this._monthlySnapshot.AsEnumerable(), true, "Done");
         }
 
         public async Task Load() {
             await this._partInstanceProvider.LoadAsync();
-            await this._transactionProvider.LoadAsync();
+        }
+
+        public async Task<bool> SaveCurrentSnapshot() {
+            if(this._currentReport!=null && this._monthlySnapshot!=null){
+                foreach(var row in this._monthlySnapshot) {
+                    this._currentReport.MonthlyPartSnapshots.Add(new PartMonthlySummary(row));
+                }
+                var added=await this._context.AddAsync(this._currentReport);
+                if (added != null) {
+                    var count = await this._unitOfWork.Save();
+                    if (count > 0) {
+                        return true;
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         }
     }
 
@@ -162,7 +175,6 @@ namespace ManufacturingInventory.Application.UseCases {
             this._context = context;
             this._transactionProvider = new TransactionProvider(context);
         }
-
 
         public async Task<TransactionSummaryOutput> Execute(TransactionSummaryInput input) {
             var dStart = new DateTime(input.StartDate.Year, input.StartDate.Month, input.StartDate.Day, 0, 0, 0, DateTimeKind.Local);

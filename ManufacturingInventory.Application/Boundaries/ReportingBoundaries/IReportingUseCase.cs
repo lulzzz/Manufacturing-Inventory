@@ -4,6 +4,7 @@ using ManufacturingInventory.Application.UseCases;
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
 
     public interface IMonthlySummaryUseCase:IUseCase<MonthlySummaryInput,MonthlySummaryOutput> {
+        Task<bool> SaveCurrentSnapshot();
         Task Load();
     }
 

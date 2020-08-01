@@ -4,14 +4,16 @@ using ManufacturingInventory.Infrastructure.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    partial class ManufacturingContextModelSnapshot : ModelSnapshot
+    [Migration("20200801183721_MonthlySummaryAdd")]
+    partial class MonthlySummaryAdd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -377,9 +379,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
@@ -623,11 +623,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.Property<double>("RndOutgoingQuantity")
                         .HasColumnType("float");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
 
                     b.Property<double>("StartCost")
                         .HasColumnType("float");
@@ -1147,7 +1142,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartMonthlySummary", b =>
                 {
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.MonthlySummary", "MonthlySummary")
-                        .WithMany("MonthlyPartSnapshots")
+                        .WithMany("Summary")
                         .HasForeignKey("MonthlySummaryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();

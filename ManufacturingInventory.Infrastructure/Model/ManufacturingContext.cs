@@ -27,6 +27,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
         public DbSet<BubblerParameter> BubblerParameters { get; set; }
         public DbSet<PartPrice> PartPrices { get; set; }
         public DbSet<PriceLog> PriceLogs { get; set; }
+        public DbSet<MonthlySummary> MonthlySummaries { get; set; }
 
         public ManufacturingContext(DbContextOptions<ManufacturingContext> options) : base(options) {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -45,7 +46,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            //optionsBuilder.UseSqlServer()
+            optionsBuilder.UseSqlServer("server=172.29.144.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
 
         }
 
@@ -165,6 +166,16 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .IsConcurrencyToken()
                 .ValueGeneratedOnAddOrUpdate();
 
+            builder.Entity<MonthlySummary>()
+                .Property(e => e.RowVersion)
+                .IsConcurrencyToken()
+                .ValueGeneratedOnAddOrUpdate();
+
+            builder.Entity<PartMonthlySummary>()
+                .Property(e => e.RowVersion)
+                .IsConcurrencyToken()
+                .ValueGeneratedOnAddOrUpdate();
+
             #endregion
 
             #region Parts
@@ -253,6 +264,8 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .HasForeignKey(e => e.ConditionId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
+
+
 
             builder.Entity<PartInstance>()
                 .HasOne(e => e.CurrentLocation)
@@ -431,6 +444,17 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .HasOne(e => e.User)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.UserId)
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            #endregion
+
+            #region MonthlySummary
+
+            builder.Entity<MonthlySummary>()
+                .HasMany(e => e.MonthlyPartSnapshots)
+                .WithOne(e => e.MonthlySummary)
+                .HasForeignKey(e => e.MonthlySummaryId)
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
 

@@ -20,6 +20,7 @@ using System.Text;
 using ManufacturingInventory.Infrastructure.Model;
 using System.Diagnostics;
 using System.IO;
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 
 namespace ManufacturingInventory.Reporting.ViewModels {
     public class ReportingMonthlySummaryViewModel : InventoryViewModelBase {
@@ -31,7 +32,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         private IRegionManager _regionManager;
         private IMonthlySummaryUseCase _reportingService;
 
-        private ObservableCollection<ReportSnapshot> _reportSnapshot;
+        private ObservableCollection<IPartMonthlySummary> _reportSnapshot;
         private DateTime _start;
         private DateTime _stop;
         private bool _showTableLoading;
@@ -53,7 +54,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         public override bool KeepAlive => true;
         
-        public ObservableCollection<ReportSnapshot> ReportSnapshot {
+        public ObservableCollection<IPartMonthlySummary> ReportSnapshot {
             get => this._reportSnapshot;
             set => SetProperty(ref this._reportSnapshot, value);
         }
@@ -78,7 +79,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading=true);
             var output=await this._reportingService.Execute(reportInput);
             if (output.Success) {
-                this.ReportSnapshot = new ObservableCollection<ReportSnapshot>(output.Snapshot);
+                this.ReportSnapshot = new ObservableCollection<IPartMonthlySummary>(output.Snapshot);
             } else {
                 this.MessageBoxService.ShowMessage(output.Message);
             }

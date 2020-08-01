@@ -1,15 +1,11 @@
-﻿using System;
+﻿using ManufacturingInventory.Application.Boundaries.Authentication;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
 
-    public interface IReportingInput {
-        DateTime StartDate { get; set; }
-        DateTime StopDate { get; set; }
-    }
-
-    public class MonthlySummaryInput: IReportingInput {
+    public class MonthlySummaryInput {
         public DateTime StartDate { get; set; }
         public DateTime StopDate { get; set; }
 
