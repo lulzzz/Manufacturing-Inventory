@@ -7,6 +7,8 @@
     <FileVersion>1.0.36.7423</FileVersion>
     <StartupObject>PublishTool.App</StartupObject>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Configurations>Debug;Release;other</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.8" />

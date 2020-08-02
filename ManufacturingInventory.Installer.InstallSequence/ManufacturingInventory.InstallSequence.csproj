@@ -4,7 +4,8 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.InstallSequence</AssemblyName>
     <FileVersion>1.0.203.7423</FileVersion>
-    <Configurations>Debug;Release;fr</Configurations>
+    <Configurations>Debug;Release;fr;other</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />

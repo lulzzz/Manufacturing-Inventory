@@ -5,7 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <FileVersion>1.0.54.7423</FileVersion>
     <StartupObject>ManufacturingInventory.InstallConsole.Program</StartupObject>
-    <Configurations>Debug;Release;fr</Configurations>
+    <Configurations>Debug;Release;fr;other</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

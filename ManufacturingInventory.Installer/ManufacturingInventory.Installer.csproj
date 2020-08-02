@@ -7,14 +7,16 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <FileVersion>1.0.204.7423</FileVersion>
 
     <StartupObject>ManufacturingInventory.Installer.App</StartupObject>
 
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 
-    <Configurations>Debug;Release;fr</Configurations>
+    <Configurations>Debug;Release;fr;other</Configurations>
+
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\seti_logo.png" />

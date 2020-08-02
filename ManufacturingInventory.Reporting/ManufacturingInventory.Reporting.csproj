@@ -4,6 +4,8 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.Reporting</AssemblyName>
     <FileVersion>1.0.17.7517</FileVersion>
+    <Configurations>Debug;Release;other</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Core" Version="19.1.9" />

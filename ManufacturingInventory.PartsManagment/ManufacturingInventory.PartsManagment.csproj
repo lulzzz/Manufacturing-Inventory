@@ -4,7 +4,8 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.PartsManagment</AssemblyName>
     <FileVersion>1.2.109.7517</FileVersion>
-    <Configurations>Debug;Release;fr</Configurations>
+    <Configurations>Debug;Release;fr;other</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="19.1.9" />

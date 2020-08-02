@@ -9,9 +9,16 @@
     <FileVersion>1.1.101.7517</FileVersion>
     <PackageId>ManufacturingInventory.UI</PackageId>
     <UserSecretsId>d873c8c3-b819-4a49-87d8-529888f6ea4b</UserSecretsId>
-    <Configurations>Debug;Release;fr</Configurations>
+    <Configurations>Debug;Release;fr;other</Configurations>
     <ApplicationIcon>Images\seti_logo.ico</ApplicationIcon>
     <AssemblyVersion>1.1.8.7375</AssemblyVersion>
+    <Platforms>AnyCPU;x86</Platforms>
+    <SignAssembly>true</SignAssembly>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Company>SETi</Company>
+    <Authors>aelmendo</Authors>
+    <AssemblyOriginatorKeyFile>manufacturinginventorycerf.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ShouldCreateLogs>True</ShouldCreateLogs>
@@ -24,6 +31,20 @@
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
     <AssemblyFileVersionSettings>IncrementOnDemand.IncrementOnDemand.Increment.DeltaDayStamp</AssemblyFileVersionSettings>
     <AssemblyVersionSettings>IncrementOnDemand.IncrementOnDemand.Increment.DeltaDayStamp</AssemblyVersionSettings>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='other|AnyCPU'">
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdatePackageVersion>False</UpdatePackageVersion>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyFileVersionSettings>IncrementOnDemand.IncrementOnDemand.Increment.DeltaDayStamp</AssemblyFileVersionSettings>
+    <AssemblyVersionSettings>IncrementOnDemand.IncrementOnDemand.Increment.DeltaDayStamp</AssemblyVersionSettings>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <ShouldCreateLogs>True</ShouldCreateLogs>
