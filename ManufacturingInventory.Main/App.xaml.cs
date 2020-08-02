@@ -68,7 +68,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             this.Configuration = builder.Build();
             //this.ConnectionString = this.Configuration.GetConnectionString("InventoryConnection");
             this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection"));
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_home"));
 
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
