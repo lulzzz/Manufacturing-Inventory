@@ -89,19 +89,21 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         private async Task ExportTableHandler(ExportFormat format) {
             await Task.Run(() => {
-                var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
-                using (FileStream file = File.Create(path)) {
-                    this.ExportService.Export(file, format);
-                }
-                using (var process = new Process()) {
-                    process.StartInfo.UseShellExecute = true;
-                    process.StartInfo.FileName = path;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.Start();
-                }
+                this.DispatcherService.BeginInvoke(() => {
+                    var path = Path.ChangeExtension(Path.GetTempFileName(), format.ToString().ToLower());
+                    using (FileStream file = File.Create(path)) {
+                        this.ExportService.Export(file, format);
+                    }
+                    using (var process = new Process()) {
+                        process.StartInfo.UseShellExecute = true;
+                        process.StartInfo.FileName = path;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.Start();
+                    }
+                });
             });
         }
-    
+
         private async Task LoadAsync() {
             await this._reportingService.Load();
         }

@@ -76,6 +76,11 @@
                                  ItemsSource="{Binding ReportSnapshot, IsAsync=True, Mode=TwoWay}"
                                  ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                                  Style="{StaticResource GridControlStyle}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand Command="{Binding ElementName=_reportSummaryTableView, Path=TableViewCommands.BestFitColumns}"
+                                               EventName="Loaded" />
+                        <common:GridExportService x:Name="MonthlySummaryExportService" />
+                    </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="_reportSummaryTableView"
                                        AutoWidth="True"
@@ -86,11 +91,6 @@
                                        ShowSearchPanelMode="Always"
                                        ShowTotalSummary="True"
                                        Style="{StaticResource TableViewStyleNoMasterNoGroup}">
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding ElementName=_reportSummaryTableView, Path=TableViewCommands.BestFitColumns}"
-                                                       EventName="Loaded" />
-                                <common:GridExportService x:Name="MonthlySummaryExportService" />
-                            </dxmvvm:Interaction.Behaviors>
                         </dxg:TableView>
                     </dxg:GridControl.View>
                     <dxg:GridColumn FieldName="PartName" Header="Part Category"/>

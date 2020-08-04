@@ -6,12 +6,12 @@
     <AssemblyName>ManufacturingApplication</AssemblyName>
     <StartupObject>ManufacturingInventory.ManufacturingApplication.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>1.1.101.7517</FileVersion>
+    <FileVersion>1.1.109.7520</FileVersion>
     <PackageId>ManufacturingInventory.UI</PackageId>
     <UserSecretsId>d873c8c3-b819-4a49-87d8-529888f6ea4b</UserSecretsId>
     <Configurations>Debug;Release;fr;other</Configurations>
     <ApplicationIcon>Images\seti_logo.ico</ApplicationIcon>
-    <AssemblyVersion>1.1.8.7375</AssemblyVersion>
+    <AssemblyVersion>1.1.16.7520</AssemblyVersion>
     <Platforms>AnyCPU;x86</Platforms>
     <SignAssembly>false</SignAssembly>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
