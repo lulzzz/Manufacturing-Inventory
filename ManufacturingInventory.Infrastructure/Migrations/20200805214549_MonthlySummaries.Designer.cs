@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200801200337_MonthlySummary-rev2")]
-    partial class MonthlySummaryrev2
+    [Migration("20200805214549_MonthlySummaries")]
+    partial class MonthlySummaries
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -647,7 +647,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("MonthlySummaryId");
 
-                    b.ToTable("PartMonthlySummary");
+                    b.ToTable("PartMonthlySummaries");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartPrice", b =>

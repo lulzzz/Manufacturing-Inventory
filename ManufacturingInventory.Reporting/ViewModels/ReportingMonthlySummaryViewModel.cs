@@ -35,11 +35,14 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         private ObservableCollection<IPartMonthlySummary> _reportSnapshot;
         private DateTime _start;
         private DateTime _stop;
+        private bool _saveEnabled=false;
         private bool _showTableLoading;
 
         public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
         public AsyncCommand CollectSnapshotCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set;}
+        public AsyncCommand SaveMonthlyReportCommand { get; private set; }
+
 
         public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,IMonthlySummaryUseCase reportingService) {
             this._reportingService = reportingService;
@@ -49,6 +52,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             this.Stop = DateTime.Now;
             this.CollectSnapshotCommand = new AsyncCommand(this.CollectSummaryHandler);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
+            this.SaveMonthlyReportCommand = new AsyncCommand(this.SaveMonthlyReportHandler);
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
         }
 
@@ -74,17 +78,33 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             set => SetProperty(ref this._showTableLoading, value);
         }
 
+        public bool SaveEnabled {
+            get => this._saveEnabled;
+            set => SetProperty(ref this._saveEnabled, value);
+        }
+
         private async Task CollectSummaryHandler() {
             MonthlySummaryInput reportInput = new MonthlySummaryInput(this._start, this._stop);
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading=true);
             var output=await this._reportingService.Execute(reportInput);
             if (output.Success) {
                 this.ReportSnapshot = new ObservableCollection<IPartMonthlySummary>(output.Snapshot);
+                this.SaveEnabled = true;
             } else {
-                this.MessageBoxService.ShowMessage(output.Message);
+                this.MessageBoxService.ShowMessage(output.Message,"",MessageButton.OK,MessageIcon.Error);
             }
 
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
+        }
+
+        public async Task SaveMonthlyReportHandler() {
+            var success=await this._reportingService.SaveCurrentSnapshot();
+            if (success) {
+                this.MessageBoxService.ShowMessage("Monthly Report Saved", "Report Saved", MessageButton.OK, MessageIcon.Information);
+            } else {
+                this.MessageBoxService.ShowMessage("Error:  Could not save monthly report"+Environment.NewLine+"Please trye generating report again",
+                    "Error", MessageButton.OK, MessageIcon.Error);
+            }
         }
 
         private async Task ExportTableHandler(ExportFormat format) {

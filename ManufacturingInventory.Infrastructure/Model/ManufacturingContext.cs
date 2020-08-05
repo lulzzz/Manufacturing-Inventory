@@ -28,6 +28,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
         public DbSet<PartPrice> PartPrices { get; set; }
         public DbSet<PriceLog> PriceLogs { get; set; }
         public DbSet<MonthlySummary> MonthlySummaries { get; set; }
+        public DbSet<PartMonthlySummary> PartMonthlySummaries { get; set; }
 
         public ManufacturingContext(DbContextOptions<ManufacturingContext> options) : base(options) {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -46,7 +47,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
 
         }
 

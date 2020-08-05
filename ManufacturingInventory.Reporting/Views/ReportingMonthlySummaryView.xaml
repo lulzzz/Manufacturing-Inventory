@@ -31,24 +31,31 @@
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
                                EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
-    <dxdo:LayoutPanel>
+    <dx:LoadingDecorator>
+        <dxdo:LayoutPanel ShowHideButton="False" ShowBorder="True" ShowCloseButton="False" ShowPinButton="False">
         <dxlc:DockLayoutControl>
-            <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Top">
-                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                 Label="Start Date">
-                    <dxe:DateEdit EditValue="{Binding Start,Mode=TwoWay}"
-                                  HorizontalContentAlignment="Center" />
-                </dxlc:LayoutItem>
-                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                 Label="Stop Date">
-                    <dxe:DateEdit EditValue="{Binding Stop,Mode=TwoWay}"
-                                  HorizontalContentAlignment="Center">
-                    </dxe:DateEdit>
-                </dxlc:LayoutItem>
-                <dx:SimpleButton Content="Get Summary"
+                <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Top">
+                    <dxlc:LayoutGroup Orientation="Vertical">
+                        <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                         Label="Start Date">
+                            <dxe:DateEdit EditValue="{Binding Start,Mode=TwoWay}"
+                                          HorizontalContentAlignment="Center" />
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                         Label="Stop Date">
+                            <dxe:DateEdit EditValue="{Binding Stop,Mode=TwoWay}"
+                                          HorizontalContentAlignment="Center">
+                            </dxe:DateEdit>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                    <dx:SimpleButton Content="Generate Monthly Report"
                                  Command="{Binding CollectSnapshotCommand,IsAsync=True}"
                                  Glyph="{dx:DXImage Image=Summary_32x32.png}" />
-            </dxlc:LayoutGroup>
+                    <dx:SimpleButton Content="Save Monthly Report"
+                                     Command="{Binding SaveMonthlyReportCommand,IsAsync=True}"
+                                     IsEnabled="{Binding SaveEnabled,IsAsync=True}"
+                                     Glyph="{dx:DXImage Image=Save_32x32.png}" />
+                </dxlc:LayoutGroup>
             <dxb:BarManager>
                 <dxb:BarManager.Bars>
                     <dxb:Bar Style="{StaticResource BarStyle}">
@@ -262,5 +269,6 @@
                 </dxg:GridControl>
             </dxb:BarManager>
         </dxlc:DockLayoutControl>
-    </dxdo:LayoutPanel>
+    </dxdo:LayoutPanel>    
+    </dx:LoadingDecorator>
 </UserControl>

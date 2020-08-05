@@ -645,7 +645,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("MonthlySummaryId");
 
-                    b.ToTable("PartMonthlySummary");
+                    b.ToTable("PartMonthlySummaries");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartPrice", b =>

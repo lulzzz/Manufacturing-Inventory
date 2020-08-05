@@ -40,7 +40,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             Console.WriteLine("Gather Report Data");
 
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.29.144.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             var context = new ManufacturingContext(optionsBuilder.Options);
             DateTime start = new DateTime(2020, 6, 1);
             DateTime stop = new DateTime(2020, 6, 30);
@@ -50,6 +50,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             MonthlySummaryInput input = new MonthlySummaryInput(start, stop);
             MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
             var snapShot = await reporting.Execute(input);
+
             if (snapShot.Success) {
                 Console.WriteLine("Succesfully Generated... Saving report to database");
                 await reporting.SaveCurrentSnapshot();
