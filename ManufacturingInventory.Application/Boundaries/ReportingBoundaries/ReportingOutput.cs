@@ -10,14 +10,14 @@ namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
     public class MonthlySummaryOutput : IOutput {
         public bool Success { get; set; }
         public string Message { get; set; }
-        public IEnumerable<IPartMonthlySummary> Snapshot { get; set; }
+        public MonthlySummary Snapshot { get; set; }
 
         public MonthlySummaryOutput() {
 
 
         }
 
-        public MonthlySummaryOutput(IEnumerable<IPartMonthlySummary> snapshot,bool success,string message) {
+        public MonthlySummaryOutput(MonthlySummary snapshot,bool success,string message) {
             this.Snapshot = snapshot;
             this.Success = success;
             this.Message = message;

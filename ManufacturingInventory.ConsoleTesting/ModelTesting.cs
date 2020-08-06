@@ -33,7 +33,8 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static void Main(string[] args) {
 
-            AsyncContext.Run(RunAsync);
+            //AsyncContext.Run(RunAsync);
+            Console.WriteLine("Month: {0}", DateTime.Now.ToString("MMMM"));
         }
 
         public static async Task RunAsync() {
@@ -53,7 +54,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             if (snapShot.Success) {
                 Console.WriteLine("Succesfully Generated... Saving report to database");
-                await reporting.SaveCurrentSnapshot();
+                await reporting.SaveMonthlySummary();
             }
             //StringBuilder builder = new StringBuilder();
             //StringBuilder transactionBuffer = new StringBuilder();

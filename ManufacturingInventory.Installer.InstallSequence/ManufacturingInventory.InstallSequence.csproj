@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.InstallSequence</AssemblyName>
-    <FileVersion>1.0.206.7522</FileVersion>
+    <FileVersion>1.0.207.7523</FileVersion>
     <Configurations>Debug;Release;fr;other</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
