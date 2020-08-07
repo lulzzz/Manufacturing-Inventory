@@ -34,11 +34,14 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         private MonthlySummary _monthlySummary=new MonthlySummary();
         private bool _isLoaded = false;
 
-        private ObservableCollection<IPartMonthlySummary> _reportSnapshot;
+        private ObservableCollection<PartMonthlySummary> _reportSnapshot;
         private ObservableCollection<string> _existingReportList;
 
+        private string _monthOfReport;
+        private DateTime _dateGenerated;
         private DateTime _start;
         private DateTime _stop;
+        private string _selectedMonth;
         private bool _saveEnabled=false;
         private bool _showTableLoading;
 
@@ -46,6 +49,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         public AsyncCommand CollectSnapshotCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set;}
         public AsyncCommand SaveMonthlyReportCommand { get; private set; }
+        public AsyncCommand LoadExistingReport { get; private set; }
 
 
         public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,IMonthlySummaryUseCase reportingService) {
@@ -62,7 +66,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         public override bool KeepAlive => true;
         
-        public ObservableCollection<IPartMonthlySummary> ReportSnapshot {
+        public ObservableCollection<PartMonthlySummary> ReportSnapshot {
             get => this._reportSnapshot;
             set => SetProperty(ref this._reportSnapshot, value);
         }
@@ -91,9 +95,25 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             get => this._monthlySummary; 
             set => SetProperty(ref this._monthlySummary,value);
         }
+
         public ObservableCollection<string> ExistingReportList { 
             get => this._existingReportList; 
             set => SetProperty(ref this._existingReportList,value); 
+        }
+
+        public string MonthOfReport { 
+            get => this._monthOfReport; 
+            set => SetProperty(ref this._monthOfReport,value);
+        }
+
+        public DateTime DateGenerated { 
+            get => this._dateGenerated;
+            set => SetProperty(ref this._dateGenerated, value);
+        }
+
+        public string SelectedMonth { 
+            get => this._selectedMonth; 
+            set => SetProperty(ref this._selectedMonth,value); 
         }
 
         private async Task CollectSummaryHandler() {
@@ -101,25 +121,38 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading=true);
             var output=await this._reportingService.Execute(reportInput);
             if (output.Success) {
-                this.ReportSnapshot = new ObservableCollection<IPartMonthlySummary>(output.Snapshot.MonthlyPartSnapshots);            
+                this.ReportSnapshot = new ObservableCollection<PartMonthlySummary>(output.Snapshot.MonthlyPartSnapshots);            
                 this.SaveEnabled = true;
             } else {
                 this.MessageBoxService.ShowMessage(output.Message,"",MessageButton.OK,MessageIcon.Error);
             }
-
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
         }
 
         public async Task SaveMonthlyReportHandler() {
+            this.MonthlySummary.DateGenerated = this.DateGenerated;
+            this.MonthlySummary.MonthStartDate = this.Start;
+            this.MonthlySummary.MonthStopDate = this.Start;
+            this.MonthlySummary.MonthOfReport = this.MonthOfReport;
+            this.MonthlySummary.MonthlyPartSnapshots = this.ReportSnapshot;
             var saved=await this._reportingService.SaveMonthlySummary(this.MonthlySummary);
             if (saved!=null) {
                 this.MonthlySummary = saved;
-                this.ReportSnapshot = new ObservableCollection<IPartMonthlySummary>(this._monthlySummary.MonthlyPartSnapshots);
+                this.ReportSnapshot = new ObservableCollection<PartMonthlySummary>(this._monthlySummary.MonthlyPartSnapshots);
                 RaisePropertyChanged();
                 this.MessageBoxService.ShowMessage("Monthly Report Saved", "Report Saved", MessageButton.OK, MessageIcon.Information);
             } else {
-                this.MessageBoxService.ShowMessage("Error:  Could not save monthly report"+Environment.NewLine+"Please trye generating report again",
+                this.MessageBoxService.ShowMessage("Error:  Could not save monthly report"+Environment.NewLine+"Please try generating report again",
                     "Error", MessageButton.OK, MessageIcon.Error);
+            }
+        }
+
+        public async Task LoadExisitingHandler() {
+            if (!string.IsNullOrEmpty(this._selectedMonth)) {
+                
+            } else {
+                this.MessageBoxService.ShowMessage("No Month Selected"+Environment.NewLine+"Please select a month and try again",
+                    "Selection Error", MessageButton.OK, MessageIcon.Warning);
             }
         }
 
@@ -144,6 +177,8 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             if (!this._isLoaded) {
                 await this._reportingService.Load();
                 var now = DateTime.Now;
+                this.DateGenerated =now;
+                this.MonthOfReport = now.ToString("MMMM");
                 var monthlySummary = new MonthlySummary(now,now);
                 monthlySummary.DateGenerated = now;
                 monthlySummary.MonthOfReport = now.ToString("MMMM");

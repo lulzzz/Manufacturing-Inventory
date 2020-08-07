@@ -122,7 +122,12 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<MonthlySummary> SaveMonthlySummary(MonthlySummary monthlySummary) {
-            return await this._monthlySummaryRepo.UpdateAsync(monthlySummary);
+            var entity=await this._monthlySummaryRepo.GetEntityAsync(e => e.Id == monthlySummary.Id);
+            if (entity != null) {
+                return await this._monthlySummaryRepo.UpdateAsync(monthlySummary);
+            } else {
+                return await this._monthlySummaryRepo.AddAsync(monthlySummary);
+            }
         }
 
         public async Task Load() {

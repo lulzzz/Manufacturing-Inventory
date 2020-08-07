@@ -87,13 +87,13 @@
                             <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                               IsTextEditable="False"
                                               ItemsSource="{Binding ExistingReportList}"
-                                              SelectedItem="{Binding SelectedReport}">
-                                <dxe:ComboBoxEdit.ItemTemplate>
+                                              SelectedItem="{Binding SelectedMonth}">
+                                <!--<dxe:ComboBoxEdit.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Stretch"
-                                                   Text="{Binding Name}" />
+                                                   Text="{Binding MonthOfReport}" />
                                     </DataTemplate>
-                                </dxe:ComboBoxEdit.ItemTemplate>
+                                </dxe:ComboBoxEdit.ItemTemplate>-->
                             </dxe:ComboBoxEdit>
                         </dxlc:LayoutItem>
                         <dx:SimpleButton Content="Load Existing Report"
