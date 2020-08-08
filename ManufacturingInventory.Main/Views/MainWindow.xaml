@@ -20,6 +20,9 @@
         <dxmvvm:EventToCommand Command="{Binding LoadedCommand}"
                                Event="Loaded" />
         <dx:DXMessageBoxService x:Name="Notice" />
+        <!--<dxmvvm:NotificationService x:Name="UpdateNotificationService"
+                                    ApplicationId="maufacturing_inventory_app"
+                                    PredefinedNotificationTemplate="ShortHeaderAndTwoTextFields" />-->
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <DockPanel>

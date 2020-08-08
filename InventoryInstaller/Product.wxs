@@ -7,7 +7,7 @@
   <?endif?>
 
   <?define UpgradeCode = "{362E579F-5F9F-488C-8465-5DF7CA0B33A7}" ?>
-  <?define BuildVersion=1.2.3.4?>
+
 	<Product Id="$(var.ProductCode)" 
            Name="!(loc.ProductName_$(var.Platform))"
            Language="!(loc.Language)"  
@@ -33,7 +33,7 @@
     <Property Id="ARPPRODUCTICON">seti_logo.ico</Property>
     <UIRef Id="WixUI_Minimal" />
 
-    <WixVariable Id="WixUILicenseRtf" Value=""/>
+    <!--<WixVariable Id="WixUILicenseRtf" Value=""/>-->
 
     
 		<Feature Id="ProductFeature" Title="ManufacturingInventory" Level="1">

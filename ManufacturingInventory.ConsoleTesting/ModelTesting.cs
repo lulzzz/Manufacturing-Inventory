@@ -54,7 +54,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             if (snapShot.Success) {
                 Console.WriteLine("Succesfully Generated... Saving report to database");
-                await reporting.SaveMonthlySummary();
+                //await reporting.SaveMonthlySummary();
             }
             //StringBuilder builder = new StringBuilder();
             //StringBuilder transactionBuffer = new StringBuilder();
@@ -72,8 +72,8 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             //System.IO.File.WriteAllText(@"C:\Users\AElmendo\Documents\NeededTransactions.txt", transactionBuffer.ToString());
 
-            var table=ConsoleTable.From<IPartMonthlySummary>(snapShot.Snapshot);
-            Console.WriteLine(table.ToMinimalString());
+           // var table=ConsoleTable.From<IPartMonthlySummary>(snapShot.Snapshot);
+            //Console.WriteLine(table.ToMinimalString());
         }
 
         //public static async Task RunAndGenerateAsync() {

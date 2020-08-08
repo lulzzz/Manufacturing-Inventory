@@ -1,9 +1,4 @@
-﻿using DevExpress.Xpf.Core;
-using DevExpress.Xpf.Docking;
-using DevExpress.Xpf.Grid;
-using DevExpress.Xpf.Prism;
-using DryIoc;
-using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
+﻿using ManufacturingInventory.Application.Boundaries.AttachmentsEdit;
 using ManufacturingInventory.Application.Boundaries.Authentication;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Application.Boundaries.CheckIn;
@@ -31,6 +26,11 @@ using ManufacturingInventory.ManufacturingApplication.Services;
 using ManufacturingInventory.ManufacturingApplication.ViewModels;
 using ManufacturingInventory.ManufacturingApplication.Views;
 using ManufacturingInventory.PartsManagment;
+using DevExpress.Xpf.Core;
+using DevExpress.Xpf.Docking;
+using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Prism;
+using DryIoc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Prism.DryIoc;
@@ -46,12 +46,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using FastExpressionCompiler.LightExpression;
+using Logger =Serilog.ILogger;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     public partial class App {
-
         private IUserService userService = new UserService();
-        private ILogger _logger;
+        private Logger _logger;
         public IConfiguration Configuration { get; private set; }
         public String ConnectionString { get; private set; }
         public DbContextOptionsBuilder<ManufacturingContext> optionsBuilder { get; private set; }
@@ -66,20 +67,19 @@ namespace ManufacturingInventory.ManufacturingApplication {
              .SetBasePath(Directory.GetCurrentDirectory())
              .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             this.Configuration = builder.Build();
-            //this.ConnectionString = this.Configuration.GetConnectionString("InventoryConnection");
             this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_dev"));
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_home"));
 
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
             //ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
             GridControl.AllowInfiniteGridSize = true;
-            
+            //this.CheckVersion_v2();
             this.CreateLogger();
-            //this.ManualLogIn();
-           // this.CheckVersion();
-            this.Login();
+            this.ManualLogIn();
+
+            //this.Login();
             base.OnStartup(e);
         }
 
@@ -213,7 +213,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
                 //this.CreateLogger();
-                container.RegisterInstance<ILogger>(this._logger);
+                container.RegisterInstance<Logger>(this._logger);
             } else {
                 this.Shutdown();
             }
