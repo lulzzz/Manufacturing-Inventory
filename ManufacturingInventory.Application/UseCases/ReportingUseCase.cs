@@ -5,6 +5,8 @@ using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Interfaces;
 using ManufacturingInventory.Infrastructure.Model.Providers;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +18,13 @@ namespace ManufacturingInventory.Application.UseCases {
     public class MonthlySummaryUseCase : IMonthlySummaryUseCase {
         private ManufacturingContext _context;
         private IEntityProvider<PartInstance> _partInstanceProvider;
+        private IRepository<MonthlySummary> _monthlySummaryRepo;
         private IUnitOfWork _unitOfWork;
-        private MonthlySummary _currentReport;
-        private List<PartMonthlySummaryDto> _monthlySnapshot; 
 
         public MonthlySummaryUseCase(ManufacturingContext context) {
             this._context = context;
             this._partInstanceProvider = new PartInstanceProvider(context);
+            this._monthlySummaryRepo = new MonthlySummaryRepository(context);
             this._unitOfWork = new UnitOfWork(context);
         }
 
@@ -30,8 +32,7 @@ namespace ManufacturingInventory.Application.UseCases {
             var dStart = new DateTime(input.StartDate.Year, input.StartDate.Month, input.StartDate.Day, 0, 0, 0, DateTimeKind.Local);
             var dStop = new DateTime(input.StopDate.Year, input.StopDate.Month, input.StopDate.Day, 23, 59, 59, DateTimeKind.Local);
             var partInstances = await this._partInstanceProvider.GetEntityListAsync(instance => instance.CostReported || (instance.IsBubbler && instance.DateInstalled >= dStart && instance.DateInstalled <= dStop));
-            this._monthlySnapshot = new List<PartMonthlySummaryDto>();
-            this._currentReport = new MonthlySummary(dStart,dStop);
+            var monthlySummary = new MonthlySummary(dStart,dStop);
             StringBuilder transactionBuffer = new StringBuilder();
             foreach (var partInstance in partInstances) {
                 var incomingTransactions = from transaction in partInstance.Transactions
@@ -82,7 +83,7 @@ namespace ManufacturingInventory.Application.UseCases {
                 double outgoingCost = outgoingCostRange;
                 double outgoingQty = outgoingQtyRange;
 
-                PartMonthlySummaryDto snapshotRow = new PartMonthlySummaryDto();
+                PartMonthlySummary snapshotRow = new PartMonthlySummary();
                 snapshotRow.PartName = partInstance.Part.Name;
                 snapshotRow.InstanceName = partInstance.Name;
 
@@ -107,35 +108,30 @@ namespace ManufacturingInventory.Application.UseCases {
                 snapshotRow.CurrentCost = currentCost;
                 snapshotRow.CurrentQuantity = currentQty;
 
-                this._monthlySnapshot.Add(snapshotRow);
+                monthlySummary.MonthlyPartSnapshots.Add(snapshotRow);
             }
-            return new MonthlySummaryOutput(this._monthlySnapshot.AsEnumerable(), true, "Done");
+            return new MonthlySummaryOutput(monthlySummary, true, "Done");
+        }
+
+        public async Task<IEnumerable<string>> GetExistingReports() {
+            return (await this._monthlySummaryRepo.GetEntityListAsync()).Select(e=>e.MonthOfReport);
+        }
+
+        public async Task<MonthlySummary> LoadExisitingReport(string month) {
+            return await this._monthlySummaryRepo.GetEntityAsync(e => e.MonthOfReport == month);
+        }
+
+        public async Task<MonthlySummary> SaveMonthlySummary(MonthlySummary monthlySummary) {
+            var entity=await this._monthlySummaryRepo.GetEntityAsync(e => e.Id == monthlySummary.Id);
+            if (entity != null) {
+                return await this._monthlySummaryRepo.UpdateAsync(monthlySummary);
+            } else {
+                return await this._monthlySummaryRepo.AddAsync(monthlySummary);
+            }
         }
 
         public async Task Load() {
             await this._partInstanceProvider.LoadAsync();
-        }
-
-        public async Task<bool> SaveCurrentSnapshot() {
-            if(this._currentReport!=null && this._monthlySnapshot!=null){
-                foreach(var row in this._monthlySnapshot) {
-                    this._currentReport.MonthlyPartSnapshots.Add(new PartMonthlySummary(row));
-                }
-                var added=await this._context.AddAsync(this._currentReport);
-                if (added != null) {
-                    var count = await this._unitOfWork.Save();
-                    if (count > 0) {
-                        return true;
-                    } else {
-                        await this._unitOfWork.Undo();
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
         }
     }
 

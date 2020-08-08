@@ -11,7 +11,6 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:localCommon="clr-namespace:ManufacturingInventory.Reporting.Internal"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
@@ -81,6 +80,7 @@
                                         CaptionLocation="Top"
                                         ShowTabForSinglePage="True"
                                         GroupBorderStyle="GroupBox"
+                                        ShowCloseButton="False"
                                         AllowFloat="False">
                         <dxdo:TabbedGroup.ItemStyle>
                             <Style TargetType="{x:Type dxdo:LayoutPanel}">
@@ -90,6 +90,14 @@
                                         Value="{Binding Content.IsActive,RelativeSource={RelativeSource Self},Mode=TwoWay}" />
                                 <Setter Property="ClosingBehavior"
                                         Value="ImmediatelyRemove" />
+                                <Setter Property="ShowCloseButton"
+                                        Value="False" />
+                                <Setter Property="ShowCollapseButton"
+                                        Value="False" />
+                                <Setter Property="ShowInDocumentSelector"
+                                        Value="False" />
+                                <Setter Property="ShowHideButton"
+                                        Value="False" />
                             </Style>
                         </dxdo:TabbedGroup.ItemStyle>
                     </dxdo:DocumentGroup>

@@ -1,10 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ManufacturingInventory.Application.UseCases;
+using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Infrastructure.Model.Interfaces;
 
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
 
     public interface IMonthlySummaryUseCase:IUseCase<MonthlySummaryInput,MonthlySummaryOutput> {
-        Task<bool> SaveCurrentSnapshot();
+        Task<MonthlySummary> SaveMonthlySummary(MonthlySummary monthlySummary);
+        Task<IEnumerable<string>> GetExistingReports();
+        Task<MonthlySummary> LoadExisitingReport(string month);
         Task Load();
     }
 

@@ -68,7 +68,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             this.Configuration = builder.Build();
             //this.ConnectionString = this.Configuration.GetConnectionString("InventoryConnection");
             this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_home"));
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_dev"));
 
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
@@ -77,9 +77,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
             GridControl.AllowInfiniteGridSize = true;
             
             this.CreateLogger();
-            this.ManualLogIn();
+            //this.ManualLogIn();
            // this.CheckVersion();
-           // this.Login();
+            this.Login();
             base.OnStartup(e);
         }
 

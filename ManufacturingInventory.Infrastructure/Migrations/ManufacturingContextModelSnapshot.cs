@@ -370,6 +370,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<DateTime>("DateGenerated")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("MonthOfReport")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("MonthStartDate")
                         .HasColumnType("datetime2");
 
@@ -645,7 +648,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.HasIndex("MonthlySummaryId");
 
-                    b.ToTable("PartMonthlySummary");
+                    b.ToTable("PartMonthlySummaries");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartPrice", b =>

@@ -16,8 +16,8 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
              mc:Ignorable="d"
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignHeight="500"
+             d:DesignWidth="1200">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -31,236 +31,291 @@
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
                                EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
-    <dxdo:LayoutPanel>
+    <dx:LoadingDecorator>
+        <dxdo:LayoutPanel ShowHideButton="False" ShowBorder="True" ShowCloseButton="False" ShowPinButton="False">
         <dxlc:DockLayoutControl>
-            <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Top">
-                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                 Label="Start Date">
-                    <dxe:DateEdit EditValue="{Binding Start,Mode=TwoWay}"
-                                  HorizontalContentAlignment="Center" />
-                </dxlc:LayoutItem>
-                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                 Label="Stop Date">
-                    <dxe:DateEdit EditValue="{Binding Stop,Mode=TwoWay}"
-                                  HorizontalContentAlignment="Center">
-                    </dxe:DateEdit>
-                </dxlc:LayoutItem>
-                <dx:SimpleButton Content="Get Summary"
-                                 Command="{Binding CollectSnapshotCommand,IsAsync=True}"
-                                 Glyph="{dx:DXImage Image=Summary_32x32.png}" />
-            </dxlc:LayoutGroup>
-            <dxb:BarManager>
-                <dxb:BarManager.Bars>
-                    <dxb:Bar Style="{StaticResource BarStyle}">
-                        <dxb:BarButtonItem x:Name="_instanceTableExportXL"
-                                           BarItemDisplayMode="ContentAndGlyph"
-                                           Command="{Binding ExportTableCommand}"
-                                           CommandParameter="Xlsx"
-                                           Content="Export Excel"
-                                           Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
-                        <dxb:BarButtonItem x:Name="_instanceTableExportPDF"
-                                           BarItemDisplayMode="ContentAndGlyph"
-                                           Command="{Binding ExportTableCommand}"
-                                           CommandParameter="Pdf"
-                                           Content="Export PDF"
-                                           Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
-                        <dxb:BarButtonItem x:Name="_instanceTableExportCSV"
-                                           BarItemDisplayMode="ContentAndGlyph"
-                                           Command="{Binding ExportTableCommand}"
-                                           CommandParameter="Csv"
-                                           Content="Export CSV"
-                                           Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}" />
-                    </dxb:Bar>
-                </dxb:BarManager.Bars>
-                <dxg:GridControl x:Name="_reportSummary"
-                                 ItemsSource="{Binding ReportSnapshot, IsAsync=True, Mode=TwoWay}"
-                                 ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
-                                 Style="{StaticResource GridControlStyle}">
-                    <dxg:GridControl.View>
-                        <dxg:TableView x:Name="_reportSummaryTableView"
-                                       AutoWidth="True"
-                                       AllowBestFit="True"
-                                       HorizontalScrollbarVisibility="Visible"
-                                       SearchColumns="ItemName"
-                                       SearchPanelNullText="Search By Name"
-                                       ShowSearchPanelMode="Always"
-                                       ShowTotalSummary="True"
-                                       Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Top">
+                    <dxlc:GroupBox Header="Monthly Summary Information">
+                        <dxlc:LayoutGroup Orientation="Horizontal">
+                            <dxlc:LayoutGroup Orientation="Vertical">
+                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                                 Label="Month Of Report">
+                                    <dxe:TextEdit EditValue="{Binding MonthlySummary.MonthOfReport,Mode=TwoWay, IsAsync=True}"/>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                                 Label="Date Generated">
+                                    <dxe:DateEdit EditValue="{Binding MonthlySummary.DateGenerated,Mode=TwoWay,IsAsync=True}"
+                                                  HorizontalContentAlignment="Center"
+                                                  Mask="MMMyyyy"
+                                                  MaskUseAsDisplayFormat="True">
+                                        <dxe:DateEdit.StyleSettings>
+                                            <dxe:DateEditPickerStyleSettings/>
+                                        </dxe:DateEdit.StyleSettings>
+                                    </dxe:DateEdit>
+                                </dxlc:LayoutItem>
+                            </dxlc:LayoutGroup>
+                            <dxlc:LayoutGroup Orientation="Vertical">
+                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                                 Label="Start Date">
+                                    <dxe:DateEdit EditValue="{Binding Start,Mode=TwoWay}"
+                                                  HorizontalContentAlignment="Center" />
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                                 Label="Stop Date">
+                                    <dxe:DateEdit EditValue="{Binding Stop,Mode=TwoWay}"
+                                                  HorizontalContentAlignment="Center">
+                                    </dxe:DateEdit>
+                                </dxlc:LayoutItem>
+                                
+                            </dxlc:LayoutGroup>
+                        </dxlc:LayoutGroup>
+                    </dxlc:GroupBox>
+
+
+                    <dxlc:LayoutGroup Orientation="Vertical">
+                        <dx:SimpleButton Content="Generate Monthly Report"
+                                         Command="{Binding CollectSnapshotCommand,IsAsync=True}"
+                                         Glyph="{dx:DXImage Image=Summary_32x32.png}" />
+                        <dx:SimpleButton Content="Save Monthly Report"
+                                         Command="{Binding SaveMonthlyReportCommand,IsAsync=True}"
+                                         IsEnabled="{Binding SaveEnabled,IsAsync=True}"
+                                         Glyph="{dx:DXImage Image=Save_32x32.png}" />
+                    </dxlc:LayoutGroup>
+                    <dxlc:LayoutGroup Orientation="Vertical">
+                        <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                         Label="Existing Report">
+                            <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                              IsTextEditable="False"
+                                              ItemsSource="{Binding ExistingReportList}"
+                                              SelectedItem="{Binding SelectedMonth}">
+                                <!--<dxe:ComboBoxEdit.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Stretch"
+                                                   Text="{Binding MonthOfReport}" />
+                                    </DataTemplate>
+                                </dxe:ComboBoxEdit.ItemTemplate>-->
+                            </dxe:ComboBoxEdit>
+                        </dxlc:LayoutItem>
+                        <dx:SimpleButton Content="Load Existing Report"
+                                         Command="{Binding LoadExisitingReportCommand,IsAsync=True}"
+                                         Glyph="{dx:DXImage Image=LoadFrom_32x32.png}" />
+                    </dxlc:LayoutGroup>
+
+                </dxlc:LayoutGroup>
+                <dxb:BarManager>
+                        <dxb:BarManager.Bars>
+                            <dxb:Bar Style="{StaticResource BarStyle}">
+                                <dxb:BarButtonItem x:Name="_instanceTableExportXL"
+                                                    BarItemDisplayMode="ContentAndGlyph"
+                                                    Command="{Binding ExportTableCommand}"
+                                                    CommandParameter="Xlsx"
+                                                    Content="Export Excel"
+                                                    Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
+                                <dxb:BarButtonItem x:Name="_instanceTableExportPDF"
+                                                    BarItemDisplayMode="ContentAndGlyph"
+                                                    Command="{Binding ExportTableCommand}"
+                                                    CommandParameter="Pdf"
+                                                    Content="Export PDF"
+                                                    Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
+                                <dxb:BarButtonItem x:Name="_instanceTableExportCSV"
+                                                    BarItemDisplayMode="ContentAndGlyph"
+                                                    Command="{Binding ExportTableCommand}"
+                                                    CommandParameter="Csv"
+                                                    Content="Export CSV"
+                                                    Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}" />
+                            </dxb:Bar>
+                        </dxb:BarManager.Bars>
+                        <dxg:GridControl x:Name="_reportSummary"
+                                            ItemsSource="{Binding ReportSnapshot, IsAsync=True, Mode=TwoWay}"
+                                            ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                                            Style="{StaticResource GridControlStyle}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding ElementName=_reportSummaryTableView, Path=TableViewCommands.BestFitColumns}"
-                                                       EventName="Loaded" />
+                                                        EventName="Loaded" />
                                 <common:GridExportService x:Name="MonthlySummaryExportService" />
                             </dxmvvm:Interaction.Behaviors>
-                        </dxg:TableView>
-                    </dxg:GridControl.View>
-                    <dxg:GridColumn FieldName="PartName" Header="Part Category"/>
-                    <dxg:GridColumn FieldName="InstanceName" Header="Part" />
-                    <dxg:GridColumn FieldName="StartQuantity"
-                                    Header="Starting Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="StartCost"
-                                    Header="Starting Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="IncomingQuantity"
-                                    Header="Incoming Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d"/>
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="IncomingCost"
-                                    Header="Incoming Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="ProductionOutgoingQuantity"
-                                    Header="Prod. Outgoing Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="ProductionOutgoingCost"
-                                    Header="Prod. Outgoing Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="RndOutgoingQuantity"
-                                    Header="Rnd Outgoing Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="RndOutgoingCost"
-                                    Header="RnD Outgoing Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="TotalOutgoingQuantity"
-                                    Header="Outgoing Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="TotalOutgoingCost"
-                                    Header="Outgoing Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="EndQuantity"
-                                    Header="End Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="EndCost"
-                                    Header="End Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="CurrentQuantity"
-                                    Header="Current Qty">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="d" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="CurrentCost"
-                                    Header="Current Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True"
-                                                  Mask="c"
-                                                  AllowNullInput="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridControl.TotalSummary>
-                        <dxg:GridSummaryItem FieldName="StartQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="StartCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="IncomingQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="IncomingCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="ProductionOutgoingQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="ProductionOutgoingCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="RndOutgoingQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="RndOutgoingCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />                        
-                        <dxg:GridSummaryItem FieldName="TotalOutgoingQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="TotalOutgoingCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="EndQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="EndCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="CurrentQuantity"
-                                             DisplayFormat="n"
-                                             SummaryType="Sum" />
-                        <dxg:GridSummaryItem FieldName="CurrentCost"
-                                             DisplayFormat="c3"
-                                             SummaryType="Sum" />
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="_reportSummaryTableView"
+                                                AutoWidth="True"
+                                                AllowBestFit="True"
+                                                HorizontalScrollbarVisibility="Visible"
+                                                SearchColumns="ItemName"
+                                                SearchPanelNullText="Search By Name"
+                                                ShowSearchPanelMode="Always"
+                                                ShowTotalSummary="True"
+                                                Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                            <dxg:GridColumn FieldName="PartName" Header="Part Category"/>
+                            <dxg:GridColumn FieldName="InstanceName" Header="Part" />
+                            <dxg:GridColumn FieldName="StartQuantity"
+                                            Header="Starting Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="StartCost"
+                                            Header="Starting Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="IncomingQuantity"
+                                            Header="Incoming Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d"/>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="IncomingCost"
+                                            Header="Incoming Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProductionOutgoingQuantity"
+                                            Header="Prod. Outgoing Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ProductionOutgoingCost"
+                                            Header="Prod. Outgoing Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RndOutgoingQuantity"
+                                            Header="Rnd Outgoing Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="RndOutgoingCost"
+                                            Header="RnD Outgoing Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="TotalOutgoingQuantity"
+                                            Header="Outgoing Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="TotalOutgoingCost"
+                                            Header="Outgoing Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="EndQuantity"
+                                            Header="End Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="EndCost"
+                                            Header="End Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CurrentQuantity"
+                                            Header="Current Qty">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="d" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CurrentCost"
+                                            Header="Current Cost">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings MaskType="Numeric"
+                                                            MaskUseAsDisplayFormat="True"
+                                                            Mask="c"
+                                                            AllowNullInput="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem FieldName="StartQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="StartCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="IncomingQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="IncomingCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="ProductionOutgoingQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="ProductionOutgoingCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="RndOutgoingQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="RndOutgoingCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />                        
+                                <dxg:GridSummaryItem FieldName="TotalOutgoingQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="TotalOutgoingCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="EndQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="EndCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="CurrentQuantity"
+                                                        DisplayFormat="n"
+                                                        SummaryType="Sum" />
+                                <dxg:GridSummaryItem FieldName="CurrentCost"
+                                                        DisplayFormat="c3"
+                                                        SummaryType="Sum" />
 
-                    </dxg:GridControl.TotalSummary>
-                </dxg:GridControl>
-            </dxb:BarManager>
+                            </dxg:GridControl.TotalSummary>
+                        </dxg:GridControl>
+                    </dxb:BarManager>                    
+
         </dxlc:DockLayoutControl>
-    </dxdo:LayoutPanel>
+    </dxdo:LayoutPanel>    
+    </dx:LoadingDecorator>
 </UserControl>
