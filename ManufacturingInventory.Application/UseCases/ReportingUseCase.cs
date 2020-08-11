@@ -114,7 +114,7 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<IEnumerable<string>> GetExistingReports() {
-            return (await this._monthlySummaryRepo.GetEntityListAsync()).Select(e=>e.MonthOfReport);
+            return (await this._monthlySummaryRepo.GetEntityListAsync()).Select(e => e.MonthOfReport);
         }
 
         public async Task<MonthlySummary> LoadExisitingReport(string month) {
@@ -124,14 +124,39 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<MonthlySummary> SaveMonthlySummary(MonthlySummary monthlySummary) {
             var entity=await this._monthlySummaryRepo.GetEntityAsync(e => e.Id == monthlySummary.Id);
             if (entity != null) {
-                return await this._monthlySummaryRepo.UpdateAsync(monthlySummary);
+                var updated=await this._monthlySummaryRepo.UpdateAsync(monthlySummary);
+                if (updated != null) {
+                    var count=await this._unitOfWork.Save();
+                    if (count > 0) {
+                        return updated;
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return null;
+                    }
+                } else {
+                    await this._unitOfWork.Undo();
+                    return null;
+                }
             } else {
-                return await this._monthlySummaryRepo.AddAsync(monthlySummary);
+                var newEntity= await this._monthlySummaryRepo.AddAsync(monthlySummary);
+                if (newEntity != null) {
+                    var count = await this._unitOfWork.Save();
+                    if (count > 0) {
+                        return newEntity;
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return null;
+                    }
+                } else {
+                    await this._unitOfWork.Undo();
+                    return null;
+                }
             }
         }
 
         public async Task Load() {
             await this._partInstanceProvider.LoadAsync();
+            await this._monthlySummaryRepo.LoadAsync();
         }
     }
 

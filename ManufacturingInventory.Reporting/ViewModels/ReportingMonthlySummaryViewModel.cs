@@ -1,26 +1,16 @@
 ﻿using DevExpress.Mvvm;
+using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Common.Application.UI.Services;
-using ManufacturingInventory.Domain.Enums;
-using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Infrastructure.Model.Entities;
+using ManufacturingInventory.Domain.Extensions;
 using Prism.Events;
 using Prism.Regions;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using ManufacturingInventory.Domain.DTOs;
 using System;
-using ManufacturingInventory.Common.Application.UI.ViewModels;
-using System.Windows;
-using System.Collections.Generic;
-using ManufacturingInventory.Domain.Extensions;
-using ManufacturingInventory.Application.Boundaries;
-using System.Text;
-using ManufacturingInventory.Infrastructure.Model;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using ManufacturingInventory.Infrastructure.Model.Interfaces;
+using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Reporting.ViewModels {
     public class ReportingMonthlySummaryViewModel : InventoryViewModelBase {
@@ -38,29 +28,33 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         private ObservableCollection<string> _existingReportList;
 
         private string _monthOfReport;
-        private DateTime _dateGenerated;
         private DateTime _start;
         private DateTime _stop;
         private string _selectedMonth;
         private bool _saveEnabled=false;
         private bool _showTableLoading;
+        private string _saveButtonText;
+        private bool _existingReportLoaded = false;
 
         public AsyncCommand<ExportFormat> ExportTableCommand { get; private set; }
         public AsyncCommand CollectSnapshotCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set;}
         public AsyncCommand SaveMonthlyReportCommand { get; private set; }
-        public AsyncCommand LoadExistingReport { get; private set; }
+        public AsyncCommand LoadExisitingReportCommand { get; private set; }
 
 
         public ReportingMonthlySummaryViewModel(IRegionManager regionManager,IEventAggregator eventAggregator,IMonthlySummaryUseCase reportingService) {
             this._reportingService = reportingService;
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
-            this.Start = DateTime.Now;
-            this.Stop = DateTime.Now;
+            var now=DateTime.Now;
+            this.Start = now;
+            this.Stop = now;
+            this.MonthOfReport = now.MonthName();
             this.CollectSnapshotCommand = new AsyncCommand(this.CollectSummaryHandler);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this.SaveMonthlyReportCommand = new AsyncCommand(this.SaveMonthlyReportHandler);
+            this.LoadExisitingReportCommand = new AsyncCommand(this.LoadExisitingHandler);
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
         }
 
@@ -106,14 +100,13 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             set => SetProperty(ref this._monthOfReport,value);
         }
 
-        public DateTime DateGenerated { 
-            get => this._dateGenerated;
-            set => SetProperty(ref this._dateGenerated, value);
-        }
-
         public string SelectedMonth { 
             get => this._selectedMonth; 
-            set => SetProperty(ref this._selectedMonth,value); 
+            set=>SetProperty(ref this._selectedMonth, value);
+        }
+        public string SaveButtonText {
+            get => this._saveButtonText;
+            set => SetProperty(ref this._saveButtonText, value);
         }
 
         private async Task CollectSummaryHandler() {
@@ -130,26 +123,42 @@ namespace ManufacturingInventory.Reporting.ViewModels {
         }
 
         public async Task SaveMonthlyReportHandler() {
-            this.MonthlySummary.DateGenerated = this.DateGenerated;
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+            this.MonthlySummary.DateGenerated = DateTime.Now;
             this.MonthlySummary.MonthStartDate = this.Start;
-            this.MonthlySummary.MonthStopDate = this.Start;
+            this.MonthlySummary.MonthStopDate = this.Stop;
+            //this.MonthlySummary.MonthOfReport = this.MonthOfReport.MonthName();
             this.MonthlySummary.MonthOfReport = this.MonthOfReport;
             this.MonthlySummary.MonthlyPartSnapshots = this.ReportSnapshot;
             var saved=await this._reportingService.SaveMonthlySummary(this.MonthlySummary);
             if (saved!=null) {
-                this.MonthlySummary = saved;
-                this.ReportSnapshot = new ObservableCollection<PartMonthlySummary>(this._monthlySummary.MonthlyPartSnapshots);
-                RaisePropertyChanged();
                 this.MessageBoxService.ShowMessage("Monthly Report Saved", "Report Saved", MessageButton.OK, MessageIcon.Information);
+                await this.ReloadAsync(saved);
             } else {
                 this.MessageBoxService.ShowMessage("Error:  Could not save monthly report"+Environment.NewLine+"Please try generating report again",
                     "Error", MessageButton.OK, MessageIcon.Error);
+                
             }
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
         }
 
         public async Task LoadExisitingHandler() {
             if (!string.IsNullOrEmpty(this._selectedMonth)) {
-                
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
+                var summary=await this._reportingService.LoadExisitingReport(this._selectedMonth);
+                if (summary != null) {
+                    this.MonthlySummary = summary;
+                    this.Start = summary.MonthStartDate;
+                    this.Stop = summary.MonthStopDate;
+                    //this.MonthOfReport = new DateTime(this.Start.Year, Convert.ToDateTime(summary.MonthOfReport + " 01,1900").Month, this.Start.Day);
+                    this.MonthOfReport = summary.MonthOfReport;
+                    this.ReportSnapshot = new ObservableCollection<PartMonthlySummary>(this.MonthlySummary.MonthlyPartSnapshots);
+                    this.SaveButtonText = "Overwrite Existing Report";
+                } else {
+                    this.MessageBoxService.ShowMessage("No Month Selected" + Environment.NewLine + "Please select a month and try again",
+                        "Selection Error", MessageButton.OK, MessageIcon.Warning);
+                }
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
             } else {
                 this.MessageBoxService.ShowMessage("No Month Selected"+Environment.NewLine+"Please select a month and try again",
                     "Selection Error", MessageButton.OK, MessageIcon.Warning);
@@ -173,15 +182,27 @@ namespace ManufacturingInventory.Reporting.ViewModels {
             });
         }
 
+        private async Task ReloadAsync(MonthlySummary monthlySummary) {
+            await this._reportingService.Load();
+            this.MonthlySummary = monthlySummary;
+            this.ReportSnapshot = new ObservableCollection<PartMonthlySummary>(monthlySummary.MonthlyPartSnapshots);
+            this.Start = monthlySummary.MonthStartDate;
+            this.Stop = monthlySummary.MonthStopDate;
+            //this.MonthOfReport = new DateTime(this.Start.Year, Convert.ToDateTime(monthlySummary.MonthOfReport + " 01,1900").Month, this.Start.Day);
+            this.MonthOfReport = monthlySummary.MonthOfReport;
+            var existingList = await this._reportingService.GetExistingReports();
+            this.ExistingReportList = new ObservableCollection<string>(existingList);
+        }
+        
         private async Task LoadAsync() {
             if (!this._isLoaded) {
                 await this._reportingService.Load();
+                this.SaveButtonText = "Save Report";
                 var now = DateTime.Now;
-                this.DateGenerated =now;
-                this.MonthOfReport = now.ToString("MMMM");
+                this.MonthOfReport = now.MonthName();
                 var monthlySummary = new MonthlySummary(now,now);
                 monthlySummary.DateGenerated = now;
-                monthlySummary.MonthOfReport = now.ToString("MMMM");
+                monthlySummary.MonthOfReport = now.MonthName();
                 var existingList = await this._reportingService.GetExistingReports();
                 this.ExistingReportList = new ObservableCollection<string>(existingList);
                 this.SaveEnabled = false;

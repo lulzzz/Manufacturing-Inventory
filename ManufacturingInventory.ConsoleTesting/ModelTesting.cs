@@ -34,7 +34,22 @@ namespace ManufacturingInventory.ConsoleTesting {
         public static void Main(string[] args) {
 
             //AsyncContext.Run(RunAsync);
-            Console.WriteLine("Month: {0}", DateTime.Now.ToString("MMMM"));
+            //Console.WriteLine("Month: {0}", DateTime.Now.ToString("MMMM"));
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            var report = context.MonthlySummaries.Find(1);
+            report.MonthOfReport = report.DateGenerated.ToString("MMMM");
+            Console.WriteLine("Month Of Report: {0}", report.MonthOfReport);
+            var updated=context.Update(report);
+            if (updated != null) {
+                context.SaveChanges();
+                Console.WriteLine("Report should be saved");
+            } else {
+                Console.WriteLine("Report Saved");
+            }
+            
+
         }
 
         public static async Task RunAsync() {

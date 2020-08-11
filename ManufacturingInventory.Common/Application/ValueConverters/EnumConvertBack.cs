@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace ManufacturingInventory.Common.Application.ValueConverters {
     public static class EnumConvertBack {
@@ -16,4 +15,5 @@ namespace ManufacturingInventory.Common.Application.ValueConverters {
             return enumVal;
         }
     }
+
 }

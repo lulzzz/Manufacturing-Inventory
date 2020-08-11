@@ -7,11 +7,6 @@ using DevExpress.Mvvm;
 using PrismCommands = Prism.Commands;
 using System;
 using Serilog;
-using NetSparkleUpdater;
-using NetSparkleUpdater.SignatureVerifiers;
-using NetSparkleUpdater.UI.WPF;
-using NetSparkleUpdater.Configurations.
-  
 using System.Printing;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
@@ -21,7 +16,7 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
         private IRegionManager _regionManager;
         public IMessageBoxService MessageBoxService { get { return ServiceContainer.GetService<IMessageBoxService>("Notice"); } }
         //protected INotificationService UpdateNotificationService { get { return ServiceContainer.GetService<INotificationService>("UpdateNotificationService"); } }
-        private SparkleUpdater _sparkle;
+        //private SparkleUpdater _sparkle;
         private Serilog.ILogger _logger;
 
         public Prism.Commands.DelegateCommand<string> LoadModuleCommand { get; private set; }

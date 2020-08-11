@@ -18,7 +18,6 @@ namespace ManufacturingInventory.Domain.Extensions {
             Type type = typeof(T);
             Array values = Enum.GetValues(type);
             foreach (T val in values) {
-
                 var memInfo = type.GetMember(type.GetEnumName(val));
                 var descriptionAtt = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
                 if (descriptionAtt.Length > 0) {

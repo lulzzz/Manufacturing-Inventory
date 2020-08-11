@@ -16,7 +16,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public MonthlySummary Add(MonthlySummary entity) {
-            var monthlySummary = this._context.Attachments.FirstOrDefault(e => e.Id == entity.Id);
+            var monthlySummary = this._context.MonthlySummaries
+                .Include(e => e.MonthlyPartSnapshots)
+                .FirstOrDefault(e => e.Id == entity.Id);
             if (monthlySummary != null) {
                 return null;
             }
@@ -24,7 +26,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<MonthlySummary> AddAsync(MonthlySummary entity) {
-            var monthlySummary = await this._context.Attachments.FirstOrDefaultAsync(e => e.Id == entity.Id);
+            var monthlySummary = await this._context.MonthlySummaries
+                .Include(e => e.MonthlyPartSnapshots)
+                .FirstOrDefaultAsync(e => e.Id == entity.Id);
             if (monthlySummary != null) {
                 return null;
             }
@@ -32,7 +36,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public MonthlySummary Update(MonthlySummary entity) {
-            var monthlySummary = this._context.MonthlySummaries.FirstOrDefault(e => e.Id == entity.Id);
+            var monthlySummary = this._context.MonthlySummaries
+                .Include(e => e.MonthlyPartSnapshots)
+                .FirstOrDefault(e => e.Id == entity.Id);
             if (monthlySummary == null) {
                 return null;
             }
@@ -41,7 +47,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<MonthlySummary> UpdateAsync(MonthlySummary entity) {
-            var monthlySummary = await this._context.MonthlySummaries.FirstOrDefaultAsync(e => e.Id == entity.Id);
+            var monthlySummary = await this._context.MonthlySummaries
+                .Include(e => e.MonthlyPartSnapshots)
+                .FirstOrDefaultAsync(e => e.Id == entity.Id);
             if (monthlySummary == null) {
                 return null;
             }
@@ -59,16 +67,19 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public MonthlySummary GetEntity(Expression<Func<MonthlySummary, bool>> expression) {
-            return this._context.MonthlySummaries.FirstOrDefault(expression);
+            return this._context.MonthlySummaries
+                .Include(e => e.MonthlyPartSnapshots)
+                .FirstOrDefault(expression);
         }
 
         public async Task<MonthlySummary> GetEntityAsync(Expression<Func<MonthlySummary, bool>> expression) {
-            return await this._context.MonthlySummaries.FirstOrDefaultAsync(expression);
+            return await this._context.MonthlySummaries
+                .Include(e=>e.MonthlyPartSnapshots)
+                .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<MonthlySummary> GetEntityList(Expression<Func<MonthlySummary, bool>> expression = null,
             Func<IQueryable<MonthlySummary>, IOrderedQueryable<MonthlySummary>> orderBy = null) {
-
             IQueryable<MonthlySummary> query = this._context.Set<MonthlySummary>()
                 .Include(e=>e.MonthlyPartSnapshots)
                 .AsNoTracking();
