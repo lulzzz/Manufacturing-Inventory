@@ -13,6 +13,11 @@ namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
         Task Load();
     }
 
+    public interface INavigationSummaryUseCase : IUseCase<NavigationSummaryInput, NavigationSummaryOutput> {
+        Task<IEnumerable<MonthlySummary>> GetExistingReports();
+        Task Load();
+    }
+
     public interface ICurrentInventoryUseCase : IUseCase<CurrentInventoryInput, CurrentInventoryOutput> {
         Task Load();
     }

@@ -24,8 +24,23 @@ namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
         }
     }
 
-    public class CurrentInventoryOutput : IOutput {
+    public class NavigationSummaryOutput: IOutput {
+        public MonthlySummary Summary { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
 
+        public NavigationSummaryOutput() {
+
+        }
+
+        public NavigationSummaryOutput(MonthlySummary snapshot, bool success, string message) {
+            this.Summary = snapshot;
+            this.Success = success;
+            this.Message = message;
+        }
+    }
+
+    public class CurrentInventoryOutput : IOutput {
         public bool Success { get; set; }
         public string Message { get; set; }
         public IEnumerable<CurrentInventoryItem> CurrentInventoryItems { get; set; }

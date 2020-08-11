@@ -13,7 +13,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Reporting.ViewModels {
-    public class ReportingMonthlySummaryViewModel : InventoryViewModelBase {
+    public class ReportingMonthlySummaryViewModel : InventoryViewModelNavigationBase {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("MonthlySummaryDispatcherService"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("MonthlySummaryMessageBoxService"); }
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("MonthlySummaryExportService"); }
@@ -147,12 +147,7 @@ namespace ManufacturingInventory.Reporting.ViewModels {
                 this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 var summary=await this._reportingService.LoadExisitingReport(this._selectedMonth);
                 if (summary != null) {
-                    this.MonthlySummary = summary;
-                    this.Start = summary.MonthStartDate;
-                    this.Stop = summary.MonthStopDate;
-                    //this.MonthOfReport = new DateTime(this.Start.Year, Convert.ToDateTime(summary.MonthOfReport + " 01,1900").Month, this.Start.Day);
-                    this.MonthOfReport = summary.MonthOfReport;
-                    this.ReportSnapshot = new ObservableCollection<PartMonthlySummary>(this.MonthlySummary.MonthlyPartSnapshots);
+                    await this.ReloadAsync(summary);
                     this.SaveButtonText = "Overwrite Existing Report";
                 } else {
                     this.MessageBoxService.ShowMessage("No Month Selected" + Environment.NewLine + "Please select a month and try again",
@@ -209,5 +204,9 @@ namespace ManufacturingInventory.Reporting.ViewModels {
                 this.MonthlySummary = monthlySummary;
             }
         }
+
+        public override void OnNavigatedTo(NavigationContext navigationContext) => throw new NotImplementedException();
+        public override bool IsNavigationTarget(NavigationContext navigationContext) => throw new NotImplementedException();
+        public override void OnNavigatedFrom(NavigationContext navigationContext) => throw new NotImplementedException();
     }
 }

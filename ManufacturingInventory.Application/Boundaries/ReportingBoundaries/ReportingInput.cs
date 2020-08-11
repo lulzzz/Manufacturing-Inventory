@@ -1,4 +1,5 @@
 ﻿using ManufacturingInventory.Application.Boundaries.Authentication;
+using ManufacturingInventory.Infrastructure.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +18,20 @@ namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
         public MonthlySummaryInput(DateTime start,DateTime stop) {
             this.StartDate = start;
             this.StopDate = stop;
+        }
+    }
+
+    public class NavigationSummaryInput {
+        public MonthlySummary Summary { get; set; }
+        public EditAction Action { get; set; }
+
+        public NavigationSummaryInput() {
+
+        }
+
+        public NavigationSummaryInput(MonthlySummary summary,EditAction action) {
+            this.Summary = summary;
+            this.Action = action;
         }
     }
 

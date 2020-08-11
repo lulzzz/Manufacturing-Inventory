@@ -83,7 +83,7 @@
                                          IsEnabled="{Binding SaveEnabled,IsAsync=True}"
                                          Glyph="{dx:DXImage Image=Save_32x32.png}" />
                     </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup Orientation="Vertical">
+                    <!--<dxlc:LayoutGroup Orientation="Vertical">
                         <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
                                          Label="Existing Report">
                             <dxe:ComboBoxEdit IsTextEditable="False"
@@ -93,7 +93,7 @@
                         <dx:SimpleButton Content="Load Existing Report"
                                          Command="{Binding LoadExisitingReportCommand,IsAsync=True}"
                                          Glyph="{dx:DXImage Image=LoadFrom_32x32.png}" />
-                    </dxlc:LayoutGroup>
+                    </dxlc:LayoutGroup>-->
 
                 </dxlc:LayoutGroup>
                 <dxb:BarManager>
