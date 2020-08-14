@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    [Migration("20200805214549_MonthlySummaries")]
-    partial class MonthlySummaries
+    [Migration("20200814160812_FinalMigration")]
+    partial class FinalMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -362,32 +362,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.ToTable("Manufacturers");
                 });
 
-            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.MonthlySummary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DateGenerated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("MonthStartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("MonthStopDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MonthlySummaries");
-                });
-
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Parameter", b =>
                 {
                     b.Property<int>("Id")
@@ -578,76 +552,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasIndex("ManufacturerId");
 
                     b.ToTable("PartManufacturers");
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartMonthlySummary", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("CurrentCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CurrentQuantity")
-                        .HasColumnType("float");
-
-                    b.Property<double>("EndCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("EndQuantity")
-                        .HasColumnType("float");
-
-                    b.Property<double>("IncomingCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("IncomingQuantity")
-                        .HasColumnType("float");
-
-                    b.Property<string>("InstanceName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MonthlySummaryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PartName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("ProductionOutgoingCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("ProductionOutgoingQuantity")
-                        .HasColumnType("float");
-
-                    b.Property<double>("RndOutgoingCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("RndOutgoingQuantity")
-                        .HasColumnType("float");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<double>("StartCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("StartQuantity")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalOutgoingCost")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalOutgoingQuantity")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MonthlySummaryId");
-
-                    b.ToTable("PartMonthlySummaries");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartPrice", b =>
@@ -1142,15 +1046,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Part", "Part")
                         .WithMany("PartManufacturers")
                         .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.PartMonthlySummary", b =>
-                {
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.MonthlySummary", "MonthlySummary")
-                        .WithMany("MonthlyPartSnapshots")
-                        .HasForeignKey("MonthlySummaryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

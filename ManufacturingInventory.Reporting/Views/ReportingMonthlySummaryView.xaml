@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ManufacturingInventory.Reporting.Views"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
-             xmlns:converters="clr-namespace:ManufacturingInventory.Common.Application.ValueConverters;assembly=ManufacturingInventory.Common"
+             xmlns:appDef="clr-namespace:ManufacturingInventory.Domain.Enums;assembly=ManufacturingInventory.Domain"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
              xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
@@ -24,7 +24,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:DateTimeConverter x:Key="dateTimeConverter" />
         </ResourceDictionary>
 
     </UserControl.Resources>
@@ -38,63 +37,68 @@
         <dxdo:LayoutPanel ShowHideButton="False" ShowBorder="True" ShowCloseButton="False" ShowPinButton="False">
         <dxlc:DockLayoutControl>
                 <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Top">
-                    <dxlc:GroupBox Header="Monthly Summary Information">
-                        <dxlc:LayoutGroup Orientation="Horizontal">
-                            <dxlc:LayoutGroup Orientation="Vertical">
-                                <!--<dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                                 Label="Month Of Report">
-                                    <dxe:TextEdit EditValue="{Binding MonthOfReport,Mode=TwoWay, IsAsync=True}" />
-                                </dxlc:LayoutItem>-->
-                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                                 Label="Month Of Report" VerticalAlignment="Center">
-                                    <dxe:DateEdit EditValue="{Binding MonthOfReport,Mode=TwoWay,IsAsync=True,Converter={StaticResource dateTimeConverter}}"
-                                                  AllowNullInput="False"
-                                                  HorizontalContentAlignment="Center"
-                                                  Mask="MMMM"
-                                                  MaskUseAsDisplayFormat="True">
-                                        <dxe:DateEdit.StyleSettings>
-                                            <dxe:DateEditPickerStyleSettings />
-                                        </dxe:DateEdit.StyleSettings>
-                                    </dxe:DateEdit>
-                                </dxlc:LayoutItem>
-                            </dxlc:LayoutGroup>
-                            <dxlc:LayoutGroup Orientation="Vertical">
-                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                                 Label="Start Date">
-                                    <dxe:DateEdit EditValue="{Binding Start,Mode=TwoWay}"
-                                                  HorizontalContentAlignment="Center" />
-                                </dxlc:LayoutItem>
-                                <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                                 Label="Stop Date">
-                                    <dxe:DateEdit EditValue="{Binding Stop,Mode=TwoWay}"
-                                                  HorizontalContentAlignment="Center">
-                                    </dxe:DateEdit>
-                                </dxlc:LayoutItem>
+                    <dxlc:LayoutGroup Orientation="Vertical"
+                                      View="GroupBox"
+                                      Header="Parameters">
+                        <dxlc:LayoutGroup.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Parameters"
+                                           HorizontalAlignment="Center"
+                                           FontSize="12" />
+                            </DataTemplate>
+                        </dxlc:LayoutGroup.HeaderTemplate>
+                        <dxlc:LayoutGroup Orientation="Horizontal"
+                                          VerticalAlignment="Center">
+                            <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                             Label="Start Date">
+                                <dxe:DateEdit EditValue="{Binding Start,Mode=TwoWay}"
+                                              HorizontalContentAlignment="Center" />
+                            </dxlc:LayoutItem>
+                            <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
+                                             Label="Stop Date">
+                                <dxe:DateEdit EditValue="{Binding Stop,Mode=TwoWay}"
+                                              HorizontalContentAlignment="Center">
+                                </dxe:DateEdit>
+                            </dxlc:LayoutItem>
 
-                            </dxlc:LayoutGroup>
                         </dxlc:LayoutGroup>
-                    </dxlc:GroupBox>
+                        <dxlc:LayoutItem Label="Select Option"
+                                         Style="{StaticResource LayoutItemStyle}">
+                            <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                              Height="25"
+                                              FontSize="9"
+                                              EditValue="{Binding SelectedCollectionType,Mode=TwoWay,IsAsync=True}"
+                                              IsTextEditable="False"
+                                              Focusable="False">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:CollectType}"
+                                                                    SortMode="DisplayName"
+                                                                    AllowImages="False" />
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxe:ComboBoxEdit.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock  Text="{Binding Name}" />
+                                            <TextBlock Grid.Row="1"
+                                                       FontSize="7"
+                                                       Text="{Binding Description}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </dxe:ComboBoxEdit.ItemTemplate>
+                            </dxe:ComboBoxEdit>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Orientation="Vertical">
                         <dx:SimpleButton Content="Generate Monthly Report"
                                          Command="{Binding CollectSnapshotCommand,IsAsync=True}"
-                                         Glyph="{dx:DXImage Image=Summary_32x32.png}" />
-                        <dx:SimpleButton Content="{Binding SaveButtonText,IsAsync=True}"
-                                         Command="{Binding SaveMonthlyReportCommand,IsAsync=True}"
-                                         IsEnabled="{Binding SaveEnabled,IsAsync=True}"
-                                         Glyph="{dx:DXImage Image=Save_32x32.png}" />
+                                         Glyph="{dx:DXImage Image=Summary_32x32.png}"
+                                         Height="75"
+                                         VerticalAlignment="Center"/>
                     </dxlc:LayoutGroup>
-                    <!--<dxlc:LayoutGroup Orientation="Vertical">
-                        <dxlc:LayoutItem Style="{StaticResource LayoutItemStyle}"
-                                         Label="Existing Report">
-                            <dxe:ComboBoxEdit IsTextEditable="False"
-                                              ItemsSource="{Binding ExistingReportList}"
-                                              SelectedItem="{Binding SelectedMonth}" />
-                        </dxlc:LayoutItem>
-                        <dx:SimpleButton Content="Load Existing Report"
-                                         Command="{Binding LoadExisitingReportCommand,IsAsync=True}"
-                                         Glyph="{dx:DXImage Image=LoadFrom_32x32.png}" />
-                    </dxlc:LayoutGroup>-->
-
                 </dxlc:LayoutGroup>
                 <dxb:BarManager>
                         <dxb:BarManager.Bars>

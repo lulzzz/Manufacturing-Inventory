@@ -1,4 +1,5 @@
 ﻿using ManufacturingInventory.Application.Boundaries.Authentication;
+using ManufacturingInventory.Domain.Enums;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using System;
 using System.Collections.Generic;
@@ -6,62 +7,52 @@ using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
 
-    public class MonthlySummaryInput {
+    public class MonthlyReportInput {
         public DateTime StartDate { get; set; }
         public DateTime StopDate { get; set; }
+        public CollectType CollectType { get; set; }
 
-        public MonthlySummaryInput() {
+        public MonthlyReportInput() {
             this.StartDate = DateTime.Now;
             this.StopDate = DateTime.Now;
+            this.CollectType = CollectType.OnlyCostReported;
         }
 
-        public MonthlySummaryInput(DateTime start,DateTime stop) {
+        public MonthlyReportInput(DateTime start,DateTime stop,CollectType collectType) {
             this.StartDate = start;
             this.StopDate = stop;
+            this.CollectType = collectType;
         }
     }
 
-    public class NavigationSummaryInput {
-        public MonthlySummary Summary { get; set; }
-        public EditAction Action { get; set; }
-
-        public NavigationSummaryInput() {
-
-        }
-
-        public NavigationSummaryInput(MonthlySummary summary,EditAction action) {
-            this.Summary = summary;
-            this.Action = action;
-        }
-    }
 
     public class TransactionSummaryInput {
         public DateTime StartDate { get; set; }
         public DateTime StopDate { get; set; }
-        public bool IncludeAll { get; set; }
+        public CollectType CollectType { get; set; }
 
         public TransactionSummaryInput() {
             this.StartDate = DateTime.Now;
             this.StopDate = DateTime.Now;
-            this.IncludeAll = false;
+            this.CollectType = CollectType.OnlyCostReported;
         }
 
-        public TransactionSummaryInput(DateTime start, DateTime stop,bool includeAll) {
+        public TransactionSummaryInput(DateTime start, DateTime stop,CollectType collectType) {
             this.StartDate = start;
             this.StopDate = stop;
-            this.IncludeAll = true;
+            this.CollectType = collectType;
         }
     }
 
     public class CurrentInventoryInput {
-        public bool IncludeAll { get; set; }
+        public CollectType CollectType { get; set; }
 
-        public CurrentInventoryInput(bool includeAll) {
-            this.IncludeAll = includeAll;
+        public CurrentInventoryInput(CollectType collectType) {
+            this.CollectType = collectType;
         }
 
         public CurrentInventoryInput() {
-            this.IncludeAll = false;
+            this.CollectType = CollectType.OnlyCostReported;
         }
     }
 }

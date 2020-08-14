@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm.Native;
 using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Domain.DTOs;
+using ManufacturingInventory.Domain.Enums;
 using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Interfaces;
@@ -15,24 +16,33 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
 
-    public class MonthlySummaryUseCase : IMonthlySummaryUseCase {
+    public class MonthlySummaryUseCase : IMonthlyReportUseCase {
         private ManufacturingContext _context;
         private IEntityProvider<PartInstance> _partInstanceProvider;
-        private IRepository<MonthlySummary> _monthlySummaryRepo;
         private IUnitOfWork _unitOfWork;
 
         public MonthlySummaryUseCase(ManufacturingContext context) {
             this._context = context;
             this._partInstanceProvider = new PartInstanceProvider(context);
-            this._monthlySummaryRepo = new MonthlySummaryRepository(context);
             this._unitOfWork = new UnitOfWork(context);
         }
 
-        public async Task<MonthlySummaryOutput> Execute(MonthlySummaryInput input) {
+        public async Task<MonthlyReportOutput> Execute(MonthlyReportInput input) {
             var dStart = new DateTime(input.StartDate.Year, input.StartDate.Month, input.StartDate.Day, 0, 0, 0, DateTimeKind.Local);
             var dStop = new DateTime(input.StopDate.Year, input.StopDate.Month, input.StopDate.Day, 23, 59, 59, DateTimeKind.Local);
-            var partInstances = await this._partInstanceProvider.GetEntityListAsync(instance => instance.CostReported || (instance.IsBubbler && instance.DateInstalled >= dStart && instance.DateInstalled <= dStop));
-            var monthlySummary = new MonthlySummary(dStart,dStop);
+            IEnumerable<PartInstance> partInstances = new List<PartInstance>();
+            switch (input.CollectType) {
+                case CollectType.OnlyCostReported:
+                    partInstances= await this._partInstanceProvider.GetEntityListAsync(instance => instance.CostReported || (instance.IsBubbler && instance.DateInstalled >= dStart && instance.DateInstalled <= dStop));
+                    break;
+                case CollectType.AllItems:
+                    partInstances = await this._partInstanceProvider.GetEntityListAsync(instance => (!instance.IsBubbler) || (instance.IsBubbler && instance.DateInstalled >= dStart && instance.DateInstalled <= dStop));
+                    break;
+                case CollectType.OnlyCostNotReported:
+                    partInstances = await this._partInstanceProvider.GetEntityListAsync(instance => !instance.CostReported || (instance.IsBubbler && instance.DateInstalled >= dStart && instance.DateInstalled <= dStop));
+                    break;
+            }
+            var monthlyReport = new List<PartSummary>();
             StringBuilder transactionBuffer = new StringBuilder();
             foreach (var partInstance in partInstances) {
                 var incomingTransactions = from transaction in partInstance.Transactions
@@ -83,80 +93,38 @@ namespace ManufacturingInventory.Application.UseCases {
                 double outgoingCost = outgoingCostRange;
                 double outgoingQty = outgoingQtyRange;
 
-                PartMonthlySummary snapshotRow = new PartMonthlySummary();
-                snapshotRow.PartName = partInstance.Part.Name;
-                snapshotRow.InstanceName = partInstance.Name;
+                PartSummary partSummary = new PartSummary();
+                partSummary.PartName = partInstance.Part.Name;
+                partSummary.InstanceName = partInstance.Name;
 
-                snapshotRow.StartQuantity = (currentQty - incomingQtyTotal) + outgoingQtyTotal;
-                snapshotRow.StartCost = (currentCost - incomingCostTotal) + outgoingCostTotal;
+                partSummary.StartQuantity = (currentQty - incomingQtyTotal) + outgoingQtyTotal;
+                partSummary.StartCost = (currentCost - incomingCostTotal) + outgoingCostTotal;
 
-                snapshotRow.EndQuantity = (snapshotRow.StartQuantity + incomingQtyRange) - outgoingQtyRange;
-                snapshotRow.EndCost = (snapshotRow.StartCost + incomingCostRange) - outgoingCostRange;
+                partSummary.EndQuantity = (partSummary.StartQuantity + incomingQtyRange) - outgoingQtyRange;
+                partSummary.EndCost = (partSummary.StartCost + incomingCostRange) - outgoingCostRange;
 
-                snapshotRow.IncomingCost = incomingCostRange;
-                snapshotRow.IncomingQuantity = incomingQtyRange;
+                partSummary.IncomingCost = incomingCostRange;
+                partSummary.IncomingQuantity = incomingQtyRange;
 
-                snapshotRow.RndOutgoingCost = outgoingCost / 2;
-                snapshotRow.RndOutgoingQuantity = outgoingQty / 2;
+                partSummary.RndOutgoingCost = outgoingCost / 2;
+                partSummary.RndOutgoingQuantity = outgoingQty / 2;
 
-                snapshotRow.ProductionOutgoingCost = outgoingCost / 2;
-                snapshotRow.ProductionOutgoingQuantity = outgoingQty / 2;
+                partSummary.ProductionOutgoingCost = outgoingCost / 2;
+                partSummary.ProductionOutgoingQuantity = outgoingQty / 2;
 
-                snapshotRow.TotalOutgoingCost = outgoingCostRange;
-                snapshotRow.TotalOutgoingQuantity = outgoingQtyRange;
+                partSummary.TotalOutgoingCost = outgoingCostRange;
+                partSummary.TotalOutgoingQuantity = outgoingQtyRange;
 
-                snapshotRow.CurrentCost = currentCost;
-                snapshotRow.CurrentQuantity = currentQty;
+                partSummary.CurrentCost = currentCost;
+                partSummary.CurrentQuantity = currentQty;
+                monthlyReport.Add(partSummary);
 
-                monthlySummary.MonthlyPartSnapshots.Add(snapshotRow);
             }
-            return new MonthlySummaryOutput(monthlySummary, true, "Done");
-        }
-
-        public async Task<IEnumerable<string>> GetExistingReports() {
-            return (await this._monthlySummaryRepo.GetEntityListAsync()).Select(e => e.MonthOfReport);
-        }
-
-        public async Task<MonthlySummary> LoadExisitingReport(string month) {
-            return await this._monthlySummaryRepo.GetEntityAsync(e => e.MonthOfReport == month);
-        }
-
-        public async Task<MonthlySummary> SaveMonthlySummary(MonthlySummary monthlySummary) {
-            var entity=await this._monthlySummaryRepo.GetEntityAsync(e => e.Id == monthlySummary.Id);
-            if (entity != null) {
-                var updated=await this._monthlySummaryRepo.UpdateAsync(monthlySummary);
-                if (updated != null) {
-                    var count=await this._unitOfWork.Save();
-                    if (count > 0) {
-                        return updated;
-                    } else {
-                        await this._unitOfWork.Undo();
-                        return null;
-                    }
-                } else {
-                    await this._unitOfWork.Undo();
-                    return null;
-                }
-            } else {
-                var newEntity= await this._monthlySummaryRepo.AddAsync(monthlySummary);
-                if (newEntity != null) {
-                    var count = await this._unitOfWork.Save();
-                    if (count > 0) {
-                        return newEntity;
-                    } else {
-                        await this._unitOfWork.Undo();
-                        return null;
-                    }
-                } else {
-                    await this._unitOfWork.Undo();
-                    return null;
-                }
-            }
+            return new MonthlyReportOutput(monthlyReport, true, "Done");
         }
 
         public async Task Load() {
             await this._partInstanceProvider.LoadAsync();
-            await this._monthlySummaryRepo.LoadAsync();
         }
     }
 
@@ -171,7 +139,18 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<CurrentInventoryOutput> Execute(CurrentInventoryInput input) {
-            var parts = await this._partInstanceProvider.GetEntityListAsync(part => part.CostReported || input.IncludeAll);
+            IEnumerable<PartInstance> parts = new List<PartInstance>();
+            switch (input.CollectType) {
+                case CollectType.OnlyCostReported:
+                    parts = await this._partInstanceProvider.GetEntityListAsync(part => part.CostReported);
+                    break;
+                case CollectType.AllItems:
+                    parts = await this._partInstanceProvider.GetEntityListAsync();
+                    break;
+                case CollectType.OnlyCostNotReported:
+                    parts = await this._partInstanceProvider.GetEntityListAsync(part => !part.CostReported);
+                    break;
+            }
             List<CurrentInventoryItem> items = new List<CurrentInventoryItem>();
             foreach (var part in parts) {
                 if (part.IsBubbler) {
@@ -188,11 +167,11 @@ namespace ManufacturingInventory.Application.UseCases {
         }
     }
 
-    public class TransactionSummaryUseCase : ITransactionSummaryUseCase {
+    public class TransactionLogUseCase : ITransactionLogUseCase {
         private ManufacturingContext _context;
         private IEntityProvider<Transaction> _transactionProvider;
 
-        public TransactionSummaryUseCase(ManufacturingContext context) {
+        public TransactionLogUseCase(ManufacturingContext context) {
             this._context = context;
             this._transactionProvider = new TransactionProvider(context);
         }
@@ -200,7 +179,18 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<TransactionSummaryOutput> Execute(TransactionSummaryInput input) {
             var dStart = new DateTime(input.StartDate.Year, input.StartDate.Month, input.StartDate.Day, 0, 0, 0, DateTimeKind.Local);
             var dStop = new DateTime(input.StopDate.Year, input.StopDate.Month, input.StopDate.Day, 23, 59, 59, DateTimeKind.Local);
-             var transactions=await this._transactionProvider.GetEntityListAsync(tran=>(tran.PartInstance.CostReported || input.IncludeAll) && (tran.TimeStamp>=dStart && tran.TimeStamp<=dStop));
+            IEnumerable<Transaction> transactions = new List<Transaction>();
+            switch (input.CollectType) {
+                case CollectType.OnlyCostReported:
+                    transactions = await this._transactionProvider.GetEntityListAsync(tran => tran.PartInstance.CostReported && (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop));
+                    break;
+                case CollectType.AllItems:
+                    transactions = await this._transactionProvider.GetEntityListAsync(tran => (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop));
+                    break;
+                case CollectType.OnlyCostNotReported:
+                    transactions = await this._transactionProvider.GetEntityListAsync(tran => !tran.PartInstance.CostReported && (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop));
+                    break;
+            }
             return new TransactionSummaryOutput(transactions, true, "Success");
         }
 

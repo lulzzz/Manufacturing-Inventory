@@ -6,15 +6,7 @@ using ManufacturingInventory.Infrastructure.Model.Interfaces;
 
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
 
-    public interface IMonthlySummaryUseCase:IUseCase<MonthlySummaryInput,MonthlySummaryOutput> {
-        Task<MonthlySummary> SaveMonthlySummary(MonthlySummary monthlySummary);
-        Task<IEnumerable<string>> GetExistingReports();
-        Task<MonthlySummary> LoadExisitingReport(string month);
-        Task Load();
-    }
-
-    public interface INavigationSummaryUseCase : IUseCase<NavigationSummaryInput, NavigationSummaryOutput> {
-        Task<IEnumerable<MonthlySummary>> GetExistingReports();
+    public interface IMonthlyReportUseCase:IUseCase<MonthlyReportInput,MonthlyReportOutput> {
         Task Load();
     }
 
@@ -22,7 +14,7 @@ namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
         Task Load();
     }
 
-    public interface ITransactionSummaryUseCase : IUseCase<TransactionSummaryInput, TransactionSummaryOutput> {
+    public interface ITransactionLogUseCase : IUseCase<TransactionSummaryInput, TransactionSummaryOutput> {
         Task Load();
     }
 }

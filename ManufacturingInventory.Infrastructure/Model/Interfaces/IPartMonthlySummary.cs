@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Infrastructure.Model.Interfaces {
-    public interface IPartMonthlySummary {
+    public interface IPartSummary {
         string PartName { get; set; }
         string InstanceName { get; set; }
 

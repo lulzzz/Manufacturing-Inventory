@@ -38,17 +38,10 @@ namespace ManufacturingInventory.ConsoleTesting {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
-            var report = context.MonthlySummaries.Find(1);
-            report.MonthOfReport = report.DateGenerated.ToString("MMMM");
-            Console.WriteLine("Month Of Report: {0}", report.MonthOfReport);
-            var updated=context.Update(report);
-            if (updated != null) {
-                context.SaveChanges();
-                Console.WriteLine("Report should be saved");
-            } else {
-                Console.WriteLine("Report Saved");
-            }
-            
+            Console.WriteLine("Testing Database");
+            var part = context.PartInstances.FirstOrDefault();
+            Console.WriteLine("Part: {0}", part.Name);
+            Console.WriteLine("Goodbye");
 
         }
 
@@ -63,7 +56,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             Console.WriteLine("Start: {0}/{1}/{2} Stop:{3}/{4}/{5}", start.Day, start.Month, start.Year, stop.Day, stop.Month, stop.Year);
 
-            MonthlySummaryInput input = new MonthlySummaryInput(start, stop);
+            MonthlyReportInput input = new MonthlyReportInput(start, stop);
             MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
             var snapShot = await reporting.Execute(input);
 

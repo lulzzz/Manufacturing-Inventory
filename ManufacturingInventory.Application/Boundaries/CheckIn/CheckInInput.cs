@@ -10,7 +10,7 @@ namespace ManufacturingInventory.Application.Boundaries.CheckIn {
     public enum PriceOption {
         [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/NewSales_16x16.png"), Display(Name = "Create New Price", Description = "Creates New Price", Order = 1)]
         CreateNew,
-        [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/CostAnalysis_16x16.png"), Display(Name = "Selected Existing Price", Description = "Use Existing Price", Order = 1)]
+        [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/CostAnalysis_16x16.png"), Display(Name = "Select Existing Price", Description = "Use Existing Price", Order = 1)]
         UseExisting,
         [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/Close_16x16.png"), Display(Name = "No Price", Description = "Check In Without Price", Order = 3)]
         NoPrice

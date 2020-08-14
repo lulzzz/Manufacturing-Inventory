@@ -206,9 +206,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IContactTableDetailEditUseCase, ContactTableDetailEdit>();
                 container.Register<ICategoryEditUseCase, CategoryEdit>();
                 container.Register<IAuthenticationUseCase, AuthenticationService>();
-                container.Register<IMonthlySummaryUseCase, MonthlySummaryUseCase>();
+                container.Register<IMonthlyReportUseCase, MonthlySummaryUseCase>();
                 container.Register<ICurrentInventoryUseCase, CurrentInventoryUseCase>();
-                container.Register<ITransactionSummaryUseCase, TransactionSummaryUseCase>();
+                container.Register<ITransactionLogUseCase, TransactionLogUseCase>();
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);

@@ -7,34 +7,18 @@ using ManufacturingInventory.Infrastructure.Model.Interfaces;
 
 namespace ManufacturingInventory.Application.Boundaries.ReportingBoundaries {
 
-    public class MonthlySummaryOutput : IOutput {
+    public class MonthlyReportOutput : IOutput {
         public bool Success { get; set; }
         public string Message { get; set; }
-        public MonthlySummary Snapshot { get; set; }
+        public IEnumerable<PartSummary> MonthlyReport { get; set; }
 
-        public MonthlySummaryOutput() {
+        public MonthlyReportOutput() {
 
-
-        }
-
-        public MonthlySummaryOutput(MonthlySummary snapshot,bool success,string message) {
-            this.Snapshot = snapshot;
-            this.Success = success;
-            this.Message = message;
-        }
-    }
-
-    public class NavigationSummaryOutput: IOutput {
-        public MonthlySummary Summary { get; set; }
-        public bool Success { get; set; }
-        public string Message { get; set; }
-
-        public NavigationSummaryOutput() {
 
         }
 
-        public NavigationSummaryOutput(MonthlySummary snapshot, bool success, string message) {
-            this.Summary = snapshot;
+        public MonthlyReportOutput(IEnumerable<PartSummary> monthlyReport, bool success,string message) {
+            this.MonthlyReport = monthlyReport;
             this.Success = success;
             this.Message = message;
         }

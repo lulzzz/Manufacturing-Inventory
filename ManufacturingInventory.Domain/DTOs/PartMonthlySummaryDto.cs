@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Domain.DTOs {
-    public class PartMonthlySummaryDto:IPartMonthlySummary {
+    public class PartSummary:IPartSummary {
         public string PartName { get; set; }
         public string InstanceName { get; set; }
 
@@ -29,11 +29,11 @@ namespace ManufacturingInventory.Domain.DTOs {
         public double EndQuantity { get; set; }
         public double EndCost { get; set; }
 
-        public PartMonthlySummaryDto() {
+        public PartSummary() {
 
         }
 
-        public PartMonthlySummaryDto(IPartMonthlySummary partSummary) {
+        public PartSummary(IPartSummary partSummary) {
             this.PartName = partSummary.PartName;
             this.InstanceName = partSummary.InstanceName;
             this.StartQuantity = partSummary.StartQuantity;

@@ -14,6 +14,8 @@ namespace ManufacturingInventory.Reporting {
         public void RegisterTypes(IContainerRegistry containerRegistry) {
             containerRegistry.RegisterForNavigation<ReportingMainView>(ModuleViews.ReportingMainView);
             containerRegistry.RegisterForNavigation<ReportingMonthlySummaryView>(ModuleViews.ReportingMonthlySummaryView);
+            containerRegistry.RegisterForNavigation<ReportingCurrentInventoryView>(ModuleViews.ReportingCurrentInventoryView);
+            containerRegistry.RegisterForNavigation<ReportingTransactionLogView>(ModuleViews.ReportingTransactionLogView);
         }
     }
 }
