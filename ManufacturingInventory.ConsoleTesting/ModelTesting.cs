@@ -38,32 +38,36 @@ namespace ManufacturingInventory.ConsoleTesting {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
-            Console.WriteLine("Testing Database");
-            var part = context.PartInstances.FirstOrDefault();
-            Console.WriteLine("Part: {0}", part.Name);
+            Console.WriteLine("Updating Stock Type");
+            var stockType = context.Categories.OfType<StockType>().Include(e => e.PartInstances).ThenInclude(e=>e.BubblerParameter).FirstOrDefault(e => e.Id == 16);
+            stockType.Quantity += (int)stockType.PartInstances.Sum(e => e.BubblerParameter.Weight);
+            context.Update(stockType);
+            Console.WriteLine("New Quantity: {0}", stockType.Quantity);
+            Console.WriteLine("Save Changes...");
+            context.SaveChanges();
             Console.WriteLine("Goodbye");
 
         }
 
         public static async Task RunAsync() {
-            Console.WriteLine("Gather Report Data");
+            //Console.WriteLine("Gather Report Data");
 
-            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
-            var context = new ManufacturingContext(optionsBuilder.Options);
-            DateTime start = new DateTime(2020, 6, 1);
-            DateTime stop = new DateTime(2020, 6, 30);
+            //DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            //var context = new ManufacturingContext(optionsBuilder.Options);
+            //DateTime start = new DateTime(2020, 6, 1);
+            //DateTime stop = new DateTime(2020, 6, 30);
 
-            Console.WriteLine("Start: {0}/{1}/{2} Stop:{3}/{4}/{5}", start.Day, start.Month, start.Year, stop.Day, stop.Month, stop.Year);
+            //Console.WriteLine("Start: {0}/{1}/{2} Stop:{3}/{4}/{5}", start.Day, start.Month, start.Year, stop.Day, stop.Month, stop.Year);
 
-            MonthlyReportInput input = new MonthlyReportInput(start, stop);
-            MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
-            var snapShot = await reporting.Execute(input);
+            //MonthlyReportInput input = new MonthlyReportInput(start, stop);
+            //MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
+            //var snapShot = await reporting.Execute(input);
 
-            if (snapShot.Success) {
-                Console.WriteLine("Succesfully Generated... Saving report to database");
-                //await reporting.SaveMonthlySummary();
-            }
+            //if (snapShot.Success) {
+            //    Console.WriteLine("Succesfully Generated... Saving report to database");
+            //    //await reporting.SaveMonthlySummary();
+            //}
             //StringBuilder builder = new StringBuilder();
             //StringBuilder transactionBuffer = new StringBuilder();
             //foreach (var row in snapShot.Snapshot) {
@@ -83,75 +87,5 @@ namespace ManufacturingInventory.ConsoleTesting {
            // var table=ConsoleTable.From<IPartMonthlySummary>(snapShot.Snapshot);
             //Console.WriteLine(table.ToMinimalString());
         }
-
-        //public static async Task RunAndGenerateAsync() {
-        //    Console.WriteLine("Gathering Transaction List");
-
-        //    DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-        //    optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
-        //    var context = new ManufacturingContext(optionsBuilder.Options);
-        //    DateTime start = new DateTime(2020, 1, 1);
-        //    DateTime stop = DateTime.Now;
-
-        //    Console.WriteLine("Start: {0}/{1}/{2} Stop:{3}/{4}/{5}", start.Day, start.Month, start.Year, stop.Day, stop.Month, stop.Year);
-
-        //    MonthlySummaryInput input = new MonthlySummaryInput(start, stop);
-        //    MonthlySummaryUseCase reporting = new MonthlySummaryUseCase(context);
-        //    var snapShot = await reporting.Execute(input);
-        //    await GenerateMissingTransactions(snapShot.TransactionsNeeded);
-
-        //}
-
-        //public static async Task GenerateMissingTransactions(IEnumerable<TransactionInfo> transactions) {
-        //    DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-        //    optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
-        //    var context = new ManufacturingContext(optionsBuilder.Options);
-        //    IRepository<PartInstance> _partInstanceRepository=new PartInstanceRepository(context);
-        //    IRepository<Transaction> _transactionRepository=new TransactionRepository(context);
-        //    IUnitOfWork unitOfWork = new UnitOfWork(context);
-        //    var user = context.Users
-        //        .Include(e => e.Sessions)
-        //            .ThenInclude(e => e.Transactions)
-        //        .Include(e => e.Permission)
-        //        .FirstOrDefault(e => e.FirstName == "Andrew");
-        //    UserService userService = new UserService();
-        //    if (user != null) {
-        //        Session session = new Session(user);
-        //        context.Sessions.Add(session);
-        //        context.SaveChanges();
-        //        userService.CurrentUserName = user.UserName;
-        //        userService.CurrentSessionId = session.Id;
-        //        userService.UserPermissionName = user.Permission.Name;
-        //    }
-
-        //    foreach (var tran in transactions) {
-        //        var partInstance =await _partInstanceRepository.GetEntityAsync(e => e.Id == tran.PartInstanceId);
-        //        if (partInstance != null) {
-        //            Transaction transaction = new Transaction(partInstance, tran.Action, 0, 0, partInstance.CurrentLocation, new DateTime(2020, 1, 1, 0, 0, 0));
-        //            transaction.Quantity = (int)tran.Quantity;
-        //            transaction.UnitCost = tran.UnitCost;
-        //            transaction.TotalCost = tran.TotalCost;
-        //            if (userService.CurrentSessionId.HasValue) {
-        //                transaction.SessionId = userService.CurrentSessionId.Value;
-        //            }
-        //            var updatedInstance = await _partInstanceRepository.UpdateAsync(partInstance);
-        //            var transactionAdded = await _transactionRepository.AddAsync(transaction);
-        //            if(updatedInstance!=null && transactionAdded != null) {
-        //                var count = await unitOfWork.Save();
-        //                if (count > 0) {
-        //                    Console.WriteLine("**Success** save for PartIntstance {0}", partInstance.Name);
-        //                } else {
-        //                    await unitOfWork.Undo();
-        //                    Console.WriteLine("**Failed** save for PartInstance {0} transaction",partInstance.Name);
-        //                }
-        //            } else {
-        //                await unitOfWork.Undo();
-        //                Console.WriteLine("**Failed** update for PartInstance {0} transaction", partInstance.Name);
-        //            }
-
-        //        }
-        //    }
-        //}
-
     }
 }

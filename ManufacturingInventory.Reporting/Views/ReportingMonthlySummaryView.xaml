@@ -64,16 +64,11 @@
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutItem Label="Select Option"
                                          Style="{StaticResource LayoutItemStyle}">
-                            <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
-                                              Height="25"
-                                              FontSize="9"
-                                              EditValue="{Binding SelectedCollectionType,Mode=TwoWay,IsAsync=True}"
-                                              IsTextEditable="False"
-                                              Focusable="False">
+                            <dxe:ComboBoxEdit IsTextEditable="False"
+                                              EditValue="{Binding SelectedCollectionType,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:CollectType}"
-                                                                    SortMode="DisplayName"
-                                                                    AllowImages="False" />
+                                                                    SortMode="DisplayName" />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxe:ComboBoxEdit.ItemTemplate>
                                     <DataTemplate>
@@ -84,7 +79,7 @@
                                             </Grid.RowDefinitions>
                                             <TextBlock  Text="{Binding Name}" />
                                             <TextBlock Grid.Row="1"
-                                                       FontSize="7"
+                                                       FontSize="8"
                                                        Text="{Binding Description}" />
                                         </Grid>
                                     </DataTemplate>

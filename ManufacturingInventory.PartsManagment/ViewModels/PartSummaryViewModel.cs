@@ -99,11 +99,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._organizations, value);
         }
 
-        //public ObservableCollection<Usage> UsageList {
-        //    get => this._usageList;
-        //    set => SetProperty(ref this._usageList, value);
-        //}
-
         public Organization SelectedOrganization {
             get => this._selectedOrganization;
             set => SetProperty(ref this._selectedOrganization, value, "SelectedOrganization");
@@ -113,11 +108,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._selectedWarehouse;
             set => SetProperty(ref this._selectedWarehouse, value, "SelectedWarehouse");
         }
-
-        //public Usage SelectedUsage {
-        //    get => this._selectedUsage;
-        //    set => SetProperty(ref this._selectedUsage, value, "SelectedUsage");
-        //}
 
         public bool IsBubbler {
             get => this._isBubbler;
@@ -148,7 +138,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             int id = (this.IsNew) ? 0 : this.SelectedPart.Id;
             int warehouseId = (this.SelectedWarehouse != null) ? this.SelectedWarehouse.Id : 0;
             int orgId = (this.SelectedOrganization != null) ? this.SelectedOrganization.Id : 0;
-            //int useageId = (this.SelectedUsage != null) ? this.SelectedUsage.Id : 0;
             PartSummaryEditInput input = new PartSummaryEditInput(id, this.Name, this.Description,this.IsNew ,this.HoldsBubblers,
                 this.DefaultToCostReported,warehouseId,orgId);
 
@@ -200,16 +189,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.DefaultToCostReported = this.SelectedPart.DefaultToCostReported;
 
                 this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
-                //this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
                 this.Organizations = new ObservableCollection<Organization>(categories.OfType<Organization>());
 
                 if (this._selectedPart.Warehouse != null) {
                     this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == this._selectedPart.WarehouseId);
                 }
-
-                //if (this._selectedPart.Usage != null) {
-                //    this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this._selectedPart.UsageId);
-                //}
 
                 if (this._selectedPart.Organization != null) {
                     this.SelectedOrganization = this.Organizations.FirstOrDefault(e => e.Id == this._selectedPart.OrganizationId);

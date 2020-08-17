@@ -37,15 +37,11 @@
                 <dxlc:LayoutGroup dxlc:DockLayoutControl.Dock="Top">
                     <dxlc:LayoutItem Label="Select Collection Option"
                                      Style="{StaticResource LayoutItemStyle}">
-                        <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
-                                          EditValue="{Binding SelectedCollectionType,Mode=TwoWay,IsAsync=True}"
-                                          IsTextEditable="False"
-                                          AllowUpdateTwoWayBoundPropertiesOnSynchronization="True"
-                                          Focusable="False"
-                                          SelectAllOnGotFocus="True">
+                        <dxe:ComboBoxEdit IsTextEditable="False"
+                                          EditValue="{Binding SelectedCollectionType,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:CollectType}"
-                                                                SortMode="DisplayName"/>
+                                                                SortMode="DisplayName" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
@@ -56,7 +52,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock  Text="{Binding Name}" />
                                         <TextBlock Grid.Row="1"
-                                                   FontSize="7"
+                                                   FontSize="8"
                                                    Text="{Binding Description}" />
                                     </Grid>
                                 </DataTemplate>

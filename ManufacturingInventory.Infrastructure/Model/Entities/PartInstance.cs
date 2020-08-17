@@ -99,7 +99,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         }
 
         public void UpdateQuantity(int delta) {
-            this.Quantity += delta;
+            this.Quantity += delta;          
             this.UpdatePrice();
         }
 

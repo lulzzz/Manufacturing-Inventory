@@ -129,13 +129,20 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         //    }
         //}
 
+        public void UpdateStock() {
+            if (this.PartInstances != null) {
+
+            }
+        }
+
         public void UpdateQuantity() {
             if (this.PartInstances != null) {
                 this.Quantity = this.PartInstances.ToList().Sum(instance => {
                     if (instance.IsBubbler) {
-                        return instance.Quantity;
+                        return (instance.BubblerParameter != null) ? (int)instance.BubblerParameter.Weight: 0;
+
                     } else {
-                        return Convert.ToInt32(instance.BubblerParameter.NetWeight);
+                        return instance.Quantity;
                     }
                 });
             }

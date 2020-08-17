@@ -55,14 +55,12 @@
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutItem Label="Select Collection Option"
                                          Style="{StaticResource LayoutItemStyle}">
-                            <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
-                                              EditValue="{Binding SelectedCollectionType,Mode=TwoWay,IsAsync=True}"
+                            <dxe:ComboBoxEdit 
                                               IsTextEditable="False"
-                                              Focusable="False">
+                                              EditValue="{Binding SelectedCollectionType,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:CollectType}"
-                                                                    SortMode="DisplayName"
-                                                                    AllowImages="False" />
+                                                                    SortMode="DisplayName"  />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxe:ComboBoxEdit.ItemTemplate>
                                     <DataTemplate>
@@ -73,7 +71,7 @@
                                             </Grid.RowDefinitions>
                                             <TextBlock  Text="{Binding Name}" />
                                             <TextBlock Grid.Row="1"
-                                                       FontSize="7"
+                                                       FontSize="8"
                                                        Text="{Binding Description}" />
                                         </Grid>
                                     </DataTemplate>
@@ -101,19 +99,19 @@
                                  ShowSizeGrip="False">
                             <dxb:BarButtonItem x:Name="_transactionExportExcel"
                                                BarItemDisplayMode="ContentAndGlyph"
-                                               Command="{Binding ExportTableCommand}"
+                                               Command="{Binding TransactionLogExportCommand}"
                                                CommandParameter="Xlsx"
                                                Content="Export Excel"
                                                Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                             <dxb:BarButtonItem x:Name="_transactionExportPDF"
                                                BarItemDisplayMode="ContentAndGlyph"
-                                               Command="{Binding ExportTableCommand}"
+                                               Command="{Binding TransactionLogExportCommand}"
                                                CommandParameter="Pdf"
                                                Content="Export PDF"
                                                Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" />
                             <dxb:BarButtonItem x:Name="_transactionExportCSV"
                                                BarItemDisplayMode="ContentAndGlyph"
-                                               Command="{Binding ExportTableCommand}"
+                                               Command="{Binding TransactionLogExportCommand}"
                                                CommandParameter="Csv"
                                                Content="Export CSV"
                                                Glyph="{dx:DXImage Image=ExportToCSV_16x16.png}" />
@@ -170,12 +168,9 @@
                                                  VisibleIndex="1">
                                 <dxg:GridColumn FieldName="Quantity"
                                                 Header="Quantity" />
-                                <dxg:GridColumn FieldName="Weight"
-                                                Visible="{Binding IsBubbler}" />
-                                <dxg:GridColumn FieldName="MeasuredWeight"
-                                                Visible="{Binding IsBubbler}" />
-                                <dxg:GridColumn FieldName="Consumed"
-                                                Visible="{Binding IsBubbler}" />
+                                <dxg:GridColumn FieldName="Weight" />
+                                <dxg:GridColumn FieldName="MeasuredWeight"/>
+                                <dxg:GridColumn FieldName="Consumed" />
                                 <dxg:GridColumn FieldName="PartInstance.UnitCost"
                                                 Header="Unit Cost">
                                     <dxg:GridColumn.EditSettings>

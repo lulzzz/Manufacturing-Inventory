@@ -105,9 +105,13 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         private async Task Load() {
             if (!this._isLoaded) {
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 await this._transactionService.Load();
                 this.SelectedCollectionType = CollectType.OnlyCostReported;
+                this.Start = DateTime.Now;
+                this.Stop = DateTime.Now;
                 this._isLoaded = true;
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
             }
         }
     }

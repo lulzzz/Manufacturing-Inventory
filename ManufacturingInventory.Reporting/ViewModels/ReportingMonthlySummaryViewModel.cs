@@ -35,9 +35,6 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         public ReportingMonthlySummaryViewModel(IMonthlyReportUseCase reportingService) {
             this._reportingService = reportingService;
-            var now=DateTime.Now;
-            this.Start = now;
-            this.Stop = now;
             this.CollectSnapshotCommand = new AsyncCommand(this.CollectSummaryHandler);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
             this.InitializeCommand = new AsyncCommand(this.LoadAsync);
@@ -101,9 +98,14 @@ namespace ManufacturingInventory.Reporting.ViewModels {
 
         private async Task LoadAsync() {
             if (!this._isLoaded) {
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 await this._reportingService.Load();
                 this.SelectedCollectionType = CollectType.OnlyCostReported;
+                var now = DateTime.Now;
+                this.Stop = now;
+                this.Start = now;
                 this._isLoaded = true;
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
             }
         }
     }

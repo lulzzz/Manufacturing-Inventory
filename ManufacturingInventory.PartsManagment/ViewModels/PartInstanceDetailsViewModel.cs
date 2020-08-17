@@ -147,10 +147,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public StockType SelectedStockType {
             get => this._selectedPartType;
             set {
+
                 this.CanEditStock = !value.IsDefault;
                 if (!value.IsDefault) {
-                    this.SelectedPartInstance.MinQuantity = this.SelectedStockType.MinQuantity;
-                    this.SelectedPartInstance.SafeQuantity = this.SelectedStockType.SafeQuantity;
+                    this.SelectedPartInstance.MinQuantity = value.MinQuantity;
+                    this.SelectedPartInstance.SafeQuantity = value.SafeQuantity;
                     RaisePropertyChanged("SelectedPartInstance");
                 }
                 SetProperty(ref this._selectedPartType, value);

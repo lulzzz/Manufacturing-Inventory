@@ -24,7 +24,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private IRepository<PriceLog> _priceLogRepository;
 
         private IEntityProvider<Location> _locationProvider;
-        private IEntityProvider<Category> _categoryProvider;
+        private IRepository<Category> _categoryRepository;
         private IEntityProvider<Distributor> _distributorProvider;
 
         private IUserService _userService;
@@ -37,7 +37,7 @@ namespace ManufacturingInventory.Application.UseCases {
             this._partInstanceRepository = new PartInstanceRepository(context);
             this._bubblerRepository = new BubblerParameterRepository(context);
             this._partRepository = new PartRepository(context);
-            this._categoryProvider = new CategoryProvider(context);
+            this._categoryRepository = new CategoryRepository(context);
             this._locationProvider = new LocationProvider(context);
             this._distributorProvider = new DistributorProvider(context);
             this._transactionRepository = new TransactionRepository(context);
@@ -79,6 +79,18 @@ namespace ManufacturingInventory.Application.UseCases {
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
+                    if (!instanceEntity.StockType.IsDefault) {
+                        var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockType.Id);
+                        if (stockType != null) {
+                            if (instanceEntity.IsBubbler) {
+                                stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                            } else {
+                                stockType.Quantity += instanceEntity.Quantity;
+                            }
+                            await this._categoryRepository.UpdateAsync(stockType);
+                        }
+                    }
+
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count =await this._unitOfWork.Save();
                     if (count > 0) {
@@ -107,6 +119,19 @@ namespace ManufacturingInventory.Application.UseCases {
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
+
+                    if (!instanceEntity.StockType.IsDefault) {
+                        var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockType.Id);
+                        if (stockType != null) {
+                            if (instanceEntity.IsBubbler) {
+                                stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                            } else {
+                                stockType.Quantity += instanceEntity.Quantity;
+                            }
+                            await this._categoryRepository.UpdateAsync(stockType);
+                        }
+                    }
+
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count = await this._unitOfWork.Save();
                     if (count > 0) {
@@ -142,6 +167,19 @@ namespace ManufacturingInventory.Application.UseCases {
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
+
+                    if (!instanceEntity.StockType.IsDefault) {
+                        var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockType.Id);
+                        if (stockType != null) {
+                            if (instanceEntity.IsBubbler) {
+                                stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                            } else {
+                                stockType.Quantity += instanceEntity.Quantity;
+                            }
+                            await this._categoryRepository.UpdateAsync(stockType);
+                        }
+                    }
+
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count = await this._unitOfWork.Save();
                     if (count > 0) {
@@ -175,8 +213,20 @@ namespace ManufacturingInventory.Application.UseCases {
                 transaction.UnitCost = partInstance.UnitCost;
                 transaction.TotalCost = transaction.UnitCost*transaction.Quantity;
                 transaction.SessionId = this._userService.CurrentSessionId.Value;
+
+                if (!partInstance.StockType.IsDefault) {
+                    var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockType.Id);
+                    if (stockType != null) {
+                        if (!partInstance.IsBubbler) {
+                            stockType.Quantity += partInstance.Quantity;
+                            await this._categoryRepository.UpdateAsync(stockType);
+                        }
+                    }
+                }
+
                 var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
                 var trans = await this._transactionRepository.AddAsync(transaction);
+
                 StringBuilder builder = new StringBuilder();
                 if (instance != null && trans != null) {
                     var val = await this._unitOfWork.Save();
@@ -197,7 +247,7 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<IEnumerable<Category>> GetCategories() {
-            return await this._categoryProvider.GetEntityListAsync();
+            return await this._categoryRepository.GetEntityListAsync();
         }
 
         public async Task<IEnumerable<Distributor>> GetDistributors() {
