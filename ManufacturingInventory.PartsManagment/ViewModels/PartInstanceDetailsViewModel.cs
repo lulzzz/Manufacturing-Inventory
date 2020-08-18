@@ -61,7 +61,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private Location _selectedLocation;
         private Condition _selectedCondition;
         private Usage _selectedUsage;
-        private StockType _selectedPartType;
+        private StockType _selectedStockType;
         private AttachmentDataTraveler _instanceAttachmentTraveler;
         private PriceDataTraveler _priceDataTraveler;
         private bool _hasPrice;
@@ -77,6 +77,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private string _comments;
         private string _description;
         private int _quantity;
+        private int _minQuantity;
+        private int _safeQuantity;
 
 
         public AsyncCommand InitializeCommand { get; private set; }
@@ -145,16 +147,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public StockType SelectedStockType {
-            get => this._selectedPartType;
+            get => this._selectedStockType;
             set {
 
                 this.CanEditStock = !value.IsDefault;
-                if (!value.IsDefault) {
-                    this.SelectedPartInstance.MinQuantity = value.MinQuantity;
-                    this.SelectedPartInstance.SafeQuantity = value.SafeQuantity;
-                    RaisePropertyChanged("SelectedPartInstance");
-                }
-                SetProperty(ref this._selectedPartType, value);
+                SetProperty(ref this._selectedStockType, value);
             }
         }
 
@@ -222,17 +219,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         public double TotalCost {
             get => this._totalCost;
             set => SetProperty(ref this._totalCost, value);
-        }
-
-        public int Quantity {
-            get => this._quantity;
-            set {
-                //if (!this.IsBubbler && this.SelectedPartInstance != null) {
-                //    this.SelectedPartInstance.EditQuantity(value);
-                //    this.TotalCost = this.SelectedPartInstance.TotalCost;
-                //}
-                SetProperty(ref this._quantity, value);
-            }
         }
 
         public ObservableCollection<Transaction> Transactions {
@@ -312,6 +298,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._isReusable;
             set => SetProperty(ref this._isReusable, value);
         }
+        public int Quantity { get => _quantity; set => _quantity = value; }
+        public int MinQuantity { get => _minQuantity; set => _minQuantity = value; }
+        public int SafeQuantity { get => _safeQuantity; set => _safeQuantity = value; }
 
         #endregion
 
@@ -606,7 +595,19 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         }
 
                         this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                        this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
+                        var stockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
+                        if (stockType != null) {
+                            if (!stockType.IsDefault) {
+                                this.Quantity = stockType.Quantity;
+                                this.SafeQuantity = stockType.SafeQuantity;
+                                this.MinQuantity = stockType.MinQuantity;
+                            } else {
+                                this.SafeQuantity = stockType.SafeQuantity;
+                                this.MinQuantity = stockType.MinQuantity;
+                                this.Quantity = this.SelectedPartInstance.Quantity;
+                            }
+                        }
+
                         this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && this.CanEdit;
                         this.IsReusable = (this.SelectedPartInstance.IsReusable || this.IsBubbler);
                         this.CostReported = this.SelectedPartInstance.CostReported;

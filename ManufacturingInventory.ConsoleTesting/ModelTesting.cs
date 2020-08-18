@@ -25,6 +25,7 @@ using Nito.AsyncEx;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks.Dataflow;
 
 namespace ManufacturingInventory.ConsoleTesting {
 
@@ -33,20 +34,41 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static void Main(string[] args) {
 
-            //AsyncContext.Run(RunAsync);
+            AsyncContext.Run(TestingCategoryUseCase);
             //Console.WriteLine("Month: {0}", DateTime.Now.ToString("MMMM"));
+
+        }
+
+        public static async Task TestingCategoryUseCase() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            var categoryService = new CategoryEdit(context);
+            Console.WriteLine("Adding partInstance to category, please wait");
+            var category=await categoryService.GetCategory(7);
+            Console.WriteLine("Category {0} ", category.Name);
+            var output = await categoryService.AddPartTo(3, category);
+            Console.WriteLine(output.Message);
+            Console.WriteLine("Done, Please come again");
+        }
+
+        public static void TestingStockTypes() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             Console.WriteLine("Updating Stock Type");
-            var stockType = context.Categories.OfType<StockType>().Include(e => e.PartInstances).ThenInclude(e=>e.BubblerParameter).FirstOrDefault(e => e.Id == 16);
-            stockType.Quantity += (int)stockType.PartInstances.Sum(e => e.BubblerParameter.Weight);
-            context.Update(stockType);
-            Console.WriteLine("New Quantity: {0}", stockType.Quantity);
-            Console.WriteLine("Save Changes...");
-            context.SaveChanges();
-            Console.WriteLine("Goodbye");
+            var stockType = context.Categories.OfType<StockType>().Include(e => e.PartInstances).ThenInclude(e => e.BubblerParameter).FirstOrDefault(e => e.Name == "TMA");
+            if (stockType != null) {
+                stockType.Quantity += (int)stockType.PartInstances.Sum(e => e.BubblerParameter.Weight);
+                context.Update(stockType);
+                Console.WriteLine("New Quantity: {0}", stockType.Quantity);
+                Console.WriteLine("Save Changes...");
+                context.SaveChanges();
+            } else {
+                Console.WriteLine("StockType Not Found");
+            }
 
+            Console.WriteLine("Exiting");
         }
 
         public static async Task RunAsync() {

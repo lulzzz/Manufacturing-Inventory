@@ -17,14 +17,19 @@ using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.CategoryManagment.Internal;
 using ManufacturingInventory.Domain.Extensions;
 using ManufacturingInventory.Application.Boundaries;
+using ManufacturingInventory.CategoryManagment.ViewModels;
 using System.Text;
+using DevExpress.Xpf.Grid.TypedStyles;
+using DevExpress.Xpf.RichEdit.Controls.Internal.TypedStyles;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryDetailsViewModel : InventoryViewModelNavigationBase {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("CategoryDetailsDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("CategoryDetailsMessageBox"); }
+        protected IDialogService SelectInstancesDialog { get => ServiceContainer.GetService<IDialogService>("SelectInstancesDialog"); }
+        protected IDialogService SelectPartsDialog { get => ServiceContainer.GetService<IDialogService>("SelectPartsDialog"); }
 
-        private ICategoryEditUseCase _categoryEdit;
+        private ICategoryEditUseCase _categoryService;
         private IRegionManager _regionManager;
         private IEventAggregator _eventAggregator;
 
@@ -32,6 +37,10 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private ObservableCollection<Part> _parts=new ObservableCollection<Part>();
         private ObservableCollection<PartInstance> _partInstances=new ObservableCollection<PartInstance>();
         private CategoryOption _selectedCategoryType;
+        private PartInstancePopUpTableViewModel _partInstancePopUpTableViewModel = null;
+        private PartPopUpTableViewModel _partPopUpTableViewModel = null;
+
+        private string _buttonText;
         private string _categoryTypeLabel;
         private int _quantity;
         private int _safeQuantity;
@@ -57,9 +66,10 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand CategoryTypeChangedCommand { get; private set; }
+        public AsyncCommand SelectItemsCommand { get; private set; }
 
         public CategoryDetailsViewModel(ICategoryEditUseCase categoryEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
-            this._categoryEdit = categoryEdit;
+            this._categoryService = categoryEdit;
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this.InitializeCommand = new AsyncCommand(this.Load);
@@ -205,6 +215,11 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             get => this._showPartTableLoading;
             set => SetProperty(ref this._showPartTableLoading, value);
         }
+        
+        public string ButtonText { 
+            get => _buttonText; 
+            set => SetProperty(ref this._buttonText,value);
+        }
 
         #endregion
 
@@ -212,7 +227,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
 
         private async Task SaveHandler() {
             EditAction action = (this.IsNew) ? EditAction.Add : EditAction.Update;
-            var defaultCategory = await this._categoryEdit.GetDefault(this.SelectedCategory.Type);
+            var defaultCategory = await this._categoryService.GetDefault(this.SelectedCategory.Type);
             bool cancel = false;
             bool defaultChanged = false; ;
             if (defaultCategory != null) {
@@ -277,7 +292,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             }
             if (!cancel) {
                 CategoryBoundaryInput input = new CategoryBoundaryInput(action, this.SelectedCategory,defaultChanged);
-                var response = await this._categoryEdit.Execute(input);
+                var response = await this._categoryService.Execute(input);
                 await this.ShowActionResponse(response);
             }
         }
@@ -330,6 +345,63 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             });
         }
 
+        private async Task AddItemsToCategory() {
+            if (this._selectedCategory.Type == CategoryTypes.Organization) {
+                var parts = await this._categoryService.GetAvailableParts(this._categoryId);
+            } else {
+                var availableInstances = await this._categoryService.GetAvailablePartInstances(this._selectedCategory);
+                this.DispatcherService.BeginInvoke(() => {
+                    if (this.ShowPartInstanceDialog(availableInstances)) {
+
+                    } else {
+
+                    }
+                });
+            }
+        }
+
+        private bool ShowPartInstanceDialog(IEnumerable<PartInstance> partInstances) {
+            this._partInstancePopUpTableViewModel = new PartInstancePopUpTableViewModel(partInstances);
+
+            UICommand continueCommand = new UICommand() {
+                Caption = "Continue With Selection",
+                IsCancel = false,
+                IsDefault = true,
+            };
+
+            UICommand cancelCommand = new UICommand() {
+                Id = MessageBoxResult.Cancel,
+                Caption = "Cancel",
+                IsCancel = true,
+                IsDefault = false,
+            };
+            UICommand result = SelectInstancesDialog.ShowDialog(
+                dialogCommands: new List<UICommand>() { continueCommand, cancelCommand },
+                title: "Select PartInstances Dialog", viewModel: this._partInstancePopUpTableViewModel);
+            return result == continueCommand;
+        }
+
+        private bool ShowPartSelectionDialog(IEnumerable<Part> parts) {
+            this._partPopUpTableViewModel = new PartPopUpTableViewModel(parts);
+
+            UICommand continueCommand = new UICommand() {
+                Caption = "Continue With Selection",
+                IsCancel = false,
+                IsDefault = true,
+            };
+
+            UICommand cancelCommand = new UICommand() {
+                Id = MessageBoxResult.Cancel,
+                Caption = "Cancel",
+                IsCancel = true,
+                IsDefault = false,
+            };
+            UICommand result = this.SelectPartsDialog.ShowDialog(
+                dialogCommands: new List<UICommand>() { continueCommand, cancelCommand },
+                title: "Select Parts Dialog", viewModel: this._partPopUpTableViewModel);
+            return result == continueCommand;
+        }
+
         #endregion
 
         #region InitializeRegion
@@ -341,13 +413,13 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     this.SetupUI();
                 });
             } else {
-                var category = await this._categoryEdit.GetCategory(this._categoryId);
+                var category = await this._categoryService.GetCategory(this._categoryId);
                 if (category != null) {
                     this.SelectedCategory = category;
                     this.SelectedCategoryType = category.Type.GetCategoryOption();
                     this.DispatcherService.BeginInvoke(() => this.ShowTableLoading(this.SelectedCategoryType,true));
-                    var partInstances = await this._categoryEdit.GetCategoryPartInstances(this._categoryId);
-                    var parts = await this._categoryEdit.GetCategoryParts(this._categoryId);
+                    var partInstances = await this._categoryService.GetCategoryPartInstances(this._selectedCategory);
+                    var parts = await this._categoryService.GetCategoryParts(this._categoryId);
                     this.DispatcherService.BeginInvoke(() => {
                         this.SetupUI(parts, partInstances, category);
                         this.ShowTableLoading(this.SelectedCategoryType, false);

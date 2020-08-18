@@ -17,15 +17,15 @@ namespace ManufacturingInventory.Application.UseCases {
     public class CategoryEdit : ICategoryEditUseCase {
         private ManufacturingContext _context;
         private IRepository<Category> _categoryRepository;
-        private IRepository<PartInstance> _partInstanceProvider;
-        private IRepository<Part> _partProvider;
+        private IRepository<PartInstance> _instanceRepository;
+        private IRepository<Part> _partRepository;
         private IUnitOfWork _unitOfWork;
 
         public CategoryEdit(ManufacturingContext context) {
             this._context = context;
             this._categoryRepository = new CategoryRepository(context);
-            this._partInstanceProvider = new PartInstanceRepository(context);
-            this._partProvider = new PartRepository(context);
+            this._instanceRepository = new PartInstanceRepository(context);
+            this._partRepository = new PartRepository(context);
             this._unitOfWork = new UnitOfWork(context);
         }
 
@@ -141,12 +141,21 @@ namespace ManufacturingInventory.Application.UseCases {
             }
         }
 
-        public async Task<IEnumerable<PartInstance>> GetCategoryPartInstances(int categoryId) {
-            return await this._partInstanceProvider.GetEntityListAsync(e => (e.StockTypeId == categoryId || e.UsageId == categoryId || e.ConditionId == categoryId));
+        public async Task<IEnumerable<PartInstance>> GetCategoryPartInstances(CategoryDTO category) {
+            switch (category.Type) {
+                case CategoryTypes.Condition:
+                    return await this._instanceRepository.GetEntityListAsync(e => e.ConditionId == category.Id);
+                case CategoryTypes.StockType:
+                    return await this._instanceRepository.GetEntityListAsync(e => e.StockTypeId == category.Id);
+                case CategoryTypes.Usage:
+                    return await this._instanceRepository.GetEntityListAsync(e => e.UsageId == category.Id);
+                default:
+                    return null;
+            }
         }
 
         public async Task<IEnumerable<Part>> GetCategoryParts(int categoryId) {
-            return await this._partProvider.GetEntityListAsync(e => e.OrganizationId == categoryId);
+            return await this._partRepository.GetEntityListAsync(e => e.OrganizationId == categoryId);
         }
 
         public async Task<CategoryDTO> GetDefault(CategoryTypes type) {
@@ -203,29 +212,76 @@ namespace ManufacturingInventory.Application.UseCases {
                     break;
             }
         }
-        
-        //private bool UpdateRelatedToDefault(Category category,CategoryTypes type) {
-        //    switch (type) {
-        //        case CategoryTypes.Organization: {
 
-        //            ((Organization)category).Parts.ToList().ForEach(part => { 
+        public async Task<CategoryBoundaryOutput> AddPartTo(int entityId,CategoryDTO category) {
+            if (category.Type == CategoryTypes.Organization) {
+                var part = await this._partRepository.GetEntityAsync(e => e.Id == entityId);
+                var cat = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
+                if (part == null || cat == null) {
+                    var msg = (part == null) ? "Part Not Found" : "Category Not Found";
+                    return new CategoryBoundaryOutput(null, false, "Error: " + msg);
+                }
+                part.OrganizationId = cat.Id;
+                var updated = await this._partRepository.UpdateAsync(part);
+                if (updated != null) {
+                    await this._unitOfWork.Save();
+                    return new CategoryBoundaryOutput(cat, true, "Success: Part Added to Category, Reloading...");
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new CategoryBoundaryOutput(null, false, "Error: Could not add Part to Category");
+                }
+            } else {
+                var instance = await this._instanceRepository.GetEntityAsync(e => e.Id == entityId);
+                var cat = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
+                if (instance == null || cat == null) {
+                    var msg = (instance == null) ? "PartInstance Not Found" : "Category Not Found";
+                    return new CategoryBoundaryOutput(null, false, "Error: " + msg);
+                }
+                StringBuilder buffer = new StringBuilder();
+                switch (category.Type) {
+                    case CategoryTypes.Condition:
+                        instance.ConditionId = cat.Id;
+                        buffer.AppendFormat("to Condition({0})", cat.Name);
+                        break;
+                    case CategoryTypes.StockType:
+                        instance.StockTypeId = cat.Id;
+                        buffer.AppendFormat("to StockType({0})", cat.Name);
+                        break;
+                    case CategoryTypes.Usage:
+                        instance.UsageId = cat.Id;
+                        buffer.AppendFormat("to Usage({0})", cat.Name);
+                        break;
+                }
+                var updated = await this._instanceRepository.UpdateAsync(instance);
+                if (updated != null) {
+                    await this._unitOfWork.Save();
+                    return new CategoryBoundaryOutput(cat, true, "Success: Part Added to Category, Reloading...");
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new CategoryBoundaryOutput(null, false, "Error: Could not add Part to Category");
+                }
+            }
+        }
 
-        //            });
-        //        }
-        //        case CategoryTypes.Condition: {
+        public async Task<IEnumerable<PartInstance>> GetAvailablePartInstances(CategoryDTO category) {
+            switch (category.Type) {
+                case CategoryTypes.Condition: {
+                    return await this._instanceRepository.GetEntityListAsync(e => e.ConditionId != category.Id);
+                }
+                case CategoryTypes.StockType: {
 
-        //        }
-        //        case CategoryTypes.StockType: {
+                    return await this._instanceRepository.GetEntityListAsync(e => e.StockTypeId != category.Id && e.IsBubbler==category.HoldsBubblers);
+                }
+                case CategoryTypes.Usage: {
+                    return await this._instanceRepository.GetEntityListAsync(e => e.UsageId != category.Id);
+                }
+                default:
+                    return null;
+            }
+        }
 
-        //        }
-        //        case CategoryTypes.Usage: {
-
-        //        }
-        //        case CategoryTypes.InvalidType:
-        //            return false;
-        //        default:
-        //            return false;
-        //    }
-        //}
+        public async Task<IEnumerable<Part>> GetAvailableParts(int categoryId) {
+            return await this._partRepository.GetEntityListAsync(e => e.OrganizationId != categoryId);
+        }
     }
 }

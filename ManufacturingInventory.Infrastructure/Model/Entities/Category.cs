@@ -100,6 +100,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int Quantity { get; set; }
         public int MinQuantity { get; set; }
         public int SafeQuantity { get; set; }
+        public bool HoldsBubblers { get; set; }
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 
         public StockType() {
@@ -117,6 +118,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
                 this.MinQuantity = ((StockType)stockType).MinQuantity;
                 this.SafeQuantity = ((StockType)stockType).SafeQuantity;
                 this.Quantity = ((StockType)stockType).Quantity;
+                this.HoldsBubblers= ((StockType)stockType).HoldsBubblers;
             }
         }
 
@@ -128,24 +130,5 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         //        this.Quantity = ((StockType)category).Quantity;
         //    }
         //}
-
-        public void UpdateStock() {
-            if (this.PartInstances != null) {
-
-            }
-        }
-
-        public void UpdateQuantity() {
-            if (this.PartInstances != null) {
-                this.Quantity = this.PartInstances.ToList().Sum(instance => {
-                    if (instance.IsBubbler) {
-                        return (instance.BubblerParameter != null) ? (int)instance.BubblerParameter.Weight: 0;
-
-                    } else {
-                        return instance.Quantity;
-                    }
-                });
-            }
-        }
     }
 }

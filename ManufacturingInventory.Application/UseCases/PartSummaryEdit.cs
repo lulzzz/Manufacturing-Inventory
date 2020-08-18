@@ -149,10 +149,6 @@ namespace ManufacturingInventory.Application.UseCases {
                 part.WarehouseId = input.WarehouseId;
             }
 
-            //if(input.UsageId != 0) {
-            //    part.UsageId = input.UsageId;
-            //}
-
             if(input.OrganizationId != 0) {
                 part.OrganizationId = input.OrganizationId;
             }

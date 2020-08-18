@@ -14,6 +14,7 @@
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:localCommon="clr-namespace:ManufacturingInventory.CategoryManagment.Internal"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.ValueConverters;assembly=ManufacturingInventory.Common"
+             xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
              xmlns:appDef="clr-namespace:ManufacturingInventory.Domain.Enums;assembly=ManufacturingInventory.Domain"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
@@ -32,6 +33,38 @@
         <dx:DXMessageBoxService x:Name="CategoryDetailsMessageBox" />
         <dxmvvm:EventToCommand EventName="Loaded"
                                Command="{Binding InitializeCommand}" />
+        <dx:DialogService x:Name="SelectInstancesDialog"
+                          DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:PartInstancePopUpTableView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="900" />
+                    <Setter Property="Height"
+                            Value="400" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dx:DialogService x:Name="SelectPartsDialog"
+                          DialogWindowStartupLocation="CenterOwner">
+            <dx:DialogService.ViewTemplate>
+                <DataTemplate>
+                    <commonViews:PartPopUpTableView />
+                </DataTemplate>
+            </dx:DialogService.ViewTemplate>
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:ThemedWindow">
+                    <Setter Property="Width"
+                            Value="900" />
+                    <Setter Property="Height"
+                            Value="400" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
         <dxlc:LayoutGroup Orientation="Vertical">
@@ -85,6 +118,18 @@
                                               IsReadOnly="{Binding CanEditDefault,Converter={dxmvvm:BooleanNegationConverter}}"
                                               UncheckedStateContent="NO" />
                         </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Label="Holds Bubblers?"
+                                         Style="{StaticResource LayoutItemStyle}">
+                            <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              CheckedStateContent="YES"
+                                              ContentPlacement="Both"
+                                              EnableAnimation="False"
+                                              IsChecked="{Binding HoldsBubblers}"
+                                              IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}"
+                                              Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}"
+                                              UncheckedStateContent="NO" />
+                        </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
 
 
@@ -129,6 +174,7 @@
                 </dxlc:LayoutItem>
 
             </dxlc:LayoutGroup>
+            <dx:SimpleButton Content="{Binding ButtonText}" Command="{Binding SelectItemsCommand}" Height="50"/>
             <dxlc:LayoutGroup Orientation="Vertical"
                               Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False, Inverse=True}}">
                 <dxlc:LayoutGroup View="GroupBox"

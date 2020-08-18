@@ -20,6 +20,16 @@
         <Setter Property="AutoExpandAllGroups" Value="True" />
         <Setter Property="SelectionMode" Value="Row" />
     </Style>
+    
+    <Style x:Key="GridControlStyleManySelect" TargetType="dxg:GridControl">
+        <Setter Property="AutoGenerateColumns" Value="None" />
+        <Setter Property="SelectionMode" Value="Row" />
+        <Setter Property="dx:DXSerializer.Enabled" Value="False" />
+        <Setter Property="AllowUpdateTwoWayBoundPropertiesOnSynchronization" Value="True" />
+        <Setter Property="AllowLiveDataShaping" Value="True" />
+        <Setter Property="AutoExpandAllGroups" Value="True" />
+        <Setter Property="SelectionMode" Value="MultipleRow" />
+    </Style>
 
     <Style x:Key="TableViewStyleNoMasterNoSearch"
            TargetType="dxg:TableView">

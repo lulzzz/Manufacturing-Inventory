@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="ManufacturingInventory.Common.Application.UI.Views.PartPopUpTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ManufacturingInventory.Common.Application.UI.Views"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             d:DesignHeight="450"
+             d:DesignWidth="900"
+             dx:ThemeManager.Theme="VS2017Blue"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxg:GridControl x:Name="_listOfParts"
+                     ClipboardCopyMode="ExcludeHeader"
+                     ItemsSource="{Binding Parts, IsAsync=True, Mode=TwoWay}"
+                     SelectedItems="{Binding SelectedParts, Mode=TwoWay}"
+                     Style="{StaticResource GridControlStyleManySelect}">
+        <dxg:GridControl.View>
+            <dxg:TableView AllowEditing="False"
+                           AllowGrouping="False"
+                           ShowGroupPanel="False"
+                           ShowSearchPanelMode="Never"
+                           Style="{StaticResource TableViewStyleNoMaster}" />
+        </dxg:GridControl.View>
+        <dxg:GridControl.Columns>
+            <dxg:GridColumn FieldName="Name"
+                            Header="Part" />
+            <dxg:GridColumn AllowGrouping="True"
+                            FieldName="Organization.Name"
+                            Header="Organization" />
+            <dxg:GridColumn AllowGrouping="True"
+                            FieldName="Warehouse.Name"
+                            Header="Warehouse" />
+        </dxg:GridControl.Columns>
+    </dxg:GridControl>
+</UserControl>

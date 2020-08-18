@@ -8,4 +8,5 @@ namespace ManufacturingInventory.Application.Boundaries {
         Delete,
         Update
     }
+
 }

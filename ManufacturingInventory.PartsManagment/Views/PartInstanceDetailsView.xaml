@@ -235,7 +235,7 @@
                                                   Mask="d"
                                                   MaskType="Numeric"
                                                   MinValue="0"
-                                                  Text="{Binding SelectedPartInstance.Quantity}"
+                                                  Text="{Binding Quantity}"
                                                   ToolTip="To Edit Quantity You Must Check In or Check Out" />
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutItem Label="Min Quantity"
@@ -246,7 +246,7 @@
                                                   Mask="d"
                                                   MaskType="Numeric"
                                                   MinValue="0"
-                                                  Text="{Binding SelectedPartInstance.MinQuantity}" />
+                                                  Text="{Binding MinQuantity}" />
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutItem Label="Safe Quantity"
                                                  LabelHorizontalAlignment="Center"
@@ -256,7 +256,7 @@
                                                   Mask="d"
                                                   MaskType="Numeric"
                                                   MinValue="0"
-                                                  Text="{Binding SelectedPartInstance.SafeQuantity}" />
+                                                  Text="{Binding SafeQuantity}" />
                                 </dxlc:LayoutItem>
                             </dxlc:LayoutGroup>
                             <dxlc:LayoutGroup Orientation="Vertical"

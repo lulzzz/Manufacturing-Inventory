@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="ManufacturingInventory.Common.Application.UI.Views.PartInstancePopUpTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ManufacturingInventory.Common.Application.UI.Views"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             d:DesignHeight="450"
+             d:DesignWidth="900"
+             dx:ThemeManager.Theme="VS2017Blue"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="resource"
+                                    Source="pack://application:,,,/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxg:GridControl x:Name="_listOfPartInstances"
+                     ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
+                     SelectedItems="{Binding SelectedPartInstances, Mode=TwoWay}"
+                     Style="{StaticResource GridControlStyleManySelect}">
+        <dxg:GridControl.View>
+                <dxg:TableView x:Name="_instanceTableView"
+                               AllowBestFit="True"
+                               AutoWidth="True"
+                               HorizontalScrollbarVisibility="Visible"
+                               SearchColumns="Name"
+                               SearchPanelNullText="Search By Name"
+                               ShowSearchPanelMode="Always"
+                               Style="{StaticResource TableViewStyleNoMaster}">
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:EventToCommand Command="{Binding ElementName=_instanceTableView, Path=TableViewCommands.BestFitColumns}"
+                                           EventName="Loaded" />
+                </dxmvvm:Interaction.Behaviors>
+            </dxg:TableView>
+            </dxg:GridControl.View>
+            <dxg:GridControl.Bands>
+                <dxg:GridControlBand Header="None"
+                                     OverlayHeaderByChildren="True"
+                                     VisibleIndex="0">
+                    <dxg:GridColumn FieldName="Id"
+                                    IsEnabled="False" />
+                    <dxg:GridColumn AllowSearchPanel="true"
+                                    FieldName="Name" />
+                    <dxg:GridColumn AllowGrouping="True"
+                                    FieldName="StockType.Name"
+                                    Header="Stock Type" />
+                    <dxg:GridColumn FieldName="SerialNumber" />
+                    <dxg:GridColumn FieldName="BatchNumber" />
+                    <dxg:GridColumn AllowGrouping="True"
+                                    FieldName="Condition.Name"
+                                    Header="Condition" />
+                    <dxg:GridColumn AllowGrouping="True"
+                                FieldName="Usage.Name"
+                                Header="Usage" />
+                    <dxg:GridColumn FieldName="TotalCost"
+                                    Header="Total Cost">
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:TextEditSettings Mask="c"
+                                                  MaskType="Numeric"
+                                                  MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                    <dxg:GridColumn FieldName="CurrentLocation.Name"
+                                    Header="Current Location" />
+                </dxg:GridControlBand>
+                <dxg:GridControlBand Header="Stock"
+                                     VisibleIndex="1">
+                    <dxg:GridColumn FieldName="Quantity"
+                                    Header="Quantity" />
+                    <dxg:GridColumn FieldName="MinQuantity" />
+                    <dxg:GridColumn FieldName="SafeQuantity" />
+                    <dxg:GridColumn FieldName="BubblerParameter.Weight" Header="Weight"/>
+                </dxg:GridControlBand>
+            </dxg:GridControl.Bands>
+        </dxg:GridControl>
+</UserControl>

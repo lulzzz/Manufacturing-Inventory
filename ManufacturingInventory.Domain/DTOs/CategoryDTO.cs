@@ -15,6 +15,7 @@ namespace ManufacturingInventory.Domain.DTOs {
         public int Quantity { get; set; }
         public int MinQuantity { get; set; }
         public int SafeQuantity { get; set; }
+        public bool HoldsBubblers { get; set; }
         public CategoryTypes Type { get; set; }
 
 
@@ -28,6 +29,7 @@ namespace ManufacturingInventory.Domain.DTOs {
                 this.Quantity = ((StockType)category).Quantity;
                 this.MinQuantity= ((StockType)category).MinQuantity;
                 this.SafeQuantity= ((StockType)category).SafeQuantity;
+                this.HoldsBubblers = ((StockType)category).HoldsBubblers;
             }
         }
 
@@ -44,7 +46,8 @@ namespace ManufacturingInventory.Domain.DTOs {
                         IsDefault = this.IsDefault,
                         Quantity=this.Quantity,
                         MinQuantity=this.MinQuantity,
-                        SafeQuantity=this.SafeQuantity
+                        SafeQuantity=this.SafeQuantity,
+                        HoldsBubblers=this.HoldsBubblers
                     };
                 case CategoryTypes.Usage:
                     return new Usage() { Name = this.Name, Description = this.Description, IsDefault = this.IsDefault };
@@ -66,13 +69,14 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.Type = type;
         }
 
-        public CategoryDTO(string name, string description, bool isDefault, int quantity, int minQuantity, int safeQuantity, CategoryTypes type) {
+        public CategoryDTO(string name, string description, bool isDefault, int quantity, int minQuantity, int safeQuantity,bool holdsBubblers, CategoryTypes type) {
             this.Name = name;
             this.Description = description;
             this.IsDefault = isDefault;
             this.Quantity = quantity;
             this.MinQuantity = minQuantity;
             this.SafeQuantity = safeQuantity;
+            this.HoldsBubblers = holdsBubblers;
             this.Type = type;
         }
     }
