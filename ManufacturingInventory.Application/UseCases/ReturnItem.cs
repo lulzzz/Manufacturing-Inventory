@@ -87,7 +87,6 @@ namespace ManufacturingInventory.Application.UseCases {
             //partInstance.BubblerParameter.DateRemoved = item.TimeStamp;
             partInstance.UpdateQuantity(1);
             partInstance.CostReported = false;
-
             partInstance.LocationId = location.Id;
             partInstance.DateRemoved = item.TimeStamp;
             if (item.ConditionId != 0) {

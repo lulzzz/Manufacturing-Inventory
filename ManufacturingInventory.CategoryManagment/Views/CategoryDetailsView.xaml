@@ -119,7 +119,8 @@
                                               UncheckedStateContent="NO" />
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Holds Bubblers?"
-                                         Style="{StaticResource LayoutItemStyle}">
+                                         Style="{StaticResource LayoutItemStyle}"
+                                         Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}">
                             <dxe:ToggleSwitch HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
                                               CheckedStateContent="YES"
@@ -127,7 +128,6 @@
                                               EnableAnimation="False"
                                               IsChecked="{Binding HoldsBubblers}"
                                               IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}"
-                                              Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}"
                                               UncheckedStateContent="NO" />
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
@@ -174,7 +174,10 @@
                 </dxlc:LayoutItem>
 
             </dxlc:LayoutGroup>
-            <dx:SimpleButton Content="{Binding ButtonText}" Command="{Binding SelectItemsCommand}" Height="50"/>
+            <dx:SimpleButton Content="{Binding ButtonText}"
+                             Command="{Binding SelectItemsCommand}"
+                             Height="50"
+                             Visibility="{Binding CanEdit,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}" />
             <dxlc:LayoutGroup Orientation="Vertical"
                               Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False, Inverse=True}}">
                 <dxlc:LayoutGroup View="GroupBox"

@@ -121,8 +121,8 @@ namespace ManufacturingInventory.Application.UseCases {
                 var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockType.Id);
                 if (stockType != null) {
                     stockType.Quantity -= item.Quantity;
+                    await this._categoryRepository.UpdateAsync(stockType);
                 }
-                await this._categoryRepository.UpdateAsync(stockType);
             }
 
             transaction.SessionId = this._userService.CurrentSessionId.Value;

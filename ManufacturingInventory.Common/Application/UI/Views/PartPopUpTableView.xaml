@@ -32,6 +32,7 @@
                            AllowGrouping="False"
                            ShowGroupPanel="False"
                            ShowSearchPanelMode="Never"
+                           ShowCheckBoxSelectorColumn="True"
                            Style="{StaticResource TableViewStyleNoMaster}" />
         </dxg:GridControl.View>
         <dxg:GridControl.Columns>

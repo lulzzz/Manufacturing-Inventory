@@ -606,12 +606,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                                 this.MinQuantity = stockType.MinQuantity;
                                 this.Quantity = this.SelectedPartInstance.Quantity;
                             }
+                            this.SelectedStockType = stockType;
                         }
 
                         this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && this.CanEdit;
                         this.IsReusable = (this.SelectedPartInstance.IsReusable || this.IsBubbler);
                         this.CostReported = this.SelectedPartInstance.CostReported;
-
                         if (this.SelectedPartInstance.Usage != null) {
                             this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);
                         }

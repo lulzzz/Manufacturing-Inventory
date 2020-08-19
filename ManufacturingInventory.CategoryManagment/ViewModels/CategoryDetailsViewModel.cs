@@ -21,6 +21,8 @@ using ManufacturingInventory.CategoryManagment.ViewModels;
 using System.Text;
 using DevExpress.Xpf.Grid.TypedStyles;
 using DevExpress.Xpf.RichEdit.Controls.Internal.TypedStyles;
+using DevExpress.CodeParser;
+using Microsoft.Extensions.Primitives;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryDetailsViewModel : InventoryViewModelNavigationBase {
@@ -48,7 +50,8 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private string _name;
         private string _description;
         private bool _isDefault;
-
+        private bool _holdsBubblers;
+        
         private bool _partInstancesEnabled;
         private bool _showPartInstanceTableLoading;
         private bool _showPartTableLoading;
@@ -61,6 +64,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private int _categoryId;
         private bool _isNew;
         private bool _isEdit;
+        
 
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
@@ -76,6 +80,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             this.SaveCommand = new AsyncCommand(this.SaveHandler);
             this.CancelCommand = new AsyncCommand(this.CancelHandler);
             this.CategoryTypeChangedCommand = new AsyncCommand(this.CategoryTypeChangedHandler);
+            this.SelectItemsCommand = new AsyncCommand(this.AddItemsToCategory);
         }
 
         #region ParameterBinding
@@ -221,6 +226,11 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             set => SetProperty(ref this._buttonText,value);
         }
 
+        public bool HoldsBubblers {
+            get => this._holdsBubblers;
+            set => SetProperty(ref this._holdsBubblers, value);
+        }
+
         #endregion
 
         #region HandlerRegion
@@ -229,7 +239,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             EditAction action = (this.IsNew) ? EditAction.Add : EditAction.Update;
             var defaultCategory = await this._categoryService.GetDefault(this.SelectedCategory.Type);
             bool cancel = false;
-            bool defaultChanged = false; ;
+            bool defaultChanged = false;
             if (defaultCategory != null) {
                 if (this.IsDefault) {
                     if (this.SelectedCategory.Id != defaultCategory.Id) {
@@ -254,11 +264,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                                 defaultChanged = false;
                                 break;
                         }
-                        //if (messageResult == MessageResult.No) {
-                        //    this.SelectedCategory.IsDefault = false;
-                        //} else if (messageResult == MessageResult.Cancel) {
-                        //    cancel = true;
-                        //}
                     }
                 } else {
                     if (this.SelectedCategory.Id == defaultCategory.Id) {
@@ -281,16 +286,11 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                                 cancel = true;
                                 break;
                         }
-
-                        //if (messageResult == MessageResult.Yes) {
-                        //    this.SelectedCategory.IsDefault = false;
-                        //} else if (messageResult == MessageResult.Cancel) {
-                        //    cancel = true;
-                        //}
                     }
                 }
             }
             if (!cancel) {
+                this.SelectedCategory.HoldsBubblers = this.HoldsBubblers;
                 CategoryBoundaryInput input = new CategoryBoundaryInput(action, this.SelectedCategory,defaultChanged);
                 var response = await this._categoryService.Execute(input);
                 await this.ShowActionResponse(response);
@@ -340,7 +340,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     this.DispatcherService.BeginInvoke(() => {
                         this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
                     });
-
                 }
             });
         }
@@ -348,15 +347,56 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private async Task AddItemsToCategory() {
             if (this._selectedCategory.Type == CategoryTypes.Organization) {
                 var parts = await this._categoryService.GetAvailableParts(this._categoryId);
+                    if (this.ShowPartSelectionDialog(parts)) {
+                        var selected = this._partPopUpTableViewModel.SelectedParts;
+                        var entityIds = selected.Select(e => e.Id);
+                        var outputList = await this._categoryService.AddPartTo(entityIds, this._selectedCategory);
+                        StringBuilder pass = new StringBuilder();
+                        StringBuilder fail = new StringBuilder();
+                        pass.AppendLine("Succeeded: ");
+                        fail.AppendLine("Failed: ");
+                        bool onefail = false;
+                        foreach (var output in outputList) {
+                            if (output.Success) {
+                                pass.AppendFormat(output.Message).AppendLine();
+                            } else {
+                                fail.AppendFormat(output.Message).AppendLine();
+                                onefail = true;
+                            }
+                        }
+                        if (onefail) {
+                            pass.AppendLine().Append(fail);
+                        }
+
+                        this.MessageBoxService.ShowMessage(pass.ToString(), "You Selected", MessageButton.OK, MessageIcon.Information);
+                        this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Publish(this._categoryId);
+                    }
             } else {
                 var availableInstances = await this._categoryService.GetAvailablePartInstances(this._selectedCategory);
-                this.DispatcherService.BeginInvoke(() => {
-                    if (this.ShowPartInstanceDialog(availableInstances)) {
-
-                    } else {
-
+                if (this.ShowPartInstanceDialog(availableInstances)) {
+                    var selected = this._partInstancePopUpTableViewModel.SelectedPartInstances;
+                    var entityIds = selected.Select(e => e.Id);
+                    var outputList= await this._categoryService.AddPartTo(entityIds, this._selectedCategory);
+                    StringBuilder pass = new StringBuilder();
+                    StringBuilder fail = new StringBuilder();
+                    pass.AppendLine("Succeeded: ");
+                    fail.AppendLine("Failed: ");
+                    bool onefail = false;
+                    foreach(var output in outputList) {
+                        if (output.Success) {
+                            pass.AppendFormat(output.Message).AppendLine();
+                        } else {
+                            fail.AppendFormat(output.Message).AppendLine();
+                            onefail = true;
+                        }
                     }
-                });
+                    if (onefail) {
+                        pass.AppendLine().Append(fail);
+                    }
+
+                    this.MessageBoxService.ShowMessage(pass.ToString(),"You Selected",MessageButton.OK,MessageIcon.Information);
+                    this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Publish(this._categoryId);
+                }
             }
         }
 
@@ -417,6 +457,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 if (category != null) {
                     this.SelectedCategory = category;
                     this.SelectedCategoryType = category.Type.GetCategoryOption();
+                    this.ButtonText = (category.Type == CategoryTypes.Organization) ? "Add Parts" : "Add PartInstances";
                     this.DispatcherService.BeginInvoke(() => this.ShowTableLoading(this.SelectedCategoryType,true));
                     var partInstances = await this._categoryService.GetCategoryPartInstances(this._selectedCategory);
                     var parts = await this._categoryService.GetCategoryParts(this._categoryId);
@@ -464,6 +505,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 this.SelectedCategory = new CategoryDTO();
                 this.SelectedCategoryType = CategoryOption.NotSelected;
                 this.IsDefault = false;
+                this.HoldsBubblers = false;
                 this.DisplayCategorySpecificItems(CategoryOption.NotSelected);
             } else {
                 if (category != null) {
@@ -482,12 +524,13 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     this.Name = category.Name;
                     this.Description = category.Description;
                     this.IsDefault = category.IsDefault;
-
+                    
                     if (this.SelectedCategoryType == CategoryOption.StockType) {
                         this.IsStockType = true;
                         this.Quantity = category.Quantity;
                         this.MinQuantity = category.MinQuantity;
                         this.SafeQuantity = category.SafeQuantity;
+                        this.HoldsBubblers = category.HoldsBubblers;
                         this.CanEditDefault = false;
                     } else {
                         this.IsStockType = false;

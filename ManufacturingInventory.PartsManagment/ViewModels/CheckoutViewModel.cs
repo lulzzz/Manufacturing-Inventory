@@ -51,8 +51,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private double _totalCost;
         private double _unitCost;
 
-
-
         private int _quantity;
         private bool _isBubbler = false;
         private bool _isInitialized = false;
@@ -378,17 +376,12 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                         this.QuantityLabel = (this.SelectedPartInstance.IsBubbler || this.SelectedPartInstance.IsReusable) ? "Quantity" : "Enter Quantity";
                         if (this.SelectedPartInstance.IsBubbler) {
                             this.Quantity = this.SelectedPartInstance.Quantity;
+                            this.SelectedCondition = this.Conditions.FirstOrDefault(condition=>condition.Name=="Used");
                         } else {
                             this.Quantity = 0;
                         }
-
-                        //if (this.SelectedPartInstance.CostReported) {
-                            this.UnitCost = this.SelectedPartInstance.UnitCost;
-                            this.TotalCost = this.SelectedPartInstance.TotalCost;
-                        //} else {
-                        //    this.UnitCost = 0;
-                        //    this.TotalCost = 0;
-                        //}
+                        this.UnitCost = this.SelectedPartInstance.UnitCost;
+                        this.TotalCost = this.SelectedPartInstance.TotalCost;
                     }
                     this._isInitialized = true;
                 });

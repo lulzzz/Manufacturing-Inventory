@@ -12,6 +12,8 @@ using System.Linq;
 using System.Reflection;
 using ManufacturingInventory.Infrastructure.Model.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
+using Microsoft.VisualBasic;
 
 namespace ManufacturingInventory.Application.UseCases {
     public class CategoryEdit : ICategoryEditUseCase {
@@ -82,6 +84,7 @@ namespace ManufacturingInventory.Application.UseCases {
                         ((StockType)category).Quantity = input.Category.Quantity;
                         ((StockType)category).MinQuantity = input.Category.MinQuantity;
                         ((StockType)category).SafeQuantity = input.Category.SafeQuantity;
+                        ((StockType)category).HoldsBubblers = input.Category.HoldsBubblers;
                         break;
                     case CategoryTypes.InvalidType:
                         return new CategoryBoundaryOutput(null, false, "Error: Invalid Type, Please make sure category type is selected");
@@ -216,51 +219,86 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<CategoryBoundaryOutput> AddPartTo(int entityId,CategoryDTO category) {
             if (category.Type == CategoryTypes.Organization) {
                 var part = await this._partRepository.GetEntityAsync(e => e.Id == entityId);
-                var cat = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
-                if (part == null || cat == null) {
+                var newCategory = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
+
+                if (part == null || newCategory == null) {
                     var msg = (part == null) ? "Part Not Found" : "Category Not Found";
                     return new CategoryBoundaryOutput(null, false, "Error: " + msg);
                 }
-                part.OrganizationId = cat.Id;
+                part.OrganizationId = newCategory.Id;
                 var updated = await this._partRepository.UpdateAsync(part);
                 if (updated != null) {
                     await this._unitOfWork.Save();
-                    return new CategoryBoundaryOutput(cat, true, "Success: Part Added to Category, Reloading...");
+                    return new CategoryBoundaryOutput(newCategory, true, "PartInstance " + part.Name + " Added Successfully");
                 } else {
                     await this._unitOfWork.Undo();
-                    return new CategoryBoundaryOutput(null, false, "Error: Could not add Part to Category");
+                    return new CategoryBoundaryOutput(null, false, "PartInstance " + part.Name + " Failed to Add");
                 }
             } else {
                 var instance = await this._instanceRepository.GetEntityAsync(e => e.Id == entityId);
-                var cat = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
-                if (instance == null || cat == null) {
-                    var msg = (instance == null) ? "PartInstance Not Found" : "Category Not Found";
+                var newCategory = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
+                if (instance == null || newCategory == null) {
+                    var msg = (instance == null) ? "PartInstance Id "+ entityId + "Not Found" : "Category Not Found";
                     return new CategoryBoundaryOutput(null, false, "Error: " + msg);
                 }
-                StringBuilder buffer = new StringBuilder();
+                bool error=false;
                 switch (category.Type) {
                     case CategoryTypes.Condition:
-                        instance.ConditionId = cat.Id;
-                        buffer.AppendFormat("to Condition({0})", cat.Name);
+                        instance.ConditionId = newCategory.Id;
                         break;
                     case CategoryTypes.StockType:
-                        instance.StockTypeId = cat.Id;
-                        buffer.AppendFormat("to StockType({0})", cat.Name);
+                        var oldCategory = await this._categoryRepository.GetEntityAsync(e => e.Id == instance.StockTypeId);
+                        if (oldCategory != null) {
+                            instance.StockTypeId = newCategory.Id;
+                            if (((StockType)newCategory).HoldsBubblers && instance.IsBubbler) {
+                                if (!newCategory.IsDefault) {
+                                    ((StockType)newCategory).Quantity += (int)instance.BubblerParameter.Weight;
+                                }
+                                if (!oldCategory.IsDefault) {
+                                    ((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
+                                }
+                            } else {
+                                if (!newCategory.IsDefault) {
+                                    ((StockType)newCategory).Quantity += instance.Quantity;
+                                }
+                                if (!oldCategory.IsDefault) {
+                                    ((StockType)oldCategory).Quantity -= instance.Quantity;
+                                }
+                            }
+                            var oldUpdated=await this._categoryRepository.UpdateAsync(oldCategory);
+                            error=!(oldUpdated != null); 
+                        } else {
+                            error = true;
+                        }
                         break;
                     case CategoryTypes.Usage:
-                        instance.UsageId = cat.Id;
-                        buffer.AppendFormat("to Usage({0})", cat.Name);
+                        instance.UsageId = newCategory.Id;
                         break;
                 }
-                var updated = await this._instanceRepository.UpdateAsync(instance);
-                if (updated != null) {
-                    await this._unitOfWork.Save();
-                    return new CategoryBoundaryOutput(cat, true, "Success: Part Added to Category, Reloading...");
+                if (!error) {
+                    var catUpdated = await this._categoryRepository.UpdateAsync(newCategory);
+                    var instanceUpdated = await this._instanceRepository.UpdateAsync(instance);
+                    if (instanceUpdated != null && catUpdated != null) {
+                        await this._unitOfWork.Save();
+                        return new CategoryBoundaryOutput(newCategory, true, "PartInstance " + instance.Name + " Added Successfully");
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return new CategoryBoundaryOutput(null, false, "PartInstance " + instance.Name + " Failed to Add");
+                    }
                 } else {
                     await this._unitOfWork.Undo();
-                    return new CategoryBoundaryOutput(null, false, "Error: Could not add Part to Category");
+                    return new CategoryBoundaryOutput(null, false, "PartInstance " + instance.Name + " Failed to Add");
                 }
             }
+        }
+
+        public async Task<IEnumerable<CategoryBoundaryOutput>> AddPartTo(IEnumerable<int> entityIds, CategoryDTO category) {
+            List<CategoryBoundaryOutput> outputList = new List<CategoryBoundaryOutput>();
+            foreach(int entityId in entityIds) {
+                var output = await this.AddPartTo(entityId, category);
+                outputList.Add(output);
+            }
+            return outputList;
         }
 
         public async Task<IEnumerable<PartInstance>> GetAvailablePartInstances(CategoryDTO category) {

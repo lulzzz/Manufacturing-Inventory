@@ -57,7 +57,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             this.EditCategoryCommand = new AsyncCommand(this.EditCategoryHandler, () => !this._editInProgress);
             this.ViewCategoryDetailsCommand = new AsyncCommand(this.ViewCategoryDetailsHandler, () => !this._editInProgress);
             this.DoubleClickViewCommand = new AsyncCommand(this.ViewCategoryDetailsHandler,()=>!this._editInProgress);
-            this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Subscribe(async ( categoryId) => await this.CategoryEditDoneHandler(categoryId));
+            this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Subscribe(async (categoryId) => await this.CategoryEditDoneHandler(categoryId));
             this._eventAggregator.GetEvent<CategoryEditCancelEvent>().Subscribe(async (categoryId) => await this.CategoryEditCancelHandler(categoryId));
 
         }
@@ -198,17 +198,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         }
 
         #endregion
-
-
-
-
-
-
-
-
-
-
-
 
 
     }

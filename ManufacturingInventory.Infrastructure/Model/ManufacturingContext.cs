@@ -45,7 +45,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            //optionsBuilder.UseSqlServer("server=172.29.144.1;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
 
         }
 
@@ -254,8 +254,6 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
-
-
             builder.Entity<PartInstance>()
                 .HasOne(e => e.CurrentLocation)
                 .WithMany(e => e.ItemsAtLocation)
@@ -328,8 +326,6 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             #region Parameters
 
-
-
             builder.Entity<Parameter>()
                 .HasOne(e => e.Unit)
                 .WithMany(e => e.Parameters)
@@ -396,7 +392,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
 
             #endregion
 
-            #region User
+            #region Alerts
 
             builder.Entity<UserAlert>()
                 .HasKey(ua => new { ua.UserId, ua.AlertId });
@@ -414,6 +410,16 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .HasForeignKey(e => e.UserId)
                 .IsRequired(true)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Alert>()
+                .HasOne(e => e.Stock)
+                .WithOne(e => e.Alert)
+                .HasForeignKey<StockType>(e => e.AlertId)
+                .IsRequired(false);
+
+            #endregion
+
+            #region User
 
             builder.Entity<User>()
                 .HasMany(e => e.Sessions)

@@ -101,6 +101,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int MinQuantity { get; set; }
         public int SafeQuantity { get; set; }
         public bool HoldsBubblers { get; set; }
+
+        public int? AlertId { get; set; }
+        public Alert Alert { get; set; }
+
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 
         public StockType() {

@@ -11,11 +11,12 @@ namespace ManufacturingInventory.Application.Boundaries.CategoryBoundaries {
         Task<IEnumerable<CategoryDTO>> GetCategories();
         Task<IEnumerable<PartInstance>> GetCategoryPartInstances(CategoryDTO category);
         Task<IEnumerable<PartInstance>> GetAvailablePartInstances(CategoryDTO category);
-        Task<IEnumerable<Part>> GetAvailableParts(int categoryId;
+        Task<IEnumerable<Part>> GetAvailableParts(int categoryId);
         Task<IEnumerable<Part>> GetCategoryParts(int categoryId);
         Task<CategoryDTO> GetCategory(int categoryId);
         Task<CategoryDTO> GetDefault(CategoryTypes type);
         Task<CategoryBoundaryOutput> AddPartTo(int entityId, CategoryDTO category);
-        
+        Task<IEnumerable<CategoryBoundaryOutput>> AddPartTo(IEnumerable<int> entityIds, CategoryDTO category);
+
     }
 }

@@ -4,14 +4,16 @@ using ManufacturingInventory.Infrastructure.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
     [DbContext(typeof(ManufacturingContext))]
-    partial class ManufacturingContextModelSnapshot : ModelSnapshot
+    [Migration("20200819182542_Category_HoldBubbler")]
+    partial class Category_HoldBubbler
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,12 +28,26 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("AlertTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PartId")
+                        .HasColumnType("int");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int?>("StockId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StockId");
 
                     b.ToTable("Alerts");
                 });
@@ -831,9 +847,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsEnabled")
-                        .HasColumnType("bit");
-
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -864,9 +877,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 {
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
-                    b.Property<int?>("AlertId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("HoldsBubblers")
                         .HasColumnType("bit");
 
@@ -878,10 +888,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
                     b.Property<int>("SafeQuantity")
                         .HasColumnType("int");
-
-                    b.HasIndex("AlertId")
-                        .IsUnique()
-                        .HasFilter("[AlertId] IS NOT NULL");
 
                     b.HasDiscriminator().HasValue("StockType");
                 });
@@ -905,6 +911,13 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Location");
 
                     b.HasDiscriminator().HasValue("Warehouse");
+                });
+
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Alert", b =>
+                {
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Attachment", b =>
@@ -1135,13 +1148,6 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.StockType", b =>
-                {
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Alert", "Alert")
-                        .WithOne("Stock")
-                        .HasForeignKey("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "AlertId");
                 });
 #pragma warning restore 612, 618
         }

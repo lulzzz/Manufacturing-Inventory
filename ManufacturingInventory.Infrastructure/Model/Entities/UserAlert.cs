@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
     public class UserAlert {
         public int Id { get; set; }
+        public bool IsEnabled { get; set; }
         public byte[] RowVersion { get; set; }
 
         public int UserId { get; set; }
