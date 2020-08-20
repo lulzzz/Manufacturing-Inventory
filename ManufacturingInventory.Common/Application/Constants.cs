@@ -22,4 +22,9 @@ namespace ManufacturingInventory.Common.Application {
         public static readonly string DefaultRankName = "Enter Rank/Bin Here";
         public static readonly int DefaultStockId = 14;
     }
+
+    public static class AlertTypes {
+        public static string IndividualAlert { get => "individual_alert"; }
+        public static string CombinedAlert { get => "combined_alert"; }
+    }
 }

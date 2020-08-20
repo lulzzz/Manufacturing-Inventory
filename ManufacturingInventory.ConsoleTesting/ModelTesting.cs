@@ -1,68 +1,184 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using IWshRuntimeLibrary;
 using Microsoft.EntityFrameworkCore;
 using ManufacturingInventory.Infrastructure.Model;
-using ManufacturingInventory.Domain.Security.Interfaces;
 using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Domain.Buisness.Concrete;
 using ManufacturingInventory.Application.UseCases;
-using ManufacturingInventory.Infrastructure.Model.Interfaces;
-using ManufacturingInventory.Application.Boundaries.Checkout;
-using ManufacturingInventory.Infrastructure.Model.Providers;
-using System.Collections.ObjectModel;
-using ManufacturingInventory.Application.Boundaries.PartInstanceDetailsEdit;
-using ManufacturingInventory.Application.Boundaries.CheckIn;
-using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
-using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
-using ManufacturingInventory.Domain.DTOs;
-using ManufacturingInventory.Domain.Extensions;
-using Nito.AsyncEx;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks.Dataflow;
-using System.Net;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Runtime.CompilerServices;
+using ManufacturingInventory.Common.Application;
+using System.Data.OleDb;
+using Nito.AsyncEx;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
 
         public static void Main(string[] args) {
 
-            AsyncContext.Run(WorkingWithAlerts);
-            //Console.WriteLine("Month: {0}", DateTime.Now.ToString("MMMM"));
-
+            //syncContext.Run(AddAlertToAllInstances);
+            //AsyncContext.Run(DeletingAlerts);
+            //AddAlertToAllInstances();
+            AsyncContext.Run(ChangeStockTypeThenAlert);
         }
 
-        public static async Task WorkingWithAlerts_Exisiting() {
+        public static async Task ChangeStockTypeThenAlert() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+            UserService userService = new UserService();
+            if (user != null) {
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+                context.SaveChanges();
+                userService.CurrentUserName = user.UserName;
+                userService.CurrentSessionId = session.Id;
+                userService.UserPermissionName = user.Permission.Name;
+            }
+            var partInstance = await context.PartInstances.Include(e => e.IndividualAlert).Include(e => e.StockType).ThenInclude(e => e.CombinedAlert).FirstOrDefaultAsync(e=>e.Id==66);
+            var newStockType = await context.Categories.OfType<StockType>().Include(e => e.CombinedAlert).ThenInclude(e => e.UserAlerts).FirstOrDefaultAsync(e => e.Id == 14);
+            if (partInstance != null && newStockType!=null) {
+                if (newStockType.IsDefault) {
+                    if (!partInstance.StockType.IsDefault) {
+                        //from combinded to individual
+                        Console.WriteLine("Combined to Individual");
+                        IndividualAlert alert = new IndividualAlert();
+                        alert.PartInstance = partInstance;
+                        partInstance.IndividualAlert = alert;
+                        context.Add(alert);
+                        partInstance.StockType = newStockType;
+                        context.Update(partInstance);
+                        await context.SaveChangesAsync();
+                        Console.WriteLine("Case one should be done");
+                    } else {
+                        //from individual to individual.  Should never be here
+                        Console.WriteLine("You should not be here");
+                    }
+                } else {
+                    if (partInstance.StockType.IsDefault) {
+                        if (partInstance.IndividualAlert != null) {
+                            //from individual to combined
+                            var userAlerts = context.UserAlerts.Where(e => e.AlertId == partInstance.IndividualAlertId);
+                            context.RemoveRange(userAlerts);
+                            var deleted = context.Alerts.Remove(partInstance.IndividualAlert);
+                            partInstance.IndividualAlert = null;
+                            partInstance.StockType = newStockType;
+                            newStockType.Quantity += partInstance.Quantity;
+                            context.Update(newStockType);
+                            await context.SaveChangesAsync();
+                            Console.WriteLine("Should be done");
+                        } else {
+                            Console.WriteLine("You should not be here");
+                        }
+                    } else {
+                        //from combined to another combined
+                        Console.WriteLine("Combined to Combined");
+                        var oldStock=context.Entry<StockType>(partInstance.StockType).Entity;
+                        oldStock.Quantity-= partInstance.Quantity;
+                        var okay=oldStock.PartInstances.Remove(partInstance);
+                        partInstance.StockType = newStockType;
+                        newStockType.PartInstances.Add(partInstance);
+                        newStockType.Quantity += partInstance.Quantity;
 
-            var stockType = await context.Categories.OfType<StockType>()
-                .Include(e => e.PartInstances)
-                    .ThenInclude(e => e.BubblerParameter)
-                .Include(e => e.Alert)
-                    .ThenInclude(e => e.UserAlerts)
-                    .ThenInclude(e => e.User)
-                .FirstOrDefaultAsync(e => e.Id == 16);
-
-            if (stockType != null) {
-                Console.WriteLine("");
-
+                        context.Update(newStockType);
+                        context.Update(oldStock);
+                        context.Update(partInstance);
+                        await context.SaveChangesAsync();
+                        Console.WriteLine("Should be finished");
+                    }
+                }
+                Console.WriteLine("Done, Press any key to exit");
             } else {
-                Console.WriteLine("Could Not Find StockType");
+                Console.WriteLine("PartInstance not found");
+            }
+
+        }
+
+        public static void AddAlertToAllInstances() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+            UserService userService = new UserService();
+            if (user != null) {
+                Session session = new Session(user);
+                context.Sessions.Add(session);
+                context.SaveChanges();
+                userService.CurrentUserName = user.UserName;
+                userService.CurrentSessionId = session.Id;
+                userService.UserPermissionName = user.Permission.Name;
+            }
+            var partInstances = context.PartInstances.Include(e => e.IndividualAlert).Include(e => e.StockType).ThenInclude(e=>e.CombinedAlert);
+            List<Task> tasks = new List<Task>();
+            foreach(var instance in partInstances) {
+                if (instance.StockType.IsDefault) {
+                    //individual alert
+                    if (instance.IndividualAlert == null) {
+                        IndividualAlert alert = new IndividualAlert();
+                        alert.PartInstance = instance;
+                        instance.IndividualAlert = alert;
+                        context.Add(alert);
+                        //context.SaveChanges();
+                    }                
+                } else {
+                    //combined alert
+                    if (instance.StockType.CombinedAlert == null) {
+                        CombinedAlert alert = new CombinedAlert();
+                        alert.StockHolder = instance.StockType;
+                        context.Add(alert);
+                        //context.SaveChanges();
+                    }
+                }
+            }
+            context.SaveChanges();
+
+        }
+
+        public static async Task DeletingAlerts() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            //var alert =await context.Alerts.OfType<IndividualAlert>().Include(e=>e.UserAlerts).ThenInclude(e=>e.User).Include(e=>e.PartInstance).FirstOrDefaultAsync(e => e.Id == 3);
+
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .Include(e=>e.UserAlerts)
+                    .ThenInclude(e=>e.Alert)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+            UserService userService = new UserService();
+            if (user != null) {
+                Session session = new Session(user);
+                await context.Sessions.AddAsync(session);
+                await context.SaveChangesAsync();
+                userService.CurrentUserName = user.UserName;
+                userService.CurrentSessionId = session.Id;
+                userService.UserPermissionName = user.Permission.Name;
+                Console.WriteLine("User found and Object created");
+                var alert = await context.UserAlerts.FirstOrDefaultAsync(e => e.UserId == user.Id && e.AlertId == 3);
+
+                if (alert != null) {
+                    
+                    await context.SaveChangesAsync();
+                    Console.WriteLine("Done?");
+                } else {
+                    Console.WriteLine("Could not find alert");
+                }
             }
         }
 
-        public static async Task WorkingWithAlerts() {
+        public static async Task WorkingWithIndividualAlerts() {
+
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
@@ -81,15 +197,55 @@ namespace ManufacturingInventory.ConsoleTesting {
                 userService.CurrentSessionId = session.Id;
                 userService.UserPermissionName = user.Permission.Name;
             }
-            var stockType = await context.Categories.OfType<StockType>().Include(e => e.PartInstances).ThenInclude(e => e.BubblerParameter).FirstOrDefaultAsync(e=>e.Id==16);
-            if (stockType != null) {
-                Alert tmaAlert = new Alert();
+            var partInstance = await context.PartInstances.Include(e => e.BubblerParameter).Include(e => e.IndividualAlert).FirstOrDefaultAsync(e=>e.Id == 1);
+            if (partInstance != null) {
+                IndividualAlert alert = new IndividualAlert();
+                alert.PartInstance = partInstance;
                 UserAlert userAlert = new UserAlert();
-                userAlert.IsEnabled = true;
-                tmaAlert.Stock = stockType;
-                userAlert.Alert = tmaAlert;
+                userAlert.Alert = alert;
                 userAlert.User = user;
                 var added=await context.AddAsync(userAlert);
+                if (added != null) {
+                    await context.SaveChangesAsync();
+                    Console.WriteLine("Should be saved");
+                } else {
+                    Console.WriteLine("Failed to add Alert");
+                }           
+            } else {
+                Console.WriteLine("PartInstance Not Found");
+            }
+
+
+        }
+
+        public static async Task WorkingWithCombinedAlerts() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+
+            var user = context.Users
+                .Include(e => e.Sessions)
+                    .ThenInclude(e => e.Transactions)
+                .Include(e => e.Permission)
+                .FirstOrDefault(e => e.FirstName == "Andrew");
+            UserService userService = new UserService();
+            if (user != null) {
+                Session session = new Session(user);
+                await context.Sessions.AddAsync(session);
+                await context.SaveChangesAsync();
+                userService.CurrentUserName = user.UserName;
+                userService.CurrentSessionId = session.Id;
+                userService.UserPermissionName = user.Permission.Name;
+            }
+            var stockType = await context.Categories.OfType<StockType>().Include(e => e.PartInstances).ThenInclude(e => e.BubblerParameter).FirstOrDefaultAsync(e => e.Id == 16);
+            if (stockType != null) {
+                CombinedAlert tmaAlert = new CombinedAlert();
+                UserAlert userAlert = new UserAlert();
+                userAlert.IsEnabled = true;
+                tmaAlert.StockHolder = stockType;
+                userAlert.Alert = tmaAlert;
+                userAlert.User = user;
+                var added = await context.AddAsync(userAlert);
                 if (added != null) {
                     await context.SaveChangesAsync();
                     Console.WriteLine("Should be saved");

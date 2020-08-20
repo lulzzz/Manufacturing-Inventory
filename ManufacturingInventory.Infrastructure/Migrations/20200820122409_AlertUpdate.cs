@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ManufacturingInventory.Infrastructure.Migrations
 {
-    public partial class AlertUpdates : Migration
+    public partial class AlertUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -38,21 +38,48 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 defaultValue: false);
 
             migrationBuilder.AddColumn<int>(
-                name: "AlertId",
+                name: "IndividualAlertId",
+                table: "PartInstances",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "CombinedAlertId",
                 table: "Categories",
                 nullable: true);
 
+            migrationBuilder.AddColumn<string>(
+                name: "alert_type",
+                table: "Alerts",
+                maxLength: 200,
+                nullable: false,
+                defaultValue: "");
+
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_AlertId",
-                table: "Categories",
-                column: "AlertId",
+                name: "IX_PartInstances_IndividualAlertId",
+                table: "PartInstances",
+                column: "IndividualAlertId",
                 unique: true,
-                filter: "[AlertId] IS NOT NULL");
+                filter: "[IndividualAlertId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_CombinedAlertId",
+                table: "Categories",
+                column: "CombinedAlertId",
+                unique: true,
+                filter: "[CombinedAlertId] IS NOT NULL");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Categories_Alerts_AlertId",
+                name: "FK_Categories_Alerts_CombinedAlertId",
                 table: "Categories",
-                column: "AlertId",
+                column: "CombinedAlertId",
+                principalTable: "Alerts",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_PartInstances_Alerts_IndividualAlertId",
+                table: "PartInstances",
+                column: "IndividualAlertId",
                 principalTable: "Alerts",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -61,11 +88,19 @@ namespace ManufacturingInventory.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Categories_Alerts_AlertId",
+                name: "FK_Categories_Alerts_CombinedAlertId",
                 table: "Categories");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_PartInstances_Alerts_IndividualAlertId",
+                table: "PartInstances");
+
             migrationBuilder.DropIndex(
-                name: "IX_Categories_AlertId",
+                name: "IX_PartInstances_IndividualAlertId",
+                table: "PartInstances");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Categories_CombinedAlertId",
                 table: "Categories");
 
             migrationBuilder.DropColumn(
@@ -73,8 +108,16 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 table: "UserAlerts");
 
             migrationBuilder.DropColumn(
-                name: "AlertId",
+                name: "IndividualAlertId",
+                table: "PartInstances");
+
+            migrationBuilder.DropColumn(
+                name: "CombinedAlertId",
                 table: "Categories");
+
+            migrationBuilder.DropColumn(
+                name: "alert_type",
+                table: "Alerts");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "AlertTime",

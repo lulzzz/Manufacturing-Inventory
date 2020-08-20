@@ -69,6 +69,7 @@ namespace ManufacturingInventory.Application.UseCases {
             if (part != null) {
                 input.PartInstance.PartId = input.PartId;
                 input.PartInstance.Price = input.Price;
+                
                 input.PartInstance.UpdatePrice();
                 var instanceEntity = await this._partInstanceRepository.AddAsync(input.PartInstance);
                 if (instanceEntity != null) {
@@ -79,8 +80,8 @@ namespace ManufacturingInventory.Application.UseCases {
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
-                    if (!instanceEntity.StockType.IsDefault) {
-                        var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockType.Id);
+                    var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
+                    if (!stockType.IsDefault) {
                         if (stockType != null) {
                             if (instanceEntity.IsBubbler) {
                                 stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
@@ -89,6 +90,11 @@ namespace ManufacturingInventory.Application.UseCases {
                             }
                             await this._categoryRepository.UpdateAsync(stockType);
                         }
+                    } else {
+                        IndividualAlert alert = new IndividualAlert();
+                        alert.PartInstance = instanceEntity;
+                        instanceEntity.IndividualAlert=alert;
+                        this._context.Add(alert);
                     }
 
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
@@ -120,16 +126,19 @@ namespace ManufacturingInventory.Application.UseCases {
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
 
-                    if (!instanceEntity.StockType.IsDefault) {
-                        var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockType.Id);
-                        if (stockType != null) {
+                    var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
+                    if (!stockType.IsDefault) {
                             if (instanceEntity.IsBubbler) {
                                 stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
                             } else {
                                 stockType.Quantity += instanceEntity.Quantity;
                             }
                             await this._categoryRepository.UpdateAsync(stockType);
-                        }
+                    } else {
+                        IndividualAlert alert = new IndividualAlert();
+                        alert.PartInstance = instanceEntity;
+                        instanceEntity.IndividualAlert = alert;
+                        this._context.Add(alert);
                     }
 
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
@@ -168,16 +177,19 @@ namespace ManufacturingInventory.Application.UseCases {
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
 
-                    if (!instanceEntity.StockType.IsDefault) {
-                        var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockType.Id);
-                        if (stockType != null) {
-                            if (instanceEntity.IsBubbler) {
-                                stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
-                            } else {
-                                stockType.Quantity += instanceEntity.Quantity;
-                            }
-                            await this._categoryRepository.UpdateAsync(stockType);
+                    var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
+                    if (!stockType.IsDefault) {
+                        if (instanceEntity.IsBubbler) {
+                            stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                        } else {
+                            stockType.Quantity += instanceEntity.Quantity;
                         }
+                        await this._categoryRepository.UpdateAsync(stockType);
+                    } else {
+                        IndividualAlert alert = new IndividualAlert();
+                        alert.PartInstance = instanceEntity;
+                        instanceEntity.IndividualAlert = alert;
+                        this._context.Add(alert);
                     }
 
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
@@ -214,14 +226,17 @@ namespace ManufacturingInventory.Application.UseCases {
                 transaction.TotalCost = transaction.UnitCost*transaction.Quantity;
                 transaction.SessionId = this._userService.CurrentSessionId.Value;
 
-                if (!partInstance.StockType.IsDefault) {
-                    var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockType.Id);
-                    if (stockType != null) {
-                        if (!partInstance.IsBubbler) {
-                            stockType.Quantity += partInstance.Quantity;
-                            await this._categoryRepository.UpdateAsync(stockType);
-                        }
+                var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockType.Id);
+                if (!stockType.IsDefault) {
+                    if (!partInstance.IsBubbler) {
+                        stockType.Quantity += partInstance.Quantity;
+                        await this._categoryRepository.UpdateAsync(stockType);
                     }
+                } else {
+                    IndividualAlert alert = new IndividualAlert();
+                    alert.PartInstance = partInstance;
+                    partInstance.IndividualAlert = alert;
+                    this._context.Add(alert);
                 }
 
                 var instance = await this._partInstanceRepository.UpdateAsync(partInstance);

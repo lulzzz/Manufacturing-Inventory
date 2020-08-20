@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ManufacturingInventory.Infrastructure.Model.Entities {
+﻿namespace ManufacturingInventory.Infrastructure.Model.Entities {
     public class UserAlert {
         public int Id { get; set; }
         public bool IsEnabled { get; set; }

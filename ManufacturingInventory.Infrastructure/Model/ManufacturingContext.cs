@@ -58,6 +58,9 @@ namespace ManufacturingInventory.Infrastructure.Model {
             builder.Entity<Warehouse>().HasBaseType<Location>();
             builder.Entity<Consumer>().HasBaseType<Location>();
 
+            builder.Entity<CombinedAlert>().HasBaseType<Alert>();
+            builder.Entity<IndividualAlert>().HasBaseType<Alert>();
+
             #region Concurrency
 
             builder.Entity<Part>()
@@ -412,9 +415,25 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Alert>()
-                .HasOne(e => e.Stock)
-                .WithOne(e => e.Alert)
-                .HasForeignKey<StockType>(e => e.AlertId)
+                .HasDiscriminator<string>(e => e.AlertType)
+                .HasValue<IndividualAlert>("individual_alert")
+                .HasValue<CombinedAlert>("combined_alert");
+
+            builder.Entity<Alert>()
+                .Property(e => e.AlertType)
+                .HasMaxLength(200)
+                .HasColumnName("alert_type");
+
+            builder.Entity<IndividualAlert>()
+                .HasOne(e => e.PartInstance)
+                .WithOne(e => e.IndividualAlert)
+                .HasForeignKey<PartInstance>(e => e.IndividualAlertId)
+                .IsRequired(false);
+
+            builder.Entity<CombinedAlert>()
+                .HasOne(e => e.StockHolder)
+                .WithOne(e => e.CombinedAlert)
+                .HasForeignKey<StockType>(e => e.CombinedAlertId)
                 .IsRequired(false);
 
             #endregion

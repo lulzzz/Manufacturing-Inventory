@@ -26,6 +26,12 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AlertType")
+                        .IsRequired()
+                        .HasColumnName("alert_type")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -34,6 +40,8 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Alerts");
+
+                    b.HasDiscriminator<string>("AlertType").HasValue("Alert");
                 });
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Attachment", b =>
@@ -444,6 +452,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("IndividualAlertId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsBubbler")
                         .HasColumnType("bit");
 
@@ -501,6 +512,10 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .HasFilter("[BubblerParameterId] IS NOT NULL");
 
                     b.HasIndex("ConditionId");
+
+                    b.HasIndex("IndividualAlertId")
+                        .IsUnique()
+                        .HasFilter("[IndividualAlertId] IS NOT NULL");
 
                     b.HasIndex("LocationId");
 
@@ -846,6 +861,20 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.ToTable("UserAlerts");
                 });
 
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.CombinedAlert", b =>
+                {
+                    b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Alert");
+
+                    b.HasDiscriminator().HasValue("combined_alert");
+                });
+
+            modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.IndividualAlert", b =>
+                {
+                    b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Alert");
+
+                    b.HasDiscriminator().HasValue("individual_alert");
+                });
+
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.Condition", b =>
                 {
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
@@ -864,7 +893,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 {
                     b.HasBaseType("ManufacturingInventory.Infrastructure.Model.Entities.Category");
 
-                    b.Property<int?>("AlertId")
+                    b.Property<int?>("CombinedAlertId")
                         .HasColumnType("int");
 
                     b.Property<bool>("HoldsBubblers")
@@ -879,9 +908,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                     b.Property<int>("SafeQuantity")
                         .HasColumnType("int");
 
-                    b.HasIndex("AlertId")
+                    b.HasIndex("CombinedAlertId")
                         .IsUnique()
-                        .HasFilter("[AlertId] IS NOT NULL");
+                        .HasFilter("[CombinedAlertId] IS NOT NULL");
 
                     b.HasDiscriminator().HasValue("StockType");
                 });
@@ -995,6 +1024,10 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                         .WithMany("PartInstances")
                         .HasForeignKey("ConditionId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.IndividualAlert", "IndividualAlert")
+                        .WithOne("PartInstance")
+                        .HasForeignKey("ManufacturingInventory.Infrastructure.Model.Entities.PartInstance", "IndividualAlertId");
 
                     b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Location", "CurrentLocation")
                         .WithMany("ItemsAtLocation")
@@ -1139,9 +1172,9 @@ namespace ManufacturingInventory.Infrastructure.Migrations
 
             modelBuilder.Entity("ManufacturingInventory.Infrastructure.Model.Entities.StockType", b =>
                 {
-                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.Alert", "Alert")
-                        .WithOne("Stock")
-                        .HasForeignKey("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "AlertId");
+                    b.HasOne("ManufacturingInventory.Infrastructure.Model.Entities.CombinedAlert", "CombinedAlert")
+                        .WithOne("StockHolder")
+                        .HasForeignKey("ManufacturingInventory.Infrastructure.Model.Entities.StockType", "CombinedAlertId");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200819212758_AlertUpdates.cs" />
+    <Compile Remove="Migrations\20200819212758_AlertUpdates.Designer.cs" />
+    <Compile Remove="Migrations\20200820113059_AlertUpdates.cs" />
+    <Compile Remove="Migrations\20200820113059_AlertUpdates.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />

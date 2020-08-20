@@ -102,8 +102,8 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int SafeQuantity { get; set; }
         public bool HoldsBubblers { get; set; }
 
-        public int? AlertId { get; set; }
-        public Alert Alert { get; set; }
+        public int? CombinedAlertId { get; set; }
+        public CombinedAlert CombinedAlert { get; set; }
 
         public virtual ICollection<PartInstance> PartInstances { get; set; }
 

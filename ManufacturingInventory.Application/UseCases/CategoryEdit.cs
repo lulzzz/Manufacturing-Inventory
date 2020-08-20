@@ -47,10 +47,15 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<CategoryBoundaryOutput> ExecuteAdd(CategoryBoundaryInput input) {
             var category = input.Category.GetCategory();
             if (category == null) {
+
                 return new CategoryBoundaryOutput(null, false,"Internal Error: Could not Cast to Specified Category, Please Contact Admin");
             }
             if (input.IsDefault_Changed) {
                 await this.ClearCategoryDefault(input.Category.Type);
+            }
+            if (input.Category.Type == CategoryTypes.StockType) {
+                CombinedAlert combinedAlert = new CombinedAlert();
+                combinedAlert.StockHolder = category as StockType;
             }
             var added = await this._categoryRepository.AddAsync(category);
             if (added != null) {
@@ -253,6 +258,14 @@ namespace ManufacturingInventory.Application.UseCases {
                             if (((StockType)newCategory).HoldsBubblers && instance.IsBubbler) {
                                 if (!newCategory.IsDefault) {
                                     ((StockType)newCategory).Quantity += (int)instance.BubblerParameter.Weight;
+                                    if (oldCategory.IsDefault) {
+                                        var userAlerts=this._context.UserAlerts.Where(e => e.AlertId == instance.IndividualAlertId);
+                                        if (userAlerts.Count() > 0) {
+                                            this._context.RemoveRange(userAlerts);
+                                        }
+                                        this._context.Alerts.Remove(instance.IndividualAlert);
+                                        instance.IndividualAlert = null;
+                                    }
                                 }
                                 if (!oldCategory.IsDefault) {
                                     ((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
@@ -260,6 +273,15 @@ namespace ManufacturingInventory.Application.UseCases {
                             } else {
                                 if (!newCategory.IsDefault) {
                                     ((StockType)newCategory).Quantity += instance.Quantity;
+                                    if (oldCategory.IsDefault) {
+                                        var userAlerts = this._context.UserAlerts.Where(e => e.AlertId == instance.IndividualAlertId);
+                                        if (userAlerts.Count() > 0) {
+                                            this._context.RemoveRange(userAlerts);
+                                        }
+
+                                        this._context.Alerts.Remove(instance.IndividualAlert);
+                                        instance.IndividualAlert = null;
+                                    }
                                 }
                                 if (!oldCategory.IsDefault) {
                                     ((StockType)oldCategory).Quantity -= instance.Quantity;

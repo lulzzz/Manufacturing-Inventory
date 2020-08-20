@@ -52,6 +52,9 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public int? PriceId { get; set; }
         public Price Price { get; set; }
 
+        public int? IndividualAlertId { get; set; }
+        public IndividualAlert IndividualAlert { get; set; }
+
         public ICollection<Attachment> Attachments { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
         public ICollection<PriceLog> PriceLogs { get; set; }

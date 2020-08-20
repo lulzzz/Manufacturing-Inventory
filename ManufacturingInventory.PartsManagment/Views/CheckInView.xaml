@@ -113,7 +113,7 @@
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup>
-                    <dxlc:LayoutItem Label="Select Warehouse"
+                    <dxlc:LayoutItem Label="Select Warehouse(Required)"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
@@ -146,7 +146,7 @@
                             </dxe:ComboBoxEdit.ItemTemplate>
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Usage"
+                    <dxlc:LayoutItem Label="Usage(Optional)"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
@@ -226,12 +226,13 @@
                                                    Text="Stock Input" />
                                     </DataTemplate>
                                 </dxlc:LayoutGroup.HeaderTemplate>
-                                <dxlc:LayoutItem Label="Stock Type(Optional)"
+                                <dxlc:LayoutItem Label="Stock Type(Required)"
                                                  Style="{StaticResource LayoutItemStyle}">
                                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsTextEditable="False"
                                                       ItemsSource="{Binding StockTypes}"
-                                                      SelectedItem="{Binding SelectedStockType}">
+                                                      SelectedItem="{Binding SelectedStockType}"
+                                                      IsReadOnly="{Binding IsExisting}">
                                         <dxe:ComboBoxEdit.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock HorizontalAlignment="Stretch"

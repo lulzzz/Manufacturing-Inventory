@@ -121,6 +121,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e=>e.IndividualAlert)
                 .FirstOrDefault(expression);
         }
 
@@ -135,6 +136,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.IndividualAlert)
                 .FirstOrDefaultAsync(expression);
         }
 
@@ -149,6 +151,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.IndividualAlert)
                 .AsNoTracking();
 
 
@@ -174,6 +177,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.IndividualAlert)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -198,6 +202,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.IndividualAlert)
                 .Load();
         }
 
@@ -212,6 +217,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.Part)
                     .ThenInclude(e => e.PartPrices)
                 .Include(e => e.PriceLogs)
+                .Include(e => e.IndividualAlert)
                 .LoadAsync();
         }
     }
