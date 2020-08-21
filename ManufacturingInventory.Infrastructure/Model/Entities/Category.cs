@@ -125,14 +125,5 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
                 this.HoldsBubblers= ((StockType)stockType).HoldsBubblers;
             }
         }
-
-        //public override void Set(ICategory category) {
-        //    Type catType = category.GetType();
-        //    if (catType.Equals(typeof(StockType))) {
-        //        this.MinQuantity = ((StockType)category).MinQuantity;
-        //        this.SafeQuantity = ((StockType)category).SafeQuantity;
-        //        this.Quantity = ((StockType)category).Quantity;
-        //    }
-        //}
     }
 }

@@ -367,7 +367,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                         if (onefail) {
                             pass.AppendLine().Append(fail);
                         }
-
                         this.MessageBoxService.ShowMessage(pass.ToString(), "You Selected", MessageButton.OK, MessageIcon.Information);
                         this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Publish(this._categoryId);
                     }
@@ -393,7 +392,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     if (onefail) {
                         pass.AppendLine().Append(fail);
                     }
-
                     this.MessageBoxService.ShowMessage(pass.ToString(),"You Selected",MessageButton.OK,MessageIcon.Information);
                     this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Publish(this._categoryId);
                 }

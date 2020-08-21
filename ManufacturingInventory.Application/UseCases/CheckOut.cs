@@ -66,6 +66,7 @@ namespace ManufacturingInventory.Application.UseCases {
             partInstance.UpdateQuantity(-1);
             partInstance.CostReported = false;
             partInstance.LocationId = location.Id;
+
             if (item.ConditionId != 0) {
                 var condition = await this._categoryRepository.GetEntityAsync(e => e.Id == item.ConditionId);
                 if (condition != null) {
@@ -77,10 +78,11 @@ namespace ManufacturingInventory.Application.UseCases {
                 var stockType =(StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockType.Id);
                 if (stockType != null) {
                     stockType.Quantity -= (int)partInstance.BubblerParameter.Weight;
+                    await this._categoryRepository.UpdateAsync(stockType);
+                } else {
+                    return new CheckOutOutputData(null, false, "Error:  Could not adjust stock, Please contact administrator");
                 }
-                await this._categoryRepository.UpdateAsync(stockType);
             }
-
 
             Transaction transaction = new Transaction(partInstance, InventoryAction.OUTGOING,
                 partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight, location, item.TimeStamp);
@@ -122,6 +124,8 @@ namespace ManufacturingInventory.Application.UseCases {
                 if (stockType != null) {
                     stockType.Quantity -= item.Quantity;
                     await this._categoryRepository.UpdateAsync(stockType);
+                } else {
+                    return new CheckOutOutputData(null, false, "Error:  Could not adjust stock, Please contact administrator");
                 }
             }
 

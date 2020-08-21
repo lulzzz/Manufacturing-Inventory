@@ -47,16 +47,23 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<CategoryBoundaryOutput> ExecuteAdd(CategoryBoundaryInput input) {
             var category = input.Category.GetCategory();
             if (category == null) {
-
                 return new CategoryBoundaryOutput(null, false,"Internal Error: Could not Cast to Specified Category, Please Contact Admin");
             }
+
+            if(input.Category.Type==CategoryTypes.StockType && input.Category.IsDefault) {
+                return new CategoryBoundaryOutput(null, false, "Error: Cannot change default StockType");
+            }
+
             if (input.IsDefault_Changed) {
                 await this.ClearCategoryDefault(input.Category.Type);
             }
-            if (input.Category.Type == CategoryTypes.StockType) {
+
+            if (input.Category.Type == CategoryTypes.StockType ) {
                 CombinedAlert combinedAlert = new CombinedAlert();
                 combinedAlert.StockHolder = category as StockType;
+                this._context.Add(combinedAlert);
             }
+
             var added = await this._categoryRepository.AddAsync(category);
             if (added != null) {
                 var count = await this._unitOfWork.Save();
@@ -78,6 +85,7 @@ namespace ManufacturingInventory.Application.UseCases {
                 if (input.IsDefault_Changed) {
                     await this.ClearCategoryDefault(input.Category.Type);
                 }
+
                 switch (input.Category.Type) {
                     case CategoryTypes.Organization:
                     case CategoryTypes.Condition:
@@ -201,11 +209,6 @@ namespace ManufacturingInventory.Application.UseCases {
                     }
                     break;
                 case CategoryTypes.StockType:
-                    //var defaultStockType = await this._context.Categories.OfType<Organization>().FirstOrDefaultAsync(e => e.IsDefault);
-                    //if (defaultStockType != null) {
-                    //    defaultStockType.IsDefault = false;
-                    //    await this._categoryRepository.UpdateAsync(defaultStockType);
-                    //}
                     break;
                 case CategoryTypes.Usage:
                     var defaultUsage = await this._context.Categories.OfType<Usage>().FirstOrDefaultAsync(e => e.IsDefault);
@@ -255,36 +258,40 @@ namespace ManufacturingInventory.Application.UseCases {
                         var oldCategory = await this._categoryRepository.GetEntityAsync(e => e.Id == instance.StockTypeId);
                         if (oldCategory != null) {
                             instance.StockTypeId = newCategory.Id;
-                            if (((StockType)newCategory).HoldsBubblers && instance.IsBubbler) {
-                                if (!newCategory.IsDefault) {
+                            if (oldCategory.IsDefault) {
+                                if (instance.IsBubbler) {
                                     ((StockType)newCategory).Quantity += (int)instance.BubblerParameter.Weight;
-                                    if (oldCategory.IsDefault) {
-                                        var userAlerts=this._context.UserAlerts.Where(e => e.AlertId == instance.IndividualAlertId);
-                                        if (userAlerts.Count() > 0) {
-                                            this._context.RemoveRange(userAlerts);
-                                        }
-                                        this._context.Alerts.Remove(instance.IndividualAlert);
-                                        instance.IndividualAlert = null;
-                                    }
+                                } else {
+                                    ((StockType)newCategory).Quantity += (int)instance.Quantity;
                                 }
-                                if (!oldCategory.IsDefault) {
-                                    ((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
+                                var userAlerts = this._context.UserAlerts.Where(e => e.AlertId == instance.IndividualAlertId);
+                                if (userAlerts.Count() > 0) {
+                                    this._context.RemoveRange(userAlerts);
                                 }
+                                this._context.Alerts.Remove(instance.IndividualAlert);
+                                instance.IndividualAlert = null;
                             } else {
-                                if (!newCategory.IsDefault) {
-                                    ((StockType)newCategory).Quantity += instance.Quantity;
-                                    if (oldCategory.IsDefault) {
-                                        var userAlerts = this._context.UserAlerts.Where(e => e.AlertId == instance.IndividualAlertId);
-                                        if (userAlerts.Count() > 0) {
-                                            this._context.RemoveRange(userAlerts);
-                                        }
-
-                                        this._context.Alerts.Remove(instance.IndividualAlert);
-                                        instance.IndividualAlert = null;
-                                    }
+                                if (instance.IsBubbler) {
+                                    ((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
+                                } else {
+                                    ((StockType)oldCategory).Quantity -= (int)instance.Quantity;
                                 }
-                                if (!oldCategory.IsDefault) {
-                                    ((StockType)oldCategory).Quantity -= instance.Quantity;
+                                if (newCategory.IsDefault) {
+                                    IndividualAlert alert = new IndividualAlert();
+                                    alert.PartInstance = instance;
+                                    instance.IndividualAlert = alert;
+                                    var added=this._context.Alerts.Add(alert);
+                                    if (added == null) {
+                                        return new CategoryBoundaryOutput(null, false,"Error: Could not creat new IndividualAlert,Please contact administrator");
+                                    }
+                                } else {
+                                    if (instance.IsBubbler) {
+                                        ((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
+                                        ((StockType)newCategory).Quantity += (int)instance.BubblerParameter.Weight;
+                                    } else {
+                                        ((StockType)oldCategory).Quantity -= (int)instance.Quantity;
+                                        ((StockType)newCategory).Quantity += (int)instance.Quantity;
+                                    }
                                 }
                             }
                             var oldUpdated=await this._categoryRepository.UpdateAsync(oldCategory);
@@ -329,8 +336,11 @@ namespace ManufacturingInventory.Application.UseCases {
                     return await this._instanceRepository.GetEntityListAsync(e => e.ConditionId != category.Id);
                 }
                 case CategoryTypes.StockType: {
-
-                    return await this._instanceRepository.GetEntityListAsync(e => e.StockTypeId != category.Id && e.IsBubbler==category.HoldsBubblers);
+                    if (category.IsDefault) {
+                        return await this._instanceRepository.GetEntityListAsync(e => e.StockTypeId != category.Id);
+                    } else {
+                        return await this._instanceRepository.GetEntityListAsync(e => e.StockTypeId != category.Id && e.IsBubbler == category.HoldsBubblers);
+                    }
                 }
                 case CategoryTypes.Usage: {
                     return await this._instanceRepository.GetEntityListAsync(e => e.UsageId != category.Id);

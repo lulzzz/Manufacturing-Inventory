@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.2.153.7534</FileVersion>
+    <FileVersion>1.2.161.7538</FileVersion>
     <Configurations>Debug;Release;fr;other</Configurations>
     <Version>1.5.9</Version>
     <Platforms>AnyCPU;x86</Platforms>

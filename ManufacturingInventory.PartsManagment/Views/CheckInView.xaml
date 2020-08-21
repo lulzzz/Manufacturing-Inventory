@@ -113,7 +113,7 @@
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup>
-                    <dxlc:LayoutItem Label="Select Warehouse(Required)"
+                    <dxlc:LayoutItem Label="Select Warehouse"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
@@ -146,7 +146,7 @@
                             </dxe:ComboBoxEdit.ItemTemplate>
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Usage(Optional)"
+                    <dxlc:LayoutItem Label="Usage"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
@@ -226,7 +226,7 @@
                                                    Text="Stock Input" />
                                     </DataTemplate>
                                 </dxlc:LayoutGroup.HeaderTemplate>
-                                <dxlc:LayoutItem Label="Stock Type(Required)"
+                                <dxlc:LayoutItem Label="Stock Type(Optional)"
                                                  Style="{StaticResource LayoutItemStyle}">
                                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsTextEditable="False"

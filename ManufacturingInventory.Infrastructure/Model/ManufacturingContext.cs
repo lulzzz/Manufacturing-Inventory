@@ -45,7 +45,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            //optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
 
         }
 
@@ -651,6 +651,5 @@ namespace ManufacturingInventory.Infrastructure.Model {
         private void SeedManufacturers(ModelBuilder builder) {
             builder.Entity<Manufacturer>().HasData(new Manufacturer { Id = 1, Name = "Mersen", Description = "Mersen deals with all SiC coated & TaC coated graphite parts." });
         }
-
     }
 }

@@ -18,8 +18,14 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             //syncContext.Run(AddAlertToAllInstances);
             //AsyncContext.Run(DeletingAlerts);
-            //AddAlertToAllInstances();
-            AsyncContext.Run(ChangeStockTypeThenAlert);
+            AddAlertToAllInstances();
+            //AsyncContext.Run(ChangeStockTypeThenAlert);
+        }
+
+        public static async Task FixStock() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
         }
 
         public static async Task ChangeStockTypeThenAlert() {
@@ -101,7 +107,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static void AddAlertToAllInstances() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             var user = context.Users
                 .Include(e => e.Sessions)

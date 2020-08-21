@@ -675,8 +675,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         #region LoadRegion
 
         private async Task Load() {
-            if (this._isExisting) {
-                
+            if (this._isExisting) {           
                 await this.LoadExisiting();
             } else {
                 await this.LoadNew();

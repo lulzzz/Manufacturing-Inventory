@@ -81,21 +81,27 @@ namespace ManufacturingInventory.Application.UseCases {
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
                     var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
-                    if (!stockType.IsDefault) {
-                        if (stockType != null) {
-                            if (instanceEntity.IsBubbler) {
-                                stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
-                            } else {
-                                stockType.Quantity += instanceEntity.Quantity;
+                    if (stockType != null) {
+                        if (!stockType.IsDefault) {
+                            if (stockType != null) {
+                                if (instanceEntity.IsBubbler) {
+                                    stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                                } else {
+                                    stockType.Quantity += instanceEntity.Quantity;
+                                }
+                                await this._categoryRepository.UpdateAsync(stockType);
                             }
-                            await this._categoryRepository.UpdateAsync(stockType);
+                        } else {
+                            IndividualAlert alert = new IndividualAlert();
+                            alert.PartInstance = instanceEntity;
+                            instanceEntity.IndividualAlert = alert;
+                            this._context.Add(alert);
                         }
                     } else {
-                        IndividualAlert alert = new IndividualAlert();
-                        alert.PartInstance = instanceEntity;
-                        instanceEntity.IndividualAlert=alert;
-                        this._context.Add(alert);
+                        await this._unitOfWork.Undo();
+                        return new CheckInOutput(null, false, "Error: Could not adjust stock, Please contact administrator");
                     }
+
 
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
                     var count =await this._unitOfWork.Save();
@@ -127,18 +133,25 @@ namespace ManufacturingInventory.Application.UseCases {
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
 
                     var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
-                    if (!stockType.IsDefault) {
-                            if (instanceEntity.IsBubbler) {
-                                stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
-                            } else {
-                                stockType.Quantity += instanceEntity.Quantity;
+                    if (stockType != null) {
+                        if (!stockType.IsDefault) {
+                            if (stockType != null) {
+                                if (instanceEntity.IsBubbler) {
+                                    stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                                } else {
+                                    stockType.Quantity += instanceEntity.Quantity;
+                                }
+                                await this._categoryRepository.UpdateAsync(stockType);
                             }
-                            await this._categoryRepository.UpdateAsync(stockType);
+                        } else {
+                            IndividualAlert alert = new IndividualAlert();
+                            alert.PartInstance = instanceEntity;
+                            instanceEntity.IndividualAlert = alert;
+                            this._context.Add(alert);
+                        }
                     } else {
-                        IndividualAlert alert = new IndividualAlert();
-                        alert.PartInstance = instanceEntity;
-                        instanceEntity.IndividualAlert = alert;
-                        this._context.Add(alert);
+                        await this._unitOfWork.Undo();
+                        return new CheckInOutput(null, false, "Error: Could not adjust stock, Please contact administrator");
                     }
 
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
@@ -178,18 +191,25 @@ namespace ManufacturingInventory.Application.UseCases {
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
 
                     var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
-                    if (!stockType.IsDefault) {
-                        if (instanceEntity.IsBubbler) {
-                            stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                    if (stockType != null) {
+                        if (!stockType.IsDefault) {
+                            if (stockType != null) {
+                                if (instanceEntity.IsBubbler) {
+                                    stockType.Quantity += (int)instanceEntity.BubblerParameter.Weight;
+                                } else {
+                                    stockType.Quantity += instanceEntity.Quantity;
+                                }
+                                await this._categoryRepository.UpdateAsync(stockType);
+                            }
                         } else {
-                            stockType.Quantity += instanceEntity.Quantity;
+                            IndividualAlert alert = new IndividualAlert();
+                            alert.PartInstance = instanceEntity;
+                            instanceEntity.IndividualAlert = alert;
+                            this._context.Add(alert);
                         }
-                        await this._categoryRepository.UpdateAsync(stockType);
                     } else {
-                        IndividualAlert alert = new IndividualAlert();
-                        alert.PartInstance = instanceEntity;
-                        instanceEntity.IndividualAlert = alert;
-                        this._context.Add(alert);
+                        await this._unitOfWork.Undo();
+                        return new CheckInOutput(null, false, "Error: Could not adjust stock, Please contact administrator");
                     }
 
                     var tranEntity = await this._transactionRepository.AddAsync(transaction);
@@ -227,16 +247,25 @@ namespace ManufacturingInventory.Application.UseCases {
                 transaction.SessionId = this._userService.CurrentSessionId.Value;
 
                 var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockType.Id);
-                if (!stockType.IsDefault) {
-                    if (!partInstance.IsBubbler) {
-                        stockType.Quantity += partInstance.Quantity;
-                        await this._categoryRepository.UpdateAsync(stockType);
+                if (stockType != null) {
+                    if (!stockType.IsDefault) {
+                        if (stockType != null) {
+                            if (partInstance.IsBubbler) {
+                                stockType.Quantity += (int)partInstance.BubblerParameter.Weight;
+                            } else {
+                                stockType.Quantity += input.Quantity.Value;
+                            }
+                            await this._categoryRepository.UpdateAsync(stockType);
+                        }
+                    } else {
+                        IndividualAlert alert = new IndividualAlert();
+                        alert.PartInstance = partInstance;
+                        partInstance.IndividualAlert = alert;
+                        this._context.Add(alert);
                     }
                 } else {
-                    IndividualAlert alert = new IndividualAlert();
-                    alert.PartInstance = partInstance;
-                    partInstance.IndividualAlert = alert;
-                    this._context.Add(alert);
+                    await this._unitOfWork.Undo();
+                    return new CheckInOutput(null, false, "Error: Could not adjust stock, Please contact administrator");
                 }
 
                 var instance = await this._partInstanceRepository.UpdateAsync(partInstance);

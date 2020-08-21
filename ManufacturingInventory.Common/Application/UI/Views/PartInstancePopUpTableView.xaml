@@ -53,25 +53,9 @@
                     <dxg:GridColumn AllowGrouping="True"
                                     FieldName="StockType.Name"
                                     Header="Stock Type" />
-                    <dxg:GridColumn FieldName="SerialNumber" />
-                    <dxg:GridColumn FieldName="BatchNumber" />
                     <dxg:GridColumn AllowGrouping="True"
-                                    FieldName="Condition.Name"
-                                    Header="Condition" />
-                    <dxg:GridColumn AllowGrouping="True"
-                                FieldName="Usage.Name"
-                                Header="Usage" />
-                    <dxg:GridColumn FieldName="TotalCost"
-                                    Header="Total Cost">
-                        <dxg:GridColumn.EditSettings>
-                            <dxe:TextEditSettings Mask="c"
-                                                  MaskType="Numeric"
-                                                  MaskUseAsDisplayFormat="True" />
-                        </dxg:GridColumn.EditSettings>
-                    </dxg:GridColumn>
-                    <dxg:GridColumn FieldName="CurrentLocation.Name"
-                                    Header="Current Location" />
-                </dxg:GridControlBand>
+                                    FieldName="IsBubbler"/>
+            </dxg:GridControlBand>
                 <dxg:GridControlBand Header="Stock"
                                      VisibleIndex="1">
                     <dxg:GridColumn FieldName="Quantity"

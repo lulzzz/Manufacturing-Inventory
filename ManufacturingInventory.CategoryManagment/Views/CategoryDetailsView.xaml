@@ -201,9 +201,30 @@
                                            Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                        <dxg:GridColumn AllowSearchPanel="true"
-                                        FieldName="Name" />
-                        <dxg:GridColumn FieldName="IsBubbler" />
+                        <dxg:GridControl.Bands>
+                            <dxg:GridControlBand Header="None"
+                                                 OverlayHeaderByChildren="True"
+                                                 VisibleIndex="0">
+                                <dxg:GridColumn FieldName="Id"
+                                                IsEnabled="False" />
+                                <dxg:GridColumn AllowSearchPanel="true"
+                                                FieldName="Name" />
+                                <dxg:GridColumn AllowGrouping="True"
+                                                FieldName="StockType.Name"
+                                                Header="Stock Type" />
+                                <dxg:GridColumn AllowGrouping="True"
+                                                FieldName="IsBubbler" />
+                            </dxg:GridControlBand>
+                            <dxg:GridControlBand Header="Stock"
+                                                 VisibleIndex="1">
+                                <dxg:GridColumn FieldName="Quantity"
+                                                Header="Quantity" />
+                                <dxg:GridColumn FieldName="MinQuantity" />
+                                <dxg:GridColumn FieldName="SafeQuantity" />
+                                <dxg:GridColumn FieldName="BubblerParameter.Weight"
+                                                Header="Weight" />
+                            </dxg:GridControlBand>
+                        </dxg:GridControl.Bands>
 
                     </dxg:GridControl>
                 </dxlc:LayoutGroup>
