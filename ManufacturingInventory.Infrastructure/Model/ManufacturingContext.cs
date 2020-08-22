@@ -45,7 +45,7 @@ namespace ManufacturingInventory.Infrastructure.Model {
             optionsBuilder.EnableSensitiveDataLogging(true);
             optionsBuilder.EnableDetailedErrors(true);
 
-            //optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
 
         }
 
@@ -415,14 +415,9 @@ namespace ManufacturingInventory.Infrastructure.Model {
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Alert>()
-                .HasDiscriminator<string>(e => e.AlertType)
-                .HasValue<IndividualAlert>("individual_alert")
-                .HasValue<CombinedAlert>("combined_alert");
-
-            builder.Entity<Alert>()
-                .Property(e => e.AlertType)
-                .HasMaxLength(200)
-                .HasColumnName("alert_type");
+                .HasDiscriminator<AlertType>(e => e.AlertType)
+                .HasValue<IndividualAlert>(AlertType.IndividualAlert)
+                .HasValue<CombinedAlert>(AlertType.CombinedAlert);
 
             builder.Entity<IndividualAlert>()
                 .HasOne(e => e.PartInstance)

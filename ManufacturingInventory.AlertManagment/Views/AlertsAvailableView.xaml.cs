@@ -13,10 +13,10 @@ using System.Windows.Shapes;
 
 namespace ManufacturingInventory.AlertManagment.Views {
     /// <summary>
-    /// Interaction logic for AlertManagmentMainView.xaml
+    /// Interaction logic for AlertsAvailableView.xaml
     /// </summary>
-    public partial class AlertManagmentMainView : UserControl {
-        public AlertManagmentMainView() {
+    public partial class AlertsAvailableView : UserControl {
+        public AlertsAvailableView() {
             InitializeComponent();
         }
     }

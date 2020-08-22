@@ -231,7 +231,8 @@
                                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsTextEditable="False"
                                                       ItemsSource="{Binding StockTypes}"
-                                                      SelectedItem="{Binding SelectedStockType}">
+                                                      SelectedItem="{Binding SelectedStockType}"
+                                                      IsReadOnly="{Binding IsExisting}">
                                         <dxe:ComboBoxEdit.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock HorizontalAlignment="Stretch"

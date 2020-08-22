@@ -3,7 +3,7 @@
 namespace ManufacturingInventory.Infrastructure.Model.Entities {
     public abstract class Alert {
         public int Id { get; set; }
-        public string AlertType { get; set; }
+        public AlertType AlertType { get; set; }
         public byte[] RowVersion { get; set; }
         public ICollection<UserAlert> UserAlerts { get; set; }
 

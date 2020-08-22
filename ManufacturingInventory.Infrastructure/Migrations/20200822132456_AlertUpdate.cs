@@ -47,12 +47,11 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 table: "Categories",
                 nullable: true);
 
-            migrationBuilder.AddColumn<string>(
-                name: "alert_type",
+            migrationBuilder.AddColumn<int>(
+                name: "AlertType",
                 table: "Alerts",
-                maxLength: 200,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PartInstances_IndividualAlertId",
@@ -116,7 +115,7 @@ namespace ManufacturingInventory.Infrastructure.Migrations
                 table: "Categories");
 
             migrationBuilder.DropColumn(
-                name: "alert_type",
+                name: "AlertType",
                 table: "Alerts");
 
             migrationBuilder.AddColumn<DateTime>(

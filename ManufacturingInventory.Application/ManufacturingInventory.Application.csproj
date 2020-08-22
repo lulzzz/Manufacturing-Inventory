@@ -2,11 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.2.161.7538</FileVersion>
+    <FileVersion>1.2.168.7539</FileVersion>
     <Configurations>Debug;Release;fr;other</Configurations>
     <Version>1.5.9</Version>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Boundaries\AlertEdit\**" />
+    <EmbeddedResource Remove="Boundaries\AlertEdit\**" />
+    <None Remove="Boundaries\AlertEdit\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
@@ -17,10 +23,6 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Boundaries\AlertEdit\" />
   </ItemGroup>
 
 </Project>

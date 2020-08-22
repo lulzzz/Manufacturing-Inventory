@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.2.103.7538</FileVersion>
+    <FileVersion>1.2.111.7539</FileVersion>
     <Configurations>Debug;Release;fr;other</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
@@ -12,6 +12,8 @@
     <Compile Remove="Migrations\20200819212758_AlertUpdates.Designer.cs" />
     <Compile Remove="Migrations\20200820113059_AlertUpdates.cs" />
     <Compile Remove="Migrations\20200820113059_AlertUpdates.Designer.cs" />
+    <Compile Remove="Migrations\20200820122409_AlertUpdate.cs" />
+    <Compile Remove="Migrations\20200820122409_AlertUpdate.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

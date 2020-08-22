@@ -18,14 +18,98 @@ namespace ManufacturingInventory.ConsoleTesting {
 
             //syncContext.Run(AddAlertToAllInstances);
             //AsyncContext.Run(DeletingAlerts);
-            AddAlertToAllInstances();
-            //AsyncContext.Run(ChangeStockTypeThenAlert);
+            //AddAlertToAllInstances();
+            //AsyncContext.Run(DeleteOldAlerts);
+            //AsyncContext.Run(CreatingUsers);
+            //AsyncContext.Run(async ()=> { await TestingUserAlerts(1,132); });
+            //AsyncContext.Run(async () => { await TestingUserAlerts(1,133); });
+            //AsyncContext.Run(async () => { await TestingUserAlerts(1,134); });
+            AsyncContext.Run(DeleteUserAlerts);
+            //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
+            //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
         }
 
-        public static async Task FixStock() {
+        public static async Task DeleteUserAlerts() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.27.192.1;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
+            Console.WriteLine("Deleting User Alerts, Please Wait...");
+
+            var userAlerts = context.UserAlerts.Include(e => e.User).Include(e => e.Alert).Where(e=>e.UserId==1);
+            foreach(var userAlert in userAlerts) {
+                Console.WriteLine("User: {0} Alert: {1}",userAlert.User.UserName,userAlert.AlertId);
+            }
+
+            context.RemoveRange(userAlerts);
+            await context.SaveChangesAsync();
+            Console.WriteLine("Should be cleared");
+
+        }
+
+        public static async Task TestingUserAlerts(int userId,int alertId) {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            Console.WriteLine("Creating User Alerts, Please Wait...");
+            var user1 = await context.Users.AsNoTracking().Include(e => e.UserAlerts).FirstOrDefaultAsync(e => e.Id == userId);
+
+            var alert2 =await context.Alerts.AsNoTracking().OfType<IndividualAlert>().Include(e => e.PartInstance).FirstOrDefaultAsync(e => e.Id == alertId);
+
+            UserAlert userAlert1 = new UserAlert();
+            userAlert1.AlertId = alert2.Id;
+            userAlert1.UserId = user1.Id;
+            userAlert1.IsEnabled = true;
+
+            context.UserAlerts.Add(userAlert1);
+
+            await context.SaveChangesAsync();
+            Console.WriteLine("UserAlert {0},{1} Created",userId,alertId);
+
+
+
+        }
+
+        public static async Task CreatingUsers() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            Console.WriteLine("Creating Users");
+            User user1 = new User();
+            user1.UserName = "User1";
+            user1.PermissionId = 1;
+
+            User user2 = new User();
+            user2.UserName = "User2";
+            user2.PermissionId = 1;
+
+            User user3 = new User();
+            user3.UserName = "User3";
+            user3.PermissionId = 1;
+
+            context.Users.Add(user1);
+            context.Users.Add(user2);
+            context.Users.Add(user3);
+            await context.SaveChangesAsync();
+            Console.WriteLine("Should be created");
+
+        }
+
+        public static async Task DeleteOldAlerts() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            await context.Alerts.OfType<IndividualAlert>().Include(e => e.PartInstance).ForEachAsync(alert => {
+                if (alert.PartInstance != null) {
+                    Console.WriteLine("Removing {0} alert id: {1}", alert.PartInstance.Name,alert.Id);
+                    
+                } else {
+                    Console.WriteLine("Should be combined, trying to delete id: {0}",alert.Id);
+                }
+                context.Remove(alert);
+
+            });
+            await context.SaveChangesAsync();
+            Console.WriteLine("Should be done");
         }
 
         public static async Task ChangeStockTypeThenAlert() {
@@ -129,19 +213,19 @@ namespace ManufacturingInventory.ConsoleTesting {
                 if (instance.StockType.IsDefault) {
                     //individual alert
                     if (instance.IndividualAlert == null) {
+                        Console.WriteLine("Individual Alert, PartInstance: {0}", instance.Name);
                         IndividualAlert alert = new IndividualAlert();
                         alert.PartInstance = instance;
                         instance.IndividualAlert = alert;
                         context.Add(alert);
-                        //context.SaveChanges();
                     }                
                 } else {
                     //combined alert
                     if (instance.StockType.CombinedAlert == null) {
+                        Console.WriteLine("Combined Alert, StockType: {0}",instance.StockType.Name);
                         CombinedAlert alert = new CombinedAlert();
                         alert.StockHolder = instance.StockType;
                         context.Add(alert);
-                        //context.SaveChanges();
                     }
                 }
             }
