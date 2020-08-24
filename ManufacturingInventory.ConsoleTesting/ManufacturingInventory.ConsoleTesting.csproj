@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.4.361.7539</FileVersion>
+    <FileVersion>1.4.362.7541</FileVersion>
     <StartupObject>ManufacturingInventory.ConsoleTesting.ModelTesting</StartupObject>
     <Configurations>Debug;Release;fr;other</Configurations>
     <Platforms>AnyCPU;x86</Platforms>

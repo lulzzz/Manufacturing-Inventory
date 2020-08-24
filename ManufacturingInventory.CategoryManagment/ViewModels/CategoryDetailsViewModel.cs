@@ -456,6 +456,8 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     this.SelectedCategory = category;
                     this.SelectedCategoryType = category.Type.GetCategoryOption();
                     this.ButtonText = (category.Type == CategoryTypes.Organization) ? "Add Parts" : "Add PartInstances";
+                    
+
                     this.DispatcherService.BeginInvoke(() => this.ShowTableLoading(this.SelectedCategoryType,true));
                     var partInstances = await this._categoryService.GetCategoryPartInstances(this._selectedCategory);
                     var parts = await this._categoryService.GetCategoryParts(this._categoryId);

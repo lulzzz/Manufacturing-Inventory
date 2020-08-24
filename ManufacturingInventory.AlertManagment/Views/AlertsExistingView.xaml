@@ -17,7 +17,72 @@
              prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ManufacturingInventory.Common;component/Application/Resources/CommonControlResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService x:Name="ExisitingAlertsDispatcherService" />
+        <dx:DXMessageBoxService x:Name="ExisitingAlertsMessageService" />
+        <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
+                               EventName="Loaded" />
+    </dxmvvm:Interaction.Behaviors>
+    <dxg:GridControl x:Name="_listOfUserAlerts"
+                     ItemsSource="{Binding UserAlerts, IsAsync=True, Mode=TwoWay}"
+                     SelectedItem="{Binding SelectedUserAlert, Mode=TwoWay, IsAsync=True}"
+                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                     Style="{StaticResource GridControlStyle}">
+        <dxg:GridControl.View>
+            <dxg:TableView x:Name="_alertExistingTableView"
+                           AutoWidth="True"
+                           AllowBestFit="True"
+                           HorizontalScrollbarVisibility="Visible"
+                           SearchColumns="Name"
+                           SearchPanelNullText="Search By Name"
+                           ShowSearchPanelMode="Always"
+                           Style="{StaticResource TableViewStyleWithMasterGroup}">
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:EventToCommand Command="{Binding ElementName=__alertExistingTableView, Path=TableViewCommands.BestFitColumns}"
+                                           EventName="Loaded" />
+                </dxmvvm:Interaction.Behaviors>
+                <dxg:TableView.RowCellMenuCustomizations>
+                    <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ToggleEnable}"
+                                       Content="Toggle Enabled"
+                                       Glyph="{dx:DXImage Image=Action_Edit.png}" />
+                    <dxb:BarButtonItem Command="{Binding Path=View.DataContext.Unsubscribe}"
+                                       Content="Unsubscribe"
+                                       IsEnabled="False"
+                                       Glyph="{dx:DXImage Image=Delete_16x16.png}" />
+                    <dxb:BarItemSeparator />
+                </dxg:TableView.RowCellMenuCustomizations>
+            </dxg:TableView>
+        </dxg:GridControl.View>
+        <dxg:GridControl.DetailDescriptor>
+            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
+                <dxg:GridControl Style="{StaticResource GridControlStyle}">
+                    <dxg:GridColumn FieldName="Name"
+                                    Header="Rank" />
+                    <dxg:GridColumn FieldName="IsBubbler" />
+
+                    <dxg:GridColumn FieldName="MinQuantity" />
+                    <dxg:GridColumn FieldName="" />
+                    <dxg:GridColumn FieldName="Voltage" />
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="detail"
+                                       Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </dxg:DataControlDetailDescriptor>
+        </dxg:GridControl.DetailDescriptor>
+        <dxg:GridColumn FieldName="AlertId" />
+        <dxg:GridColumn FieldName="IsEnabled" />
+        <dxg:GridColumn FieldName="Alert.AlertType"
+                        Header="AlertType"
+                        GroupIndex="0" />
+    </dxg:GridControl>
 </UserControl>
