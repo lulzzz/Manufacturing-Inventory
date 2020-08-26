@@ -15,6 +15,7 @@ namespace ManufacturingInventory.Application.Boundaries.CheckIn {
         [Image("pack://application:,,,/DevExpress.Images.v19.1;component/DevAV/Actions/Close_16x16.png"), Display(Name = "No Price", Description = "Check In Without Price", Order = 3)]
         NoPrice
     }
+
     public class CheckInInput {
 
         public CheckInInput(PartInstance partInstance, PriceOption priceOption, DateTime timeStamp,int partId,bool isExisiting,int? quantity=null,Price price=null) {

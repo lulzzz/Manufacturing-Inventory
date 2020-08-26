@@ -31,57 +31,52 @@
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
                                EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
-    <dxb:BarManager>
-        <dxb:BarManager.Bars>
-            <dxb:Bar Style="{StaticResource BarStyle}">
-                <dxb:BarButtonItem x:Name="_categoryAdd"
-                                   BarItemDisplayMode="ContentAndGlyph"
-                                   Command="{Binding AddNewCategoryCommand}"
-                                   Content="New Category"
-                                   Glyph="{dx:DXImage Image=Add_32x32.png}" />
-                <dxb:BarButtonItem x:Name="_categoryDelete"
-                                   BarItemDisplayMode="ContentAndGlyph"
-                                   Command="{Binding DeleteCategoryCommand}"
-                                   Content="Delete Category"
-                                   IsEnabled="False"
-                                   Glyph="{dx:DXImage Image=Delete_32x32.png}" />
-            </dxb:Bar>
-        </dxb:BarManager.Bars>
-        <dxg:GridControl x:Name="_listOfUserAlerts"
-                         ItemsSource="{Binding UserAlerts, IsAsync=True, Mode=TwoWay}"
-                         SelectedItem="{Binding SelectedUserAlert, Mode=TwoWay, IsAsync=True}"
-                         ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
-                         Style="{StaticResource GridControlStyle}">
-            <dxg:GridControl.View>
-                <dxg:TableView x:Name="_alertExistingTableView"
-                               AutoWidth="True"
-                               AllowBestFit="True"
-                               HorizontalScrollbarVisibility="Visible"
-                               SearchColumns="Name"
-                               SearchPanelNullText="Search By Name"
-                               ShowSearchPanelMode="Always"
-                               Style="{StaticResource TableViewStyleNoMaster}">
-                    <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:EventToCommand Command="{Binding ElementName=__alertExistingTableView, Path=TableViewCommands.BestFitColumns}"
-                                               EventName="Loaded" />
-                    </dxmvvm:Interaction.Behaviors>
-                    <dxg:TableView.RowCellMenuCustomizations>
-                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ToggleEnable}"
-                                           Content="Toggle Enabled"
-                                           Glyph="{dx:DXImage Image=Action_Edit.png}" />
-                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.Unsubscribe}"
-                                           Content="Unsubscribe"
-                                           IsEnabled="False"
-                                           Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                        <dxb:BarItemSeparator />
-                    </dxg:TableView.RowCellMenuCustomizations>
-                </dxg:TableView>
-            </dxg:GridControl.View>
-            <dxg:GridColumn FieldName="AlertId" />
-            <dxg:GridColumn FieldName="IsEnabled" />
-            <dxg:GridColumn FieldName="Alert.AlertType"
-                            Header="Alert Type"
-                            GroupIndex="0" />
-        </dxg:GridControl>
-    </dxb:BarManager>
+    <dxg:GridControl x:Name="_listOfUserAlerts"
+                     ItemsSource="{Binding AvailableAlerts, IsAsync=True, Mode=TwoWay}"
+                     SelectedItem="{Binding SelectedAlert, Mode=TwoWay, IsAsync=True}"
+                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                     Style="{StaticResource GridControlStyle}">
+        <dxg:GridControl.View>
+            <dxg:TableView x:Name="_alertExistingTableView"
+                           AutoWidth="True"
+                           AllowBestFit="True"
+                           HorizontalScrollbarVisibility="Visible"
+                           SearchColumns="Name"
+                           SearchPanelNullText="Search By Name"
+                           ShowSearchPanelMode="Always"
+                           Style="{StaticResource TableViewStyleWithMasterGroup}">
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:EventToCommand Command="{Binding ElementName=__alertExistingTableView, Path=TableViewCommands.BestFitColumns}"
+                                           EventName="Loaded" />
+                </dxmvvm:Interaction.Behaviors>
+                <dxg:TableView.RowCellMenuCustomizations>
+                    <dxb:BarButtonItem Command="{Binding Path=View.DataContext.Subscribe}"
+                                       Content="Toggle Enabled"
+                                       Glyph="{dx:DXImage Image=Action_Edit.png}" />
+                    <dxb:BarItemSeparator />
+                </dxg:TableView.RowCellMenuCustomizations>
+            </dxg:TableView>
+        </dxg:GridControl.View>
+        <dxg:GridColumn FieldName="AlertId" />
+        <dxg:GridColumn FieldName="IsEnabled" />
+        <dxg:GridColumn FieldName="Alert.AlertType"
+                        Header="AlertType"
+                        GroupIndex="0" />
+        <dxg:GridControl.DetailDescriptor>
+            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
+                <dxg:GridControl Style="{StaticResource GridControlStyle}">
+                    <dxg:GridColumn FieldName="Name" />
+                    <dxg:GridColumn FieldName="PartCategory" />
+
+                    <dxg:GridColumn FieldName="IsBubbler" />
+                    <dxg:GridColumn FieldName="Quantity" />
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="detail"
+                                       Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </dxg:DataControlDetailDescriptor>
+        </dxg:GridControl.DetailDescriptor>
+    </dxg:GridControl>
 </UserControl>

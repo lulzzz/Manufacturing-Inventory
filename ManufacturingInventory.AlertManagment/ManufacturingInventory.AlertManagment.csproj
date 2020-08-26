@@ -22,7 +22,4 @@
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
 </Project>

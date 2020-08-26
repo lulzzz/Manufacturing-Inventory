@@ -39,7 +39,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 default:
                     return null;
             }
-            
         }
 
         public async Task<Alert> UpdateAsync(Alert entity) {

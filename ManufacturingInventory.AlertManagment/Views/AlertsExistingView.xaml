@@ -31,8 +31,8 @@
                                EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
     <dxg:GridControl x:Name="_listOfUserAlerts"
-                     ItemsSource="{Binding UserAlerts, IsAsync=True, Mode=TwoWay}"
-                     SelectedItem="{Binding SelectedUserAlert, Mode=TwoWay, IsAsync=True}"
+                     ItemsSource="{Binding ExisitingAlerts, IsAsync=True, Mode=TwoWay}"
+                     SelectedItem="{Binding SelectedAlert, Mode=TwoWay, IsAsync=True}"
                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                      Style="{StaticResource GridControlStyle}">
         <dxg:GridControl.View>
@@ -60,29 +60,26 @@
                 </dxg:TableView.RowCellMenuCustomizations>
             </dxg:TableView>
         </dxg:GridControl.View>
-        <dxg:GridControl.DetailDescriptor>
-            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
-                <dxg:GridControl Style="{StaticResource GridControlStyle}">
-                    <dxg:GridColumn FieldName="Name"
-                                    Header="Rank" />
-                    <dxg:GridColumn FieldName="IsBubbler" />
-
-                    <dxg:GridColumn FieldName="MinQuantity" />
-                    <dxg:GridColumn FieldName="" />
-                    <dxg:GridColumn FieldName="Voltage" />
-                    <dxg:GridControl.View>
-                        <dxg:TableView x:Name="detail"
-                                       Style="{StaticResource TableViewStyleNoMasterNoGroup}">
-
-                        </dxg:TableView>
-                    </dxg:GridControl.View>
-                </dxg:GridControl>
-            </dxg:DataControlDetailDescriptor>
-        </dxg:GridControl.DetailDescriptor>
         <dxg:GridColumn FieldName="AlertId" />
         <dxg:GridColumn FieldName="IsEnabled" />
         <dxg:GridColumn FieldName="Alert.AlertType"
                         Header="AlertType"
                         GroupIndex="0" />
+        <dxg:GridControl.DetailDescriptor>
+            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
+                <dxg:GridControl Style="{StaticResource GridControlStyle}">
+                    <dxg:GridColumn FieldName="Name" />
+                    <dxg:GridColumn FieldName="PartCategory" />
+
+                    <dxg:GridColumn FieldName="IsBubbler" />
+                    <dxg:GridColumn FieldName="Quantity" />
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="detail"
+                                       Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </dxg:DataControlDetailDescriptor>
+        </dxg:GridControl.DetailDescriptor>
     </dxg:GridControl>
 </UserControl>

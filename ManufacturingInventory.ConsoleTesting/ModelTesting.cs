@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ManufacturingInventory.Common.Application;
 using System.Data.OleDb;
 using Nito.AsyncEx;
+using ManufacturingInventory.Domain.DTOs;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
@@ -21,12 +22,51 @@ namespace ManufacturingInventory.ConsoleTesting {
             //AddAlertToAllInstances();
             //AsyncContext.Run(DeleteOldAlerts);
             //AsyncContext.Run(CreatingUsers);
-            //AsyncContext.Run(async ()=> { await TestingUserAlerts(1,132); });
-            //AsyncContext.Run(async () => { await TestingUserAlerts(1,133); });
-            //AsyncContext.Run(async () => { await TestingUserAlerts(1,134); });
-            AsyncContext.Run(DeleteUserAlerts);
+            //AsyncContext.Run(async () => { await TestingUserAlerts(1, 132); });
+            //AsyncContext.Run(async () => { await TestingUserAlerts(1, 133); });
+            //AsyncContext.Run(async () => { await TestingUserAlerts(1, 134); });
+            //AsyncContext.Run(async () => { await TestingUserAlerts(1, 131); });
+            //AsyncContext.Run(DeleteUserAlerts);
+            AsyncContext.Run(AlertQueryTesting);
             //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
+        }
+
+        public static async Task AlertQueryTesting() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);         
+            var tempIndividual = context.UserAlerts.Include(e => e.Alert).Where(e=>e.Alert.AlertType == AlertType.IndividualAlert && e.UserId == 1).Select(e=>e.Alert);
+            var tempCombined = context.UserAlerts.Include(e => e.Alert).Where(e => e.Alert.AlertType == AlertType.CombinedAlert && e.UserId == 1).Select(e => e.Alert);
+
+            List<AlertDto> alerts = new List<AlertDto>();
+
+
+            foreach (var temp in tempIndividual) {
+                var alert = await context.Alerts.OfType<IndividualAlert>().Include(e => e.PartInstance).ThenInclude(e=>e.Part).FirstOrDefaultAsync(e => e.Id == temp.Id);
+                if (alert != null) {
+                    alerts.Add(new AlertDto(temp));
+                }
+            }
+
+
+            foreach (var temp in tempCombined ) {
+                var alert = await context.Alerts.OfType<CombinedAlert>().Include(e => e.StockHolder).ThenInclude(e => e.PartInstances).ThenInclude(e => e.Part).FirstOrDefaultAsync(e => e.Id == temp.Id);
+                if (alert != null) {
+                    alerts.Add(new AlertDto(alert));
+                }
+            }
+
+            foreach(var alert in alerts) {
+                Console.WriteLine("Alert: {0} AlertType: {1}",alert.AlertId, alert.AlertType);
+                Console.WriteLine("PartInstance(s)");
+                Console.Write(" Name(s): ");
+                foreach(var instance in alert.PartInstances) {
+                    Console.Write(instance.Name+",");
+                }
+                Console.WriteLine();
+            }
+            
         }
 
         public static async Task DeleteUserAlerts() {
@@ -53,7 +93,7 @@ namespace ManufacturingInventory.ConsoleTesting {
             Console.WriteLine("Creating User Alerts, Please Wait...");
             var user1 = await context.Users.AsNoTracking().Include(e => e.UserAlerts).FirstOrDefaultAsync(e => e.Id == userId);
 
-            var alert2 =await context.Alerts.AsNoTracking().OfType<IndividualAlert>().Include(e => e.PartInstance).FirstOrDefaultAsync(e => e.Id == alertId);
+            var alert2 =await context.Alerts.AsNoTracking().OfType<CombinedAlert>().FirstOrDefaultAsync(e => e.Id == alertId);
 
             UserAlert userAlert1 = new UserAlert();
             userAlert1.AlertId = alert2.Id;

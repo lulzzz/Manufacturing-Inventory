@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ManufacturingInventory.Application.Boundaries.AlertManagmentUseCase {
-    public class AlertsAvailableOutput : IOutput {
+    public class AlertUseCaseOutput : IOutput {
         public Alert Alert { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
 
-        public AlertsAvailableOutput(Alert alert,bool success,string message) {
+        public AlertUseCaseOutput(Alert alert,bool success,string message) {
             this.Alert = alert;
             this.Success = success;
             this.Message = message;
