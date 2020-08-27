@@ -142,7 +142,7 @@ namespace ManufacturingInventory.Application.UseCases {
                         var count = await this._unitOfWork.Save();
                         if (count > 0) {
                             var userActions = this.GenerateAvailableActions(userEntity.Permission.Name);
-                            return new UserService(userEntity.UserName, addedSession.Id, userEntity.Permission.Name,userActions);
+                            return new UserService(userEntity.Id,userEntity.UserName, addedSession.Id, userEntity.Permission.Name,userActions);
                         } else {
                             await this._unitOfWork.Undo();
                             this._logger.Error("Error: Could not save, AuthUseCase->CreateUserServiceNewUser");
@@ -195,7 +195,7 @@ namespace ManufacturingInventory.Application.UseCases {
                         var count = await this._unitOfWork.Save();
                         if (count > 0) {
                             var userActions = this.GenerateAvailableActions(entity.Permission.Name);
-                            return new UserService(entity.UserName, addedSession.Id, entity.Permission.Name,userActions);
+                            return new UserService(entity.Id,entity.UserName, addedSession.Id, entity.Permission.Name,userActions);
                         } else {
                             await this._unitOfWork.Undo();
                             this._logger.Error("Error: Could not save, AuthUseCase->CreateUserServiceExisitingUser->DB permissions are same as domain");
@@ -245,7 +245,7 @@ namespace ManufacturingInventory.Application.UseCases {
                             var count = await this._unitOfWork.Save();
                             if (count > 0) {
                                 var userActions = this.GenerateAvailableActions(entity.Permission.Name);
-                                return new UserService(entity.UserName, addedSession.Id, entity.Permission.Name,userActions);
+                                return new UserService(entity.Id,entity.UserName, addedSession.Id, entity.Permission.Name,userActions);
                             } else {
                                 await this._unitOfWork.Undo();
                                 this._logger.Error("Error: Could not save, AuthUseCase->CreateUserService-> DB permissions do not match domain, Domain overrides");
@@ -302,7 +302,7 @@ namespace ManufacturingInventory.Application.UseCases {
                             var count = await this._unitOfWork.Save();
                             if (count > 0) {
                                 var userActions= this.GenerateAvailableActions(entity.Permission.Name);
-                                return new UserService(entity.UserName, addedSession.Id, entity.Permission.Name, userActions);
+                                return new UserService(entity.Id,entity.UserName, addedSession.Id, entity.Permission.Name, userActions);
                             } else {
                                 await this._unitOfWork.Undo();
                                 this._logger.Error("Error: Could not save, AuthUseCase->CreateUserServiceNewUser");

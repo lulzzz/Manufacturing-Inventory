@@ -11,6 +11,7 @@ using ManufacturingInventory.Application.Boundaries.PartInstanceTableView;
 using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 using ManufacturingInventory.Application.Boundaries.PriceEdit;
 using ManufacturingInventory.Application.Boundaries.ReturnItem;
+using ManufacturingInventory.Application.Boundaries.AlertManagmentUseCase;
 using ManufacturingInventory.Application.Boundaries.TransactionTableEdit;
 using ManufacturingInventory.Application.Boundaries.ReportingBoundaries;
 using ManufacturingInventory.Application.UseCases;
@@ -48,6 +49,7 @@ using System.Linq;
 using System.Windows;
 using FastExpressionCompiler.LightExpression;
 using Logger =Serilog.ILogger;
+using ManufacturingInventory.AlertManagment;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     public partial class App {
@@ -126,6 +128,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 Session session = new Session(user);
                 context.Sessions.Add(session);
                 context.SaveChanges();
+                this.userService.CurrentUserId = user.Id;
                 this.userService.CurrentUserName = user.UserName;
                 this.userService.CurrentSessionId = session.Id;
                 this.userService.UserPermissionName = user.Permission.Name;
@@ -181,6 +184,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             moduleCatalog.AddModule<DistributorManagmentModule>();
             moduleCatalog.AddModule<CategoryManagmentModule>();
             moduleCatalog.AddModule<ReportingModule>();
+            moduleCatalog.AddModule<AlertManagmentModule>();
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {
@@ -209,10 +213,12 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IMonthlyReportUseCase, MonthlySummaryUseCase>();
                 container.Register<ICurrentInventoryUseCase, CurrentInventoryUseCase>();
                 container.Register<ITransactionLogUseCase, TransactionLogUseCase>();
+                container.Register<IAlertsAvailableUseCase, AlertsAvailableUseCase>();
+                container.Register<IAlertsExistingUseCase, AlertsExistingUseCase>();
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
-                //this.CreateLogger();
+                this.CreateLogger();
                 container.RegisterInstance<Logger>(this._logger);
             } else {
                 this.Shutdown();

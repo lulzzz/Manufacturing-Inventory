@@ -21,5 +21,7 @@ namespace ManufacturingInventory.Common.Application {
         public static string ReportingMainView { get => "ReportingMainView"; }
 
         public static string ManufacturersManagmentMainView { get => "ManufacturersManagmentMainView"; }
+
+        public static string AlertsMainView { get => "AlertsMainView"; }
     }
 }

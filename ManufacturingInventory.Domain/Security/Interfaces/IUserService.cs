@@ -11,6 +11,7 @@ namespace ManufacturingInventory.Domain.Security.Interfaces {
     }
 
     public interface IUserService {
+        int CurrentUserId { get; set; }
         string CurrentUserName { get; set; }
         int? CurrentSessionId { get; set; }
         string UserPermissionName { get; set; }

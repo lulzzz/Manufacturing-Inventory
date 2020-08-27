@@ -35,11 +35,10 @@
                 <dxdo:LayoutPanel x:Name="_navigationPane"
                                   prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.AlertsExistingRegion}"
                                   CaptionHorizontalAlignment="Center"
-                                  Style="{StaticResource PanelStyle}"
-                                  ItemWidth="600">
+                                  Style="{StaticResource PanelStyle}">
                     <dxdo:LayoutPanel.CaptionTemplate>
                         <DataTemplate>
-                            <TextBlock Text="Categories"
+                            <TextBlock Text="Exisiting Alerts"
                                        FontSize="16"
                                        HorizontalAlignment="Center" />
                         </DataTemplate>
@@ -51,7 +50,7 @@
                                   Style="{StaticResource PanelStyle}">
                     <dxdo:LayoutPanel.CaptionTemplate>
                         <DataTemplate>
-                            <TextBlock Text="Category Details"
+                            <TextBlock Text="Available Alerts"
                                        FontSize="16"
                                        HorizontalAlignment="Center" />
                         </DataTemplate>

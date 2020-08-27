@@ -60,13 +60,13 @@
                                                IsEnabled="True"
                                                LargeGlyph="{dx:DXImage Image=BO_Category.png}" />
 
-                            <dxb:BarButtonItem x:Name="usersView"
+                            <dxb:BarButtonItem x:Name="alertsView"
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:MainAppViews.UserManagmentMainView}"
-                                               Content="User View"
-                                               Glyph="{dx:DXImage Image=BOCustomer_16x16.png}"
-                                               IsEnabled="False"
-                                               LargeGlyph="{dx:DXImage Image=BOCustomer_32x32.png}" />
+                                               CommandParameter="{x:Static common:MainAppViews.AlertsMainView}"
+                                               Content="User Alert Managment"
+                                               Glyph="{dx:DXImage Image=Radio_16x16.png}"
+                                               IsEnabled="True"
+                                               LargeGlyph="{dx:DXImage Image=Radio_32x32.png}" />
 
                             <dxb:BarButtonItem x:Name="distributorView"
                                                Command="{Binding LoadModuleCommand}"

@@ -27,12 +27,53 @@ namespace ManufacturingInventory.ConsoleTesting {
             //AsyncContext.Run(async () => { await TestingUserAlerts(1, 134); });
             //AsyncContext.Run(async () => { await TestingUserAlerts(1, 131); });
             //AsyncContext.Run(DeleteUserAlerts);
-            AsyncContext.Run(AlertQueryTesting);
+            //AsyncContext.Run(AlertQueryTestingExisting);
+            AsyncContext.Run(AlertQueryTestingAvailable);
+            //AlertQueryTestingAvailable();
             //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
         }
 
-        public static async Task AlertQueryTesting() {
+        public static async Task AlertQueryTestingAvailable() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            var exisiting = context.UserAlerts.Include(e => e.Alert).Where(e => e.UserId == 1).Select(e=>e.Alert);
+            //context.Alerts.Include(e=>e.UserAlerts).Contains()
+
+
+
+            var available = await context.Alerts
+                .Include(alert => (alert as IndividualAlert).PartInstance.BubblerParameter)
+                .Include(alert => (alert as IndividualAlert).PartInstance.Part)
+                .Include(alert => (alert as CombinedAlert).StockHolder.PartInstances)
+                    .ThenInclude(instance => instance.BubblerParameter)
+                .Where(alert => exisiting.All(e => e.Id != alert.Id))
+                .Select(alert=>new AlertDto(alert))
+                .ToListAsync();
+
+
+            var alerts = await context.UserAlerts
+                .Include(e => (e.Alert as IndividualAlert).PartInstance.BubblerParameter)
+                .Include(e => (e.Alert as IndividualAlert).PartInstance.Part)
+                .Include(e => (e.Alert as CombinedAlert).StockHolder.PartInstances)
+                .Where(e => e.UserId == 1).Select(e => new AlertDto(e.Alert)).ToListAsync();
+
+
+
+
+            foreach (var alert in alerts) {
+                Console.WriteLine("Alert: {0} AlertType: {1}", alert.AlertId, alert.AlertType);
+                Console.WriteLine("PartInstance(s)");
+                Console.Write(" Name(s): ");
+                foreach (var instance in alert.PartInstances) {
+                    Console.Write(instance.Name + ",");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public static async Task AlertQueryTestingExisting() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);         

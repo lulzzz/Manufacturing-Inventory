@@ -6,6 +6,6 @@ using ManufacturingInventory.Domain.DTOs;
 namespace ManufacturingInventory.Application.Boundaries.AlertManagmentUseCase {
     public interface IAlertsExistingUseCase:IUseCase<AlertUseCaseInput,AlertUseCaseOutput> {
         Task Load();
-        Task<IEnumerable<AlertDto>> GetExistingAlert(int userId);
+        Task<IEnumerable<AlertDto>> GetExistingAlerts(int userId);
     }
 }

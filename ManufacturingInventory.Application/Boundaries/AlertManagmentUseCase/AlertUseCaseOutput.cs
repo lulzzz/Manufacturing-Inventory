@@ -9,6 +9,12 @@ namespace ManufacturingInventory.Application.Boundaries.AlertManagmentUseCase {
         public bool Success { get; set; }
         public string Message { get; set; }
 
+        public AlertUseCaseOutput() {
+            this.Alert = null;
+            this.Success = false;
+            this.Message = "Error: No Input Given";
+        }
+
         public AlertUseCaseOutput(Alert alert,bool success,string message) {
             this.Alert = alert;
             this.Success = success;

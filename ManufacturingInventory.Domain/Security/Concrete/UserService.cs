@@ -4,13 +4,15 @@ using System.Collections.Generic;
 
 namespace ManufacturingInventory.Domain.Buisness.Concrete {
     public class UserService : IUserService {
+        public int CurrentUserId { get; set; }
         public string CurrentUserName { get; set; }
         public string UserPermissionName { get; set; }
         public int? CurrentSessionId { get; set; }
         public List<UserAction> AvailableUserActions { get; private set; }
 
 
-        public UserService(string currentUserName, int currentSessionId, string userPermissionName,List<UserAction> userActions) {
+        public UserService(int currentUserId,string currentUserName, int currentSessionId, string userPermissionName,List<UserAction> userActions) {
+            this.CurrentUserId = currentUserId;
             this.CurrentUserName = currentUserName;
             this.CurrentSessionId = currentSessionId;
             this.UserPermissionName = userPermissionName;
