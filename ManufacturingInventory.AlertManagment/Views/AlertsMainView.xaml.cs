@@ -16,8 +16,16 @@ namespace ManufacturingInventory.AlertManagment.Views {
     /// Interaction logic for AlertManagmentMainView.xaml
     /// </summary>
     public partial class AlertsMainView : UserControl {
+        private bool _isactive;
+        public string PanelCaption { get { return "Alert Managment"; } }
+
+        public bool IsActive {
+            get => this._isactive;
+            set => this._isactive = value;
+        }
         public AlertsMainView() {
             InitializeComponent();
+            this.IsActive = true;
         }
     }
 }

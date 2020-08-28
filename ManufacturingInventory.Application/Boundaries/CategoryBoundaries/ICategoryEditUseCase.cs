@@ -17,6 +17,7 @@ namespace ManufacturingInventory.Application.Boundaries.CategoryBoundaries {
         Task<CategoryDTO> GetDefault(CategoryTypes type);
         Task<CategoryBoundaryOutput> AddPartTo(int entityId, CategoryDTO category);
         Task<IEnumerable<CategoryBoundaryOutput>> AddPartTo(IEnumerable<int> entityIds, CategoryDTO category);
+        Task<CategoryBoundaryOutput> RemovePartFrom(int entityId, CategoryDTO category);
 
     }
 }

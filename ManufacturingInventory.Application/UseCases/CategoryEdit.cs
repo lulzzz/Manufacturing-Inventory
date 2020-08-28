@@ -330,6 +330,80 @@ namespace ManufacturingInventory.Application.UseCases {
             return outputList;
         }
 
+        public async Task<CategoryBoundaryOutput> RemovePartFrom(int entityId,CategoryDTO category) {
+            if (category.Type == CategoryTypes.Organization) {
+                var part = await this._partRepository.GetEntityAsync(e => e.Id == entityId);
+                if (part != null) {
+                    part.OrganizationId = null;
+                    part.Organization = null;
+                    var updated = await this._partRepository.UpdateAsync(part);
+                    if (updated != null) {
+                        await this._unitOfWork.Save();
+                        return new CategoryBoundaryOutput(null, true, "Part " + part.Name + " Removed Successfully");
+                    } else {
+                        await this._unitOfWork.Undo();
+                        return new CategoryBoundaryOutput(null, false, "PartInstance " + part.Name + " Failed to Add");
+                    }
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new CategoryBoundaryOutput(null, false, "Error: Part Not Found!");
+                }
+            } else {
+                var instance = await this._instanceRepository.GetEntityAsync(e => e.Id == entityId);
+                var exisitingCategory = await this._categoryRepository.GetEntityAsync(e => e.Id == category.Id);
+                if (instance == null || exisitingCategory == null) {
+                    var msg = (instance == null) ? "PartInstance Id " + entityId + "Not Found" : "Category Not Found";
+                    return new CategoryBoundaryOutput(null, false, "Error: " + msg);
+                }
+                switch (category.Type) {
+                    case CategoryTypes.Condition:
+                        instance.Condition = null;
+                        instance.ConditionId = null;
+                        break;
+                    case CategoryTypes.StockType:
+                        if (!exisitingCategory.IsDefault) {
+                            var newCategory = await this._context.Categories.OfType<StockType>().Include(e=>e.PartInstances).FirstOrDefaultAsync(e => e.IsDefault);
+                            if (newCategory != null) {
+                                if (instance.IsBubbler) {
+                                    ((StockType)exisitingCategory).Quantity -= (int)instance.BubblerParameter.Weight;
+                                } else {
+                                    ((StockType)exisitingCategory).Quantity -= (int)instance.Quantity;
+                                }
+                                IndividualAlert alert = new IndividualAlert();
+                                alert.PartInstance = instance;
+                                instance.IndividualAlert = alert;
+                                var added = this._context.Alerts.Add(alert);
+                                instance.StockType = newCategory;
+                                instance.StockTypeId = newCategory.Id;
+                                var oldUpdated = await this._categoryRepository.UpdateAsync(exisitingCategory);
+                                if (added == null || oldUpdated == null) {
+                                    await this._unitOfWork.Undo();
+                                    return new CategoryBoundaryOutput(null, false, "Error: Could not update alerts and old category,Please contact administrator");
+                                }
+                            } else {
+                                await this._unitOfWork.Undo();
+                                return new CategoryBoundaryOutput(null, false, "Error: Could not remove from category, please contatc administrator");
+                            }
+                        } else {
+                            return new CategoryBoundaryOutput(null, false, "Error: Cannot remove from default category"+Environment.NewLine+"To change category select desired category then add part instance");
+                        }
+                        break;
+                    case CategoryTypes.Usage:
+                        instance.UsageId = null;
+                        instance.Usage = null;
+                        break;
+                }
+                var instanceUpdated = await this._instanceRepository.UpdateAsync(instance);
+                if (instanceUpdated != null) {
+                    await this._unitOfWork.Save();
+                    return new CategoryBoundaryOutput(exisitingCategory, true, "PartInstance " + instance.Name + " Removed Successfully");
+                } else {
+                    await this._unitOfWork.Undo();
+                    return new CategoryBoundaryOutput(null, false, "PartInstance " + instance.Name + " Failed to Remove");
+                }
+            }
+        }
+
         public async Task<IEnumerable<PartInstance>> GetAvailablePartInstances(CategoryDTO category) {
             switch (category.Type) {
                 case CategoryTypes.Condition: {

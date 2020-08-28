@@ -68,7 +68,7 @@ namespace ManufacturingInventory.AlertManagment.ViewModels {
         }
 
         private async Task ReloadAsync() {
-            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
+            this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             await this._alertService.Load();
             var alerts = await this._alertService.GetAvailableAlerts(this._userService.CurrentUserId);
             this.AvailableAlerts = new ObservableCollection<AlertDto>(alerts);
@@ -77,7 +77,7 @@ namespace ManufacturingInventory.AlertManagment.ViewModels {
 
         private async Task LoadAsync() {
             if (!this._isLoaded) {
-                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
+                this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
                 await this._alertService.Load();
                 var alerts = await this._alertService.GetAvailableAlerts(this._userService.CurrentUserId);
                 this.AvailableAlerts = new ObservableCollection<AlertDto>(alerts);

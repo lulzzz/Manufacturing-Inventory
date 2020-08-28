@@ -32,8 +32,7 @@
         <dxdo:DockLayoutManager x:Name="DistributorManagmentDockLayoutManager"
                                 FloatingMode="Window">
             <dxdo:LayoutGroup Name="root">
-                <dxdo:LayoutPanel x:Name="_navigationPane"
-                                  prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.AlertsExistingRegion}"
+                <dxdo:LayoutPanel prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.AlertsExistingRegion}"
                                   CaptionHorizontalAlignment="Center"
                                   Style="{StaticResource PanelStyle}">
                     <dxdo:LayoutPanel.CaptionTemplate>
@@ -44,8 +43,7 @@
                         </DataTemplate>
                     </dxdo:LayoutPanel.CaptionTemplate>
                 </dxdo:LayoutPanel>
-                <dxdo:LayoutPanel x:Name="_detailsPane"
-                                  prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.AlertsAvailableRegion}"
+                <dxdo:LayoutPanel prism:RegionManager.RegionName="{x:Static localCommon:LocalRegions.AlertsAvailableRegion}"
                                   CaptionHorizontalAlignment="Center"
                                   Style="{StaticResource PanelStyle}">
                     <dxdo:LayoutPanel.CaptionTemplate>

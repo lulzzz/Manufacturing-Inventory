@@ -41,6 +41,8 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private CategoryOption _selectedCategoryType;
         private PartInstancePopUpTableViewModel _partInstancePopUpTableViewModel = null;
         private PartPopUpTableViewModel _partPopUpTableViewModel = null;
+        private PartInstance _selectedPartInstance;
+        private Part _selectedPart;
 
         private string _buttonText;
         private string _categoryTypeLabel;
@@ -71,6 +73,8 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand CategoryTypeChangedCommand { get; private set; }
         public AsyncCommand SelectItemsCommand { get; private set; }
+        public AsyncCommand RemovePartCommand { get; private set; }
+        public AsyncCommand RemovePartInstanceCommand { get; private set; }
 
         public CategoryDetailsViewModel(ICategoryEditUseCase categoryEdit,IRegionManager regionManager,IEventAggregator eventAggregator) {
             this._categoryService = categoryEdit;
@@ -81,6 +85,8 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             this.CancelCommand = new AsyncCommand(this.CancelHandler);
             this.CategoryTypeChangedCommand = new AsyncCommand(this.CategoryTypeChangedHandler);
             this.SelectItemsCommand = new AsyncCommand(this.AddItemsToCategory);
+            this.RemovePartCommand = new AsyncCommand(this.RemovePartHandler);
+            this.RemovePartInstanceCommand = new AsyncCommand(this.RemovePartInstanceHandler);
         }
 
         #region ParameterBinding
@@ -100,6 +106,16 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         public ObservableCollection<PartInstance> PartInstances { 
             get => this._partInstances;
             set => SetProperty(ref this._partInstances, value);
+        }
+
+        public PartInstance SelectedPartInstance {
+            get => this._selectedPartInstance;
+            set => SetProperty(ref this._selectedPartInstance, value);
+        }
+
+        public Part SelectedPart {
+            get => this._selectedPart;
+            set => SetProperty(ref this._selectedPart, value);
         }
 
         public bool CanEdit { 
@@ -335,7 +351,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                     this.DispatcherService.BeginInvoke(() => {
                         this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
                     });
-                    this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Publish(response.Category.Id);
+                    this._eventAggregator.GetEvent<CategoryEditDoneEvent>().Publish(this._categoryId);
                 } else {
                     this.DispatcherService.BeginInvoke(() => {
                         this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
@@ -438,6 +454,29 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 dialogCommands: new List<UICommand>() { continueCommand, cancelCommand },
                 title: "Select Parts Dialog", viewModel: this._partPopUpTableViewModel);
             return result == continueCommand;
+        }
+
+        private async Task RemovePartHandler() {
+            //var output=await this._categoryService.RemovePartFrom(this.SelectedPart)
+            if (this.SelectedPart != null) {
+                var output = await this._categoryService.RemovePartFrom(this.SelectedPart.Id, this.SelectedCategory);
+                await this.ShowActionResponse(output);
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("Error:  Must select Part", "Error", MessageButton.OK, MessageIcon.Error);
+                });
+            }
+        }
+
+        private async Task RemovePartInstanceHandler() {
+            if (this.SelectedPartInstance != null) {
+                var output = await this._categoryService.RemovePartFrom(this.SelectedPartInstance.Id, this.SelectedCategory);
+                await this.ShowActionResponse(output);
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage("Error:  Must select PartInstance", "Error", MessageButton.OK, MessageIcon.Error);
+                });
+            }
         }
 
         #endregion

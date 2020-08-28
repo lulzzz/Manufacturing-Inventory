@@ -16,8 +16,8 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
              mc:Ignorable="d"
-             Height="400"
-             Width="1200">
+             d:DesignHeight="400"
+             d:DesignWidth="1200">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -32,20 +32,18 @@
                                EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
-        <dxlc:LayoutControl>
+        <dxlc:LayoutGroup Orientation="Horizontal">
             <dxg:GridControl x:Name="_listOfUserAlerts"
                              ItemsSource="{Binding AvailableAlerts, IsAsync=True, Mode=TwoWay}"
                              SelectedItem="{Binding SelectedAlert, Mode=TwoWay, IsAsync=True}"
                              ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                              Style="{StaticResource GridControlStyle}">
                 <dxg:GridControl.View>
-                    <dxg:TableView x:Name="_alertExistingTableView"
+                    <dxg:TableView x:Name="_alertsAvailableTable"
                                    AutoWidth="True"
                                    AllowBestFit="True"
                                    HorizontalScrollbarVisibility="Visible"
-                                   SearchColumns="Name"
-                                   SearchPanelNullText="Search By Name"
-                                   ShowSearchPanelMode="Always"
+                                   ShowSearchPanelMode="Never"
                                    Style="{StaticResource TableViewStyleWithMasterGroup}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding ElementName=_alertExistingTableView, Path=TableViewCommands.BestFitColumns}"
@@ -69,7 +67,6 @@
                         <dxg:GridControl Style="{StaticResource GridControlStyle}">
                             <dxg:GridColumn FieldName="Name" />
                             <dxg:GridColumn FieldName="PartCategory" />
-
                             <dxg:GridColumn FieldName="IsBubbler" />
                             <dxg:GridColumn FieldName="Quantity" />
                             <dxg:GridControl.View>
@@ -81,6 +78,6 @@
                     </dxg:DataControlDetailDescriptor>
                 </dxg:GridControl.DetailDescriptor>
             </dxg:GridControl>
-        </dxlc:LayoutControl>
+        </dxlc:LayoutGroup>
     </dx:LoadingDecorator>
 </UserControl>

@@ -202,7 +202,8 @@
                 </dxlc:LayoutGroup>
                 <dx:DXTabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
                     <dx:DXTabItem Glyph="{dx:DXImage Image=BOProductGroup_16x16.png}"
-                                  Header="Stock Information">
+                                  Header="Stock Information"
+                                  IsSelected="True">
                         <dxlc:LayoutGroup Orientation="Vertical">
                             <dxlc:LayoutGroup Orientation="Horizontal"
                                               View="GroupBox">
@@ -215,7 +216,8 @@
                                 </dxlc:LayoutGroup.HeaderTemplate>
                                 <dxlc:LayoutItem Label="Stock Type"
                                                  Style="{StaticResource LayoutItemStyle}">
-                                    <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                    <dxe:TextEdit Text="{Binding SelectedStockType.Name}" />
+                                    <!--<dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"
                                                       IsTextEditable="False"
                                                       ItemsSource="{Binding StockTypes}"
@@ -226,7 +228,7 @@
                                                            Text="{Binding Name}" />
                                             </DataTemplate>
                                         </dxe:ComboBoxEdit.ItemTemplate>
-                                    </dxe:ComboBoxEdit>
+                                    </dxe:ComboBoxEdit>-->
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutItem Label="Quantity"
                                                  Style="{StaticResource LayoutItemStyle}">

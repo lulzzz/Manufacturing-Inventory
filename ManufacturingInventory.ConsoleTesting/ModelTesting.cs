@@ -11,6 +11,8 @@ using ManufacturingInventory.Common.Application;
 using System.Data.OleDb;
 using Nito.AsyncEx;
 using ManufacturingInventory.Domain.DTOs;
+using ManufacturingInventory.Infrastructure.Model.Repositories;
+using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
@@ -28,10 +30,31 @@ namespace ManufacturingInventory.ConsoleTesting {
             //AsyncContext.Run(async () => { await TestingUserAlerts(1, 131); });
             //AsyncContext.Run(DeleteUserAlerts);
             //AsyncContext.Run(AlertQueryTestingExisting);
-            AsyncContext.Run(AlertQueryTestingAvailable);
+            AsyncContext.Run(RemovePartFromCategory);
             //AlertQueryTestingAvailable();
             //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
+        }
+
+        public static async Task RemovePartFromCategory() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            Console.WriteLine("Working, Please Wait...");
+            CategoryEdit categoryService = new CategoryEdit(context);
+            var categories = await categoryService.GetCategories();
+            var category=categories.FirstOrDefault(e => e.Id == 14);
+            //var instance=category
+            var partInstances = await categoryService.GetCategoryPartInstances(category);
+            var partInstance = partInstances.FirstOrDefault(e => e.Id == 1);
+            var output = await categoryService.RemovePartFrom(partInstance.Id, category);
+            if (output.Success) {
+                Console.WriteLine(output.Message);
+
+            } else {
+                Console.WriteLine(output.Message);
+            }
+
         }
 
         public static async Task AlertQueryTestingAvailable() {

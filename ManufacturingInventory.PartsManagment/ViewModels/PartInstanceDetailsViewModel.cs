@@ -298,9 +298,21 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             get => this._isReusable;
             set => SetProperty(ref this._isReusable, value);
         }
-        public int Quantity { get => _quantity; set => _quantity = value; }
-        public int MinQuantity { get => _minQuantity; set => _minQuantity = value; }
-        public int SafeQuantity { get => _safeQuantity; set => _safeQuantity = value; }
+
+        public int Quantity { 
+            get => this._quantity;
+            set => SetProperty(ref this._quantity, value);
+        }
+
+        public int MinQuantity { 
+            get => this._minQuantity;
+            set => SetProperty(ref this._minQuantity, value);
+        }
+
+        public int SafeQuantity { 
+            get => this._safeQuantity;
+            set => SetProperty(ref this._safeQuantity, value);
+        }
 
         #endregion
 
@@ -336,9 +348,9 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         public async Task SaveHandler() {
-            if (this.SelectedStockType != null) {
-                this.SelectedPartInstance.StockTypeId = this.SelectedStockType.Id;
-            }
+            //if (this.SelectedStockType != null) {
+            //    this.SelectedPartInstance.StockTypeId = this.SelectedStockType.Id;
+            //}
 
             if (this.SelectedCondition != null) {
                 this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
@@ -457,61 +469,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             await this.ReloadHandler();
         }
 
-        public async Task ReloadHandler() {
-            await this._editInstance.LoadAsync();
-            var instance = await this._editInstance.GetPartInstance(this._instanceId);
-            var categories = await this._editInstance.GetCategories();
-            var locations = await this._editInstance.GetLocations();
-            var transactions = await this._editInstance.GetTransactions(this._instanceId);
-            this.Transactions = new ObservableCollection<Transaction>(transactions);
 
-            this.DispatcherService.BeginInvoke(() => {
-                this.SelectedPartInstance = instance;
-                this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
-                this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
-                this.Locations = new ObservableCollection<Location>(locations);
-                if (this.SelectedPartInstance != null) {
-                    this.Comments = this.SelectedPartInstance.Comments;
-                    this.Description = this.SelectedPartInstance.Description;
-                    this.Quantity = this.SelectedPartInstance.Quantity;
-
-                    if (this.IsBubbler) {
-                        this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
-                        this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
-                        this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
-                    }
-
-                    if (this.SelectedPartInstance.PriceId.HasValue) {
-                        this.UnitCost = this.SelectedPartInstance.Price.UnitCost;
-                        this.TotalCost = this.SelectedPartInstance.TotalCost;
-                        this.HasPrice = true;
-                        this.AddPriceButtonText = "Add and Replace Price";
-                        this.NavigatePriceEdit(false, false);
-                    } else {
-                        this.UnitCost = 0;
-                        this.TotalCost = 0;
-                        this.HasPrice = false;
-                        this.AddPriceButtonText = "Add Price";
-                    }
-
-                    this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
-
-                    if (this.SelectedPartInstance.Condition != null) {
-                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
-                    }
-
-                    if (this.SelectedPartInstance.Usage != null) {
-                        this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);
-                    }
-
-                    this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
-                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
-                    this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && this.CanEdit;
-                    this.IsReusable = this.SelectedPartInstance.IsReusable || this.IsBubbler;
-                }
-            });
-        }
 
         #endregion
 
@@ -619,6 +577,62 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this._isInitialized = true;
                 });
             }
+        }
+
+        public async Task ReloadHandler() {
+            await this._editInstance.LoadAsync();
+            var instance = await this._editInstance.GetPartInstance(this._instanceId);
+            var categories = await this._editInstance.GetCategories();
+            var locations = await this._editInstance.GetLocations();
+            var transactions = await this._editInstance.GetTransactions(this._instanceId);
+            this.Transactions = new ObservableCollection<Transaction>(transactions);
+
+            this.DispatcherService.BeginInvoke(() => {
+                this.SelectedPartInstance = instance;
+                this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
+                this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
+                this.Locations = new ObservableCollection<Location>(locations);
+                if (this.SelectedPartInstance != null) {
+                    this.Comments = this.SelectedPartInstance.Comments;
+                    this.Description = this.SelectedPartInstance.Description;
+                    this.Quantity = this.SelectedPartInstance.Quantity;
+
+                    if (this.IsBubbler) {
+                        this.GrossWeight = this.SelectedPartInstance.BubblerParameter.GrossWeight;
+                        this.Measured = this.SelectedPartInstance.BubblerParameter.Measured;
+                        this.NetWeight = this.SelectedPartInstance.BubblerParameter.NetWeight;
+                    }
+
+                    if (this.SelectedPartInstance.PriceId.HasValue) {
+                        this.UnitCost = this.SelectedPartInstance.Price.UnitCost;
+                        this.TotalCost = this.SelectedPartInstance.TotalCost;
+                        this.HasPrice = true;
+                        this.AddPriceButtonText = "Add and Replace Price";
+                        this.NavigatePriceEdit(false, false);
+                    } else {
+                        this.UnitCost = 0;
+                        this.TotalCost = 0;
+                        this.HasPrice = false;
+                        this.AddPriceButtonText = "Add Price";
+                    }
+
+                    this.AttachmentDataTraveler = new AttachmentDataTraveler(GetAttachmentBy.PARTINSTANCE, this.SelectedPartInstance.Id);
+
+                    if (this.SelectedPartInstance.Condition != null) {
+                        this.SelectedCondition = this.Conditions.FirstOrDefault(e => e.Id == this.SelectedPartInstance.ConditionId);
+                    }
+
+                    if (this.SelectedPartInstance.Usage != null) {
+                        this.SelectedUsage = this.UsageList.FirstOrDefault(e => e.Id == this.SelectedPartInstance.UsageId);
+                    }
+
+                    this.SelectedLocation = this.Locations.FirstOrDefault(e => e.Id == this.SelectedPartInstance.LocationId);
+                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == this.SelectedPartInstance.StockTypeId);
+                    this.CanEditStock = (this.SelectedPartInstance.StockTypeId == Constants.DefaultStockId) && this.CanEdit;
+                    this.IsReusable = this.SelectedPartInstance.IsReusable || this.IsBubbler;
+                }
+            });
         }
 
         private async Task ClosingHandler() {

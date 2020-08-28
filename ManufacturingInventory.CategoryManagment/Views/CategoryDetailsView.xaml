@@ -20,7 +20,7 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d"
              d:DesignHeight="700"
-             d:DesignWidth="500">
+             d:DesignWidth="1200">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -67,7 +67,7 @@
         </dx:DialogService>
     </dxmvvm:Interaction.Behaviors>
     <dx:LoadingDecorator>
-        <dxlc:LayoutGroup Orientation="Vertical">
+        <dxlc:LayoutGroup Orientation="Vertical" Margin="1,1,1,1">
             <dxlc:LayoutGroup Orientation="Vertical">
                 <dxlc:LayoutGroup Orientation="Vertical">
                     <dxlc:LayoutItem Label="{Binding CategoryTypeLabel,Mode=TwoWay,IsAsync=True}"
@@ -119,29 +119,47 @@
                                               UncheckedStateContent="NO" />
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem Label="Holds Bubblers?"
-                                         Style="{StaticResource LayoutItemStyle}"
-                                         Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}">
-                            <dxe:ToggleSwitch HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              CheckedStateContent="YES"
-                                              ContentPlacement="Both"
-                                              EnableAnimation="False"
-                                              IsChecked="{Binding HoldsBubblers}"
-                                              IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}"
-                                              UncheckedStateContent="NO" />
+                                             Style="{StaticResource LayoutItemStyle}"
+                                             Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}">
+                                <dxe:ToggleSwitch HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  CheckedStateContent="YES"
+                                                  ContentPlacement="Both"
+                                                  EnableAnimation="False"
+                                                  IsChecked="{Binding HoldsBubblers}"
+                                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}"
+                                                  UncheckedStateContent="NO" />
+                            </dxlc:LayoutItem>
+                            <dxlc:LayoutItem Label="Note: Please Read"
+                                             FontStyle="Normal" FontWeight="Bold"
+                                             Background="GreenYellow"
+                                             Style="{StaticResource LayoutItemStyle}">
+                            <TextBlock HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow" FontSize="11">
+                                    <Run Text="**To add bubblers to StockType HoldsBubblers must be marked Yes" />
+                                    <LineBreak />
+                                    <Run Text="**A StockType can either hold bubbler or non-bubblers, stock cannot be combined." />
+                                    <LineBreak />
+                                    <Run Text="**The only exception is the default StockType Individual" />
+                            </TextBlock>
                         </dxlc:LayoutItem>
+
+
                     </dxlc:LayoutGroup>
 
 
                 </dxlc:LayoutGroup>
 
-                <dxlc:LayoutItem Label="Description"
-                                 Style="{StaticResource LayoutItemStyle}">
-                    <dxe:TextEdit EditValue="{Binding Description}" NullText="Category Description"
-                                  Style="{StaticResource TextEditComments}"
-                                  Height="50"
-                                  IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
-                </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Label="Description"
+                                     Style="{StaticResource LayoutItemStyle}">
+                        <dxe:TextEdit EditValue="{Binding Description}"
+                                      NullText="Category Description"
+                                      Style="{StaticResource TextEditComments}"
+                                      Height="50"
+                                      IsReadOnly="{Binding CanEdit,Converter={dxmvvm:BooleanNegationConverter}}" />
+                    </dxlc:LayoutItem>
+
+
+
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Visibility="{Binding IsStockType,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=False}}">
                 <dxlc:LayoutItem Label="Total Quantity"
@@ -177,6 +195,7 @@
             <dx:SimpleButton Content="{Binding ButtonText}"
                              Command="{Binding SelectItemsCommand}"
                              Height="50"
+                             Glyph="{dx:DXImage Image=Close_16x16.png}"
                              Visibility="{Binding CanEdit,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=True, Inverse=True}}" />
             <dxlc:LayoutGroup Orientation="Vertical"
                               Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False, Inverse=True}}">
@@ -193,12 +212,19 @@
                     <dxg:GridControl x:Name="_listOfPartInstances"
                                      ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowPartInstanceTableLoading, Mode=TwoWay}"
+                                     SelectedItem="{Binding SelectedPartInstance,Mode=TwoWay,IsAsync=True}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="_instanceTableView"
                                            AllowBestFit="True"
                                            AutoWidth="True"
                                            Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Command="{Binding Path=View.DataContext.RemovePartInstanceCommand}"
+                                                       Content="Remove PartInstance"
+                                                       Glyph="{dx:DXImage Image=Close_16x16.png}" />
+                                    <dxb:BarItemSeparator />
+                                </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
                         <dxg:GridControl.Bands>
@@ -206,23 +232,34 @@
                                                  OverlayHeaderByChildren="True"
                                                  VisibleIndex="0">
                                 <dxg:GridColumn FieldName="Id"
-                                                IsEnabled="False" />
+                                                IsEnabled="False"
+                                                VisibleIndex="1"/>
                                 <dxg:GridColumn AllowSearchPanel="true"
-                                                FieldName="Name" />
+                                                FieldName="Name"
+                                                VisibleIndex="2" />
                                 <dxg:GridColumn AllowGrouping="True"
                                                 FieldName="StockType.Name"
-                                                Header="Stock Type" />
+                                                Header="Stock Type"
+                                                VisibleIndex="3" />
                                 <dxg:GridColumn AllowGrouping="True"
-                                                FieldName="IsBubbler" />
+                                                FieldName="IsBubbler"
+                                                VisibleIndex="4" />
+                                <dxg:GridColumn FieldName="SerialNumber" />
+                                <dxg:GridColumn FieldName="BatchNumber" />
                             </dxg:GridControlBand>
                             <dxg:GridControlBand Header="Stock"
                                                  VisibleIndex="1">
                                 <dxg:GridColumn FieldName="Quantity"
-                                                Header="Quantity" />
-                                <dxg:GridColumn FieldName="MinQuantity" />
-                                <dxg:GridColumn FieldName="SafeQuantity" />
+                                                Header="Quantity"
+                                                VisibleIndex="5" />
                                 <dxg:GridColumn FieldName="BubblerParameter.Weight"
-                                                Header="Weight" />
+                                                Header="Weight"
+                                                VisibleIndex="6"/>
+                                <dxg:GridColumn FieldName="MinQuantity"
+                                                VisibleIndex="7"/>
+                                <dxg:GridColumn FieldName="SafeQuantity"
+                                                VisibleIndex="8"/>
+
                             </dxg:GridControlBand>
                         </dxg:GridControl.Bands>
 
@@ -242,6 +279,7 @@
                                      dxlc:DockLayoutControl.Dock="Client"
                                      ClipboardCopyMode="ExcludeHeader"
                                      ItemsSource="{Binding Parts, IsAsync=True, Mode=TwoWay}"
+                                     SelectedItem="{Binding SelectedPart,Mode=TwoWay,IsAsync=True}"
                                      ShowLoadingPanel="{Binding ShowPartTableLoading, Mode=TwoWay}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
@@ -249,6 +287,12 @@
                                            AllowBestFit="True"
                                            AutoWidth="True"
                                            Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItem Command="{Binding Path=View.DataContext.RemovePartCommand}"
+                                                       Content="Remove Part"
+                                                       Glyph="{dx:DXImage Image=Close_16x16.png}" />
+                                    <dxb:BarItemSeparator />
+                                </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
                         <dxg:GridControl.Columns>

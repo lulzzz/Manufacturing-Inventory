@@ -226,7 +226,7 @@
                                                    Text="Stock Input" />
                                     </DataTemplate>
                                 </dxlc:LayoutGroup.HeaderTemplate>
-                                <dxlc:LayoutItem Label="Stock Type(Optional)"
+                                <dxlc:LayoutItem Label="Stock Type"
                                                  Style="{StaticResource LayoutItemStyle}">
                                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsTextEditable="False"
