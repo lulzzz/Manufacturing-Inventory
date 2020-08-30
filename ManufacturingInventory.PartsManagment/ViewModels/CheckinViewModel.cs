@@ -186,10 +186,10 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._warehouses, value);
         }
 
-        //public ObservableCollection<StockType> StockTypes {
-        //    get => this._partTypes;
-        //    set => SetProperty(ref this._partTypes, value);
-        //}
+        public ObservableCollection<StockType> StockTypes {
+            get => this._partTypes;
+            set => SetProperty(ref this._partTypes, value);
+        }
 
         public ObservableCollection<Distributor> Distributors {
             get => this._distributors;
@@ -692,13 +692,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                     this.SelectedPartInstance = partInstance;
                     this.Distributors = new ObservableCollection<Distributor>(distributors);
                     this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                    //this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
                     this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
                     this.TransactionTimeStamp = DateTime.Now;
                     this.CostReported = this.SelectedPartInstance.CostReported;
                     this.CanEditStock = this.SelectedPartInstance.StockTypeId==Constants.DefaultStockId;
-                    //this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == partInstance.StockTypeId);
+                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == partInstance.StockTypeId);
                     this.SelectedWarehouse = this.Warehouses.FirstOrDefault(e => e.Id == partInstance.LocationId);
                     this.IsReusable = this.SelectedPartInstance.IsReusable;
 
@@ -729,14 +729,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => {
                     this.Distributors = new ObservableCollection<Distributor>(distributors);
                     this.Conditions = new ObservableCollection<Condition>(categories.OfType<Condition>());
-                    //this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
+                    this.StockTypes = new ObservableCollection<StockType>(categories.OfType<StockType>());
                     this.Warehouses = new ObservableCollection<Warehouse>(warehouses);
                     this.UsageList = new ObservableCollection<Usage>(categories.OfType<Usage>());
-                    //this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == Constants.DefaultStockId);
+                    this.SelectedStockType = this.StockTypes.FirstOrDefault(e => e.Id == Constants.DefaultStockId);
                     this.TransactionTimeStamp = DateTime.Now;
                     var partInstance = new PartInstance();
                     if (part != null) {
-                        //partInstance.CostReported = part.DefaultToCostReported;
                         this.CostReported = part.DefaultToCostReported;
                         partInstance.CostReported = part.DefaultToCostReported;
                         if (part.WarehouseId.HasValue) {

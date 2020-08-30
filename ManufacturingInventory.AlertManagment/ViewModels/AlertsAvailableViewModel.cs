@@ -85,8 +85,5 @@ namespace ManufacturingInventory.AlertManagment.ViewModels {
                 this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = false);
             }
         }
-
-
-
     }
 }

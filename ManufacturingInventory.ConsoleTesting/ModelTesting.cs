@@ -19,7 +19,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static void Main(string[] args) {
 
-            //syncContext.Run(AddAlertToAllInstances);
+            AsyncContext.Run(AddAlertToAllInstances);
             //AsyncContext.Run(DeletingAlerts);
             //AddAlertToAllInstances();
             //AsyncContext.Run(DeleteOldAlerts);
@@ -29,8 +29,8 @@ namespace ManufacturingInventory.ConsoleTesting {
             //AsyncContext.Run(async () => { await TestingUserAlerts(1, 134); });
             //AsyncContext.Run(async () => { await TestingUserAlerts(1, 131); });
             //AsyncContext.Run(DeleteUserAlerts);
-            //AsyncContext.Run(AlertQueryTestingExisting);
-            AsyncContext.Run(RemovePartFromCategory);
+            //AsyncContext.Run(AlertQueryTestingAvailable);
+            //AsyncContext.Run(RemovePartFromCategory);
             //AlertQueryTestingAvailable();
             //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
@@ -38,7 +38,8 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static async Task RemovePartFromCategory() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+
             using var context = new ManufacturingContext(optionsBuilder.Options);
             Console.WriteLine("Working, Please Wait...");
             CategoryEdit categoryService = new CategoryEdit(context);
@@ -59,7 +60,10 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static async Task AlertQueryTestingAvailable() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            //optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            Console.WriteLine("Starting Query..");
+
             using var context = new ManufacturingContext(optionsBuilder.Options);
             var exisiting = context.UserAlerts.Include(e => e.Alert).Where(e => e.UserId == 1).Select(e=>e.Alert);
             //context.Alerts.Include(e=>e.UserAlerts).Contains()
@@ -98,7 +102,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static async Task AlertQueryTestingExisting() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);         
             var tempIndividual = context.UserAlerts.Include(e => e.Alert).Where(e=>e.Alert.AlertType == AlertType.IndividualAlert && e.UserId == 1).Select(e=>e.Alert);
             var tempCombined = context.UserAlerts.Include(e => e.Alert).Where(e => e.Alert.AlertType == AlertType.CombinedAlert && e.UserId == 1).Select(e => e.Alert);
@@ -135,7 +139,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static async Task DeleteUserAlerts() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             Console.WriteLine("Deleting User Alerts, Please Wait...");
 
@@ -152,7 +156,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static async Task TestingUserAlerts(int userId,int alertId) {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             Console.WriteLine("Creating User Alerts, Please Wait...");
             var user1 = await context.Users.AsNoTracking().Include(e => e.UserAlerts).FirstOrDefaultAsync(e => e.Id == userId);
@@ -175,7 +179,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static async Task CreatingUsers() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             Console.WriteLine("Creating Users");
             User user1 = new User();
@@ -295,7 +299,7 @@ namespace ManufacturingInventory.ConsoleTesting {
 
         public static void AddAlertToAllInstances() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("server=192.168.0.5;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             var user = context.Users
                 .Include(e => e.Sessions)
