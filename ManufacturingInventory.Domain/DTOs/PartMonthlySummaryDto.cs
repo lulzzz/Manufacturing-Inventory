@@ -7,6 +7,9 @@ namespace ManufacturingInventory.Domain.DTOs {
     public class PartSummary:IPartSummary {
         public string PartName { get; set; }
         public string InstanceName { get; set; }
+        public DateTime Today { get; set; }
+        public DateTime DateIn { get; set; }
+        public int Age { get; set; }
 
         public double StartQuantity { get; set; }
         public double StartCost { get; set; }

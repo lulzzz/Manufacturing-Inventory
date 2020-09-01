@@ -41,6 +41,11 @@ namespace ManufacturingInventory.Application.UseCases {
             var monthlyReport = new List<PartSummary>();
             StringBuilder transactionBuffer = new StringBuilder();
             foreach (var partInstance in partInstances) {
+                DateTime dateIn;
+                var temp=partInstance.Transactions.OrderByDescending(e => e.TimeStamp).FirstOrDefault(e=>e.InventoryAction==InventoryAction.INCOMING);
+                dateIn = (temp != null) ? temp.TimeStamp : DateTime.Now;
+                var today = DateTime.Now;
+                
                 var incomingTransactions = from transaction in partInstance.Transactions
                                            where (transaction.TimeStamp >= dStart && transaction.InventoryAction == InventoryAction.INCOMING)
                                            select transaction;
@@ -92,6 +97,10 @@ namespace ManufacturingInventory.Application.UseCases {
                 PartSummary partSummary = new PartSummary();
                 partSummary.PartName = partInstance.Part.Name;
                 partSummary.InstanceName = partInstance.Name;
+
+                partSummary.DateIn = dateIn;
+                partSummary.Age = (today - partSummary.DateIn).Days;
+                partSummary.Today = today;
 
                 partSummary.StartQuantity = (currentQty - incomingQtyTotal) + outgoingQtyTotal;
                 partSummary.StartCost = (currentCost - incomingCostTotal) + outgoingCostTotal;

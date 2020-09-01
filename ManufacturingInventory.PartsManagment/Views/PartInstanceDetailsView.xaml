@@ -279,6 +279,7 @@
                                                       Mask="f"
                                                       MaskType="Numeric"
                                                       MaskUseAsDisplayFormat="True"
+                                                      IsReadOnly="True"
                                                       Text="{Binding NetWeight}" />
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="Gross"
@@ -288,6 +289,7 @@
                                                       Mask="f"
                                                       MaskType="Numeric"
                                                       MaskUseAsDisplayFormat="True"
+                                                      IsReadOnly="True"
                                                       Text="{Binding GrossWeight}" />
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
@@ -299,6 +301,7 @@
                                                       Mask="f"
                                                       MaskType="Numeric"
                                                       MaskUseAsDisplayFormat="True"
+                                                      IsReadOnly="True"
                                                       Text="{Binding Measured}" />
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="Weight"
@@ -308,6 +311,7 @@
                                                       Mask="f"
                                                       MaskType="Numeric"
                                                       MaskUseAsDisplayFormat="True"
+                                                      IsReadOnly="True"
                                                       Text="{Binding Weight}" />
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>

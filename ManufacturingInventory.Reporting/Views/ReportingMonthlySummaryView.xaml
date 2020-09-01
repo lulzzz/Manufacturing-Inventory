@@ -18,7 +18,7 @@
              prism:ClearChildViewsRegionBehavior.ClearChildViews="True"
              mc:Ignorable="d"
              d:DesignHeight="500"
-             d:DesignWidth="1200">
+             d:DesignWidth="1600">
 	<UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -139,17 +139,28 @@
                                                 Style="{StaticResource TableViewStyleNoMasterNoGroup}">
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                            <dxg:GridColumn FieldName="PartName" Header="Part Category"/>
-                            <dxg:GridColumn FieldName="InstanceName" Header="Part" />
-                            <dxg:GridColumn FieldName="StartQuantity"
-                                            Header="Starting Qty">
+                            <dxg:GridColumn FieldName="PartName" Header="Part Category" VisibleIndex="0"/>
+                            <dxg:GridColumn FieldName="InstanceName"
+                                        Header="Part"
+                                        VisibleIndex="1" />
+                            <dxg:GridColumn FieldName="Today"  VisibleIndex="2"/>
+                            <dxg:GridColumn FieldName="DateIn"  VisibleIndex="3" />
+                            <dxg:GridColumn FieldName="Age"  VisibleIndex="4">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
-                                                            MaskUseAsDisplayFormat="True"
-                                                            Mask="d" />
+                                                          MaskUseAsDisplayFormat="True"
+                                                          Mask="d" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="StartCost"
+                            <dxg:GridColumn FieldName="StartQuantity"  VisibleIndex="5"
+                                                Header="Starting Qty">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:TextEditSettings MaskType="Numeric" 
+                                                                MaskUseAsDisplayFormat="True"
+                                                                Mask="d" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="StartCost"  VisibleIndex="6"
                                             Header="Starting Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
@@ -159,7 +170,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="IncomingQuantity"
-                                            Header="Incoming Qty">
+                                        VisibleIndex="7"
+                                        Header="Incoming Qty">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -167,7 +179,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="IncomingCost"
-                                            Header="Incoming Cost">
+                                        VisibleIndex="8"
+                                        Header="Incoming Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -176,7 +189,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ProductionOutgoingQuantity"
-                                            Header="Prod. Outgoing Qty">
+                                        VisibleIndex="9"
+                                        Header="Prod. Outgoing Qty">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -184,7 +198,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ProductionOutgoingCost"
-                                            Header="Prod. Outgoing Cost">
+                                        VisibleIndex="10"
+                                        Header="Prod. Outgoing Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -193,7 +208,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RndOutgoingQuantity"
-                                            Header="Rnd Outgoing Qty">
+                                        VisibleIndex="11"
+                                        Header="Rnd Outgoing Qty">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -201,7 +217,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RndOutgoingCost"
-                                            Header="RnD Outgoing Cost">
+                                        VisibleIndex="12"
+                                        Header="RnD Outgoing Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -210,7 +227,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TotalOutgoingQuantity"
-                                            Header="Outgoing Qty">
+                                        VisibleIndex="13"
+                                        Header="Outgoing Qty">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -218,7 +236,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TotalOutgoingCost"
-                                            Header="Outgoing Cost">
+                                        VisibleIndex="14"
+                                        Header="Outgoing Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -227,7 +246,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="EndQuantity"
-                                            Header="End Qty">
+                                        VisibleIndex="15"
+                                        Header="End Qty">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -235,7 +255,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="EndCost"
-                                            Header="End Cost">
+                                        VisibleIndex="16"
+                                        Header="End Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -244,7 +265,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CurrentQuantity"
-                                            Header="Current Qty">
+                                        VisibleIndex="17"
+                                        Header="Current Qty">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"
@@ -252,7 +274,8 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CurrentCost"
-                                            Header="Current Cost">
+                                        VisibleIndex="18"
+                                        Header="Current Cost">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings MaskType="Numeric"
                                                             MaskUseAsDisplayFormat="True"

@@ -13,13 +13,19 @@ using Nito.AsyncEx;
 using ManufacturingInventory.Domain.DTOs;
 using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
+using ManufacturingInventory.Infrastructure.Model.Providers;
+using System.Text;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
 
-        public static void Main(string[] args) {
+        public static List<int> IdList = new List<int>() { 16, 17, 28, 12, 13, 18, 19, 20, 21, 22, 23, 74, 76, 24, 25, 26, 27, 59, 60, 75, 73, 72, 71, 70, 69, 68, 67, 66, 65 };
 
-            AsyncContext.Run(AddAlertToAllInstances);
+        public static void Main(string[] args) {
+            //AsyncContext.Run(ImportNew);
+            //AsyncContext.Run(DeleteAll);
+            //AsyncContext.Run(AddAlertToAllInstances);
+            //AsyncContext.Run(TestCurrentInventory);
             //AsyncContext.Run(DeletingAlerts);
             //AddAlertToAllInstances();
             //AsyncContext.Run(DeleteOldAlerts);
@@ -34,6 +40,82 @@ namespace ManufacturingInventory.ConsoleTesting {
             //AlertQueryTestingAvailable();
             //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
+        }
+
+        public static async Task ImportNew() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            await context.Database.MigrateAsync();
+            Console.WriteLine("Created: {0}");
+        }
+
+        public static async Task DeleteAll() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            IRepository<PartInstance> instanceRepository = new PartInstanceRepository(context);
+            await instanceRepository.LoadAsync();
+            Console.WriteLine("Attempting to delete id list, see log below");
+            foreach(var id in IdList) {
+                var partInstance = await instanceRepository.GetEntityAsync(e => e.Id == id);
+                if (partInstance != null) {
+                    var output = await instanceRepository.DeleteAsync(partInstance);
+                    if (output != null) {
+                        var count=await context.SaveChangesAsync();
+                        if (count > 0) {
+                            Console.WriteLine("Successfully Deleted: Id:{0} Name:{1}", partInstance.Id, partInstance.Name);
+                        } else {
+                            Console.WriteLine("Error Saving Id:{0} Name:{1}", partInstance.Id, partInstance.Name);
+                        }
+                    } else {
+                        Console.WriteLine("Error Deleting: Id:{0} Name:{1}", partInstance.Id, partInstance.Name);
+                    }
+                } else {
+                    Console.WriteLine("Could Not Find:  Id:{0} ",id);
+                }
+            }        
+        }
+
+        public static async Task TestCurrentInventory() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            IEntityProvider<PartInstance> partInstanceProvider = new PartInstanceProvider(context);
+            await partInstanceProvider.LoadAsync();
+            DateTime now = DateTime.Now;
+            
+            var allParts = await partInstanceProvider.GetEntityListAsync(e => e.CostReported && e.Quantity!=0);
+            List<CurrentInventoryItem> currentInventory = new List<CurrentInventoryItem>();
+            foreach(var part in allParts) {
+                if (part.IsBubbler) {
+                    DateTime dateIn = part.Transactions.OrderByDescending(e => e.TimeStamp).First().TimeStamp;
+                    currentInventory.Add(new CurrentInventoryItem() { 
+                        Id = part.Id,
+                        Today=now,
+                        DateIn=dateIn, 
+                        Age=(now-dateIn).Days,
+                        PartCategory = part.Part.Name, 
+                        Part = part.Name, 
+                        Quantity = part.BubblerParameter.NetWeight, 
+                        Cost = part.TotalCost
+                    });
+                } else {
+                    DateTime dateIn = part.Transactions.OrderByDescending(e => e.TimeStamp).First().TimeStamp;
+                    currentInventory.Add(new CurrentInventoryItem() {
+                        Id = part.Id,
+                        Today=now,
+                        DateIn = dateIn,
+                        Age = (now - dateIn).Days,
+                        PartCategory = part.Part.Name,
+                        Part = part.Name,
+                        Quantity = part.Quantity,
+                        Cost = part.TotalCost
+                    });
+                }
+            }
+            ConsoleTable table = ConsoleTable.From<CurrentInventoryItem>(currentInventory);           
+            Console.WriteLine(table.ToMinimalString());
         }
 
         public static async Task RemovePartFromCategory() {
@@ -338,7 +420,6 @@ namespace ManufacturingInventory.ConsoleTesting {
                 }
             }
             context.SaveChanges();
-
         }
 
         public static async Task DeletingAlerts() {

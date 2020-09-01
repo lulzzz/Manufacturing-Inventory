@@ -70,7 +70,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
              .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             this.Configuration = builder.Build();
             this.optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection_home"));
+            this.optionsBuilder.UseSqlServer(this.Configuration.GetConnectionString("InventoryConnection"));
 
             ApplicationThemeHelper.ApplicationThemeName = Theme.VS2017BlueName;
             //ApplicationThemeHelper.UpdateApplicationThemeName();
@@ -79,9 +79,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
             GridControl.AllowInfiniteGridSize = true;
             //this.CheckVersion_v2();
             this.CreateLogger();
-            this.ManualLogIn();
+            //this.ManualLogIn();
 
-            //this.Login();
+            this.Login();
             base.OnStartup(e);
         }
 

@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>PublishTool</AssemblyName>
-    <FileVersion>1.0.42.7539</FileVersion>
+    <FileVersion>1.0.43.7549</FileVersion>
     <StartupObject>PublishTool.App</StartupObject>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Configurations>Debug;Release;other</Configurations>

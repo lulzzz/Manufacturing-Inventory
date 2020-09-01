@@ -5,6 +5,7 @@ using ManufacturingInventory.Infrastructure.Model;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ManufacturingInventory.Application.UseCases {
@@ -34,6 +35,7 @@ namespace ManufacturingInventory.Application.UseCases {
             List<CurrentInventoryItem> items = new List<CurrentInventoryItem>();
             foreach (var part in parts) {
                 if (part.IsBubbler) {
+                    var dateIn = part.Transactions.OrderByDescending(e => e.TimeStamp).FirstOrDefault(e => e.InventoryAction == InventoryAction.INCOMING);
                     items.Add(new CurrentInventoryItem() { Id = part.Id, PartCategory = part.Part.Name, Part = part.Name, Quantity = part.BubblerParameter.NetWeight, Cost = part.TotalCost });
                 } else {
                     items.Add(new CurrentInventoryItem() { Id = part.Id, PartCategory = part.Part.Name, Part = part.Name, Quantity = part.Quantity, Cost = part.TotalCost });
