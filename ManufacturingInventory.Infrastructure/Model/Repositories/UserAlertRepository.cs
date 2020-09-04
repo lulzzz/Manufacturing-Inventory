@@ -25,7 +25,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<UserAlert> AddAsync(UserAlert entity) {
-            var userAlert = await this._context.UserAlerts.FirstOrDefaultAsync(e => e.Id == entity.Id);
+            var userAlert = await this._context.UserAlerts.FirstOrDefaultAsync(e => e.AlertId == entity.AlertId && e.UserId == entity.UserId);
             if (userAlert != null) {
                 return null;
             }

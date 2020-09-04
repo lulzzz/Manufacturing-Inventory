@@ -57,15 +57,29 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<IEnumerable<AlertDto>> GetAvailableAlerts(int userId) {
-            return await this._context.UserAlerts
-                .Include(e => (e.Alert as IndividualAlert).PartInstance.BubblerParameter)
-                .Include(e => (e.Alert as IndividualAlert).PartInstance.Part)
-                .Include(e => (e.Alert as CombinedAlert).StockHolder.PartInstances)
-                .Where(e => e.UserId !=userId).Select(e => new AlertDto(e.Alert)).ToListAsync();
+            var exisiting = this._context.UserAlerts
+                .Include(e => e.Alert)
+                .Where(e => e.UserId == userId)
+                .Select(e => e.Alert);
+
+            return await this._context.Alerts
+                .Include(alert => (alert as IndividualAlert).PartInstance.BubblerParameter)
+                .Include(alert => (alert as IndividualAlert).PartInstance.Part)
+                .Include(alert => (alert as CombinedAlert).StockHolder.PartInstances)
+                    .ThenInclude(instance => instance.BubblerParameter)
+                .Where(alert => exisiting.All(e => e.Id != alert.Id))
+                .Select(alert => new AlertDto(alert))
+                .ToListAsync();
         }
 
         public async Task Load() {
             await this._userAlertRepository.LoadAsync();
+            await this._context.Alerts
+                .Include(alert => (alert as IndividualAlert).PartInstance.BubblerParameter)
+                .Include(alert => (alert as IndividualAlert).PartInstance.Part)
+                .Include(alert => (alert as CombinedAlert).StockHolder.PartInstances)
+                    .ThenInclude(instance => instance.BubblerParameter)
+                .LoadAsync();
         }
     }
 }

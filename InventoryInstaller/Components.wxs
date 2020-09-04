@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-
-
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Fragment>
     <!-- Product Components -->
     <ComponentGroup Id="ProductComponents">
       <!-- Shortcut -->
       <ComponentRef Id="MainAppShortcut" />
+      <ComponentRef Id="INSTALLFOLDER_Permission"/>
     </ComponentGroup>
     <!-- Installed files -->
     <DirectoryRef Id="INSTALLFOLDER" FileSource="..\ManufacturingInventory.Main\bin\Release\netcoreapp3.1\publish\">
-
+      <Component Id="INSTALLFOLDER_Permission" Guid="{77641FE7-90C4-45BD-A25B-EEA618C78DC8}">
+        <CreateFolder>
+          <util:PermissionEx User="Users" GenericAll="yes"/>
+        </CreateFolder>
+      </Component>
       <!-- Shortcut to main application -->
       <Component Id="MainAppShortcut" Guid="{96D12DC5-A8D8-4EDF-97E5-0ADF168C92EE}">
 

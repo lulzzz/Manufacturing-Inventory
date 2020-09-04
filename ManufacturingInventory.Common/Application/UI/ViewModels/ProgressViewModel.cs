@@ -17,7 +17,6 @@ namespace ManufacturingInventory.Common.Application.UI.ViewModels {
         private int _itemCount;
         private int _maxProgress;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
-        private bool _working = false;
         private string _progressLabel;
 
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("DispatcherService"); }

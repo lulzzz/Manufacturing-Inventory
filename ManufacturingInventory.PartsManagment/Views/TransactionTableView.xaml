@@ -29,6 +29,7 @@
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="TransactionTableDispatcher" />
+        <dx:DXMessageBoxService x:Name="TransactionTableMessageBox" />
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
                                EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
@@ -76,10 +77,10 @@
                         <dxmvvm:EventToCommand Command="{Binding ElementName=_transactionsTblView, Path=TableViewCommands.BestFitColumns}"
                                                EventName="Loaded" />
                     </dxmvvm:Interaction.Behaviors>
-                    <!--<dxg:TableView.RowCellMenuCustomizations>
-                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ReturnItemCommand}"
-                                Content="Return Item" Glyph="{dx:DXImage Image=Undo_16x16.png}" IsEnabled="True" />
-                    </dxg:TableView.RowCellMenuCustomizations>-->
+                    <dxg:TableView.RowCellMenuCustomizations>
+                        <dxb:BarButtonItem Command="{Binding Path=View.DataContext.UndoTransactionCommand}"
+                                Content="Undo Transaction" Glyph="{dx:DXImage Image=Undo_16x16.png}" IsEnabled="True" />
+                    </dxg:TableView.RowCellMenuCustomizations>
                 </dxg:TableView>
             </dxg:GridControl.View>
             <dxg:GridControl.Bands>

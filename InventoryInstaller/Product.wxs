@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <?if $(var.Platform)="x64"?>
-  <?define ProductCode="{FF795468-FD9F-408E-80EC-20811BB16BA5}"?>
+  <?define ProductCode="{BFEF88F6-5C3D-4F8A-A1A1-12C040E00DD6}"?>
   <?else?>
-  <?define ProductCode="{9275F1CA-CD9B-4A82-9E6F-42B26EDE18C7}"?>
+  <?define ProductCode="{502945A2-264E-4006-BDB7-439C0FFC1487}"?>
   <?endif?>
 
-  <?define UpgradeCode = "{362E579F-5F9F-488C-8465-5DF7CA0B33A7}" ?>
+  <?define UpgradeCode = "{48ECB49B-33D3-46CD-A3E6-149492BBE338}" ?>
 
 	<Product Id="$(var.ProductCode)" 
            Name="!(loc.ProductName_$(var.Platform))"
@@ -24,25 +24,22 @@
              Keywords="!(loc.Keywords)"
              Comments="!(loc.Comments)"
              Languages="!(loc.Language)"/>
-
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    
+    <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 		<MediaTemplate EmbedCab="yes" />
     
-
     <Icon Id="seti_logo.ico" SourceFile="$(var.ManufacturingInventory.ProjectDir)\Images\seti_logo.ico"/>
     <Property Id="ARPPRODUCTICON">seti_logo.ico</Property>
+    
     <UIRef Id="WixUI_Minimal" />
 
-    <!--<WixVariable Id="WixUILicenseRtf" Value=""/>-->
-
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)Assets\SETiLicense.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)Assets\Background.jpg" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)Assets\GermsBanner.jpg" />
     
 		<Feature Id="ProductFeature" Title="ManufacturingInventory" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="PublishedComponents" />
 		</Feature>
 	</Product>
-
-
-
-
 </Wix>

@@ -46,33 +46,34 @@
                                    SearchPanelNullText="Search By Name"
                                    ShowSearchPanelMode="Always"
                                    Style="{StaticResource TableViewStyleWithMasterGroup}">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command="{Binding ElementName=__alertExistingTableView, Path=TableViewCommands.BestFitColumns}"
-                                                   EventName="Loaded" />
-                        </dxmvvm:Interaction.Behaviors>
                         <dxg:TableView.RowCellMenuCustomizations>
                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.ToggleEnableCommand}"
                                                Content="Toggle Enabled"
                                                Glyph="{dx:DXImage Image=Action_Edit.png}" />
                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.UnsubscribeCommand}"
                                                Content="Unsubscribe"
-                                               IsEnabled="False"
                                                Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                             <dxb:BarItemSeparator />
                         </dxg:TableView.RowCellMenuCustomizations>
                     </dxg:TableView>
                 </dxg:GridControl.View>
-                <dxg:GridColumn FieldName="AlertId" />
-                <dxg:GridColumn FieldName="IsEnabled" />
+                <dxg:GridColumn FieldName="AlertIdentifier"
+                                VisibleIndex="0" />
+                <dxg:GridColumn FieldName="AlertId"
+                                VisibleIndex="1" 
+                                Visible="False"/>
                 <dxg:GridColumn FieldName="Alert.AlertType"
                                 Header="AlertType"
+                                VisibleIndex="2"
                                 GroupIndex="0" />
+                <dxg:GridColumn FieldName="MinQuantity" />
+                <dxg:GridColumn FieldName="SafeQuantity" />
+                <dxg:GridColumn FieldName="IsEnabled" />
                 <dxg:GridControl.DetailDescriptor>
                     <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
                         <dxg:GridControl Style="{StaticResource GridControlStyle}">
                             <dxg:GridColumn FieldName="Name" />
                             <dxg:GridColumn FieldName="PartCategory" />
-
                             <dxg:GridColumn FieldName="IsBubbler" />
                             <dxg:GridColumn FieldName="Quantity" />
                             <dxg:GridControl.View>

@@ -30,18 +30,24 @@ namespace ManufacturingInventory.Application.UseCases {
                     return new AlertUseCaseOutput(null, false, "Error: Action Not available");
                 }
                 case AlertAction.UnSubscribe: {
-                    var deleted = this._userAlertRepository.DeleteAsync(new UserAlert() { UserId=input.UserId,AlertId=input.AlertDto.AlertId});
-                    if (deleted != null) {
-                        var count = await this._unitOfWork.Save();
-                        if (count > 0) {
-                            return new AlertUseCaseOutput(null, true, "Success: Reloading...");
+                    var userAlert = await this._userAlertRepository.GetEntityAsync(e => e.UserId == input.UserId && e.AlertId == input.AlertDto.AlertId);
+                    if (userAlert != null) {
+                        var deleted = this._context.Remove(userAlert).Entity;
+                        if (deleted != null) {
+                            var count = await this._unitOfWork.Save();
+                            if (count > 0) {
+                                return new AlertUseCaseOutput(null, true, "Success: Reloading...");
+                            } else {
+                                await this._unitOfWork.Undo();
+                                return new AlertUseCaseOutput(null, false, "Error: UnSubscribe Failed");
+                            }
                         } else {
-                            await this._unitOfWork.Undo();
-                            return new AlertUseCaseOutput(null, false, "Error: UnSubscribe Failed");
+                            return new AlertUseCaseOutput(null, false, "Error: Could not find UserAlert");
                         }
                     } else {
-                        return new AlertUseCaseOutput(null, false, "Error: Could not find UserAlert");
+                        return new AlertUseCaseOutput(null, false, "Internal Error: Could not find UserAlert");
                     }
+
                 }
                 case AlertAction.ToggleEnable: {
                     var userAlert = await this._userAlertRepository.GetEntityAsync(e => e.UserId == input.UserId && e.AlertId == input.AlertDto.AlertId);
@@ -72,7 +78,7 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<IEnumerable<AlertDto>> GetExistingAlerts(int userId) {
-            return (await this._userAlertRepository.GetEntityListAsync(e => e.UserId == userId)).Select(e=>new AlertDto(e.Alert));
+            return (await this._userAlertRepository.GetEntityListAsync(e => e.UserId == userId)).Select(userAlert=>new AlertDto(userAlert));
         }
 
         public async Task Load() {

@@ -62,7 +62,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DoubleClickViewCommand = new AsyncCommand(this.ViewInstanceDetailsHandlerAsync,this.CanExecuteView);
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler, this.CanReturnItem);
 
-
+            this._eventAggregator.GetEvent<ReloadEvent>().Subscribe(async () => await this.ReloadNoTraveler());
             this._eventAggregator.GetEvent<PartInstanceEditDoneEvent>().Subscribe(async (traveler) => await this.PartInstanceEditDoneEvent(traveler));
             this._eventAggregator.GetEvent<PartInstanceEditCancelEvent>().Subscribe(async (traveler) => await this.PartInstanceEditCancelHandler(traveler));
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceIds) => await this.OutGoingDoneHandler(instanceIds));
@@ -71,7 +71,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this._eventAggregator.GetEvent<CheckInCancelEvent>().Subscribe(async () => await this.CheckInCanceledHandler());
             this._eventAggregator.GetEvent<PriceEditDoneEvent>().Subscribe(async () => await this.PriceEditDoneHandler());
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async (instanceId) => { await this.ReturnDoneHandler(instanceId); });
-            this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => { await this.ReturnCancelHandler(); });
+            this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => { await this.ReturnCancelHandler();});
         }
 
         #region BindingVariables
@@ -395,15 +395,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private async Task InitializeHandler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            //bool isBubbler = false;
-            //bool displayReusable = false;
-            //var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
-            //if (check.Count() > 0) {
-            //    displayReusable = true;
-            //    isBubbler = check.Select(e => e.IsBubbler).Contains(true);
-            //}
             this.DispatcherService.BeginInvoke(() => {
-                //this.IsBubbler = isBubbler;
                 this.DisplayReusable = this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.ShowTableLoading = false;
@@ -414,18 +406,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            //bool isBubbler = false;
-            //bool displayReusable = false;
-            //var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
-            //if (check.Count() > 0) {
-            //    displayReusable = true;
-            //    isBubbler = check.Select(e => e.IsBubbler).Contains(true);
-            //}
-
-            //var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
-
             this.DispatcherService.BeginInvoke(() => {
-                //this.IsBubbler = isBubbler;
                 this.DisplayReusable = this.IsBubbler;
                 this.PartInstances = new ObservableCollection<PartInstance>(partInstances);
                 this.SelectedPartInstance = this.PartInstances.FirstOrDefault(e => e.Id == traveler.PartInstanceId);
@@ -436,18 +417,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task ReloadNoTraveler() {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
-
             await this._partInstanceView.Load();
             var partInstances = await this._partInstanceView.GetPartInstances(this.SelectedPartId);
-            //var bubbler = partInstances.Select(e => e.IsBubbler).Contains(true);
-            //bool isBubbler = false;
-            //bool displayReusable = false;
-            //var check = partInstances.Where(e => e.IsReusable || e.IsBubbler);
-            //if (check.Count() > 0) {
-            //    displayReusable = true;
-            //    isBubbler = check.Select(e => e.IsBubbler).Contains(true);
-            //}
-
             this.DispatcherService.BeginInvoke(() => {
                 //this.IsBubbler = isBubbler;
                 this.DisplayReusable = this.IsBubbler;
@@ -463,8 +434,6 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         }
 
         #endregion
-
-
 
     }
 }

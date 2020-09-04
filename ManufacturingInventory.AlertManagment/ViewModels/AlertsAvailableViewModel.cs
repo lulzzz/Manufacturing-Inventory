@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ManufacturingInventory.AlertManagment.ViewModels {
     class AlertsAvailableViewModel : InventoryViewModelBase {
-        public override bool KeepAlive => throw new System.NotImplementedException();
+        public override bool KeepAlive => false;
 
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("AlertsAvailableDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("AlertsAvailableMessageBox"); }

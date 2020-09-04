@@ -24,7 +24,7 @@ namespace ManufacturingInventory.ConsoleTesting {
         public static void Main(string[] args) {
             //AsyncContext.Run(ImportNew);
             //AsyncContext.Run(DeleteAll);
-            //AsyncContext.Run(AddAlertToAllInstances);
+            AsyncContext.Run(AddAlertToAllInstances);
             //AsyncContext.Run(TestCurrentInventory);
             //AsyncContext.Run(DeletingAlerts);
             //AddAlertToAllInstances();

@@ -63,21 +63,36 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             if (category == null) {
                 return null;
             }
-            return (await Task.Run(() => this._context.Categories.Remove(category))).Entity;
+            return (await Task.Run(() => this._context.Remove(category))).Entity;
         }
 
         public Category GetEntity(Expression<Func<Category, bool>> expression) {
                 return this._context.Categories
-                    .FirstOrDefault(expression);
+                .Include(e => ((StockType)e).PartInstances)
+                .Include(e => ((StockType)e).CombinedAlert.UserAlerts)
+                .Include(e => ((Organization)e).Parts)
+                .Include(e => ((Condition)e).PartInstances)
+                .Include(e => ((Usage)e).PartInstances)
+                .FirstOrDefault(expression);
         }
 
         public async Task<Category> GetEntityAsync(Expression<Func<Category, bool>> expression) {
                 return await this._context.Categories
-                    .FirstOrDefaultAsync(expression);
+                .Include(e => ((StockType)e).PartInstances)
+                .Include(e => ((StockType)e).CombinedAlert.UserAlerts)
+                .Include(e => ((Organization)e).Parts)
+                .Include(e => ((Condition)e).PartInstances)
+                .Include(e => ((Usage)e).PartInstances)
+                .FirstOrDefaultAsync(expression);
         }
 
         public IEnumerable<Category> GetEntityList(Expression<Func<Category, bool>> expression = null, Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = null) {
             IQueryable<Category> query = this._context.Set<Category>()
+                .Include(e => ((StockType)e).PartInstances)
+                .Include(e => ((StockType)e).CombinedAlert.UserAlerts)
+                .Include(e => ((Organization)e).Parts)
+                .Include(e => ((Condition)e).PartInstances)
+                .Include(e => ((Usage)e).PartInstances)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -92,7 +107,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task<IEnumerable<Category>> GetEntityListAsync(Expression<Func<Category, bool>> expression = null, Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = null) {
-            IQueryable<Category> query = this._context.Set<Category>().AsNoTracking();
+            IQueryable<Category> query = this._context.Set<Category>()
+                .Include(e => ((StockType)e).PartInstances)
+                .Include(e => ((StockType)e).CombinedAlert.UserAlerts)
+                .Include(e => ((Organization)e).Parts)
+                .Include(e => ((Condition)e).PartInstances)
+                .Include(e => ((Usage)e).PartInstances)
+                .AsNoTracking();
 
             if (expression != null) {
                 query = query.Where(expression).AsNoTracking();
@@ -110,7 +131,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public async Task LoadAsync() {
-            await this._context.Categories.LoadAsync();
+            await this._context.Categories
+                .Include(e => ((StockType)e).PartInstances)
+                .Include(e => ((StockType)e).CombinedAlert.UserAlerts)
+                .Include(e => ((Organization)e).Parts)
+                .Include(e => ((Condition)e).PartInstances)
+                .Include(e => ((Usage)e).PartInstances)
+                .LoadAsync();
         }
     }
 }

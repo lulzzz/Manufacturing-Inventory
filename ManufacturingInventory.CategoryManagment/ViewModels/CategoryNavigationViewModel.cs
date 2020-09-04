@@ -1,6 +1,6 @@
 ﻿using DevExpress.Mvvm;
-using ManufacturingInventory.Application.Boundaries.DistributorManagment;
 using ManufacturingInventory.Common.Application;
+using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.Common.Application.UI.ViewModels;
 using Prism.Events;
@@ -10,12 +10,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Collections.Generic;
-using ManufacturingInventory.Application.Boundaries;
-using ManufacturingInventory.Application.UseCases;
-using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Domain.DTOs;
 using ManufacturingInventory.CategoryManagment.Internal;
 using Serilog;
+using ManufacturingInventory.Application.Boundaries;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryNavigationViewModel : InventoryViewModelBase {
@@ -48,8 +46,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             this._eventAggregator = eventAggregator;
             this._regionManager = regionManager;
             this._logger = logger;
-            //this._logger.Info("In CategoryNavigationViewModel!");
-            //Log.Logger.Information("In CategoryNavigationView");
             this._logger.Information("In CategoryNavigationView");
             this.InitializeCommand = new AsyncCommand(this.Load);
             this.AddNewCategoryCommand = new AsyncCommand(this.AddNewCategoryHandler, () => !this._editInProgress);
@@ -106,6 +102,7 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
         private async Task EditCategoryHandler() {
             await Task.Run(() => {
                 if (this.SelectedCategory != null) {
+                    this._editInProgress = true;
                     this.DispatcherService.BeginInvoke(() => {
                         this.NavigateDetails(this.SelectedCategory.Id, true, false);
                     });
@@ -113,8 +110,14 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             });
         }
 
-        private Task DeleteCategoryHandler() {
-            return Task.CompletedTask;
+        private async Task DeleteCategoryHandler() {
+            if (this.SelectedCategory != null) {
+                if (!this.SelectedCategory.IsDefault) {
+                    CategoryBoundaryInput input = new CategoryBoundaryInput(EditAction.Delete, this.SelectedCategory, false);
+                    var output=await this._categoryEdit.Execute(input);
+                    await this.ShowActionResponse(output);
+                }
+            }
         }
 
         #endregion
@@ -149,12 +152,18 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
             await this.Reload(categoryId); 
         }
 
-        private async Task ShowActionResponse(CategoryBoundaryOutput response) {
+        private async Task ShowActionResponse(CategoryBoundaryOutput response,bool wasDelete=false) {
             if (response.Success) {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
                 });
-                await this.Reload(response.Category.Id);
+
+                if (!wasDelete) {
+                    await this.Reload(response.Category.Id);
+                } else {
+                    await this.Reload();
+                }
+
 
             } else {
                 this.DispatcherService.BeginInvoke(() => {

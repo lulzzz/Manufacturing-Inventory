@@ -18,6 +18,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         private ITransactionTableUndoUseCase _transactionEdit;
         private IEventAggregator _eventAggregator;
 
+        protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("TransactionTableMessageBox"); }
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("TransactionTableDispatcher"); }
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("TransactionTableExportService"); }
 
@@ -41,6 +42,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
+            this.UndoTransactionCommand = new AsyncCommand(this.UndoTransactionHandler);
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async (instanceId) => { await this.ReturnDoneHandler(instanceId);});
             this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => await this.ReturnCancelHandler());
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.ReloadHandler(); });
@@ -103,8 +105,29 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             await this.ReloadWithInstanceHandler(true,instanceId);
         }
 
-        private Task UndoTransactionHandler() {
-            return Task.CompletedTask;
+        private async Task UndoTransactionHandler() {
+            if (this.SelectedTransaction != null) {
+                //this.MessageBoxService.ShowMessage("","",MessageButton.YesNo,MessageIcon.Warning);
+
+                TransactionTableUndoInput input = new TransactionTableUndoInput(this._selectedTransaction.Id);
+                var output = await this._transactionEdit.Execute(input);
+                await this.ShowActionResponse(output);
+            }
+        }
+
+        private async Task ShowActionResponse(TransactionUndoOutput response) {
+            if (response.Success) {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Success", MessageButton.OK, MessageIcon.Information);
+                });
+                //await this.ReloadWithInstanceHandler(true,response.Transaction.PartInstanceId);
+                this._eventAggregator.GetEvent<ReloadEvent>().Publish();
+                await this.ReloadHandler();
+            } else {
+                this.DispatcherService.BeginInvoke(() => {
+                    this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
+                });
+            }
         }
 
         private async Task ExportTableHandler(ExportFormat format) {

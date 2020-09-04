@@ -1,7 +1,8 @@
-﻿using System;
+﻿using ManufacturingInventory.Infrastructure.Model.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Transactions;
+
 
 namespace ManufacturingInventory.Application.Boundaries.TransactionTableEdit {
     public class TransactionUndoOutput : IOutput {

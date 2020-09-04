@@ -22,7 +22,7 @@ namespace ManufacturingInventory.PartsManagment.Internal {
 
 
     public class RenameHeaderEvent : PubSubEvent<string> { }
-
+    public class ReloadEvent : PubSubEvent { }
 
 
     //PartSummary-Edit

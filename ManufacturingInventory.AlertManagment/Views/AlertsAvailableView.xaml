@@ -45,10 +45,6 @@
                                    HorizontalScrollbarVisibility="Visible"
                                    ShowSearchPanelMode="Never"
                                    Style="{StaticResource TableViewStyleWithMasterGroup}">
-                        <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command="{Binding ElementName=_alertExistingTableView, Path=TableViewCommands.BestFitColumns}"
-                                                   EventName="Loaded" />
-                        </dxmvvm:Interaction.Behaviors>
                         <dxg:TableView.RowCellMenuCustomizations>
                             <dxb:BarButtonItem Command="{Binding Path=View.DataContext.SubscribeCommand}"
                                                Content="Subscribe"
@@ -57,11 +53,16 @@
                         </dxg:TableView.RowCellMenuCustomizations>
                     </dxg:TableView>
                 </dxg:GridControl.View>
-                <dxg:GridColumn FieldName="AlertId" />
-                <dxg:GridColumn FieldName="IsEnabled" />
+                <dxg:GridColumn FieldName="AlertIdentifier"
+                                VisibleIndex="0" />
+                <dxg:GridColumn FieldName="AlertId"
+                                VisibleIndex="1" />
                 <dxg:GridColumn FieldName="Alert.AlertType"
                                 Header="AlertType"
+                                VisibleIndex="2"
                                 GroupIndex="0" />
+                <dxg:GridColumn FieldName="MinQuantity" />
+                <dxg:GridColumn FieldName="SafeQuantity" />
                 <dxg:GridControl.DetailDescriptor>
                     <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
                         <dxg:GridControl Style="{StaticResource GridControlStyle}">

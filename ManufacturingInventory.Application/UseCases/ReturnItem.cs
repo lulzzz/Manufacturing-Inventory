@@ -16,7 +16,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private ManufacturingContext _context;
         private IRepository<Transaction> _transactionRepository;
         private IEntityProvider<Location> _locationProvider;
-        private IRepository<Category> _categoryProvider;
+        private IRepository<Category> _categoryRepository;
         private IRepository<PartInstance> _partInstanceRepository;
         private IRepository<BubblerParameter> _bubblerRepository;
         private IEntityProvider<Part> _partProvider;
@@ -27,7 +27,7 @@ namespace ManufacturingInventory.Application.UseCases {
             this._bubblerRepository = new BubblerParameterRepository(context);
             this._transactionRepository = new TransactionRepository(context);
             this._locationProvider = new LocationProvider(context);
-            this._categoryProvider = new CategoryRepository(context);
+            this._categoryRepository = new CategoryRepository(context);
             this._partInstanceRepository = new PartInstanceRepository(context);
             this._partProvider = new PartProvider(context);
             this._userService = userService;
@@ -36,7 +36,7 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<IEnumerable<Condition>> GetConditions() {
-            return (await this._categoryProvider.GetEntityListAsync()).OfType<Condition>();
+            return (await this._categoryRepository.GetEntityListAsync()).OfType<Condition>();
         }
         
         public async Task<PartInstance> GetPartInstance(int instanceId) {
@@ -90,17 +90,17 @@ namespace ManufacturingInventory.Application.UseCases {
             partInstance.LocationId = location.Id;
             partInstance.DateRemoved = item.TimeStamp;
             if (item.ConditionId != 0) {
-                var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
+                var condition = await this._categoryRepository.GetEntityAsync(e => e.Id == item.ConditionId);
                 if (condition != null) {
                     partInstance.ConditionId = condition.Id;
                 }
             }
 
             if (!partInstance.StockType.IsDefault) {
-                var stockType = (StockType)await this._categoryProvider.GetEntityAsync(e => e.Id == partInstance.StockTypeId);
+                var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockTypeId);
                 if (stockType != null) {
                     stockType.Quantity += (int)partInstance.BubblerParameter.Weight;
-                    var updated = await this._categoryProvider.UpdateAsync(stockType);
+                    var updated = await this._categoryRepository.UpdateAsync(stockType);
                     if (updated == null) {
                         await this._unitOfWork.Undo();
                         return new ReturnItemOutput(null, false, "Error: Could not adjust stock, Please contact administrator");
@@ -139,17 +139,17 @@ namespace ManufacturingInventory.Application.UseCases {
 
             partInstance.LocationId = location.Id;
             if (item.ConditionId != 0) {
-                var condition = await this._categoryProvider.GetEntityAsync(e => e.Id == item.ConditionId);
+                var condition = await this._categoryRepository.GetEntityAsync(e => e.Id == item.ConditionId);
                 if (condition != null) {
                     partInstance.ConditionId = condition.Id;
                 }
             }
 
             if (!partInstance.StockType.IsDefault) {
-                var stockType = (StockType)await this._categoryProvider.GetEntityAsync(e => e.Id == partInstance.StockTypeId);
+                var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == partInstance.StockTypeId);
                 if (stockType != null) {
                     stockType.Quantity += partInstance.Quantity;
-                    var updated = await this._categoryProvider.UpdateAsync(stockType);
+                    var updated = await this._categoryRepository.UpdateAsync(stockType);
                     if (updated == null) {
                         await this._unitOfWork.Undo();
                         return new ReturnItemOutput(null, false, "Error: Could not adjust stock, Please contact administrator");

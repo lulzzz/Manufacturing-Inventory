@@ -124,24 +124,38 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<CategoryBoundaryOutput> ExecuteDelete(CategoryBoundaryInput input) {
-            var category = await this._categoryRepository.GetEntityAsync(e => e.Id == input.Category.Id);
-            if (category != null) {
-                var deleted = await this._categoryRepository.DeleteAsync(category);
-                if (deleted != null) {
-                    var count = await this._unitOfWork.Save();
-                    if (count != 0) {
-                        return new CategoryBoundaryOutput(category, true, "Success: Category Deleted");
-                    } else {
-                        await this._unitOfWork.Undo();
-                        return new CategoryBoundaryOutput(null, false, "Error: Save Failed");
-                    }
-                } else {
-                    await this._unitOfWork.Undo();
-                    return new CategoryBoundaryOutput(null, false, "Error: Delete Failed");
-                }
-            } else {
-                return new CategoryBoundaryOutput(null, false, "Error: Category Not Found,Please Contact Admin");
-            }
+            //if (input.Category.IsDefault) {
+            //    var category = await this._categoryRepository.GetEntityAsync(e => e.Id == input.Category.Id);
+            //    if (category != null) {
+            //        switch (input.Category.Type) {
+            //            case CategoryTypes.Organization:
+            //                ((Organization)category).Parts.Clear();
+            //                break;
+            //            case CategoryTypes.Condition:
+            //                ((Condition)category).PartInstances.Clear();
+            //                break;
+            //            case CategoryTypes.StockType:
+            //                var individual=await 
+            //                var partInstances=((StockType)category).PartInstances;
+            //                foreach(var partInstance in partInstances) {
+
+            //                }
+            //                break;
+            //            case CategoryTypes.Usage:
+            //                ((Organization)category).Parts.Clear();
+            //                break;
+            //            default:
+            //                await this._unitOfWork.Undo();
+            //                return new CategoryBoundaryOutput(null, false, "Internal Error: Invalid category type");
+            //        }
+            //        var deleted = await this._categoryRepository.DeleteAsync(org);
+            //    } else {
+            //        return new CategoryBoundaryOutput(null, false, "Error: Could not find category");
+            //    }
+            //} else {
+            //    return new CategoryBoundaryOutput(null, false, "Error: Cannot delete defaul category");
+            //}
+            return new CategoryBoundaryOutput(null, false, "Error: Not Implemented");
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetCategories() {
@@ -286,10 +300,10 @@ namespace ManufacturingInventory.Application.UseCases {
                                     }
                                 } else {
                                     if (instance.IsBubbler) {
-                                        ((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
+                                        //((StockType)oldCategory).Quantity -= (int)instance.BubblerParameter.Weight;
                                         ((StockType)newCategory).Quantity += (int)instance.BubblerParameter.Weight;
                                     } else {
-                                        ((StockType)oldCategory).Quantity -= (int)instance.Quantity;
+                                        //((StockType)oldCategory).Quantity -= (int)instance.Quantity;
                                         ((StockType)newCategory).Quantity += (int)instance.Quantity;
                                     }
                                 }

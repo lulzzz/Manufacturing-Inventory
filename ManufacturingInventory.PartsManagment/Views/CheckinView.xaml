@@ -12,7 +12,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:validationRules="clr-namespace:ManufacturingInventory.Common.Application.ValidationRules;assembly=ManufacturingInventory.Common"
-             d:DesignHeight="600"
+             d:DesignHeight="800"
              d:DesignWidth="700"
              dx:ThemeManager.Theme="VS2017Blue"
              prism:ViewModelLocator.AutoWireViewModel="True"
@@ -226,7 +226,7 @@
                                                    Text="Stock Input" />
                                     </DataTemplate>
                                 </dxlc:LayoutGroup.HeaderTemplate>
-                                <dxlc:LayoutItem Label="Stock Type(Optional)"
+                                <dxlc:LayoutItem Label="Stock Type"
                                                  Style="{StaticResource LayoutItemStyle}">
                                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                       IsTextEditable="False"
