@@ -20,7 +20,7 @@ namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
 
         public static List<int> IdList = new List<int>() { 16, 17, 28, 12, 13, 18, 19, 20, 21, 22, 23, 74, 76, 24, 25, 26, 27, 59, 60, 75, 73, 72, 71, 70, 69, 68, 67, 66, 65 };
-
+        public static List<int> PartIdList = new List<int>() { 2,3,4,5,6,7};
         public static void Main(string[] args) {
             //AsyncContext.Run(ImportNew);
             //AsyncContext.Run(DeleteAll);
@@ -42,22 +42,24 @@ namespace ManufacturingInventory.ConsoleTesting {
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
         }
 
-        public static async Task ImportNew() {
-            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
-            using var context = new ManufacturingContext(optionsBuilder.Options);
-            await context.Database.MigrateAsync();
-            Console.WriteLine("Created: {0}");
-        }
-
         public static async Task DeleteAll() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             using var context = new ManufacturingContext(optionsBuilder.Options);
             IRepository<PartInstance> instanceRepository = new PartInstanceRepository(context);
+            IRepository<Part> partRepository = new PartRepository(context);
+
+            await partRepository.LoadAsync();
+
+            var parts = await context.Parts.Include(e => e.PartInstances).Where(e => e.Id > 1).ToListAsync();
+            List<int> instanceIds = new List<int>();
+            foreach(var part in parts) {
+                var ids = part.PartInstances.Select(e => e.Id);
+                instanceIds.AddRange(ids);
+            }
             await instanceRepository.LoadAsync();
             Console.WriteLine("Attempting to delete id list, see log below");
-            foreach(var id in IdList) {
+            foreach(var id in instanceIds) {
                 var partInstance = await instanceRepository.GetEntityAsync(e => e.Id == id);
                 if (partInstance != null) {
                     var output = await instanceRepository.DeleteAsync(partInstance);

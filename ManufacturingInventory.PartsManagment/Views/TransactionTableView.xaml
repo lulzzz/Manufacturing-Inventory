@@ -79,7 +79,8 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:TableView.RowCellMenuCustomizations>
                         <dxb:BarButtonItem Command="{Binding Path=View.DataContext.UndoTransactionCommand}"
-                                Content="Undo Transaction" Glyph="{dx:DXImage Image=Undo_16x16.png}" IsEnabled="True" />
+                                Content="Undo Transaction" Glyph="{dx:DXImage Image=Undo_16x16.png}"/>
+
                     </dxg:TableView.RowCellMenuCustomizations>
                 </dxg:TableView>
             </dxg:GridControl.View>
@@ -104,6 +105,8 @@
                     <dxg:GridColumn AllowGrouping="True"
                                     FieldName="PartInstance.Name"
                                     Header="Item" />
+                    <dxg:GridColumn FieldName="PartInstance.Id"
+                                    Header="Item Id" />
                     <dxg:GridColumn AllowGrouping="True"
                                     FieldName="PartInstance.SerialNumber"
                                     Header="Serial Number" />

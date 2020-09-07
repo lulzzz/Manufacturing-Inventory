@@ -33,8 +33,8 @@ namespace ManufacturingInventory.Domain.DTOs {
                     var instance = new InstanceDto(individual.PartInstance);
                     this.AlertIdentifier = instance.Name;
                     this.Quantity = instance.Quantity;
-                    this.MinQuantity = individual.PartInstance.MinQuantity;
-                    this.SafeQuantity = individual.PartInstance.SafeQuantity;
+                    this.MinQuantity = (individual.PartInstance!=null) ? individual.PartInstance.MinQuantity:-1;
+                    this.SafeQuantity = (individual.PartInstance != null) ? individual.PartInstance.SafeQuantity : -1;
                     this.PartInstances = new List<InstanceDto>();
                     this.PartInstances.Add(instance);
                     this.AlertType = alert.AlertType;
@@ -65,8 +65,8 @@ namespace ManufacturingInventory.Domain.DTOs {
                     var instance = new InstanceDto(individual.PartInstance);
                     this.AlertIdentifier = instance.Name;
                     this.Quantity = instance.Quantity;
-                    this.MinQuantity = individual.PartInstance.MinQuantity;
-                    this.SafeQuantity = individual.PartInstance.SafeQuantity;
+                    this.MinQuantity = (individual.PartInstance != null) ? individual.PartInstance.MinQuantity : -1;
+                    this.SafeQuantity = (individual.PartInstance != null) ? individual.PartInstance.SafeQuantity : -1;
                     this.PartInstances = new List<InstanceDto>();
                     this.PartInstances.Add(instance);
                     break;

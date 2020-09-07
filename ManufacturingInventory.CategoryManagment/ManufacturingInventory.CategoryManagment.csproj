@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>ManufacturingInventory.CategoryManagment</AssemblyName>
-    <FileVersion>1.0.147.7551</FileVersion>
+    <FileVersion>1.0.160.7555</FileVersion>
     <Configurations>Debug;Release;other</Configurations>
     <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>

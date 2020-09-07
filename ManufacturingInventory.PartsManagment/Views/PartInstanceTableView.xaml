@@ -116,8 +116,7 @@
                     <dxg:GridControlBand Header="None"
                                          OverlayHeaderByChildren="True"
                                          VisibleIndex="0">
-                        <dxg:GridColumn FieldName="Id"
-                                        IsEnabled="False" />
+                        <dxg:GridColumn FieldName="Id" />
                         <dxg:GridColumn AllowSearchPanel="true"
                                         FieldName="Name" />
                         <dxg:GridColumn AllowGrouping="True"

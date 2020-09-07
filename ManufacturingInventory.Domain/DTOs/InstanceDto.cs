@@ -20,11 +20,20 @@ namespace ManufacturingInventory.Domain.DTOs {
         }
 
         public InstanceDto(PartInstance partInstance) {
-            this.Id = partInstance.Id;
-            this.Name = partInstance.Name;
-            this.PartCategory = partInstance.Part.Name;
-            this.IsBubbler = partInstance.IsBubbler;
-            this.Quantity = (this.IsBubbler && partInstance.BubblerParameter != null) ? partInstance.BubblerParameter.Weight : partInstance.Quantity;
+            if (partInstance != null) {
+                this.Id = partInstance.Id;
+                this.Name = partInstance.Name;
+                this.PartCategory = partInstance.Part.Name;
+                this.IsBubbler = partInstance.IsBubbler;
+                this.Quantity = (this.IsBubbler && partInstance.BubblerParameter != null) ? partInstance.BubblerParameter.Weight : partInstance.Quantity;
+            }else {
+                this.Id = -1;
+                this.Name = "Deleted PartInstance";
+                this.PartCategory = "PartInstance was deleted";
+                this.IsBubbler = false;
+                this.Quantity = -1;
+            }
+
         }
     }
 }

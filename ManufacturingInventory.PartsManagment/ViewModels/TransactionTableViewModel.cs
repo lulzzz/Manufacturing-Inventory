@@ -23,12 +23,13 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
         protected IExportService ExportService { get => ServiceContainer.GetService<IExportService>("TransactionTableExportService"); }
 
         private ObservableCollection<Transaction> _transaction = new ObservableCollection<Transaction>();
-        private Transaction _selectedTransaction;
+        private Transaction _selectedTransaction=new Transaction();
         private int _selectedPartId;
         private bool _showTableLoading;
         private bool _isBubbler;
         private bool _returnInProgress = false;
         private bool _isInitialized = false;
+        private string _undoTransactionToolTip;
 
         public AsyncCommand InitializeCommand { get; private set; }
         public AsyncCommand UndoTransactionCommand { get; private set; }
@@ -42,7 +43,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             this.InitializeCommand = new AsyncCommand(this.InitializeHandler);
             this.ReturnItemCommand = new AsyncCommand(this.ReturnItemHandler,()=>!this._returnInProgress);
             this.ExportTableCommand = new AsyncCommand<ExportFormat>(this.ExportTableHandler);
-            this.UndoTransactionCommand = new AsyncCommand(this.UndoTransactionHandler);
+            this.UndoTransactionCommand = new AsyncCommand(this.UndoTransactionHandler, () => !this._returnInProgress);
             this._eventAggregator.GetEvent<ReturnDoneEvent>().Subscribe(async (instanceId) => { await this.ReturnDoneHandler(instanceId);});
             this._eventAggregator.GetEvent<ReturnCancelEvent>().Subscribe(async () => await this.ReturnCancelHandler());
             this._eventAggregator.GetEvent<OutgoingDoneEvent>().Subscribe(async (instanceId) => { await this.ReloadHandler(); });
@@ -76,6 +77,11 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
             set => SetProperty(ref this._isBubbler, value);
         }
 
+        public string UndoTransactionToolTip {
+            get => this._undoTransactionToolTip;
+            set => SetProperty(ref this._undoTransactionToolTip, value);
+        }
+
         private async Task ReturnItemHandler() {
             await Task.Run(() => {
                 this.DispatcherService.BeginInvoke(() => {
@@ -107,8 +113,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
         private async Task UndoTransactionHandler() {
             if (this.SelectedTransaction != null) {
-                //this.MessageBoxService.ShowMessage("","",MessageButton.YesNo,MessageIcon.Warning);
-
+            
                 TransactionTableUndoInput input = new TransactionTableUndoInput(this._selectedTransaction.Id);
                 var output = await this._transactionEdit.Execute(input);
                 await this.ShowActionResponse(output);

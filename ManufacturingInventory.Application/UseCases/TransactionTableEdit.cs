@@ -35,24 +35,23 @@ namespace ManufacturingInventory.Application.UseCases {
             var transaction = await this._transactionRepository.GetEntityAsync(e => e.Id == input.TransactionId);         
             if (transaction != null) {
                 var partInstance = await this._partInstanceRepository.GetEntityAsync(e => e.Id == transaction.PartInstanceId);
-                if (partInstance != null) {
-                    
+                if (partInstance != null) {            
                     switch (transaction.InventoryAction) {
                         case InventoryAction.OUTGOING:
                             return await this.ExecuteUndoOutgoing(partInstance,transaction);
                         case InventoryAction.INCOMING:
-                            var incount=partInstance.Transactions.Where(e => e.InventoryAction == InventoryAction.INCOMING).Count();
+                            var incount = partInstance.Transactions.Where(e => e.InventoryAction == InventoryAction.INCOMING).Count();
                             var outCount = partInstance.Transactions
-                                .Where(e => 
+                                .Where(e =>
                                 e.InventoryAction == InventoryAction.OUTGOING || e.InventoryAction == InventoryAction.RETURNING)
                                 .Count();
-
-                            if (incount==1 && outCount==0) {                              
+                            if(incount==1 && outCount == 0) {
                                 return await this.ExecuteDelete(partInstance, transaction);
-                            }else if(incount==1 && outCount>0) {
-
-                            }else if(incount>1) {
-                                //
+                            }else if(incount>1 && outCount == 0) {
+                                return await this.ExecuteUndoAddTo(partInstance, transaction);
+                            } else {
+                                return new TransactionUndoOutput(null, false, "Error: Can only undo incoming transactions" + Environment.NewLine +
+                                    "if there are 0 outgoing transactions");
                             }
                         case InventoryAction.RETURNING:
                             return await this.ExecuteUndoReturn(partInstance, transaction);
@@ -62,7 +61,6 @@ namespace ManufacturingInventory.Application.UseCases {
                 } else {
                     return new TransactionUndoOutput(null, false, "Internal Error: Could not fin PartInstance");
                 }
-
             } else {
                 return new TransactionUndoOutput(null, false, "Error: Internal error, could not find transaction");
             }
@@ -79,6 +77,10 @@ namespace ManufacturingInventory.Application.UseCases {
                         stockType.Quantity -= partInstance.Quantity;
                     }
                 } else {
+                    var userAlerts = this._context.UserAlerts.Where(e => e.AlertId == partInstance.IndividualAlertId);
+                    if (userAlerts.Count() > 0) {
+                        this._context.RemoveRange(userAlerts);
+                    }
                     this._context.Alerts.Remove(partInstance.IndividualAlert);
                     partInstance.IndividualAlert = null;
                 }       

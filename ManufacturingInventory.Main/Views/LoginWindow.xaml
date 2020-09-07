@@ -8,7 +8,7 @@
         xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:local="clr-namespace:ManufacturingInventory.ManufacturingApplication.Views"
-        mc:Ignorable="d" Title="LoginWindow" TitleAlignment="Center" Height="280" Width="300">
+        mc:Ignorable="d" Title="LoginWindow" TitleAlignment="Center" Height="320" Width="300">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService x:Name="Error"/>
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
@@ -30,10 +30,10 @@
                            TextAlignment="Center"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Username" LabelPosition="Top" LabelHorizontalAlignment="Center" FontWeight="Bold">
-                <dxe:TextEdit EditValue="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <dxe:TextEdit EditValue="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Width="175"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Password" LabelPosition="Top" LabelHorizontalAlignment="Center" FontWeight="Bold">
-                <dxe:PasswordBoxEdit EditValue="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <dxe:PasswordBoxEdit EditValue="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Width="175"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Save Login Info?" LabelPosition="Top" LabelHorizontalAlignment="Center" FontWeight="Bold">
                 <dxe:CheckEdit EditValue="{Binding SaveLogin,Mode=TwoWay}" HorizontalAlignment="Center"/>
