@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.4.407.7556</FileVersion>
-    <StartupObject>ManufacturingInventory.ConsoleTesting.ModelTesting</StartupObject>
+    <FileVersion>1.4.438.7556</FileVersion>
+    <StartupObject>ManufacturingInventory.ConsoleTesting.Program</StartupObject>
     <Configurations>Debug;Release;fr;other</Configurations>
     <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
@@ -75,6 +75,7 @@
     <ProjectReference Include="..\ManufacturingInventory.Common\ManufacturingInventory.Common.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Domain\ManufacturingInventory.Domain.csproj" />
     <ProjectReference Include="..\ManufacturingInventory.Infrastructure\ManufacturingInventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\ManufacturingInventory.Installer.InstallSequence\ManufacturingInventory.InstallSequence.csproj" />
   </ItemGroup>
 
 </Project>

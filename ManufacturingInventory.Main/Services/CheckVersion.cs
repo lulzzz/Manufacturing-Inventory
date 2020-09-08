@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace ManufacturingInventory.ManufacturingApplication.Services {
 
     public static class Constants {
-        public static string InstallLocationDefault { get => @"C:\Program Files (x86)\Manufacturing Inventory"; }
-        public static string SourceDirectory { get => @"\\172.20.4.20\Manufacturing Install\Application"; }
+        public static string SourceDirectory { get => @"\\172.20.4.20\ManufacturingInstall\Application"; }
         public static string TempDirectory { get => @"C:\Temp"; }
     }
 
@@ -17,23 +17,24 @@ namespace ManufacturingInventory.ManufacturingApplication.Services {
         public bool NewVersionAvailable { get; set; }
         public string CurrentVersion { get; set; }
         public string NewVersion { get; set; }
+        public string InstallerLocation { get; set; }
 
-        public CheckVersionResponse(bool available,string current,string newVersion) {
+        public CheckVersionResponse(bool available,string current,string newVersion,string installerLocation) {
             this.NewVersionAvailable = available;
             this.CurrentVersion = current;
             this.NewVersion = newVersion;
+            this.InstallerLocation = installerLocation;
         }
     }
 
     public class CheckVersion {
-        public static string sourceDirectory = @"\\172.20.4.20\Manufacturing Install";
-        public static string targetDirectory = @"C:\Program Files (x86)\InventoryTestInstall";
-
+        public static string sourceDirectory = @"\\172.20.4.20\ManufacturingInstall\Application";
         public CheckVersionResponse Check() {
-            var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            var location = assemblyLocation;
-            var fileVersion = FileVersionInfo.GetVersionInfo(assemblyLocation).FileVersion;
-            var temp = fileVersion.Split(".");
+            //var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var assemblyName = AssemblyName.GetAssemblyName(@"C:\Program Files\ManufacturingInventory\ManufacturingApplication.dll");
+            //var fileVersion= AssemblyName.GetAssemblyName(assemblyLocation).Version.ToString();
+            var fileVersion = assemblyName.Version.ToString();
+            var temp = Array.ConvertAll(fileVersion.Split("."),e=>Convert.ToInt32(e));
             var fileVersionValue = CalculateVersion(temp);
             if (Directory.Exists(Constants.SourceDirectory)) {
                 DirectoryInfo directoryInfo = new DirectoryInfo(Constants.SourceDirectory);
@@ -43,7 +44,7 @@ namespace ManufacturingInventory.ManufacturingApplication.Services {
                     foreach (var file in files) {
                         string name = file.Name;
                         string versionString = GetVersionString(file.Name);
-                        var values = versionString.Split(".");
+                        var values = Array.ConvertAll(versionString.Split("."), e => Convert.ToInt32(e));
                         var version = CalculateVersion(values);
                         versionLookup.Add(version, file);
                     }
@@ -51,75 +52,34 @@ namespace ManufacturingInventory.ManufacturingApplication.Services {
                     var newFile = versionLookup[newVersionKey];
                     var serverVersion = GetVersionString(newFile.FullName);
                     if (fileVersionValue < newVersionKey) {
-                        return new CheckVersionResponse(true, fileVersion,serverVersion);
+                        return new CheckVersionResponse(true, fileVersion,serverVersion,newFile.FullName);
                     } else {
-                        return new CheckVersionResponse(false, fileVersion, serverVersion);
+                        return new CheckVersionResponse(false, fileVersion, serverVersion, newFile.FullName);
                     }
                 } else {
-                    return new CheckVersionResponse(false, "", "");
+                    return new CheckVersionResponse(false, "", "","");
                 }
             } else {
-                return new CheckVersionResponse(false, "", "");
+                return new CheckVersionResponse(false, "", "","");
             }
         }
 
         public static string GetVersionString(string fileNameWithVersion) {
-            return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
+            //return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
+            return fileNameWithVersion.Split('-')[1];
         }
 
-        public static int CalculateVersion(string[] versionStringArray) {
-            var versionArrray = Array.ConvertAll(versionStringArray, e => Convert.ToInt32(e));
+        public static int CalculateVersion(int[] versionArray) {
             int dateTimeValue = 1;
             int majorMinorValue = 0;
-            for (int i = 0; i < versionArrray.Length; i++) {
+            for (int i = 0; i < versionArray.Length; i++) {
                 if (i >= 2) {
-                    dateTimeValue *= versionArrray[i];
+                    dateTimeValue *= versionArray[i];
                 } else {
-                    majorMinorValue += versionArrray[i];
+                    majorMinorValue += versionArray[i];
                 }
             }
             return dateTimeValue + majorMinorValue;
         }
     }
-
-    //public static class VersionChecker {
-    //    public static CheckVersion CheckInstalledVersion() {
-    //        if (Directory.Exists(Constants.SourceDirectory)) {
-    //            DirectoryInfo directoryInfo = new DirectoryInfo(Constants.SourceDirectory);
-    //            var files = directoryInfo.GetFiles();
-    //            if (files.Count() > 0) {
-    //                Dictionary<int, FileInfo> versionLookup = new Dictionary<int, FileInfo>();
-    //                foreach (var file in files) {
-    //                    string name = file.Name;
-    //                    string versionString = GetVersionString(file.Name);
-    //                    var values = versionString.Split(".");
-    //                    var version = Array.ConvertAll(values, e => Convert.ToInt32(e)).Sum();
-    //                    versionLookup.Add(version, file);
-    //                }
-    //                var newVersionKey = versionLookup.Max(e => e.Key);
-    //                var newFile = versionLookup[newVersionKey];
-    //                var newVersionStr = GetVersionString(newFile.Name);
-    //                var dest = Path.Combine(Constants.InstallLocationDefault, "ManufacturingApplication.exe");
-    //                if (File.Exists(dest)) {
-    //                    var installedVersionStr = FileVersionInfo.GetVersionInfo(dest).FileVersion;
-    //                    if (installedVersionStr == newVersionStr) {
-    //                        return 
-    //                    } else {
-    //                        return new VersionCheckerResponce(, newVersionStr, "New Version Available", newFile.FullName);
-    //                    }
-    //                } else {
-    //                    return new VersionCheckerResponce(InstallStatus.NotInstalled, newVersionStr, "Not Installed", newFile.FullName);
-    //                }
-    //            } else {
-    //                return new VersionCheckerResponce(InstallStatus.ServerFilesMissing, "", "No Files Found In Directory", "");
-    //            }
-    //        } else {
-    //            return new VersionCheckerResponce(InstallStatus.ServerFilesMissing, "", "Directory Not Found", "");
-    //        }
-    //    }
-
-    //    public static string GetVersionString(string fileNameWithVersion) {
-    //        return fileNameWithVersion.Substring(fileNameWithVersion.IndexOf("-") + 1, (fileNameWithVersion.Length - 4) - (fileNameWithVersion.IndexOf("-") + 1)).Replace("_", ".");
-    //    }
-    //}
 }

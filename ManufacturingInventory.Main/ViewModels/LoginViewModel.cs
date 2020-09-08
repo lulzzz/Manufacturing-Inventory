@@ -90,7 +90,8 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
         private void Cancel() {
             this.LoginResponce = new LogInResponce(null, false);
             //this.LoginCompleted?.Invoke(this, EventArgs.Empty);
-            AsyncContext.Run(() => this.LoginCompleted?.Invoke(this, EventArgs.Empty));
+            this.LoginCompleted?.Invoke(this, EventArgs.Empty);
+            //AsyncContext.Run(() => this.LoginCompleted?.Invoke(this, EventArgs.Empty));
         }
 
         private async Task Load() {

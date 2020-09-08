@@ -13,6 +13,8 @@
         <dx:DXMessageBoxService x:Name="Error"/>
         <dxmvvm:EventToCommand Command="{Binding InitializeCommand}"
                                EventName="Loaded" />
+        <dxmvvm:EventToCommand Command="{Binding CancelCommand}"
+                               EventName="Closed" />
     </dxmvvm:Interaction.Behaviors>
     <dxlc:LayoutControl>
         <dxlc:LayoutControl.Background>

@@ -55,6 +55,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
     public partial class App {
         private IUserService userService = new UserService();
         private Logger _logger;
+        private CheckVersionViewModel _versionVM = null;
         public IConfiguration Configuration { get; private set; }
         public String ConnectionString { get; private set; }
         public DbContextOptionsBuilder<ManufacturingContext> optionsBuilder { get; private set; }
@@ -77,10 +78,9 @@ namespace ManufacturingInventory.ManufacturingApplication {
             //ThemeManager.ApplicationThemeChanged += this.ThemeManager_ApplicationThemeChanged;
             //DXTabControl.TabContentCacheModeProperty = TabContentCacheMode.CacheTabsOnSelecting;
             GridControl.AllowInfiniteGridSize = true;
-            //this.CheckVersion_v2();
+            this.CheckVersion();
             this.CreateLogger();
             //this.ManualLogIn();
-
             this.Login();
             base.OnStartup(e);
         }
@@ -99,8 +99,10 @@ namespace ManufacturingInventory.ManufacturingApplication {
             Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             if (this.ShowCheckVersionWindow()) {
                 Process process = new Process();
+                string fullFileName = this._versionVM.CheckVersionResponse.InstallerLocation;
                 ProcessStartInfo psi = new ProcessStartInfo {
-                    FileName = @"C:\Program Files (x86)\Manufacturing Inventory\Installer\InventoryInstaller.exe",
+                    FileName = "msiexec",
+                    Arguments = string.Format(" /i \"{0}\"", fullFileName),
                     UseShellExecute = false,
                 };
                 process.StartInfo = psi;
@@ -149,7 +151,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
                     DXSplashScreen.Show<SETSplashScreen>();
                 }
                 loginWindow.Close();
-
             };
             loginWindow.DataContext = loginVM;
             if (DXSplashScreen.IsActive)
@@ -164,16 +165,16 @@ namespace ManufacturingInventory.ManufacturingApplication {
             var response = versionChecker.Check();
             if (response.NewVersionAvailable) {
                 CheckVersionWindow versionWindow = new CheckVersionWindow();
-                var versionVM = new CheckVersionViewModel(response);
-                versionVM.CheckCompleted += (sender, args) => {
+                this._versionVM = new CheckVersionViewModel(response);
+                this._versionVM.CheckCompleted += (sender, args) => {
                     versionWindow.Close();
                 };
-                versionWindow.DataContext = versionVM;
+                versionWindow.DataContext = this._versionVM;
                 if (DXSplashScreen.IsActive)
                     DXSplashScreen.Close();
 
                 versionWindow.ShowDialog();
-                return versionVM.Update;
+                return this._versionVM.Update;
             } else {
                 return false;
             }

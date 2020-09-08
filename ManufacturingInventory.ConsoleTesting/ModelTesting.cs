@@ -16,6 +16,8 @@ using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Text;
 using ManufacturingInventory.Domain.Security.Concrete;
+using System.Reflection;
+using ManufacturingInventory.InstallSequence.Infrastructure;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
@@ -43,35 +45,13 @@ namespace ManufacturingInventory.ConsoleTesting {
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
             //DomainDebug();
             //AuthenticateDebug();
+            VersionTesting();
         }
 
-        public static void AuthServiceDebugging() {
-            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
-            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
-            using var context = new ManufacturingContext(optionsBuilder.Options);
-            DomainManager domainManager = new DomainManager();
-            //IUserSettingsService
-            //AuthenticationService authService = new AuthenticationService(context);
-        }
+        public static void VersionTesting() {
 
-        public static void AuthenticateDebug() {
-            DomainManager domainManager = new DomainManager();
-            Console.WriteLine("Authenticating..");
 
-            var result=domainManager.Authenticate("msuter", "Today@seti!");
-            Console.WriteLine("Authenticate Status: {0}", result.Status);
-            Console.WriteLine("Done");
 
-        }
-
-        public static void DomainUserPermissions() {
-            DomainManager domainManager = new DomainManager();
-            Console.WriteLine("Getting user credentials");
-            var permissions=domainManager.AllUserInventoryPermsions("msuter");
-            foreach(var permission in permissions) {
-                Console.WriteLine(permission);
-            }
-            Console.WriteLine("Should be done");
         }
 
         public static async Task DeleteAll() {

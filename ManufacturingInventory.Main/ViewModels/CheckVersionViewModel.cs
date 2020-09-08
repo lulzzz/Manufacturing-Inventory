@@ -7,8 +7,6 @@ using ManufacturingInventory.ManufacturingApplication.Services;
 
 namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
     public class CheckVersionViewModel : InventoryViewModelBase {
-
-
         protected IDispatcherService DispatcherService { get { return ServiceContainer.GetService<IDispatcherService>("CheckVersionDispatcher"); } }
 
         public event EventHandler CheckCompleted;
@@ -66,6 +64,11 @@ namespace ManufacturingInventory.ManufacturingApplication.ViewModels {
         public override bool KeepAlive => false;
 
         public bool Update { get; set; }
+
+        public CheckVersionResponse CheckVersionResponse {
+            get => this._checkVersionResponse; 
+            set => this._checkVersionResponse = value;
+        }
 
         private void UpdateHandler() {
             this.Update = true;

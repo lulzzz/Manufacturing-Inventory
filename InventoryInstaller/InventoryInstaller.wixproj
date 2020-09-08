@@ -98,6 +98,7 @@
     </GetAssemblyIdentity>
     <!-- Rename and move final MSI -->
     <Exec Command="if not exist Installs mkdir Installs" />
-    <Exec Command="move bin\$(Configuration)\en-us\$(OutputName).msi Installs\ManufacturingInventory-%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />
+    <!--<Exec Command="move bin\$(Configuration)\en-us\$(OutputName).msi Installs\ManufacturingInventory-%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />-->
+    <Exec Command="move bin\$(Configuration)\en-us\$(OutputName).msi \\172.20.4.20\ManufacturingInstall\Application\ManufacturingInventory-%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />
   </Target>
 </Project>
