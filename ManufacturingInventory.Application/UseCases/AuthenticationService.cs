@@ -137,7 +137,7 @@ namespace ManufacturingInventory.Application.UseCases {
                 }
                 var addedSession = await this._sessionRepository.AddAsync(new Session(userEntity));
                 if (addedSession != null) {
-                    var updated = await this._userRepository.UpdateAsync(userEntity);
+                    var updated = await this._userRepository.AddAsync(userEntity);
                     if (updated != null) {
                         var count = await this._unitOfWork.Save();
                         if (count > 0) {
@@ -297,7 +297,7 @@ namespace ManufacturingInventory.Application.UseCases {
                     }
                     var addedSession = await this._sessionRepository.AddAsync(new Session(entity));
                     if (addedSession != null) {
-                        var updated = await this._userRepository.UpdateAsync(entity);
+                        var updated = await this._userRepository.AddAsync(entity);
                         if (updated != null) {
                             var count = await this._unitOfWork.Save();
                             if (count > 0) {

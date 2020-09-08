@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <?if $(var.Platform)="x64"?>
-  <?define ProductCode="{374D9223-026A-407D-B549-F027E77F267E}"?>
+  <!--<?define ProductCode="{374D9223-026A-407D-B549-F027E77F267E}"?>-->
+  <?define ProductCode="{F620A26E-3DBC-45E9-9197-A5953C4B0797}"?>
   <?else?>
-  <?define ProductCode="{E5B93625-348D-4BF5-ACE5-C65B34884DD0}"?>
+  <!--<?define ProductCode="{E5B93625-348D-4BF5-ACE5-C65B34884DD0}"?>-->
+  <?define ProductCode="{99EAC336-3EE3-47D1-A29B-01AAE252D4D2}"?>
   <?endif?>
 
   <?define UpgradeCode = "{48ECB49B-33D3-46CD-A3E6-149492BBE338}" ?>

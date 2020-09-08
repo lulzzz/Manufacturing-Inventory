@@ -53,7 +53,7 @@ namespace ManufacturingInventory.Domain.Buisness.Concrete {
                     }
 
                     case AuthenticationStatus.UserNotFound: {
-                        return new LogInResponce("User was no found on domain, Please contact administrator");
+                        return new LogInResponce("User was not found on domain, Please contact administrator");
                     }
 
                     case AuthenticationStatus.NoPermissions: {

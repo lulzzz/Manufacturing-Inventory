@@ -15,6 +15,7 @@ using ManufacturingInventory.Infrastructure.Model.Repositories;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
 using ManufacturingInventory.Infrastructure.Model.Providers;
 using System.Text;
+using ManufacturingInventory.Domain.Security.Concrete;
 
 namespace ManufacturingInventory.ConsoleTesting {
     public class ModelTesting {
@@ -24,7 +25,7 @@ namespace ManufacturingInventory.ConsoleTesting {
         public static void Main(string[] args) {
             //AsyncContext.Run(ImportNew);
             //AsyncContext.Run(DeleteAll);
-            AsyncContext.Run(AddAlertToAllInstances);
+            //AsyncContext.Run(AddAlertToAllInstances);
             //AsyncContext.Run(TestCurrentInventory);
             //AsyncContext.Run(DeletingAlerts);
             //AddAlertToAllInstances();
@@ -40,6 +41,37 @@ namespace ManufacturingInventory.ConsoleTesting {
             //AlertQueryTestingAvailable();
             //Console.WriteLine("CombinedAlert Value: {0}", (int)AlertType.CombinedAlert);
             //Console.WriteLine("Individual Value: {0}", (int)AlertType.IndividualAlert);
+            //DomainDebug();
+            //AuthenticateDebug();
+        }
+
+        public static void AuthServiceDebugging() {
+            DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
+            optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory_dev;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
+            using var context = new ManufacturingContext(optionsBuilder.Options);
+            DomainManager domainManager = new DomainManager();
+            //IUserSettingsService
+            //AuthenticationService authService = new AuthenticationService(context);
+        }
+
+        public static void AuthenticateDebug() {
+            DomainManager domainManager = new DomainManager();
+            Console.WriteLine("Authenticating..");
+
+            var result=domainManager.Authenticate("msuter", "Today@seti!");
+            Console.WriteLine("Authenticate Status: {0}", result.Status);
+            Console.WriteLine("Done");
+
+        }
+
+        public static void DomainUserPermissions() {
+            DomainManager domainManager = new DomainManager();
+            Console.WriteLine("Getting user credentials");
+            var permissions=domainManager.AllUserInventoryPermsions("msuter");
+            foreach(var permission in permissions) {
+                Console.WriteLine(permission);
+            }
+            Console.WriteLine("Should be done");
         }
 
         public static async Task DeleteAll() {
