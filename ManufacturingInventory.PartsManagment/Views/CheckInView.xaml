@@ -12,6 +12,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:validationRules="clr-namespace:ManufacturingInventory.Common.Application.ValidationRules;assembly=ManufacturingInventory.Common"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              d:DesignHeight="800"
              d:DesignWidth="700"
              dx:ThemeManager.Theme="VS2017Blue"
@@ -146,7 +147,7 @@
                             </dxe:ComboBoxEdit.ItemTemplate>
                         </dxe:ComboBoxEdit>
                     </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Label="Usage"
+                    <dxlc:LayoutItem Label="Usage(Suggested)"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"

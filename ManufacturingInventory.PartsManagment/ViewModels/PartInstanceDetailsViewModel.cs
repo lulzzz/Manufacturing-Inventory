@@ -354,6 +354,8 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             if (this.SelectedCondition != null) {
                 this.SelectedPartInstance.ConditionId = this.SelectedCondition.Id;
+            } else {
+                this.SelectedPartInstance.ConditionId=null;
             }
 
             if (this.SelectedUsage != null) {

@@ -6,12 +6,12 @@
     <AssemblyName>ManufacturingApplication</AssemblyName>
     <StartupObject>ManufacturingInventory.ManufacturingApplication.App</StartupObject>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <FileVersion>3.2.270.7556</FileVersion>
+    <FileVersion>3.2.284.7557</FileVersion>
     <PackageId>ManufacturingInventory.UI</PackageId>
     <UserSecretsId>d873c8c3-b819-4a49-87d8-529888f6ea4b</UserSecretsId>
     <Configurations>Debug;Release;fr;other</Configurations>
     <ApplicationIcon></ApplicationIcon>
-    <AssemblyVersion>3.1.75.7556</AssemblyVersion>
+    <AssemblyVersion>3.1.89.7557</AssemblyVersion>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <SignAssembly>false</SignAssembly>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

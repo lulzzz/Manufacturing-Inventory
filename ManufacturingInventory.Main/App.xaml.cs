@@ -61,7 +61,19 @@ namespace ManufacturingInventory.ManufacturingApplication {
         public DbContextOptionsBuilder<ManufacturingContext> optionsBuilder { get; private set; }
 
         protected override Window CreateShell() {
-            return Container.Resolve<MainWindow>();
+            if (this.userService.IsValid()) {
+                return Container.Resolve<MainWindow>();
+            } else {
+                return null;
+            }
+           //return Container.Resolve<MainWindow>();
+        }
+
+        protected override void OnExit(ExitEventArgs e) {
+            if (this.userService.IsValid()) {
+                //this.userService.LogOut();
+            }
+            base.OnExit(e);
         }
 
         protected override void OnStartup(StartupEventArgs e) {
@@ -91,7 +103,8 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
             } else {
                 Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-                this.Shutdown();
+                Current.Shutdown(0);
+                //this.Shutdown();
             }
         }
 
@@ -107,8 +120,10 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 };
                 process.StartInfo = psi;
                 process.Start();
+                
                 Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-                this.Shutdown();
+                Current.Shutdown(0);
+                //this.Shutdown();
             } else {
                 if (!DXSplashScreen.IsActive)
                     DXSplashScreen.Show<ManufacturingInventory.ManufacturingApplication.SETSplashScreen>();
@@ -219,7 +234,6 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);
-                this.CreateLogger();
                 container.RegisterInstance<Logger>(this._logger);
             } else {
                 this.Shutdown();

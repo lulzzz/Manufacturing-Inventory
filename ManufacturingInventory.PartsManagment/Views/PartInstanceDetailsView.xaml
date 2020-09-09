@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
              xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
@@ -108,18 +109,20 @@
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Condition"
                                              Style="{StaticResource LayoutItemStyle}">
-                                <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                                <controlex:ComboBoxEditEx ApplyItemTemplateToSelectedItem="True"
                                                   IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"
                                                   IsTextEditable="False"
+                                                  ClearSelectionOnBackspace="True"
+                                                  AssignNullValueOnClearingEditText="True"
                                                   ItemsSource="{Binding Conditions}"
                                                   SelectedItem="{Binding SelectedCondition}">
-                                    <dxe:ComboBoxEdit.ItemTemplate>
+                                    <controlex:ComboBoxEditEx.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock HorizontalAlignment="Stretch"
                                                        Text="{Binding Name}" />
                                         </DataTemplate>
-                                    </dxe:ComboBoxEdit.ItemTemplate>
-                                </dxe:ComboBoxEdit>
+                                    </controlex:ComboBoxEditEx.ItemTemplate>
+                                </controlex:ComboBoxEditEx>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem Label="Usage"
                                              Style="{StaticResource LayoutItemStyle}">
