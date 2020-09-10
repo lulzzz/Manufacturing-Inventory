@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:ManufacturingInventory.Reporting.Views"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
              xmlns:appDef="clr-namespace:ManufacturingInventory.Domain.Enums;assembly=ManufacturingInventory.Domain"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
              xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"

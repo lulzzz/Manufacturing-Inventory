@@ -15,6 +15,7 @@
              xmlns:localCommon="clr-namespace:ManufacturingInventory.CategoryManagment.Internal"
              xmlns:common="clr-namespace:ManufacturingInventory.Common.Application.ValueConverters;assembly=ManufacturingInventory.Common"
              xmlns:commonViews="clr-namespace:ManufacturingInventory.Common.Application.UI.Views;assembly=ManufacturingInventory.Common"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:appDef="clr-namespace:ManufacturingInventory.Domain.Enums;assembly=ManufacturingInventory.Domain"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"

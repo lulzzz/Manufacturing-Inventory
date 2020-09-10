@@ -13,6 +13,7 @@
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
              d:DesignHeight="450"
@@ -63,7 +64,7 @@
                                   MinValue="0"
                                   Text="{Binding UnitCost, Mode=TwoWay}" />
                 </dxlc:LayoutItem>
-                <dxlc:LayoutItem Label="Distributor"
+                <dxlc:LayoutItem Label="Distributor(Required)"
                                  Style="{StaticResource LayoutItemStyle}">
                     <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                       IsReadOnly="{Binding CanEdit, Converter={dxmvvm:BooleanNegationConverter}}"

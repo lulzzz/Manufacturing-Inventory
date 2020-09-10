@@ -12,6 +12,7 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              dx:ThemeManager.Theme="VS2017Blue"

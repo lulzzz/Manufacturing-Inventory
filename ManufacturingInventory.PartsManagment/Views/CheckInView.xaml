@@ -114,7 +114,7 @@
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup>
-                    <dxlc:LayoutItem Label="Select Warehouse"
+                    <dxlc:LayoutItem Label="Select Warehouse(Required)"
                                      Style="{StaticResource LayoutItemStyle}">
                         <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
@@ -134,33 +134,37 @@
                     <dxlc:LayoutItem Label="Select Condition(Optional)"
                                      Style="{StaticResource LayoutItemStyle}"
                                      Visibility="{Binding IsReusable, Converter={dxmvvm:BooleanToVisibilityConverter}}">
-                        <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
-                                          IsReadOnly="{Binding IsExisting}"
-                                          IsTextEditable="False"
-                                          ItemsSource="{Binding Conditions}"
-                                          SelectedItem="{Binding SelectedCondition}">
-                            <dxe:ComboBoxEdit.ItemTemplate>
+                        <controlex:ComboBoxEditEx ApplyItemTemplateToSelectedItem="True"
+                                                  IsReadOnly="{Binding IsExisting}"
+                                                  IsTextEditable="False"
+                                                  ClearSelectionOnBackspace="True"
+                                                  AssignNullValueOnClearingEditText="True"
+                                                  ItemsSource="{Binding Conditions}"
+                                                  SelectedItem="{Binding SelectedCondition}">
+                            <controlex:ComboBoxEditEx.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock HorizontalAlignment="Stretch"
                                                Text="{Binding Name}" />
                                 </DataTemplate>
-                            </dxe:ComboBoxEdit.ItemTemplate>
-                        </dxe:ComboBoxEdit>
+                            </controlex:ComboBoxEditEx.ItemTemplate>
+                        </controlex:ComboBoxEditEx>
                     </dxlc:LayoutItem>
                     <dxlc:LayoutItem Label="Usage(Suggested)"
                                      Style="{StaticResource LayoutItemStyle}">
-                        <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
+                        <controlex:ComboBoxEditEx ApplyItemTemplateToSelectedItem="True"
                                           IsReadOnly="{Binding IsExisting}"
                                           IsTextEditable="False"
+                                          ClearSelectionOnBackspace="True"
+                                          AssignNullValueOnClearingEditText="True"
                                           ItemsSource="{Binding UsageList}"
                                           SelectedItem="{Binding SelectedUsage}">
-                            <dxe:ComboBoxEdit.ItemTemplate>
+                            <controlex:ComboBoxEditEx.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock HorizontalAlignment="Stretch"
                                                Text="{Binding Name}" />
                                 </DataTemplate>
-                            </dxe:ComboBoxEdit.ItemTemplate>
-                        </dxe:ComboBoxEdit>
+                            </controlex:ComboBoxEditEx.ItemTemplate>
+                        </controlex:ComboBoxEditEx>
                     </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
                 <dxlc:LayoutGroup Orientation="Horizontal"
@@ -390,11 +394,13 @@
                                                           MinValue="0"
                                                           Text="{Binding Price.UnitCost, Mode=TwoWay}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem Label="Select Distributor"
+                                        <dxlc:LayoutItem Label="Select Distributor(Required)"
                                                          Style="{StaticResource LayoutItemStyle}">
                                             <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
                                                               IsReadOnly="{Binding NotNoPriceOption, Converter={dxmvvm:BooleanNegationConverter}}"
                                                               IsTextEditable="False"
+                                                              ClearSelectionOnBackspace="True"
+                                                              AssignNullValueOnClearingEditText="True"
                                                               ItemsSource="{Binding Distributors}"
                                                               SelectedItem="{Binding SelectedDistributor}">
                                                 <dxe:ComboBoxEdit.ItemTemplate>

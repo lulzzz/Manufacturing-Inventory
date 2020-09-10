@@ -13,6 +13,7 @@
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:services="clr-namespace:ManufacturingInventory.Common.Application.UI.Services;assembly=ManufacturingInventory.Common"
@@ -145,7 +146,7 @@
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Orientation="Horizontal">
-                        <dxlc:LayoutItem Label="Consumer"
+                        <dxlc:LayoutItem Label="Consumer(Required)"
                                          LabelHorizontalAlignment="Center"
                                          LabelPosition="Top">
                             <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
@@ -165,17 +166,19 @@
                         <dxlc:LayoutItem Label="Condition(Optional)"
                                          LabelHorizontalAlignment="Center"
                                          LabelPosition="Top">
-                            <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
-                                              IsTextEditable="False"
-                                              ItemsSource="{Binding Conditions, Mode=TwoWay, IsAsync=True}"
-                                              SelectedItem="{Binding SelectedCondition, Mode=TwoWay, IsAsync=True}">
-                                <dxe:ComboBoxEdit.ItemTemplate>
+                            <controlex:ComboBoxEditEx ApplyItemTemplateToSelectedItem="True"
+                                                      IsTextEditable="False"
+                                                      ClearSelectionOnBackspace="True"
+                                                      AssignNullValueOnClearingEditText="True"
+                                                      ItemsSource="{Binding Conditions, Mode=TwoWay, IsAsync=True}"
+                                                      SelectedItem="{Binding SelectedCondition, Mode=TwoWay, IsAsync=True}">
+                                <controlex:ComboBoxEditEx.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Stretch"
                                                    Text="{Binding Name}" />
                                     </DataTemplate>
-                                </dxe:ComboBoxEdit.ItemTemplate>
-                            </dxe:ComboBoxEdit>
+                                </controlex:ComboBoxEditEx.ItemTemplate>
+                            </controlex:ComboBoxEditEx>
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                     <dx:SimpleButton Height="40"

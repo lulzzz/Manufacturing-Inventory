@@ -13,6 +13,7 @@
              xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
              xmlns:local="clr-namespace:ManufacturingInventory.PartsManagment.Views"
              xmlns:localcore="clr-namespace:ManufacturingInventory.PartsManagment.Internal;assembly=ManufacturingInventory.PartsManagment"
+             xmlns:controlex="clr-namespace:ManufacturingInventory.Common.Application.UI.ControlEx;assembly=ManufacturingInventory.Common"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prism="http://prismlibrary.com/"
              d:DesignHeight="450"
@@ -88,21 +89,23 @@
                 </dxe:ComboBoxEdit>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem BorderBrush="Black"
-                             Label="Organization"
+                             Label="Organization(Optional)"
                              LabelHorizontalAlignment="Center"
                              LabelPosition="Top">
-                <dxe:ComboBoxEdit ApplyItemTemplateToSelectedItem="True"
-                                  IsReadOnly="{Binding CanSaveCancel, Converter={dxmvvm:BooleanNegationConverter}}"
-                                  IsTextEditable="False"
-                                  ItemsSource="{Binding Organizations}"
-                                  SelectedItem="{Binding SelectedOrganization, Mode=TwoWay}">
-                    <dxe:ComboBoxEdit.ItemTemplate>
+                <controlex:ComboBoxEditEx ApplyItemTemplateToSelectedItem="True"
+                                          IsReadOnly="{Binding CanSaveCancel, Converter={dxmvvm:BooleanNegationConverter}}"
+                                          IsTextEditable="False"
+                                          ClearSelectionOnBackspace="True"
+                                          AssignNullValueOnClearingEditText="True"
+                                          ItemsSource="{Binding Organizations}"
+                                          SelectedItem="{Binding SelectedOrganization, Mode=TwoWay}">
+                    <controlex:ComboBoxEditEx.ItemTemplate>
                         <DataTemplate>
                             <TextBlock HorizontalAlignment="Stretch"
                                        Text="{Binding Name}" />
                         </DataTemplate>
-                    </dxe:ComboBoxEdit.ItemTemplate>
-                </dxe:ComboBoxEdit>
+                    </controlex:ComboBoxEditEx.ItemTemplate>
+                </controlex:ComboBoxEditEx>
             </dxlc:LayoutItem>
         </dxlc:LayoutGroup>
         <dxlc:LayoutGroup>
