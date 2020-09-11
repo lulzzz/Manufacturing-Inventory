@@ -5,6 +5,12 @@ using System.Text;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 
 namespace ManufacturingInventory.Domain.DTOs {
+    public enum AlertStatus {
+        StockAlert,
+        StockWarning,
+        StockNoAlert,
+    }
+
     public class AlertDto {
         public int AlertId { get; set; }
         public string AlertIdentifier { get; set; }
@@ -13,6 +19,8 @@ namespace ManufacturingInventory.Domain.DTOs {
         public double MinQuantity { get; set; }
         public double SafeQuantity { get; set; }
         public bool IsEnabled { get; set; }
+        public AlertStatus AlertStatus { get; set; }
+        
         public List<InstanceDto> PartInstances { get; set; }
 
         public AlertDto() {
@@ -23,6 +31,7 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.SafeQuantity = 0;
             this.AlertType = AlertType.IndividualAlert;
             this.AlertId = 0;
+            this.AlertStatus = AlertStatus.StockNoAlert;
         }
 
         public AlertDto(Alert alert) {
@@ -53,6 +62,13 @@ namespace ManufacturingInventory.Domain.DTOs {
                     this.PartInstances = stockType.PartInstances.Select(partInstance => new InstanceDto(partInstance)).ToList();
                     break;
             }
+            if (this.Quantity < this.SafeQuantity) {
+                this.AlertStatus = AlertStatus.StockWarning;
+            } else if (this.Quantity < this.MinQuantity) {
+                this.AlertStatus = AlertStatus.StockAlert;
+            } else {
+                this.AlertStatus = AlertStatus.StockNoAlert;
+            }
         }
 
         public AlertDto(UserAlert userAlert) {
@@ -79,6 +95,13 @@ namespace ManufacturingInventory.Domain.DTOs {
                     this.SafeQuantity = stockType.SafeQuantity;
                     this.PartInstances = stockType.PartInstances.Select(partInstance => new InstanceDto(partInstance)).ToList();
                     break;
+            }
+            if (this.Quantity < this.SafeQuantity) {
+                this.AlertStatus = AlertStatus.StockWarning;
+            } else if (this.Quantity < this.MinQuantity) {
+                this.AlertStatus = AlertStatus.StockAlert;
+            } else {
+                this.AlertStatus = AlertStatus.StockNoAlert;
             }
         }
     }
