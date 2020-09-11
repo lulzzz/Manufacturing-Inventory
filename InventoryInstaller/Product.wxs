@@ -2,10 +2,10 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <?if $(var.Platform)="x64"?>
   <!--<?define ProductCode="{374D9223-026A-407D-B549-F027E77F267E}"?>-->
-  <?define ProductCode="{9A0A798B-A05F-44B6-96F4-8B84FF2E19E1}"?>
+  <?define ProductCode="{FD428F6F-E391-487D-A70E-A13E37F4E021}"?>
   <?else?>
   <!--<?define ProductCode="{E5B93625-348D-4BF5-ACE5-C65B34884DD0}"?>-->
-  <?define ProductCode="{01532DFE-F99D-40D2-A673-C161E14316D9}"?>
+  <?define ProductCode="{8783F49D-0389-4A73-8090-D0BBECBDE661}"?>
   <?endif?>
 
   <?define UpgradeCode = "{049092C0-8A44-4421-9916-152E140D52D3}" ?>
