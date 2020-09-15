@@ -71,19 +71,23 @@ namespace ManufacturingInventory.AlertEmailService.Services {
             string alertStatus = "";
             switch (alert.AlertStatus) {
                 case AlertStatus.StockAlert:
-                    alertStatus = "Stock Alarm";
+                    alertStatus = "Alarm";
+                    this._alertBuilder.AppendLine("<tr style=\"background-color: #ff5050\">");
                     break;
                 case AlertStatus.StockWarning:
-                    alertStatus = "Stock Warning";
+                    alertStatus = "Warning";
+                    this._alertBuilder.AppendLine("<tr style=\"background-color: #ccff33\">");
                     break;
                 case AlertStatus.StockNoAlert:
-                    alertStatus = "Stock Okay";
+                    alertStatus = "Okay";
+                    this._alertBuilder.AppendLine("<tr style=\"background-color: #00ff99\">");
                     break;
                 default:
                     alertStatus = "";
+                    this._alertBuilder.AppendLine("<tr>");
                     break;
             }
-            this._alertBuilder.AppendLine("<tr>");
+            //this._alertBuilder.AppendLine("<tr>");
                 this._alertBuilder.AppendFormat("<td>{0}</td>", alert.AlertIdentifier).AppendLine();
                 this._alertBuilder.AppendFormat("<td>{0}</td>", alert.AlertType).AppendLine();
                 this._alertBuilder.AppendFormat("<td>{0}</td>", alertStatus).AppendLine();

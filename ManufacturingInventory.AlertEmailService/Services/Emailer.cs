@@ -10,7 +10,6 @@ namespace ManufacturingInventory.AlertEmailService.Services {
     public class EmailRecipient {
         public string EmailAddress { get; set; }
         public string Message { get;private set; }
-        private DateTime _dateTime;
         public bool IsFinalized { get; private set; }
         public MessageBuilder MessageBuilder { get; private set; }
         public List<AlertDto> Alerts { get; set; }
@@ -23,14 +22,17 @@ namespace ManufacturingInventory.AlertEmailService.Services {
         }
 
         public async Task BuildAlertTable() {
-
+            await Task.Run(() => { 
+                foreach(var alert in this.Alerts) {
+                    this.MessageBuilder.AppendAlert(alert);
+                }
+            });
         }
 
         public void FinalizeMessage() {
             this.Message=this.MessageBuilder.FinishMessage();
             this.IsFinalized = true;
         }
-
     }
 
     public class Emailer {
@@ -52,6 +54,9 @@ namespace ManufacturingInventory.AlertEmailService.Services {
 
             EmailMessage message = new EmailMessage(this._exchange);
             message.ToRecipients.Add(emailRecipient.EmailAddress);
+            if (emailRecipient.EmailAddress != "aelmendorf@s-et.com") {
+                message.ToRecipients.Add("aelmendorf@s-et.com");
+            }
             message.Subject = "Manufacturing Inventory Alert Service";
             MessageBody body = new MessageBody();
             body.BodyType = BodyType.HTML;

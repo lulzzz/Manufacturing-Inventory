@@ -12,13 +12,15 @@ namespace ManufacturingInventory.AlertEmailService.Services {
     public class AlertService {
         private ManufacturingContext _context;
         private Emailer _emailer;
-        private List<EmailRecipient> recipients;
         private List<User> _users;
 
         public AlertService() {
             DbContextOptionsBuilder<ManufacturingContext> optionsBuilder = new DbContextOptionsBuilder<ManufacturingContext>();
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             this._context = new ManufacturingContext(optionsBuilder.Options);
+            this._emailer = new Emailer();
+            this._users = new List<User>();
+
         }
 
         public async Task Run() {
@@ -36,7 +38,6 @@ namespace ManufacturingInventory.AlertEmailService.Services {
                     .ThenInclude(e => (e.Alert as CombinedAlert).StockHolder.PartInstances)
                 .Where(e => !String.IsNullOrEmpty(e.Email) && e.UserAlerts.Count() > 0)
                 .ToListAsync();
-
         }
 
         private async Task ProcessAlerts() {
@@ -48,11 +49,10 @@ namespace ManufacturingInventory.AlertEmailService.Services {
         private async IAsyncEnumerable<EmailRecipient> Process() {
             foreach(var user in this._users) {
                 EmailRecipient recipient = new EmailRecipient(user.Email);
-
                 recipient.Alerts=user.UserAlerts
                     .Where(e=>e.IsEnabled)
                     .Select(userAlert => new AlertDto(userAlert.Alert))
-                    .OrderByDescending(e=>e.AlertStatus)
+                    .OrderBy(e=>e.AlertStatus)
                     .ToList();
 
                 await recipient.BuildAlertTable();
@@ -61,17 +61,17 @@ namespace ManufacturingInventory.AlertEmailService.Services {
             }
         }
 
-        private async Task ProcessAlertsAndSend() {
-            List<Task> tasks = new List<Task>();
-            foreach(var recipient in this.recipients) {
-                tasks.Add(recipient.BuildAlertTable());
-            }
-            await Task.WhenAll(tasks);
-            tasks.Clear();
-            foreach (var recipient in this.recipients) {
-                Task task = this._emailer.SendMessageAsync(recipient);
-            }
-            await Task.WhenAll(tasks);
-        }
+        //private async Task ProcessAlertsAndSend() {
+        //    List<Task> tasks = new List<Task>();
+        //    foreach(var recipient in this.recipients) {
+        //        tasks.Add(recipient.BuildAlertTable());
+        //    }
+        //    await Task.WhenAll(tasks);
+        //    tasks.Clear();
+        //    foreach (var recipient in this.recipients) {
+        //        Task task = this._emailer.SendMessageAsync(recipient);
+        //    }
+        //    await Task.WhenAll(tasks);
+        //}
     }
 }
