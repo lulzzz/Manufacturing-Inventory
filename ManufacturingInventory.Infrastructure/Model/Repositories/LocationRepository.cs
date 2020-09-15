@@ -78,6 +78,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 return this._context.Locations
                     .Include(e => e.ItemsAtLocation)
                     .Include(e => e.Transactions)
+                    .Include(e => ((Warehouse)e).StoredParts)
                     .AsNoTracking()
                     .FirstOrDefault(expression);
         }
@@ -85,6 +86,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public async Task<Location> GetEntityAsync(Expression<Func<Location, bool>> expression) {
             return await this._context.Locations
                 .Include(e => e.ItemsAtLocation)
+                .Include(e=>((Warehouse)e).StoredParts)
                 .Include(e => e.Transactions)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(expression);
@@ -95,6 +97,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<Location> query = this._context.Set<Location>()
                 .Include(e => e.Transactions)
                 .Include(e => e.ItemsAtLocation)
+                .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -112,6 +115,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             IQueryable<Location> query = this._context.Set<Location>()
                 .Include(e => e.ItemsAtLocation)
                 .Include(e => e.Transactions)
+                .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking();
 
             if (expression != null) {
@@ -129,6 +133,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             this._context.Locations
                 .Include(e => e.Transactions)
                 .Include(e => e.ItemsAtLocation)
+                .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking()
                 .Load();
         }
@@ -137,6 +142,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
             await this._context.Locations.AsNoTracking()
                  .Include(e => e.Transactions)
                  .Include(e => e.ItemsAtLocation)
+                 .Include(e => ((Warehouse)e).StoredParts)
                  .AsNoTracking()
                  .LoadAsync();
         }

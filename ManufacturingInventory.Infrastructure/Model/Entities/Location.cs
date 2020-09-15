@@ -26,19 +26,15 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
 
     public class Warehouse : Location {
         public ICollection<Part> StoredParts { get; set; }
-        //public ICollection<IncomingTransaction> IncomingTransactions { get; set; }
 
-        public Warehouse() {
+        public Warehouse():base() {
             this.StoredParts = new HashSet<Part>();
-            //this.IncomingTransactions = new HashSet<IncomingTransaction>();
         }
     }
 
     public class Consumer : Location {
-        //public ICollection<OutgoingTransaction> OutgoingTransactions { get; set; }
+        public Consumer():base() {
 
-        public Consumer() {
-            //this.OutgoingTransactions = new HashSet<OutgoingTransaction>();
         }
     }
 }

@@ -4,16 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ManufacturingInventory.Application.Boundaries.CategoryBoundaries {
-    public class CategoryBoundaryOutput : IOutput {
-        public Category Category;
+namespace ManufacturingInventory.Application.Boundaries.LocationManage {
+    public class LocationManagmentOutput : IOutput {
         public bool Success { get; set; }
         public string Message { get; set; }
+        public LocationDto Location { get; set; }
 
-        public CategoryBoundaryOutput(Category category, bool success, string message) {
-            this.Category = category;
+        public LocationManagmentOutput(LocationDto location,bool success, string message) {
             this.Success = success;
             this.Message = message;
+            this.Location = location;
         }
+
     }
 }

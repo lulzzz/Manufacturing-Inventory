@@ -1,19 +1,15 @@
 ﻿using DevExpress.Mvvm;
-using ManufacturingInventory.Common.Application;
+using ManufacturingInventory.Application.Boundaries;
 using ManufacturingInventory.Application.Boundaries.CategoryBoundaries;
-using ManufacturingInventory.Infrastructure.Model.Entities;
-using ManufacturingInventory.Common.Application.UI.ViewModels;
+using ManufacturingInventory.CategoryManagment.Internal;
+using ManufacturingInventory.Common.Application;
+using ManufacturingInventory.Domain.DTOs;
 using Prism.Events;
 using Prism.Regions;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Collections.Generic;
-using ManufacturingInventory.Domain.DTOs;
-using ManufacturingInventory.CategoryManagment.Internal;
-using Serilog;
-using ManufacturingInventory.Application.Boundaries;
 
 namespace ManufacturingInventory.CategoryManagment.ViewModels {
     public class CategoryNavigationViewModel : InventoryViewModelBase {
@@ -163,8 +159,6 @@ namespace ManufacturingInventory.CategoryManagment.ViewModels {
                 } else {
                     await this.Reload();
                 }
-
-
             } else {
                 this.DispatcherService.BeginInvoke(() => {
                     this.MessageBoxService.ShowMessage(response.Message, "Error", MessageButton.OK, MessageIcon.Error);
