@@ -32,7 +32,7 @@
         <dxmvvm:EventToCommand EventName="Loaded"
                                Command="{Binding InitializeCommand}" />
     </dxmvvm:Interaction.Behaviors>
-    <dx:LoadingDecorator>
+    <dx:LoadingDecorator IsSplashScreenShown="{Binding ShowViewLoading}">
         <dxlc:LayoutGroup Orientation="Vertical"
                           Margin="1,1,1,1">
             <dxlc:LayoutGroup Orientation="Vertical">
@@ -47,9 +47,6 @@
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EnumItemsSourceBehavior EnumType="{x:Type appDef:LocationType}"
                                                                 SortMode="DisplayName" />
-                                <dxmvvm:EventToCommand Command="{Binding LocationTypeChangedCommand}"
-                                                       EventName="EditValueChanged">
-                                </dxmvvm:EventToCommand>
                             </dxmvvm:Interaction.Behaviors>
                             <dxe:ComboBoxEdit.ItemTemplate>
                                 <DataTemplate>
@@ -99,63 +96,10 @@
                 </dxlc:LayoutItem>
 
             </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup VerticalAlignment="Stretch"
-                              View="GroupBox">
-                <dxlc:LayoutGroup.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="Parts Stored at Location"
-                                   FontSize="16"
-                                   HorizontalAlignment="Center" />
-                    </DataTemplate>
-                </dxlc:LayoutGroup.HeaderTemplate>
-                <dxg:GridControl x:Name="_listOfParts"
-                                 ItemsSource="{Binding SelectedLocation.Parts, IsAsync=True, Mode=TwoWay}"
-                                 ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
-                                 Style="{StaticResource GridControlStyle}">
-                    <dxg:GridControl.View>
-                        <dxg:TableView AllowEditing="False"
-                                       AllowBestFit="True"
-                                       AutoWidth="True"
-                                       Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
-                        </dxg:TableView>
-                    </dxg:GridControl.View>
-                    <dxg:GridControl.Columns>
-                        <dxg:GridColumn FieldName="Name"
-                                        Header="Part" />
-                        <dxg:GridColumn AllowGrouping="True"
-                                        FieldName="Organization.Name"
-                                        Header="Organization" />
-
-                    </dxg:GridControl.Columns>
-                    <dxg:GridControl.DetailDescriptor>
-                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
-                            <dxg:GridControl Style="{StaticResource GridControlStyle}">
-                                <dxg:GridColumn FieldName="Id" />
-                                <dxg:GridColumn FieldName="Name" />
-                                <dxg:GridColumn FieldName="IsBubbler" />
-                                <dxg:GridColumn FieldName="SerialNumber" />
-                                <dxg:GridColumn FieldName="BatchNumber" />
-                                <dxg:GridControl.View>
-                                    <dxg:TableView Style="{StaticResource TableViewStyleNoMasterNoGroup}">
-                                    </dxg:TableView>
-                                </dxg:GridControl.View>
-                            </dxg:GridControl>
-                        </dxg:DataControlDetailDescriptor>
-                    </dxg:GridControl.DetailDescriptor>
-                </dxg:GridControl>
-            </dxlc:LayoutGroup>
-            <dxlc:LayoutGroup Orientation="Vertical"
-                              Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False, Inverse=True}}">
-                <dxlc:LayoutGroup View="GroupBox"
-                                  Visibility="{Binding PartInstancesEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False}}"
-                                  VerticalAlignment="Stretch">
-                    <dxlc:LayoutGroup.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="Part Instances At Location"
-                                       FontSize="16"
-                                       HorizontalAlignment="Center" />
-                        </DataTemplate>
-                    </dxlc:LayoutGroup.HeaderTemplate>
+            <dx:DXTabControl Visibility="{Binding IsNew,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False, Inverse=True}}">
+                <dx:DXTabItem Glyph="{dx:DXImage Image=RedYellowGreen_16x16.png}"
+                              Header="Part Instances"
+                              IsSelected="True">
                     <dxg:GridControl x:Name="_listOfPartInstances"
                                      ItemsSource="{Binding SelectedLocation.PartInstances, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
@@ -176,8 +120,70 @@
                         <dxg:GridColumn FieldName="SerialNumber" />
                         <dxg:GridColumn FieldName="BatchNumber" />
                     </dxg:GridControl>
-                </dxlc:LayoutGroup>
-            </dxlc:LayoutGroup>
+                </dx:DXTabItem>
+                <dx:DXTabItem Glyph="{dx:DXImage Image=BOProductGroup_16x16.png}"
+                              Header="Parts"
+                              Visibility="{Binding PartsEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False}}">
+                    <dxg:GridControl x:Name="_listOfParts"
+                                     ItemsSource="{Binding SelectedLocation.Parts, IsAsync=True, Mode=TwoWay}"
+                                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
+                                     Style="{StaticResource GridControlStyle}">
+                        <dxg:GridControl.View>
+                            <dxg:TableView AllowEditing="False"
+                                           AllowBestFit="True"
+                                           AutoWidth="True"
+                                           Style="{StaticResource TableViewStyleNoMasterNoGroupNoSearch}">
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="Name"
+                                            Header="Part" />
+                            <dxg:GridColumn AllowGrouping="True"
+                                            FieldName="Organization.Name"
+                                            Header="Organization" />
+
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.DetailDescriptor>
+                            <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
+                                <dxg:GridControl Style="{StaticResource GridControlStyle}">
+                                    <dxg:GridColumn FieldName="Id" />
+                                    <dxg:GridColumn FieldName="Name" />
+                                    <dxg:GridColumn FieldName="IsBubbler" />
+                                    <dxg:GridColumn FieldName="SerialNumber" />
+                                    <dxg:GridColumn FieldName="BatchNumber" />
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                                        </dxg:TableView>
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                            </dxg:DataControlDetailDescriptor>
+                        </dxg:GridControl.DetailDescriptor>
+                    </dxg:GridControl>
+                </dx:DXTabItem>
+                <dx:DXTabItem Glyph="{dx:DXImage Image=AgendaView_16x16.png}" 
+                              Header="Transactions">
+                    <dxg:GridControl x:Name="_listOfTransactions"
+                                     ItemsSource="{Binding SelectedLocation.Transactions, IsAsync=True, Mode=TwoWay}"
+                                     ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}">
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="_transactionsTblView"
+                                           Style="{StaticResource TableViewStyleNoMasterNoSearch}">
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                        <dxg:GridColumn FieldName="Id"
+                                        Visible="False" />
+                        <dxg:GridColumn FieldName="TimeStamp" />
+                        <dxg:GridColumn AllowGrouping="True"
+                                        FieldName="InventoryAction"
+                                        GroupIndex="0"
+                                        Header="Action" />
+                        <dxg:GridColumn AllowGrouping="True"
+                                        FieldName="PartInstanceName"
+                                        Header="Item" />
+                        <dxg:GridColumn FieldName="Quantity" />
+                    </dxg:GridControl>
+                </dx:DXTabItem>
+            </dx:DXTabControl>
             <dxlc:LayoutItem VerticalAlignment="Bottom"
                              Label="Save or Cancel Changes"
                              Style="{StaticResource LayoutItemStyle}"

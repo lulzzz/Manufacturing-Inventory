@@ -30,13 +30,11 @@ namespace ManufacturingInventory.Application.UseCases {
         public async Task<LocationManagmentOutput> Execute(LocationManagmentInput input) {
             switch (input.EditAction) {
                 case Boundaries.EditAction.Add:
-                    
-                    return new LocationManagmentOutput(null, false, "Internal Error: Action not implemented");
+                    return await this.ExecuteAdd(input);
                 case Boundaries.EditAction.Delete:
-                    return new LocationManagmentOutput(null, false, "Internal Error: Action not implemented");
+                    return await this.ExecuteDelete(input);
                 case Boundaries.EditAction.Update:
-
-                    return new LocationManagmentOutput(null, false, "Internal Error: Action not implemented");
+                    return await this.ExecuteUpdate(input);
                 default:
                     return new LocationManagmentOutput(null, false, "Internal Error: Action not implemented");
             }
@@ -95,7 +93,6 @@ namespace ManufacturingInventory.Application.UseCases {
                 return new LocationManagmentOutput(null, false, "Error: Could not find location to update");
             }
         }
-        
 
         private async Task<LocationManagmentOutput> ExecuteDelete(LocationManagmentInput input) {
             var location = await this._locationRepository.GetEntityAsync(e => e.Id == input.Location.Id);
@@ -126,21 +123,11 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<IEnumerable<LocationDto>> GetLocations() {
-            return (await this._locationRepository.GetEntityListAsync()).Select(location => new LocationDto());
+            return (await this._locationRepository.GetEntityListAsync()).Select(location => new LocationDto(location));
         }
 
         public async Task Load() {
             await this._locationRepository.LoadAsync();
-            await this._instanceProvider.LoadAsync();
-            await this._partProvider.LoadAsync();
-        }
-
-        public async Task<IEnumerable<InstanceDto>> GetLocationInstances(int locationId) {
-            return (await this._instanceProvider.GetEntityListAsync(e => e.CurrentLocation.Id == locationId)).Select(instance=>new InstanceDto(instance));
-        }
-
-        public async Task<IEnumerable<PartDto>> GetLocationParts(int locationId) {
-            return (await this._partProvider.GetEntityListAsync(e => e.WarehouseId == locationId)).Select(part => new PartDto(part));
         }
     }
 }

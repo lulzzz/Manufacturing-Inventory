@@ -50,6 +50,8 @@ using System.Windows;
 using FastExpressionCompiler.LightExpression;
 using Logger =Serilog.ILogger;
 using ManufacturingInventory.AlertManagment;
+using ManufacturingInventory.Application.Boundaries.LocationManage;
+using ManufacturingInventory.LocationManagment;
 
 namespace ManufacturingInventory.ManufacturingApplication {
     public partial class App {
@@ -201,6 +203,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
             moduleCatalog.AddModule<CategoryManagmentModule>();
             moduleCatalog.AddModule<ReportingModule>();
             moduleCatalog.AddModule<AlertManagmentModule>();
+            moduleCatalog.AddModule<LocationManagmentModule>();
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry) {
@@ -231,6 +234,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<ITransactionLogUseCase, TransactionLogUseCase>();
                 container.Register<IAlertsAvailableUseCase, AlertsAvailableUseCase>();
                 container.Register<IAlertsExistingUseCase, AlertsExistingUseCase>();
+                container.Register<ILocationManagmentUseCase, LocationManagmentUseCase>();
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);

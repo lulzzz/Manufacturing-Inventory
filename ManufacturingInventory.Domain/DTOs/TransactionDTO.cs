@@ -36,6 +36,20 @@ namespace ManufacturingInventory.Domain.DTOs {
 
         }
 
+        public TransactionDTO(Transaction transaction) {
+            this.TimeStamp = transaction.TimeStamp;
+            this.InventoryAction = transaction.InventoryAction;
+            this.Quantity = (transaction.PartInstance.IsBubbler) ? (int)transaction.Weight : transaction.Quantity;
+            this.Measured = transaction.Weight;
+            this.UnitCost = transaction.UnitCost;
+            this.TotalCost = transaction.TotalCost;
+            this.PartInstanceId = transaction.PartInstanceId;
+            this.PartInstanceName =(transaction.PartInstance!=null) ? transaction.PartInstance.Name:"Instance Not Loaded";
+            this.LocationId = transaction.LocationId;
+            this.LocationName =(transaction.Location!=null) ? transaction.Location.Name:"Location Not Loaded";
+            //this.IsBubbler needs check for PartInstance!=null.  Not needed for this use case
+        }
+
         public DateTime TimeStamp { get; set; }
         public InventoryAction InventoryAction { get; set; }
         public int Quantity { get; set; }

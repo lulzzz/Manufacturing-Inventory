@@ -92,19 +92,6 @@
             <dxg:GridControl.DetailDescriptor>
                 <dxg:TabViewDetailDescriptor>
                     <dxg:TabViewDetailDescriptor.DetailDescriptors>
-                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Parts}">
-                            <dxg:GridControl Style="{StaticResource GridControlStyle}">
-                                <dxg:GridColumn FieldName="Name" />
-                                <dxg:GridColumn FieldName="PartCategory" />
-                                <dxg:GridColumn FieldName="IsBubbler" />
-                                <dxg:GridColumn FieldName="Quantity" />
-                                <dxg:GridControl.View>
-                                    <dxg:TableView DetailHeaderContent="Parts Stored"
-                                                   Style="{StaticResource TableViewStyleNoMasterNoGroup}">
-                                    </dxg:TableView>
-                                </dxg:GridControl.View>
-                            </dxg:GridControl>
-                        </dxg:DataControlDetailDescriptor>
                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
                             <dxg:GridControl Style="{StaticResource GridControlStyle}">
                                 <dxg:GridColumn FieldName="Name" />
@@ -112,8 +99,38 @@
                                 <dxg:GridColumn FieldName="IsBubbler" />
                                 <dxg:GridColumn FieldName="Quantity" />
                                 <dxg:GridControl.View>
-                                    <dxg:TableView DetailHeaderContent="PartInstances Stored" 
-                                        Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                                    <dxg:TableView DetailHeaderContent="PartInstances At"
+                                                   Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxg:DataControlDetailDescriptor>
+                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Parts}">
+                            <dxg:GridControl Style="{StaticResource GridControlStyle}">
+                                <dxg:GridColumn FieldName="Name" />
+                                <dxg:GridControl.View>
+                                    <dxg:TableView DetailHeaderContent="Parts Stored"
+                                                   Style="{StaticResource TableViewStyleNoMasterNoGroup}">
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxg:DataControlDetailDescriptor>
+                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Transactions}">
+                            <dxg:GridControl Style="{StaticResource GridControlStyle}">
+                                <dxg:GridColumn FieldName="Id"
+                                                Visible="False" />
+                                <dxg:GridColumn FieldName="TimeStamp" />
+                                <dxg:GridColumn AllowGrouping="True"
+                                                FieldName="InventoryAction"
+                                                GroupIndex="0"
+                                                Header="Action" />
+                                <dxg:GridColumn AllowGrouping="True"
+                                                FieldName="PartInstanceName"
+                                                Header="Item" />
+                                <dxg:GridColumn FieldName="Quantity" />
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="_transactionsTblView"
+                                                   Style="{StaticResource TableViewStyleNoMasterNoSearch}">
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>

@@ -6,4 +6,6 @@ using Prism.Events;
 namespace ManufacturingInventory.LocationManagment.Internal {
     public class ReloadEvent: PubSubEvent { }
     public class LocationEditDoneEvent : PubSubEvent<int> { }
+    public class LocationEditCancelOrErrorEvent : PubSubEvent { }
+    
 }

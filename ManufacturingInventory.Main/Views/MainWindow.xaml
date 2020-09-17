@@ -46,10 +46,10 @@
 
                             <dxb:BarButtonItem x:Name="locationView"
                                                Command="{Binding LoadModuleCommand}"
-                                               CommandParameter="{x:Static common:MainAppViews.LocationsManagmentMainView}"
+                                               CommandParameter="{x:Static common:MainAppViews.LocationManagmentMainView}"
                                                Content="Location Managment"
                                                Glyph="{dx:DXImage Image=Country_32x32.png}"
-                                               IsEnabled="False"
+                                               IsEnabled="True"
                                                LargeGlyph="{dx:DXImage Image=Country_32x32.png}" />
 
                             <dxb:BarButtonItem x:Name="categoryView"

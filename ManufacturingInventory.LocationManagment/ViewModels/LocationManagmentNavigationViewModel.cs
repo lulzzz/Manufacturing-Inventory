@@ -23,7 +23,6 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("LocationNavMessageBoxService"); }
         private IEventAggregator _eventAggregator;
         private IRegionManager _regionManager;
-        private ILogger _logger;
         private ILocationManagmentUseCase _locationService;
 
         private ObservableCollection<LocationDto> _locations;
@@ -31,7 +30,6 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         private bool _showTableLoading;
         private bool _isLoaded=false;
         private bool _editInProgress=false;
-
 
         public AsyncCommand DeleteLocationCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
@@ -45,11 +43,11 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
             this._regionManager = regionManager;
             this._locationService = locationService;
 
-            this.DeleteLocationCommand = new AsyncCommand(this.DeleteLocationHandler);
-            this.ViewDetailsCommand = new AsyncCommand(this.ViewDetailsHandler);
-            this.AddNewLocationCommand = new AsyncCommand(this.AddNewLocationHandler);
-            this.EditLocationCommand = new AsyncCommand(this.EditLocationHandler);
-            this.DoubleClickViewCommand = new AsyncCommand(this.ViewDetailsHandler);
+            this.DeleteLocationCommand = new AsyncCommand(this.DeleteLocationHandler,!this._editInProgress);
+            this.ViewDetailsCommand = new AsyncCommand(this.ViewDetailsHandler,!this._editInProgress);
+            this.AddNewLocationCommand = new AsyncCommand(this.AddNewLocationHandler, !this._editInProgress);
+            this.EditLocationCommand = new AsyncCommand(this.EditLocationHandler, !this._editInProgress);
+            this.DoubleClickViewCommand = new AsyncCommand(this.ViewDetailsHandler, !this._editInProgress);
             this.InitializeCommand = new AsyncCommand(this.LoadHandler);
         }
 
@@ -73,7 +71,10 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         public async Task AddNewLocationHandler() {
             if (this.SelectedLocation != null) {
                 await Task.Run(() => {
-                    this.NavigateDetails(false, true);
+                    this._editInProgress = true;
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.NavigateDetails(false, true);
+                    });               
                 });
             }
         }
@@ -87,14 +88,17 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         public async Task EditLocationHandler() {
             if (this.SelectedLocation != null) {
                 await Task.Run(() => {
-                    this.NavigateDetails(true, false, this.SelectedLocation.Id);
+                    this._editInProgress = true;
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.NavigateDetails(true, false, this.SelectedLocation.Id);
+                    });          
                 });
             }
         }
 
         private void NavigateDetails(bool isEdit,bool isNew, int? locationId=null) {
             NavigationParameters parameters = new NavigationParameters();
-            parameters.Add(ParameterKeys.SelectedLocationId, this.SelectedLocation.Id);
+            parameters.Add(ParameterKeys.SelectedLocationId, locationId);
             parameters.Add(ParameterKeys.IsEdit, isEdit);
             parameters.Add(ParameterKeys.IsNew, isNew);
             this._editInProgress = isEdit || isNew;
@@ -104,8 +108,9 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         public async Task ViewDetailsHandler() {
             if (this.SelectedLocation != null) {
                 await Task.Run(() => {
-                    this.NavigateDetails(false, false,this.SelectedLocation.Id);
-
+                    this.DispatcherService.BeginInvoke(() => {
+                        this.NavigateDetails(false, false, this.SelectedLocation.Id);
+                    });
                 });
             }
         }
@@ -126,6 +131,19 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
                 });
                 await this.Reload();
             }
+        }
+
+        private async Task EditCompletedCallBack(int locationId) {
+            this._editInProgress = false;
+            await this.Reload(locationId);
+        }
+
+        private async Task EditCancelOrErrorCallBack() {
+            await this.Reload();
+        }
+
+        private void CleanUpRegions() {
+            this._regionManager.Regions[LocalRegions.LocationDetailsRegion].RemoveAll();
         }
 
         public async Task Reload(int? locationId=null) {

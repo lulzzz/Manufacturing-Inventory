@@ -12,9 +12,11 @@ namespace ManufacturingInventory.Domain.DTOs {
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsDefualt { get; set; }
+        public bool ShowParts { get; set; }
         public LocationType LocationType{get;set;}
         public IEnumerable<InstanceDto> PartInstances { get; set; }
         public IEnumerable<PartDto> Parts { get; set; }
+        public IEnumerable<TransactionDTO> Transactions { get; set; }
 
         public LocationDto() {
             this.Id = -1;
@@ -22,8 +24,10 @@ namespace ManufacturingInventory.Domain.DTOs {
             this.Description = "N/A";
             this.IsDefualt = false;
             this.LocationType = LocationType.NotSelected;
-            this.PartInstances = null;
-            this.Parts = null;
+            this.PartInstances = new List<InstanceDto>();
+            this.Parts = new List<PartDto>();
+            this.Transactions = new List<TransactionDTO>();
+            this.ShowParts = false;
         }
 
         public LocationDto(Location location) {
@@ -38,27 +42,35 @@ namespace ManufacturingInventory.Domain.DTOs {
                     this.PartInstances = warehouse.ItemsAtLocation.Select(instance => new InstanceDto(instance));
                     this.Parts = warehouse.StoredParts.Select(part => new PartDto(part));
                     this.LocationType = LocationType.Warehouse;
+                    this.Transactions = warehouse.Transactions.Select(transaction => new TransactionDTO(transaction));
+                    this.ShowParts = true;
                 } else if (type == typeof(Consumer)) {
                     var consumer = (Consumer)location;
                     this.PartInstances = consumer.ItemsAtLocation.Select(instance => new InstanceDto(instance));
-                    this.Parts = null;
+                    this.Parts = new List<PartDto>();
+                    this.Transactions = consumer.Transactions.Select(transaction => new TransactionDTO(transaction));
+                    this.ShowParts = false;
                     this.LocationType = LocationType.Consumer;
                 } else {
-                    this.PartInstances = null;
-                    this.Parts = null;
                     this.Id = -1;
                     this.Name = "N/A";
                     this.LocationType = LocationType.NotSelected;
                     this.Description = "N/A";
                     this.IsDefualt = false;
+                    this.ShowParts = false;
+                    this.Parts = new List<PartDto>();
+                    this.PartInstances = new List<InstanceDto>();
+                    this.Transactions = new List<TransactionDTO>();
                 }
             } else {
-                this.PartInstances = null;
-                this.Parts = null;
                 this.Id = -1;
                 this.Name = "N/A";
                 this.Description = "N/A";
                 this.IsDefualt = false;
+                this.ShowParts = false;
+                this.Parts = new List<PartDto>();
+                this.PartInstances = new List<InstanceDto>();
+                this.Transactions = new List<TransactionDTO>();
                 this.LocationType = LocationType.NotSelected;
             }
         }
