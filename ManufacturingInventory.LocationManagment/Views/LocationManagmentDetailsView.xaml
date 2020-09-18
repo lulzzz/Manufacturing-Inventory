@@ -101,7 +101,7 @@
                               Header="Part Instances"
                               IsSelected="True">
                     <dxg:GridControl x:Name="_listOfPartInstances"
-                                     ItemsSource="{Binding SelectedLocation.PartInstances, IsAsync=True, Mode=TwoWay}"
+                                     ItemsSource="{Binding PartInstances, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
@@ -125,7 +125,7 @@
                               Header="Parts"
                               Visibility="{Binding PartsEnabled,Converter={dxmvvm:BooleanToVisibilityConverter HiddenInsteadOfCollapsed=False}}">
                     <dxg:GridControl x:Name="_listOfParts"
-                                     ItemsSource="{Binding SelectedLocation.Parts, IsAsync=True, Mode=TwoWay}"
+                                     ItemsSource="{Binding Parts, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}"
                                      Style="{StaticResource GridControlStyle}">
                         <dxg:GridControl.View>
@@ -163,7 +163,7 @@
                 <dx:DXTabItem Glyph="{dx:DXImage Image=AgendaView_16x16.png}" 
                               Header="Transactions">
                     <dxg:GridControl x:Name="_listOfTransactions"
-                                     ItemsSource="{Binding SelectedLocation.Transactions, IsAsync=True, Mode=TwoWay}"
+                                     ItemsSource="{Binding Transactions, IsAsync=True, Mode=TwoWay}"
                                      ShowLoadingPanel="{Binding ShowTableLoading, Mode=TwoWay}">
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="_transactionsTblView"

@@ -10,7 +10,8 @@ namespace ManufacturingInventory.Application.Boundaries.LocationManage {
         Task Load();
         Task<IEnumerable<LocationDto>> GetLocations();
         Task<LocationDto> GetLocation(int locationId);
-        //Task<IEnumerable<InstanceDto>> GetLocationInstances(int locationId);
-        //Task<IEnumerable<PartDto>> GetLocationParts(int locationId);
+        Task<IEnumerable<InstanceDto>> GetLocationInstances(int locationId);
+        Task<IEnumerable<PartDto>> GetLocationParts(int locationId);
+        Task<IEnumerable<TransactionDTO>> GetLocationTransactions(int locationId);
     }
 }

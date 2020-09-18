@@ -58,7 +58,7 @@
                                SearchColumns="Name"
                                SearchPanelNullText="Search By Name"
                                ShowSearchPanelMode="Always"
-                               Style="{StaticResource TableViewStyleWithMasterGroup}">
+                               Style="{StaticResource TableViewStyleNoMaster}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding ElementName=_locationTableView, Path=TableViewCommands.BestFitColumns}"
                                                EventName="Loaded" />
@@ -88,8 +88,8 @@
                             FieldName="IsDefault" />
             <dxg:GridColumn Header="Location Type"
                             FieldName="LocationType"
-                            GroupIndex="0" />
-            <dxg:GridControl.DetailDescriptor>
+                            GroupIndex="0"/>
+            <!--<dxg:GridControl.DetailDescriptor>
                 <dxg:TabViewDetailDescriptor>
                     <dxg:TabViewDetailDescriptor.DetailDescriptors>
                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding PartInstances}">
@@ -137,7 +137,7 @@
                         </dxg:DataControlDetailDescriptor>
                     </dxg:TabViewDetailDescriptor.DetailDescriptors>
                 </dxg:TabViewDetailDescriptor>
-            </dxg:GridControl.DetailDescriptor>
+            </dxg:GridControl.DetailDescriptor>-->
         </dxg:GridControl>
     </dxb:BarManager>
 </UserControl>

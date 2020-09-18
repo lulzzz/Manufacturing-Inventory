@@ -36,8 +36,9 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         private LocationDto _selectedLocation;
         private LocationType _selectedLocationType;
         private bool _showViewLoading;
-        //private ObservableCollection<PartDto> _parts;
-        //private ObservableCollection<InstanceDto> _partInstances;
+        private ObservableCollection<PartDto> _parts;
+        private ObservableCollection<InstanceDto> _partInstances;
+        private ObservableCollection<TransactionDTO> _transactions;
 
         private bool _partsEnabled;
         private bool _canEditDefault;
@@ -73,15 +74,20 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
             set => SetProperty(ref this._selectedLocation,value);
         }
 
-        //public ObservableCollection<PartDto> Parts {
-        //    get => this._parts;
-        //    set => SetProperty(ref this._parts, value);
-        //}
+        public ObservableCollection<PartDto> Parts {
+            get => this._parts;
+            set => SetProperty(ref this._parts, value);
+        }
 
-        //public ObservableCollection<InstanceDto> PartInstances {
-        //    get => this._partInstances;
-        //    set => SetProperty(ref this._partInstances, value);
-        //}
+        public ObservableCollection<InstanceDto> PartInstances {
+            get => this._partInstances;
+            set => SetProperty(ref this._partInstances, value);
+        }
+
+        public ObservableCollection<TransactionDTO> Transactions {
+            get => this._transactions;
+            set => SetProperty(ref this._transactions, value);
+        }
 
         public string LocationTypeName { 
             get => this._locationTypeName; 
@@ -190,6 +196,14 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
                         this.CanEdit = this._isEdit;
                         this.CanChangeType = false;
                         this.PartsEnabled = location.LocationType == LocationType.Warehouse;
+                        var transactions = await this._locationService.GetLocationTransactions(this._locationId);
+                        var partInstances = await this._locationService.GetLocationInstances(this._locationId);
+                        this.PartInstances = new ObservableCollection<InstanceDto>(partInstances);
+                        this.Transactions = new ObservableCollection<TransactionDTO>(transactions);
+                        if (this.PartsEnabled) {
+                            var parts = await this._locationService.GetLocationParts(this._locationId);
+                            this.Parts = new ObservableCollection<PartDto>(parts);
+                        }
                         this.SelectedLocation = location;
                         this.IsDefault = this.SelectedLocation.IsDefualt;
                         this.SelectedLocationType = this.SelectedLocation.LocationType;

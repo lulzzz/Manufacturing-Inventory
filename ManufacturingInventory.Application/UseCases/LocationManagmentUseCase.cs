@@ -17,6 +17,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private IRepository<Location> _locationRepository;
         private IEntityProvider<PartInstance> _instanceProvider;
         private IEntityProvider<Part> _partProvider;
+        private IEntityProvider<Transaction> _transactionProvider;
         private IUnitOfWork _unitOfWork;
 
         public LocationManagmentUseCase(ManufacturingContext context) {
@@ -24,6 +25,7 @@ namespace ManufacturingInventory.Application.UseCases {
             this._locationRepository = new LocationRepository(context);
             this._instanceProvider = new PartInstanceProvider(context);
             this._partProvider = new PartProvider(context);
+            this._transactionProvider = new TransactionProvider(context);
             this._unitOfWork = new UnitOfWork(context);
         }
 
@@ -74,7 +76,7 @@ namespace ManufacturingInventory.Application.UseCases {
         private async Task<LocationManagmentOutput> ExecuteUpdate(LocationManagmentInput input) {
             var location = await this._locationRepository.GetEntityAsync(e => e.Id == input.Location.Id);
             if (location != null) {
-                location.Id = input.Location.Id;
+                //location.Id = input.Location.Id;
                 location.Name = input.Location.Name;
                 location.Description = input.Location.Description;
                 location.IsDefualt = input.Location.IsDefualt;
@@ -126,8 +128,22 @@ namespace ManufacturingInventory.Application.UseCases {
             return (await this._locationRepository.GetEntityListAsync()).Select(location => new LocationDto(location));
         }
 
+        public async Task<IEnumerable<InstanceDto>> GetLocationInstances(int locationId) {
+            return (await this._instanceProvider.GetEntityListAsync(e => e.CurrentLocation.Id == locationId)).Select(instance => new InstanceDto(instance));
+        }
+
+        public async Task<IEnumerable<PartDto>> GetLocationParts(int locationId) {
+            return (await this._partProvider.GetEntityListAsync(e => e.WarehouseId == locationId)).Select(part => new PartDto(part));
+        }
+
+        public async Task<IEnumerable<TransactionDTO>> GetLocationTransactions(int locationId) {
+            return (await this._transactionProvider.GetEntityListAsync(e => e.LocationId == locationId)).Select(transaction => new TransactionDTO(transaction));
+        }
+
         public async Task Load() {
             await this._locationRepository.LoadAsync();
+            await this._instanceProvider.LoadAsync();
+            await this._partProvider.LoadAsync();
         }
     }
 }

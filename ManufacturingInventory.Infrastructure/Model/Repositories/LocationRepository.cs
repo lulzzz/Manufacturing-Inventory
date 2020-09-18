@@ -76,12 +76,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public Location GetEntity(Expression<Func<Location, bool>> expression) {
             return this._context.Locations
                 .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e=>e.Part)
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e=>e.BubblerParameter)
                 .Include(e => e.Transactions)
-                    .ThenInclude(e=>e.PartInstance)
-                    .ThenInclude(e=>e.BubblerParameter)
                 .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking()
                 .FirstOrDefault(expression);
@@ -90,12 +85,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public async Task<Location> GetEntityAsync(Expression<Func<Location, bool>> expression) {
             return await this._context.Locations
                 .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Transactions)
-                    .ThenInclude(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(expression);
@@ -105,12 +95,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public IEnumerable<Location> GetEntityList(Expression<Func<Location, bool>> expression = null, Func<IQueryable<Location>, IOrderedQueryable<Location>> orderBy = null) {
             IQueryable<Location> query = this._context.Set<Location>()
                 .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Transactions)
-                    .ThenInclude(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking();
 
@@ -128,12 +113,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public async Task<IEnumerable<Location>> GetEntityListAsync(Expression<Func<Location, bool>> expression = null, Func<IQueryable<Location>, IOrderedQueryable<Location>> orderBy = null) {
             IQueryable<Location> query = this._context.Set<Location>()
                 .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Transactions)
-                    .ThenInclude(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking();
 
@@ -151,12 +131,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public void Load() {
             this._context.Locations
                 .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Transactions)
-                    .ThenInclude(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking()
                 .Load();
@@ -165,12 +140,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         public async Task LoadAsync() {
             await this._context.Locations.AsNoTracking()
                 .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.Part)
-                .Include(e => e.ItemsAtLocation)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => e.Transactions)
-                    .ThenInclude(e => e.PartInstance)
-                    .ThenInclude(e => e.BubblerParameter)
                 .Include(e => ((Warehouse)e).StoredParts)
                 .AsNoTracking()
                 .LoadAsync();
