@@ -3,6 +3,7 @@ using ManufacturingInventory.Application.Boundaries.PartNavigationEdit;
 using ManufacturingInventory.Common.Application;
 using ManufacturingInventory.Infrastructure.Model.Entities;
 using ManufacturingInventory.PartsManagment.Internal;
+using ManufacturingInventory.Common.Application.UI.GlobalEvents;
 using Prism.Events;
 using Prism.Regions;
 using System.Collections.ObjectModel;
@@ -45,6 +46,7 @@ namespace ManufacturingInventory.PartsManagment.ViewModels {
 
             this._eventAggregator.GetEvent<PartEditDoneEvent>().Subscribe(async (partId)=>await this.ReloadEditDoneHandler(partId));
             this._eventAggregator.GetEvent<PartEditCancelEvent>().Subscribe(async () => await this.ReloadEditCancelHandle());
+            //this._eventAggregator.GetEvent<GlobalReload>().Subscribe(async () => await this.ReloadEditCancelHandle());
         }
 
         public override bool KeepAlive => false;

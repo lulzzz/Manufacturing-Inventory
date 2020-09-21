@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.Aler
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.AlertEmailService", "ManufacturingInventory.AlertEmailService\ManufacturingInventory.AlertEmailService.csproj", "{C5B0A493-4511-454F-B774-21BC4CC85EFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingInventory.LocationManagment", "ManufacturingInventory.LocationManagment\ManufacturingInventory.LocationManagment.csproj", "{241109EF-44A8-4036-9E01-849C932D02F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingInventory.LocationManagment", "ManufacturingInventory.LocationManagment\ManufacturingInventory.LocationManagment.csproj", "{241109EF-44A8-4036-9E01-849C932D02F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

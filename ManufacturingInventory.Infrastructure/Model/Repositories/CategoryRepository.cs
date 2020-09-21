@@ -127,7 +127,13 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
         }
 
         public void Load() {
-            this._context.Categories.Load();
+            this._context.Categories
+                .Include(e => ((StockType)e).PartInstances)
+                .Include(e => ((StockType)e).CombinedAlert.UserAlerts)
+                .Include(e => ((Organization)e).Parts)
+                .Include(e => ((Condition)e).PartInstances)
+                .Include(e => ((Usage)e).PartInstances)
+                .Load();
         }
 
         public async Task LoadAsync() {

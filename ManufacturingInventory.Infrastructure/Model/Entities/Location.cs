@@ -21,6 +21,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
         public void Set(Location location) {
             this.Name = location.Name;
             this.Description = location.Description;
+            this.IsDefualt = location.IsDefualt;
         }
     }
 

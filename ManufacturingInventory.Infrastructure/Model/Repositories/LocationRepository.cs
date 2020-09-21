@@ -50,7 +50,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 return null;
             }
             location.Set(entity);
-           return (await Task.Run(() => this._context.Locations.Update(entity).Entity));
+           return (await Task.Run(() => this._context.Update<Location>(entity).Entity));
 
         }
 
@@ -78,7 +78,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.ItemsAtLocation)
                 .Include(e => e.Transactions)
                 .Include(e => ((Warehouse)e).StoredParts)
-                .AsNoTracking()
                 .FirstOrDefault(expression);
         }
 
@@ -87,9 +86,7 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.ItemsAtLocation)
                 .Include(e => e.Transactions)
                 .Include(e => ((Warehouse)e).StoredParts)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(expression);
-
         }
 
         public IEnumerable<Location> GetEntityList(Expression<Func<Location, bool>> expression = null, Func<IQueryable<Location>, IOrderedQueryable<Location>> orderBy = null) {
@@ -133,7 +130,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.ItemsAtLocation)
                 .Include(e => e.Transactions)
                 .Include(e => ((Warehouse)e).StoredParts)
-                .AsNoTracking()
                 .Load();
         }
 
@@ -142,7 +138,6 @@ namespace ManufacturingInventory.Infrastructure.Model.Repositories {
                 .Include(e => e.ItemsAtLocation)
                 .Include(e => e.Transactions)
                 .Include(e => ((Warehouse)e).StoredParts)
-                .AsNoTracking()
                 .LoadAsync();
         }
     }

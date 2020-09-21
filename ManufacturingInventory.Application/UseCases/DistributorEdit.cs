@@ -76,9 +76,8 @@ namespace ManufacturingInventory.Application.UseCases {
         }
 
         public async Task<DistributorEditOutput> ExecuteDelete(DistributorEditInput input) {
-            return new DistributorEditOutput(null, false, "Error: Not Implemented Yet");
+            return new DistributorEditOutput(null, false, "Internal Error: Delete not implemented");
         }
-
 
         public async Task<IEnumerable<ContactDTO>> GetContacts(int distributorId) {
             return (await this._contactProvider.GetEntityListAsync(e=>e.DistributorId==distributorId)).Select(contact=>new ContactDTO(contact));

@@ -43,12 +43,15 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
             this._regionManager = regionManager;
             this._locationService = locationService;
 
-            this.DeleteLocationCommand = new AsyncCommand(this.DeleteLocationHandler,!this._editInProgress);
-            this.ViewDetailsCommand = new AsyncCommand(this.ViewDetailsHandler,!this._editInProgress);
-            this.AddNewLocationCommand = new AsyncCommand(this.AddNewLocationHandler, !this._editInProgress);
-            this.EditLocationCommand = new AsyncCommand(this.EditLocationHandler, !this._editInProgress);
-            this.DoubleClickViewCommand = new AsyncCommand(this.ViewDetailsHandler, !this._editInProgress);
+            this.DeleteLocationCommand = new AsyncCommand(this.DeleteLocationHandler, () => !this._editInProgress);
+            this.ViewDetailsCommand = new AsyncCommand(this.ViewDetailsHandler, () => !this._editInProgress);
+            this.AddNewLocationCommand = new AsyncCommand(this.AddNewLocationHandler,()=> !this._editInProgress);
+            this.EditLocationCommand = new AsyncCommand(this.EditLocationHandler, () => !this._editInProgress);
+            this.DoubleClickViewCommand = new AsyncCommand(this.ViewDetailsHandler, () => !this._editInProgress);
             this.InitializeCommand = new AsyncCommand(this.LoadHandler);
+
+            this._eventAggregator.GetEvent<LocationEditDoneEvent>().Subscribe(async (int locationId) => await this.Reload(locationId));
+            this._eventAggregator.GetEvent<LocationEditCancelOrErrorEvent>().Subscribe(async () => await this.Reload());
         }
 
         public override bool KeepAlive => false;
@@ -134,7 +137,6 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         }
 
         private async Task EditCompletedCallBack(int locationId) {
-            this._editInProgress = false;
             await this.Reload(locationId);
         }
 
@@ -149,6 +151,7 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         public async Task Reload(int? locationId=null) {
             this.DispatcherService.BeginInvoke(() => this.ShowTableLoading = true);
             await this._locationService.Load();
+            this._editInProgress = false;
             var locations = await this._locationService.GetLocations();
             this.Locations = new ObservableCollection<LocationDto>(locations);
             if (locationId.HasValue) {

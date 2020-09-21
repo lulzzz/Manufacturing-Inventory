@@ -235,6 +235,7 @@ namespace ManufacturingInventory.ManufacturingApplication {
                 container.Register<IAlertsAvailableUseCase, AlertsAvailableUseCase>();
                 container.Register<IAlertsExistingUseCase, AlertsExistingUseCase>();
                 container.Register<ILocationManagmentUseCase, LocationManagmentUseCase>();
+                container.Register<ILocationEditUseCase, LocationEditUseCase>();
                 container.Register<ILogInService, LogInService>();
                 container.Register<IDomainManager, DomainManager>();
                 container.RegisterInstance<IUserService>(this.userService);

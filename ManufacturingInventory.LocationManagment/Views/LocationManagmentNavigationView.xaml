@@ -74,7 +74,6 @@
                                            Glyph="{dx:DXImage Image=Action_Edit.png}" />
                         <dxb:BarButtonItem Command="{Binding Path=View.DataContext.DeleteLocationCommand}"
                                            Content="Delete Location"
-                                           IsEnabled="False"
                                            Glyph="{dx:DXImage Image=Delete_32x32.png}" />
                         <dxb:BarItemSeparator />
                     </dxg:TableView.RowCellMenuCustomizations>

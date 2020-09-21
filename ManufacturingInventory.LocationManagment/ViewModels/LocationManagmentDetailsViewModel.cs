@@ -25,7 +25,7 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         protected IDispatcherService DispatcherService { get => ServiceContainer.GetService<IDispatcherService>("LocationDetailsDispatcher"); }
         protected IMessageBoxService MessageBoxService { get => ServiceContainer.GetService<IMessageBoxService>("LocationDetailsMessageBox"); }
 
-        private ILocationManagmentUseCase _locationService;
+        private ILocationEditUseCase _locationService;
         private IRegionManager _regionManager;
         private IEventAggregator _eventAggregator;
 
@@ -55,9 +55,8 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
         public AsyncCommand SaveCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand InitializeCommand { get; private set; }
-        //public AsyncCommand LocationTypeChangedCommand { get; private set; }
 
-        public LocationManagmentDetailsViewModel(IEventAggregator eventAggregator,IRegionManager regionManager,ILocationManagmentUseCase locationService) {
+        public LocationManagmentDetailsViewModel(IEventAggregator eventAggregator,IRegionManager regionManager,ILocationEditUseCase locationService) {
             this._regionManager = regionManager;
             this._eventAggregator = eventAggregator;
             this._locationService = locationService;
@@ -160,8 +159,10 @@ namespace ManufacturingInventory.LocationManagment.ViewModels {
             await this.ShowActionResponse(output);
         }
 
-        private async Task CancelHandler() {
+        private Task CancelHandler() {
+            this.CanEdit = false;
             this._eventAggregator.GetEvent<LocationEditCancelOrErrorEvent>().Publish();
+            return Task.CompletedTask;
         }
 
         private async Task ShowActionResponse(LocationManagmentOutput response) {

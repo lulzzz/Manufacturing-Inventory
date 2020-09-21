@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Text;
 using Task = System.Threading.Tasks.Task;
 
-namespace ManufacturingInventory.AlertEmailService.Services {
+namespace ManufacturingInventory.EmailAlertService.Services {
 
-    public class EmailRecipient : IEmailRecipient {
+    public class EmailRecipient {
         public string EmailAddress { get; set; }
-        public string Message { get; private set; }
+        public string Message { get;private set; }
         public bool IsFinalized { get; private set; }
         public MessageBuilder MessageBuilder { get; private set; }
         public List<AlertDto> Alerts { get; set; }
@@ -22,20 +22,20 @@ namespace ManufacturingInventory.AlertEmailService.Services {
         }
 
         public async Task BuildAlertTable() {
-            await Task.Run(() => {
-                foreach (var alert in this.Alerts) {
+            await Task.Run(() => { 
+                foreach(var alert in this.Alerts) {
                     this.MessageBuilder.AppendAlert(alert);
                 }
             });
         }
 
         public void FinalizeMessage() {
-            this.Message = this.MessageBuilder.FinishMessage();
+            this.Message=this.MessageBuilder.FinishMessage();
             this.IsFinalized = true;
         }
     }
 
-    public class Emailer : IEmailer {
+    public class Emailer {
         //public static readonly ExchangeVersion ExchangeVersion = ExchangeVersion.Exchange2007_SP1;
         //public static readonly WebCredentials Credentials = new WebCredentials("inventoryalerts", "!23seti", "sskep.com");
         //public static readonly string From = "inventoryalerts@s-et.com";
@@ -60,7 +60,7 @@ namespace ManufacturingInventory.AlertEmailService.Services {
             message.Subject = "Manufacturing Inventory Alert Service";
             MessageBody body = new MessageBody();
             body.BodyType = BodyType.HTML;
-            body.Text = emailRecipient.Message;
+            body.Text =emailRecipient.Message;
             message.Body = body;
             await message.SendAndSaveCopy();
         }
