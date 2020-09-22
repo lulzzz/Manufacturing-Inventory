@@ -1,5 +1,6 @@
 ﻿using ManufacturingInventory.Domain.DTOs;
 using Microsoft.Exchange.WebServices.Data;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,8 +41,11 @@ namespace ManufacturingInventory.AlertEmailService.Services {
         //public static readonly WebCredentials Credentials = new WebCredentials("inventoryalerts", "!23seti", "sskep.com");
         //public static readonly string From = "inventoryalerts@s-et.com";
         private ExchangeService _exchange;
+        private readonly ILogger _logger;
 
-        public Emailer() {
+        public Emailer(ILoggerFactory loggerFactory) {
+            this._logger = loggerFactory.CreateLogger<Emailer>();
+            this._logger.LogInformation("Emailer Initialized");
             this._exchange = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
             WebCredentials credentials = new WebCredentials("inventoryalerts", "!23seti", "sskep.com");
             this._exchange.Credentials = credentials;
@@ -54,6 +58,7 @@ namespace ManufacturingInventory.AlertEmailService.Services {
 
             EmailMessage message = new EmailMessage(this._exchange);
             message.ToRecipients.Add(emailRecipient.EmailAddress);
+
             if (emailRecipient.EmailAddress != "aelmendorf@s-et.com") {
                 message.ToRecipients.Add("aelmendorf@s-et.com");
             }
@@ -63,6 +68,7 @@ namespace ManufacturingInventory.AlertEmailService.Services {
             body.Text = emailRecipient.Message;
             message.Body = body;
             await message.SendAndSaveCopy();
+            this._logger.LogInformation("Emial sent to {0}",emailRecipient.EmailAddress);
         }
     }
 }

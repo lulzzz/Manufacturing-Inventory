@@ -21,6 +21,7 @@ namespace ManufacturingInventory.AlertEmailService.Services {
             optionsBuilder.UseSqlServer("server=172.20.4.20;database=manufacturing_inventory;user=aelmendorf;password=Drizzle123!;MultipleActiveResultSets=true");
             this._context = new ManufacturingContext(optionsBuilder.Options);
             this._logger = loggerFactory.CreateLogger<AlertService>();
+            this._logger.LogInformation("Alert Service Initialized");
             this._emailer = emailer;
             this._users = new List<User>();
 
@@ -41,6 +42,7 @@ namespace ManufacturingInventory.AlertEmailService.Services {
                     .ThenInclude(e => (e.Alert as CombinedAlert).StockHolder.PartInstances)
                 .Where(e => !String.IsNullOrEmpty(e.Email) && e.UserAlerts.Count() > 0)
                 .ToListAsync();
+            this._logger.LogInformation("Users Gathered");
         }
 
         private async Task ProcessAlerts() {

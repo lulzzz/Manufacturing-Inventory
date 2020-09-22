@@ -15,9 +15,12 @@ namespace ManufacturingInventory.AlertEmailService {
         static void Main(string[] args) {
             //const string loggerTemplate = @"{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u4}]<{ThreadId}> [{SourceContext:l}] {Message:lj}{NewLine}{Exception}";
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var logDirPath = Path.Combine(baseDir, "AppLogs"); 
-            var logfile = Path.Combine(baseDir, "App_Data", "logs", "log.txt");
-
+            var logDirPath = Path.Combine(baseDir, "AppLogs");
+            if (!Directory.Exists(logDirPath)) {
+                Directory.CreateDirectory(logDirPath);
+            }
+            //var logfile = Path.Combine(baseDir, "App_Data", "logs", "log.txt");
+            var logfile = Path.Combine(logDirPath, "log.txt");
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder => {
@@ -32,22 +35,10 @@ namespace ManufacturingInventory.AlertEmailService {
                         Filter = (x, y) => y >= LogLevel.Warning
                     });
                 })
-                .AddSingleton<IAlertService, AlertService>()
-                .AddSingleton<IEmailer, Emailer>()
+                .AddTransient<IAlertService, AlertService>()
+                .AddTransient<IEmailer, Emailer>()
                 .BuildServiceProvider();
 
-            //using var loggerFactory = LoggerFactory.Create(builder => {
-            //    builder
-            //    .AddFilter("Microsoft", LogLevel.Warning)
-            //    .AddFilter("Microsoft", LogLevel.Warning)
-            //    .AddFilter("Microsoft", LogLevel.Warning)
-            //    .AddConsole()
-            //    .AddEventLog(new EventLogSettings() { 
-            //        SourceName="",
-            //        LogName="",
-            //        Filter=(x,y)=>y>=LogLevel.Warning
-            //    });
-            //});
 
             var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<Program>();
 
@@ -60,7 +51,8 @@ namespace ManufacturingInventory.AlertEmailService {
 
             logger.LogWarning(builder.ToString());
 
-
+            var alertService=serviceProvider.GetService<IAlertService>();
+            AsyncContext.Run(alertService.Run);
             //Console.WriteLine("Running Service");
             //AlertService alertService = new AlertService();
             //AsyncContext.Run(alertService.Run);

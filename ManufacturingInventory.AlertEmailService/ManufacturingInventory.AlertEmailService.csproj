@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <FileVersion>1.0.11.7569</FileVersion>
+    <FileVersion>1.0.19.7570</FileVersion>
     <AssemblyName>AlertEmailService</AssemblyName>
     <StartupObject>ManufacturingInventory.AlertEmailService.Program</StartupObject>
   </PropertyGroup>
