@@ -27,7 +27,9 @@ namespace ManufacturingInventory.Application.UseCases {
             IEnumerable<Transaction> transactions = new List<Transaction>();
             switch (input.CollectType) {
                 case CollectType.OnlyCostReported:
-                    transactions = await this._transactionProvider.GetEntityListAsync(tran => tran.PartInstance.CostReported && (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop));
+                    transactions = await this._transactionProvider.GetEntityListAsync(tran => 
+                    (tran.PartInstance.CostReported && (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop)) ||
+                    ((tran.PartInstance.IsBubbler && !tran.PartInstance.CostReported) && (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop)));
                     break;
                 case CollectType.AllItems:
                     transactions = await this._transactionProvider.GetEntityListAsync(tran => (tran.TimeStamp >= dStart && tran.TimeStamp <= dStop));
