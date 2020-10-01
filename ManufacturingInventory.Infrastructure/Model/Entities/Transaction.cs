@@ -56,9 +56,10 @@ namespace ManufacturingInventory.Infrastructure.Model.Entities {
             this.Weight = weight;
             this.MeasuredWeight = measured;
             this.UnitCost = instance.UnitCost;
-            this.TotalCost = (instance.IsBubbler) ? (instance.TotalCost*instance.BubblerParameter.NetWeight) : (this.Quantity * this.UnitCost);
-            this.InventoryAction = inventoryAction;
             this.Quantity = 1;
+            //this.TotalCost = (instance.BubblerParameter.NetWeight * instance.UnitCost);
+            this.TotalCost = (instance.IsBubbler) ? (instance.UnitCost * instance.BubblerParameter.NetWeight) : (this.Quantity * this.UnitCost);
+            this.InventoryAction = inventoryAction;  
             this.LocationId = location.Id;
             this.PartInstanceId = instance.Id;
         }

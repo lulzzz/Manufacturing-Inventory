@@ -16,6 +16,8 @@ namespace ManufacturingInventory.Application.UseCases {
         private ManufacturingContext _context;
         private IEntityProvider<PartInstance> _partInstanceProvider;
         private IUnitOfWork _unitOfWork;
+        private static double ProductionFactor = .90;
+        private static double RnDFactor = .10;
 
         public MonthlySummaryUseCase(ManufacturingContext context) {
             this._context = context;
@@ -63,18 +65,21 @@ namespace ManufacturingInventory.Application.UseCases {
 
                 if (partInstance.IsBubbler) {
                     incomingQtyTotal = incomingTransactions.Sum(e => e.PartInstance.BubblerParameter.NetWeight);
-                    incomingCostTotal = incomingTransactions.Sum(e => e.TotalCost);
+                    //incomingCostTotal = incomingTransactions.Sum(e => e.TotalCost);
+                    incomingCostTotal = incomingTransactions.Sum(e => e.PartInstance.BubblerParameter.NetWeight * e.UnitCost);
 
                     incomingQtyRange = incomingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.PartInstance.BubblerParameter.NetWeight);
-                    incomingCostRange = incomingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.TotalCost);
+                    //incomingCostRange = incomingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.TotalCost);
+                    incomingCostRange = incomingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.PartInstance.BubblerParameter.NetWeight * e.UnitCost);
 
                     outgoingQtyTotal = outgoingTransactions.Sum(e => e.PartInstance.BubblerParameter.NetWeight);
-                    outgoingCostTotal = outgoingTransactions.Sum(e => e.TotalCost);
+                    //outgoingCostTotal = outgoingTransactions.Sum(e => e.TotalCost);
+                    outgoingCostTotal = outgoingTransactions.Sum(e => e.PartInstance.BubblerParameter.NetWeight * e.UnitCost);
 
                     outgoingQtyRange = outgoingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.PartInstance.BubblerParameter.NetWeight);
-                    outgoingCostRange = outgoingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.TotalCost);
+                    outgoingCostRange = outgoingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.PartInstance.BubblerParameter.NetWeight*e.UnitCost);
                     currentQty = partInstance.BubblerParameter.NetWeight;
-                    currentCost = partInstance.TotalCost;
+                    currentCost = partInstance.UnitCost*currentQty;
                 } else {
                     incomingQtyTotal = incomingTransactions.Sum(e => e.Quantity);
                     incomingCostTotal = incomingTransactions.Sum(e => e.TotalCost);
@@ -88,7 +93,7 @@ namespace ManufacturingInventory.Application.UseCases {
                     outgoingQtyRange = outgoingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.Quantity);
                     outgoingCostRange = outgoingTransactions.Where(e => e.TimeStamp <= dStop).Sum(e => e.TotalCost);
                     currentQty = partInstance.Quantity;
-                    currentCost = partInstance.TotalCost;
+                    currentCost = partInstance.UnitCost * currentQty;
                 }
 
                 double outgoingCost = outgoingCostRange;
@@ -110,12 +115,12 @@ namespace ManufacturingInventory.Application.UseCases {
 
                 partSummary.IncomingCost = incomingCostRange;
                 partSummary.IncomingQuantity = incomingQtyRange;
+                
+                partSummary.RndOutgoingCost = outgoingCost * MonthlySummaryUseCase.RnDFactor;
+                partSummary.RndOutgoingQuantity = outgoingQty * MonthlySummaryUseCase.RnDFactor;
 
-                partSummary.RndOutgoingCost = outgoingCost / 2;
-                partSummary.RndOutgoingQuantity = outgoingQty / 2;
-
-                partSummary.ProductionOutgoingCost = outgoingCost / 2;
-                partSummary.ProductionOutgoingQuantity = outgoingQty / 2;
+                partSummary.ProductionOutgoingCost = outgoingCost * MonthlySummaryUseCase.ProductionFactor;
+                partSummary.ProductionOutgoingQuantity = outgoingQty * MonthlySummaryUseCase.ProductionFactor;
 
                 partSummary.TotalOutgoingCost = outgoingCostRange;
                 partSummary.TotalOutgoingQuantity = outgoingQtyRange;

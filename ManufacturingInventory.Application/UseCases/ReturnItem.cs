@@ -113,10 +113,10 @@ namespace ManufacturingInventory.Application.UseCases {
 
             Transaction transaction = new Transaction(partInstance, InventoryAction.RETURNING,
                 partInstance.BubblerParameter.Measured, partInstance.BubblerParameter.Weight, location, item.TimeStamp);
-            transaction.UnitCost =0;
-            transaction.TotalCost = 0;
-            transaction.ReferenceTransactionId = refTransaction.Id;
-            transaction.SessionId = this._userService.CurrentSessionId.Value;
+                transaction.UnitCost =0;
+                transaction.TotalCost = 0;
+                transaction.ReferenceTransactionId = refTransaction.Id;
+                transaction.SessionId = this._userService.CurrentSessionId.Value;
 
             var bubbler = await this._bubblerRepository.UpdateAsync(partInstance.BubblerParameter);
             var instance = await this._partInstanceRepository.UpdateAsync(partInstance);
