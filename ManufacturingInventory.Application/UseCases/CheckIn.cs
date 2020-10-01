@@ -189,10 +189,6 @@ namespace ManufacturingInventory.Application.UseCases {
                     Transaction transaction = new Transaction();
                     transaction.SetupCheckIn(instanceEntity, InventoryAction.INCOMING, instanceEntity.LocationId, input.TimeStamp);
                     transaction.SessionId = this._userService.CurrentSessionId.Value;
-
-
-
-
                     var stockType = (StockType)await this._categoryRepository.GetEntityAsync(e => e.Id == instanceEntity.StockTypeId);
                     if (stockType != null) {
                         if (!stockType.IsDefault) {
